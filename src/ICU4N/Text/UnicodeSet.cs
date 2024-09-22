@@ -1,6 +1,5 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Impl;
-using ICU4N.Support.Text;
 using ICU4N.Util;
 using J2N;
 using J2N.Collections.Generic.Extensions;
@@ -10,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -127,11 +127,25 @@ namespace ICU4N.Text
         /// <stable>ICU 54</stable>
         public override string ToString()
         {
-            StringBuilder b = new StringBuilder();
-            return (
-                    Codepoint == CodepointEnd ? UnicodeSet.AppendToPat(b, Codepoint, false)
-                            : UnicodeSet.AppendToPat(UnicodeSet.AppendToPat(b, Codepoint, false).Append('-'), CodepointEnd, false))
-                            .ToString();
+            ValueStringBuilder b = new ValueStringBuilder(stackalloc char[UnicodeSet.CharStackBufferSize]);
+            try
+            {
+                if (Codepoint == CodepointEnd)
+                {
+                    UnicodeSet.AppendToPat(ref b, Codepoint, false);
+                }
+                else
+                {
+                    UnicodeSet.AppendToPat(ref b, Codepoint, false);
+                    b.Append('-');
+                    UnicodeSet.AppendToPat(ref b, CodepointEnd, false);
+                }
+                return b.ToString();
+            }
+            finally
+            {
+                b.Dispose();
+            }
         }
     }
 
@@ -243,7 +257,7 @@ namespace ICU4N.Text
     /// <c><see cref="MinValue"/>-<see cref="MaxValue"/></c>.
     /// <para/>
     /// The second API is the
-    /// <see cref="ApplyPattern(string)"/>/<see cref="ToPattern(StringBuilder, bool)"/> API from the
+    /// <see cref="ApplyPattern(string)"/>/<see cref="ToPattern(bool)"/> API from the
     /// <c>java.text.Format</c>-derived classes.  Unlike the
     /// methods that add characters, add categories, and control the logic
     /// of the set, the method <see cref="ApplyPattern(string)"/> sets all
@@ -256,7 +270,7 @@ namespace ICU4N.Text
     /// <para/>
     /// Patterns are accepted by the constructors and the
     /// <see cref="ApplyPattern(string)"/> methods and returned by the
-    /// <see cref="ToPattern(StringBuilder, bool)"/> method.  These patterns follow a syntax
+    /// <see cref="ToPattern(bool)"/> method.  These patterns follow a syntax
     /// similar to that employed by .NET regular expression character
     /// classes.  Here are some simple examples:
     /// 
@@ -485,8 +499,11 @@ namespace ICU4N.Text
     /// <stable>ICU 2.0</stable>
     // ICU4N TODO: API - mark sealed (not sure why this wasn't done)
     // ICU4N TODO: API - change ToPattern() to ICustomFormatter.Format(string, object, IFormatProvider) ? Need to find corresponding API in .NET and change accordingly (see the "second API") in documentation above
+    // ICU4N TODO: Review and update above docs (they have some Java related stuff).
     public partial class UnicodeSet : UnicodeFilter, IEnumerable<string>, IComparable<UnicodeSet>, IFreezable<UnicodeSet>
     {
+        internal const int CharStackBufferSize = 32;
+
         private static readonly object syncLock = new object();
 
         /// <summary>
@@ -535,7 +552,7 @@ namespace ICU4N.Text
         /// <see cref="ApplyPattern(string)"/>, with variables substituted and whitespace
         /// removed.  For sets constructed without <see cref="ApplyPattern(string)"/>, or
         /// modified using the non-pattern API, this string will be null,
-        /// indicating that <see cref="ToPattern(StringBuilder, bool)"/> must generate a pattern
+        /// indicating that <see cref="ToPattern(bool)"/> must generate a pattern
         /// representation from the inversion list.
         /// </summary>
         private string pat = null;
@@ -837,13 +854,65 @@ namespace ICU4N.Text
                     ResemblesPropertyPattern(pattern, pos);
         }
 
-        // ICU4N specific - AppendCodePoint(IAppendable app, int c) moved to UnicodeSetExtension.tt
+        // ICU4N specific - AppendCodePoint(IAppendable app, int c) factored out because we aren't expecting exceptions from a StringBuilder
 
-        // ICU4N specific - Append(IAppendable app, ICharSequence s) moved to UnicodeSetExtension.tt
+        // ICU4N specific - Append(IAppendable app, ICharSequence s) factored out because we aren't expecting exceptions from a StringBuilder
 
-        // ICU4N specific - AppendToPat(IAppendable buf, string s, bool escapeUnprintable) moved to UnicodeSetExtension.tt
+        /// <summary>
+        /// Append the <see cref="ToPattern(bool)"/> representation of a
+        /// string to the given <see cref="StringBuilder"/>.
+        /// </summary>
+        private static void AppendToPat(ref ValueStringBuilder buf, string s, bool escapeUnprintable)
+        {
+            int cp;
+            for (int i = 0; i < s.Length; i += Character.CharCount(cp))
+            {
+                cp = s.CodePointAt(i);
+                AppendToPat(ref buf, cp, escapeUnprintable);
+            }
+        }
 
-        // ICU4N specific - AppendToPat(IAppendable buf, int c, bool escapeUnprintable) moved to UnicodeSetExtension.tt
+        /// <summary>
+        /// Append the <see cref="ToPattern(bool)"/> representation of a
+        /// character to the given <see cref="StringBuilder"/>.
+        /// </summary>
+        internal static void AppendToPat(ref ValueStringBuilder buf, int c, bool escapeUnprintable)
+        {
+            // ICU4N: Removed unnecessary try/catch
+            if (escapeUnprintable && Utility.IsUnprintable(c))
+            {
+                // Use hex escape notation (<backslash>uxxxx or <backslash>Uxxxxxxxx) for anything
+                // unprintable
+                if (Utility.EscapeUnprintable(ref buf, c))
+                {
+                    return;
+                }
+            }
+            // Okay to let ':' pass through
+            switch (c)
+            {
+                case '[': // SET_OPEN:
+                case ']': // SET_CLOSE:
+                case '-': // HYPHEN:
+                case '^': // COMPLEMENT:
+                case '&': // INTERSECTION:
+                case '\\': //BACKSLASH:
+                case '{':
+                case '}':
+                case '$':
+                case ':':
+                    buf.Append('\\');
+                    break;
+                default:
+                    // Escape whitespace
+                    if (PatternProps.IsWhiteSpace(c))
+                    {
+                        buf.Append('\\');
+                    }
+                    break;
+            }
+            buf.AppendCodePoint(c);
+        }
 
         /// <summary>
         /// Returns a string representation of this set.  If the result of
@@ -857,11 +926,102 @@ namespace ICU4N.Text
             {
                 return pat;
             }
-            StringBuilder result = new StringBuilder();
-            return ToPattern(result, escapeUnprintable).ToString();
+            ValueStringBuilder result = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                ToPattern(ref result, escapeUnprintable);
+                return result.ToString();
+            }
+            finally
+            {
+                result.Dispose();
+            }
         }
 
-        // ICU4N specific - ToPattern(IAppendable result, bool escapeUnprintable) moved to UnicodeSetExtension.tt
+        /// <summary>
+        /// Outputs the string representation of this set. If the result of
+        /// calling this function is passed to a <see cref="UnicodeSet"/> constructor, it
+        /// will produce another set that is equal to this one.
+        /// </summary>
+        /// <param name="escapeUnprintable">If true, then unprintable characters
+        /// will be converted to escape form backslash-'u' or
+        /// backslash-'U'.</param>
+        /// <param name="destination">When this method returns successfully, contains the string representation of this set.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        public override bool TryToPattern(bool escapeUnprintable, Span<char> destination, out int charsLength)
+        {
+            if (pat != null && !escapeUnprintable)
+            {
+                charsLength = pat.Length;
+                return pat.AsSpan().TryCopyTo(destination);
+            }
+            ValueStringBuilder result = new ValueStringBuilder(destination);
+            try
+            {
+                ToPattern(ref result, escapeUnprintable);
+                return result.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                result.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Append a string representation of this set to result.  This will be
+        /// a cleaned version of the string passed to ApplyPattern(), if there
+        /// is one.  Otherwise it will be generated.
+        /// </summary>
+        private void ToPattern(ref ValueStringBuilder result, bool escapeUnprintable)
+        {
+            if (pat == null)
+            {
+                AppendNewPattern(ref result, escapeUnprintable, true);
+                return;
+            }
+            // ICU4N: Removed unnecessary try/catch
+            if (!escapeUnprintable)
+            {
+                result.Append(pat);
+                return;
+            }
+            bool oddNumberOfBackslashes = false;
+            for (int i = 0; i < pat.Length;)
+            {
+                int c = pat.CodePointAt(i);
+                i += Character.CharCount(c);
+                if (Utility.IsUnprintable(c))
+                {
+                    // If the unprintable character is preceded by an odd
+                    // number of backslashes, then it has been escaped
+                    // and we omit the last backslash.
+                    Utility.EscapeUnprintable(ref result, c);
+                    oddNumberOfBackslashes = false;
+                }
+                else if (!oddNumberOfBackslashes && c == '\\')
+                {
+                    // Temporarily withhold an odd-numbered backslash.
+                    oddNumberOfBackslashes = true;
+                }
+                else
+                {
+                    if (oddNumberOfBackslashes)
+                    {
+                        result.Append('\\');
+                    }
+                    result.AppendCodePoint(c);
+                    oddNumberOfBackslashes = false;
+                }
+            }
+            if (oddNumberOfBackslashes)
+            {
+                result.Append('\\');
+            }
+        }
+
 
         /// <summary>
         /// Generate and append a string representation of this set to result.
@@ -871,7 +1031,7 @@ namespace ICU4N.Text
         /// <param name="result">The buffer into which to generate the pattern.</param>
         /// <param name="escapeUnprintable">Escape unprintable characters if true.</param>
         /// <stable>ICU 3.8</stable>
-        public virtual StringBuilder GeneratePattern(StringBuilder result, bool escapeUnprintable)
+        public virtual StringBuilder GeneratePattern(StringBuilder result, bool escapeUnprintable) // ICU4N TODO: API - Create primary overloads that write to Span<char> and return string, then factor out.
         {
             return GeneratePattern(result, escapeUnprintable, true);
         }
@@ -886,12 +1046,84 @@ namespace ICU4N.Text
         /// <param name="includeStrings">If false, doesn't include the strings.</param>
         /// <stable>ICU 3.8</stable>
         public virtual StringBuilder GeneratePattern(StringBuilder result,
-                bool escapeUnprintable, bool includeStrings)
+                bool escapeUnprintable, bool includeStrings) // ICU4N TODO: API - Create primary overloads that write to Span<char> and return string, then factor out.
         {
-            return AppendNewPattern(result, escapeUnprintable, includeStrings);
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                AppendNewPattern(ref sb, escapeUnprintable, includeStrings);
+                return result.Append(sb.AsSpan());
+            }
+            finally
+            {
+                sb.Dispose();
+            }
         }
 
-        // ICU4N specific - AppendNewPattern(IAppendable result, bool escapeUnprintable, bool includeStrings) moved to UnicodeSetExtension.tt
+        private void AppendNewPattern(ref ValueStringBuilder result, bool escapeUnprintable, bool includeStrings)
+        {
+            // ICU4N: Removed unnecessary try/catch
+            result.Append('[');
+
+            int count = RangeCount;
+
+            // If the set contains at least 2 intervals and includes both
+            // MIN_VALUE and MAX_VALUE, then the inverse representation will
+            // be more economical.
+            if (count > 1 &&
+                    GetRangeStart(0) == MinValue &&
+                    GetRangeEnd(count - 1) == MaxValue)
+            {
+
+                // Emit the inverse
+                result.Append('^');
+
+                for (int i = 1; i < count; ++i)
+                {
+                    int start = GetRangeEnd(i - 1) + 1;
+                    int end = GetRangeStart(i) - 1;
+                    AppendToPat(ref result, start, escapeUnprintable);
+                    if (start != end)
+                    {
+                        if ((start + 1) != end)
+                        {
+                            result.Append('-');
+                        }
+                        AppendToPat(ref result, end, escapeUnprintable);
+                    }
+                }
+            }
+
+            // Default; emit the ranges as pairs
+            else
+            {
+                for (int i = 0; i < count; ++i)
+                {
+                    int start = GetRangeStart(i);
+                    int end = GetRangeEnd(i);
+                    AppendToPat(ref result, start, escapeUnprintable);
+                    if (start != end)
+                    {
+                        if ((start + 1) != end)
+                        {
+                            result.Append('-');
+                        }
+                        AppendToPat(ref result, end, escapeUnprintable);
+                    }
+                }
+            }
+
+            if (includeStrings && strings.Count > 0)
+            {
+                foreach (string s in strings)
+                {
+                    result.Append('{');
+                    AppendToPat(ref result, s, escapeUnprintable);
+                    result.Append('}');
+                }
+            }
+            result.Append(']');
+        }
 
         /// <summary>
         /// Returns the number of elements in this set (its cardinality)
@@ -1125,9 +1357,77 @@ namespace ICU4N.Text
             return maxLen;
         }
 
-        // ICU4N specific - MatchesAt(ICharSequence text, int offset) moved to UnicodeSetExtension.tt
+        /// <summary>
+        /// Tests whether the text matches at the offset. If so, returns the end of the longest substring that it matches. If not, returns -1.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        internal virtual int MatchesAt(ReadOnlySpan<char> text, int offset) // ICU4N: Marked internal because it is obsolete
+        {
+            int lastLen = -1;
 
-        // ICU4N specific - MatchesAt(ICharSequence text, int offsetInText, ICharSequence substring) moved to UnicodeSetExtension.tt
+            if (strings.Count != 0)
+            {
+                char firstChar = text[offset];
+                string trial = null;
+                // find the first string starting with firstChar
+                //Iterator<string> it = strings.iterator();
+                using (var it = strings.GetEnumerator())
+                {
+                    while (it.MoveNext())
+                    {
+                        trial = it.Current;
+                        char firstStringChar = trial[0];
+                        if (firstStringChar < firstChar) continue;
+                        if (firstStringChar > firstChar) goto strings_break;
+                    }
+
+                    // now keep checking string until we get the longest one
+                    for (; ; )
+                    {
+                        int tempLen = MatchesAt(text, offset, trial.AsSpan());
+                        if (lastLen > tempLen) goto strings_break;
+                        lastLen = tempLen;
+                        if (!it.MoveNext()) break;
+                        trial = it.Current;
+                    }
+                }
+            }
+        strings_break: { }
+
+            if (lastLen < 2)
+            {
+                int cp = UTF16.CharAt(text, offset);
+                if (Contains(cp)) lastLen = UTF16.GetCharCount(cp);
+            }
+
+            return offset + lastLen;
+        }
+
+        /// <summary>
+        /// Does one string contain another, starting at a specific offset?
+        /// </summary>
+        /// <param name="text">Text to match.</param>
+        /// <param name="offsetInText">Offset within that text.</param>
+        /// <param name="substring">Substring to match at offset in text.</param>
+        /// <returns>-1 if match fails, otherwise other.Length.</returns>
+        // Note: This method was moved from CollectionUtilities
+        private static int MatchesAt(ReadOnlySpan<char> text, int offsetInText, ReadOnlySpan<char> substring)
+        {
+            int len = substring.Length;
+            int textLength = text.Length;
+            if (textLength + offsetInText > len)
+            {
+                return -1;
+            }
+            int i = 0;
+            for (int j = offsetInText; i < len; ++i, ++j)
+            {
+                char pc = substring[i];
+                char tc = text[j];
+                if (pc != tc) return -1;
+            }
+            return i;
+        }
 
         /// <summary>
         /// Implementation of <see cref="IUnicodeMatcher"/> API.  Union the set of all
@@ -1394,17 +1694,189 @@ namespace ICU4N.Text
             return this;
         }
 
-        // ICU4N specific - Add(ICharSequence s) moved to UnicodeSetExtension.tt
+        /// <summary>
+        /// Adds the specified multicharacter to this set if it is not already
+        /// present.  If this set already contains the multicharacter,
+        /// the call leaves this set unchanged.
+        /// Thus "ch" =&gt; {"ch"}
+        /// <para/>
+        /// <b>Warning: you cannot add an empty string ("") to a UnicodeSet.</b>
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <stable>ICU 2.0</stable>
+        public UnicodeSet Add(string s)
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
 
-        // ICU4N specific - GetSingleCP(ICharSequence s) moved to UnicodeSetExtension.tt
+            CheckFrozen();
+            int cp = GetSingleCP(s.AsSpan());
+            if (cp < 0)
+            {
+                strings.Add(s);
+                pat = null;
+            }
+            else
+            {
+                AddUnchecked(cp, cp);
+            }
+            return this;
+        }
 
-        // ICU4N specific - AddAll(ICharSequence s) moved to UnicodeSetExtension.tt
+        /// <summary>
+        /// Adds the specified multicharacter to this set if it is not already
+        /// present.  If this set already contains the multicharacter,
+        /// the call leaves this set unchanged.
+        /// Thus "ch" =&gt; {"ch"}
+        /// <para/>
+        /// <b>Warning: you cannot add an empty string ("") to a UnicodeSet.</b>
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <stable>ICU 2.0</stable>
+        public UnicodeSet Add(ReadOnlySpan<char> s)
+        {
+            CheckFrozen();
+            int cp = GetSingleCP(s);
+            if (cp < 0)
+            {
+                strings.Add(s.ToString()); // ICU4N TODO: Make strings use CharSequence instead of string? Then we can at least make ReadOnlyMemory work without an allocation.
+                pat = null;
+            }
+            else
+            {
+                AddUnchecked(cp, cp);
+            }
+            return this;
+        }
 
-        // ICU4N specific - RetainAll(ICharSequence s) moved to UnicodeSetExtension.tt
+        /// <summary>
+        /// Utility for getting code point from single code point <see cref="ReadOnlySpan{Char}"/>.
+        /// See the public <see cref="UTF16.GetSingleCodePoint(ReadOnlySpan{Char})"/>.
+        /// </summary>
+        /// <param name="s">To test.</param>
+        /// <returns>A code point IF the string consists of a single one. Otherwise returns -1.</returns>
+        private static int GetSingleCP(ReadOnlySpan<char> s)
+        {
+            if (s.Length < 1)
+            {
+                throw new ArgumentException("Can't use zero-length strings in UnicodeSet");
+            }
+            if (s.Length > 2) return -1;
+            if (s.Length == 1) return s[0];
 
-        // ICU4N specific - ComplementAll(ICharSequence s) moved to UnicodeSetExtension.tt
+            // at this point, len = 2
+            int cp = UTF16.CharAt(s, 0);
+            if (cp > 0xFFFF)
+            { // is surrogate pair
+                return cp;
+            }
+            return -1;
+        }
 
-        // ICU4N specific - RemoveAll(ICharSequence s) moved to UnicodeSetExtension.tt
+        /// <summary>
+        /// Adds each of the characters in this string to the set. Thus "ch" =&gt; {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>this object, for chaining.</returns>
+        /// <stable>ICU 2.0</stable>
+        internal UnicodeSet AddAll(string s) // ICU4N specific - changed from public to internal (we are using UnionWithChars in .NET)
+        {
+            return AddAll(s.AsSpan());
+        }
+
+        /// <summary>
+        /// Adds each of the characters in this string to the set. Thus "ch" =&gt; {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>this object, for chaining.</returns>
+        /// <stable>ICU 2.0</stable>
+        internal UnicodeSet AddAll(ReadOnlySpan<char> s) // ICU4N specific - changed from public to internal (we are using UnionWithChars in .NET)
+        {
+            CheckFrozen();
+            int cp;
+            for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
+            {
+                cp = UTF16.CharAt(s, i);
+                AddUnchecked(cp, cp);
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Retains EACH of the characters in this string. Note: "ch" == {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <stable>ICU 2.0</stable>
+        internal UnicodeSet RetainAll(string s) // ICU4N specific - changed from public to internal (we are using IntersectWithChars in .NET)
+        {
+            return RetainAll(s.AsSpan());
+        }
+
+        /// <summary>
+        /// Retains EACH of the characters in this string. Note: "ch" == {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <stable>ICU 2.0</stable>
+        internal UnicodeSet RetainAll(ReadOnlySpan<char> s) // ICU4N specific - changed from public to internal (we are using IntersectWithChars in .NET)
+        {
+            return RetainAll(FromAll(s));
+        }
+
+        /// <summary>
+        /// Complement EACH of the characters in this string. Note: "ch" == {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <stable>ICU 2.0</stable>
+        internal UnicodeSet ComplementAll(string s) // ICU4N specific - changed from public to internal (we are using SymmetricExceptWithChars in .NET)
+        {
+            return ComplementAll(s.AsSpan());
+        }
+
+        /// <summary>
+        /// Complement EACH of the characters in this string. Note: "ch" == {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <stable>ICU 2.0</stable>
+        internal UnicodeSet ComplementAll(ReadOnlySpan<char> s) // ICU4N specific - changed from public to internal (we are using SymmetricExceptWithChars in .NET)
+        {
+            return ComplementAll(FromAll(s));
+        }
+
+        /// <summary>
+        /// Remove EACH of the characters in this string. Note: "ch" == {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <stable>ICU 2.0</stable>
+        internal UnicodeSet RemoveAll(string s) // ICU4N specific - changed from public to internal (we are using ExceptWithChars in .NET)
+        {
+            return RemoveAll(s.AsSpan());
+        }
+
+        /// <summary>
+        /// Remove EACH of the characters in this string. Note: "ch" == {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <stable>ICU 2.0</stable>
+        internal UnicodeSet RemoveAll(ReadOnlySpan<char> s) // ICU4N specific - changed from public to internal (we are using ExceptWithChars in .NET)
+        {
+            return RemoveAll(FromAll(s));
+        }
 
         /// <summary>
         /// Remove all strings from this <see cref="UnicodeSet"/>
@@ -1422,9 +1894,53 @@ namespace ICU4N.Text
             return this;
         }
 
-        // ICU4N specific - From(ICharSequence s) moved to UnicodeSetExtension.tt
+        /// <summary>
+        /// Makes a set from a multicharacter string. Thus "ch" =&gt; {"ch"}
+        /// <para/>
+        /// <b>Warning: you cannot add an empty string ("") to a UnicodeSet.</b>
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>A newly created set containing the given string.</returns>
+        /// <stable>ICU 2.0</stable>
+        public static UnicodeSet From(string s)
+        {
+            return new UnicodeSet().Add(s);
+        }
 
-        // ICU4N specific - FromAll(ICharSequence s) moved to UnicodeSetExtension.tt
+        /// <summary>
+        /// Makes a set from a multicharacter string. Thus "ch" =&gt; {"ch"}
+        /// <para/>
+        /// <b>Warning: you cannot add an empty string ("") to a UnicodeSet.</b>
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>A newly created set containing the given string.</returns>
+        /// <stable>ICU 2.0</stable>
+        public static UnicodeSet From(ReadOnlySpan<char> s)
+        {
+            return new UnicodeSet().Add(s);
+        }
+
+        /// <summary>
+        /// Makes a set from each of the characters in the string. Thus "ch" =&gt; {"c", "h"}
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>A newly created set containing the given characters.</returns>
+        /// <stable>ICU 2.0</stable>
+        public static UnicodeSet FromAll(string s) // ICU4N TODO: API - rename FromChars() to match other APIs
+        {
+            return new UnicodeSet().AddAll(s);
+        }
+
+        /// <summary>
+        /// Makes a set from each of the characters in the string. Thus "ch" =&gt; {"c", "h"}
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>A newly created set containing the given characters.</returns>
+        /// <stable>ICU 2.0</stable>
+        public static UnicodeSet FromAll(ReadOnlySpan<char> s) // ICU4N TODO: API - rename FromChars() to match other APIs
+        {
+            return new UnicodeSet().AddAll(s);
+        }
 
         /// <summary>
         /// Retain only the elements in this set that are contained in the
@@ -1471,7 +1987,65 @@ namespace ICU4N.Text
             return Retain(c, c);
         }
 
-        // ICU4N specific - Retain(ICharSequence s) moved to UnicodeSetExtension.tt
+        /// <summary>
+        /// Retain the specified string in this set if it is present.
+        /// Upon return this set will be empty if it did not contain <paramref name="cs"/>, or
+        /// will only contain <paramref name="cs"/> if it did contain <paramref name="cs"/>.
+        /// </summary>
+        /// <param name="cs">The string to be retained.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <stable>ICU 2.0</stable>
+        internal UnicodeSet Retain(string cs) // ICU4N specific - changed from public to internal (we are using IntersectWith in .NET)
+        {
+            int cp = GetSingleCP(cs.AsSpan());
+            if (cp < 0)
+            {
+                string s = cs;
+                bool isIn = strings.Contains(s);
+                if (isIn && Count == 1)
+                {
+                    return this;
+                }
+                Clear();
+                strings.Add(s);
+                pat = null;
+            }
+            else
+            {
+                Retain(cp, cp);
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Retain the specified string in this set if it is present.
+        /// Upon return this set will be empty if it did not contain <paramref name="cs"/>, or
+        /// will only contain <paramref name="cs"/> if it did contain <paramref name="cs"/>.
+        /// </summary>
+        /// <param name="cs">The string to be retained.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <stable>ICU 2.0</stable>
+        internal UnicodeSet Retain(ReadOnlySpan<char> cs) // ICU4N specific - changed from public to internal (we are using IntersectWith in .NET)
+        {
+            int cp = GetSingleCP(cs);
+            if (cp < 0)
+            {
+                string s = cs.ToString(); // ICU4N TODO: Remove this allocation?
+                bool isIn = strings.Contains(s);
+                if (isIn && Count == 1)
+                {
+                    return this;
+                }
+                Clear();
+                strings.Add(s);
+                pat = null;
+            }
+            else
+            {
+                Retain(cp, cp);
+            }
+            return this;
+        }
 
         /// <summary>
         /// Removes the specified range from this set if it is present.
@@ -1515,8 +2089,51 @@ namespace ICU4N.Text
             return Remove(c, c);
         }
 
-        // ICU4N specific - Remove(ICharSequence s) moved to UnicodeSetExtension.tt
+        /// <summary>
+        /// Removes the specified string from this set if it is present.
+        /// The set will not contain the specified string once the call
+        /// returns.
+        /// </summary>
+        /// <param name="s">The string to be removed.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <stable>ICU 2.0</stable>
+        public UnicodeSet Remove(string s)
+        {
+            int cp = GetSingleCP(s.AsSpan());
+            if (cp < 0)
+            {
+                strings.Remove(s);
+                pat = null;
+            }
+            else
+            {
+                Remove(cp, cp);
+            }
+            return this;
+        }
 
+        /// <summary>
+        /// Removes the specified string from this set if it is present.
+        /// The set will not contain the specified string once the call
+        /// returns.
+        /// </summary>
+        /// <param name="s">The string to be removed.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <stable>ICU 2.0</stable>
+        public UnicodeSet Remove(ReadOnlySpan<char> s)
+        {
+            int cp = GetSingleCP(s);
+            if (cp < 0)
+            {
+                strings.Remove(s.ToString()); // ICU4N TODO: Remove this allocation
+                pat = null;
+            }
+            else
+            {
+                Remove(cp, cp);
+            }
+            return this;
+        }
 
         /// <summary>
         /// Complements the specified range in this set.  Any character in
@@ -1581,7 +2198,72 @@ namespace ICU4N.Text
             return this;
         }
 
-        // ICU4N specific - Complement(ICharSequence s) moved to UnicodeSetExtension.tt
+        /// <summary>
+        /// Complement the specified string in this set.
+        /// The set will not contain the specified string once the call
+        /// returns.
+        /// <para/>
+        /// <b>Warning: you cannot add an empty string ("") to a UnicodeSet.</b>
+        /// </summary>
+        /// <param name="s">The string to complement.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <stable>ICU 2.0</stable>
+        internal UnicodeSet Complement(string s) // ICU4N specific - changed from public to internal (we are using SymmetricExceptWith in .NET)
+        {
+            CheckFrozen();
+            int cp = GetSingleCP(s.AsSpan());
+            if (cp < 0)
+            {
+                if (strings.Contains(s))
+                {
+                    strings.Remove(s);
+                }
+                else
+                {
+                    strings.Add(s);
+                }
+                pat = null;
+            }
+            else
+            {
+                Complement(cp, cp);
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Complement the specified string in this set.
+        /// The set will not contain the specified string once the call
+        /// returns.
+        /// <para/>
+        /// <b>Warning: you cannot add an empty string ("") to a UnicodeSet.</b>
+        /// </summary>
+        /// <param name="s">The string to complement.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <stable>ICU 2.0</stable>
+        internal UnicodeSet Complement(ReadOnlySpan<char> s) // ICU4N specific - changed from public to internal (we are using SymmetricExceptWith in .NET)
+        {
+            CheckFrozen();
+            int cp = GetSingleCP(s);
+            if (cp < 0)
+            {
+                string s2 = s.ToString(); // ICU4N TODO: Remove this allocation
+                if (strings.Contains(s2))
+                {
+                    strings.Remove(s2);
+                }
+                else
+                {
+                    strings.Add(s2);
+                }
+                pat = null;
+            }
+            else
+            {
+                Complement(cp, cp);
+            }
+            return this;
+        }
 
         /// <summary>
         /// Returns true if this set contains the given character.
@@ -1804,7 +2486,45 @@ namespace ICU4N.Text
             return ((i & 1) != 0 && end < list[i]);
         }
 
-        // ICU4N specific - Contains(ICharSequence s) moved to UnicodeSetExtension.tt
+        /// <summary>
+        /// Returns <tt>true</tt> if this set contains the given
+        /// multicharacter string.
+        /// </summary>
+        /// <param name="s">String to be checked for containment.</param>
+        /// <returns><tt>true</tt> if this set contains the specified string.</returns>
+        /// <stable>ICU 2.0</stable>
+        public bool Contains(string s)
+        {
+            int cp = GetSingleCP(s.AsSpan());
+            if (cp < 0)
+            {
+                return strings.Contains(s);
+            }
+            else
+            {
+                return Contains(cp);
+            }
+        }
+
+        /// <summary>
+        /// Returns <tt>true</tt> if this set contains the given
+        /// multicharacter string.
+        /// </summary>
+        /// <param name="s">String to be checked for containment.</param>
+        /// <returns><tt>true</tt> if this set contains the specified string.</returns>
+        /// <stable>ICU 2.0</stable>
+        public bool Contains(ReadOnlySpan<char> s)
+        {
+            int cp = GetSingleCP(s);
+            if (cp < 0)
+            {
+                return strings.Contains(s.ToString()); // ICU4N TODO: Remove this allocation
+            }
+            else
+            {
+                return Contains(cp);
+            }
+        }
 
         /// <summary>
         /// Returns true if this set contains all the characters and strings
@@ -1966,14 +2686,23 @@ namespace ICU4N.Text
             {
                 return ToString();
             }
-            StringBuilder result = new StringBuilder("(?:");
-            AppendNewPattern(result, true, false);
-            foreach (string s in strings)
+            ValueStringBuilder result = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                result.Append('|');
-                AppendToPat(result, s, true);
+                result.Append("(?:");
+                AppendNewPattern(ref result, true, false);
+                foreach (string s in strings)
+                {
+                    result.Append('|');
+                    AppendToPat(ref result, s, true);
+                }
+                result.Append(')');
+                return result.ToString();
             }
-            return result.Append(")").ToString();
+            finally
+            {
+                result.Dispose();
+            }
         }
 
         /// <summary>
@@ -1984,7 +2713,7 @@ namespace ICU4N.Text
         /// <param name="end">Last character, inclusive, of the range.</param>
         /// <returns>true if the test condition is met.</returns>
         /// <stable>ICU 2.0</stable>
-        public virtual bool ContainsNone(int start, int end)
+        internal virtual bool ContainsNone(int start, int end) // ICU4N: In .NET we can just use !Overlaps().
         {
             if (start < MinValue || start > MaxValue)
             {
@@ -2013,7 +2742,7 @@ namespace ICU4N.Text
         /// <param name="b">Set to be checked for containment.</param>
         /// <returns>true if the test condition is met.</returns>
         /// <stable>2.0</stable>
-        public virtual bool ContainsNone(UnicodeSet b)
+        internal virtual bool ContainsNone(UnicodeSet b) // ICU4N: In .NET we can just use !Overlaps().
         {
             // The specified set is a subset if some of its pairs overlap with some of this set's pairs.
             // This implementation accesses the lists directly for speed.
@@ -2093,15 +2822,37 @@ namespace ICU4N.Text
         //        return true;
         //    }
 
-        // ICU4N specific - ContainsNone(ICharSequence s) moved to UnicodeSetExtension.tt
+        /// <summary>
+        /// Returns <c>true</c> if this set contains none of the characters
+        /// of the given string.
+        /// </summary>
+        /// <param name="s">String containing characters to be checked for containment.</param>
+        /// <returns><c>true</c> if the test condition is met.</returns>
+        /// <stable>ICU 2.0</stable>
+        internal virtual bool ContainsNone(string s) // ICU4N specific - made internal because we can use !Overlaps() in .NET
+        {
+            return Span(s, SpanCondition.NotContained) == s.Length;
+        }
 
         /// <summary>
-        /// Returns true if this set contains one or more of the characters
+        /// Returns <c>true</c> if this set contains none of the characters
+        /// of the given string.
+        /// </summary>
+        /// <param name="s">String containing characters to be checked for containment.</param>
+        /// <returns><c>true</c> if the test condition is met.</returns>
+        /// <stable>ICU 2.0</stable>
+        internal virtual bool ContainsNone(ReadOnlySpan<char> s) // ICU4N specific - made internal because we can use !Overlaps() in .NET
+        {
+            return Span(s, SpanCondition.NotContained) == s.Length;
+        }
+
+        /// <summary>
+        /// Returns <c>true</c> if this set contains one or more of the characters
         /// in the given range.
         /// </summary>
         /// <param name="start">First character, inclusive, of the range.</param>
         /// <param name="end">Last character, inclusive, of the range.</param>
-        /// <returns>true if the condition is met.</returns>
+        /// <returns><c>true</c> if the condition is met.</returns>
         /// <stable>ICU 2.0</stable>
         internal bool ContainsSome(int start, int end) // ICU4N specific - changed from public to internal (we are using Overlaps in .NET)
         {
@@ -2109,18 +2860,40 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Returns true if this set contains one or more of the characters
+        /// Returns <c>true</c> if this set contains one or more of the characters
         /// and strings of the given set.
         /// </summary>
         /// <param name="s">Set to be checked for containment.</param>
-        /// <returns>True if the condition is met.</returns>
+        /// <returns><c>true</c> if the condition is met.</returns>
         /// <stable>ICU 2.0</stable>
         internal bool ContainsSome(UnicodeSet s) // ICU4N specific - changed from public to internal (we are using Overlaps in .NET)
         {
             return !ContainsNone(s);
         }
 
-        // ICU4N specific - ContainsSome(ICharSequence s) moved to UnicodeSetExtension.tt
+        /// <summary>
+        /// Returns <c>true</c> if this set contains one or more of the characters
+        /// of the given string.
+        /// </summary>
+        /// <param name="s">String containing characters to be checked for containment.</param>
+        /// <returns><c>true</c> if the condition is met.</returns>
+        /// <stable>ICU 2.0</stable>
+        internal bool ContainsSome(string s) // ICU4N specific - changed from public to internal (we are using Overlaps in .NET)
+        {
+            return ContainsSome(s.AsSpan());
+        }
+
+        /// <summary>
+        /// Returns <c>true</c> if this set contains one or more of the characters
+        /// of the given string.
+        /// </summary>
+        /// <param name="s">String containing characters to be checked for containment.</param>
+        /// <returns><c>true</c> if the condition is met.</returns>
+        /// <stable>ICU 2.0</stable>
+        internal bool ContainsSome(ReadOnlySpan<char> s) // ICU4N specific - changed from public to internal (we are using Overlaps in .NET)
+        {
+            return !ContainsNone(s);
+        }
 
         /// <summary>
         /// Adds all of the elements in the specified set to this set if
@@ -2364,18 +3137,25 @@ namespace ICU4N.Text
             bool parsePositionWasNull = pos == null;
             if (parsePositionWasNull)
             {
-                pos = new ParsePosition(0);
+                pos = new ParsePosition(0); // ICU4N TODO: Figure out how to factor this Java component out.
             }
 
-            StringBuilder rebuiltPat = new StringBuilder();
-            RuleCharacterIterator chars =
-                    new RuleCharacterIterator(pattern, symbols, pos);
-            ApplyPattern(chars, symbols, rebuiltPat.AsAppendable(), options);
-            if (chars.InVariable)
+            ValueStringBuilder rebuiltPat = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                SyntaxError(chars, "Extra chars in variable value");
+                RuleCharacterIterator chars =
+                        new RuleCharacterIterator(pattern, symbols, pos);
+                ApplyPattern(chars, symbols, ref rebuiltPat, options);
+                if (chars.InVariable)
+                {
+                    SyntaxError(chars, "Extra chars in variable value");
+                }
+                pat = rebuiltPat.ToString();
             }
-            pat = rebuiltPat.ToString();
+            finally
+            {
+                rebuiltPat.Dispose();
+            }
             if (parsePositionWasNull)
             {
                 int i = pos.Index;
@@ -2433,7 +3213,7 @@ namespace ICU4N.Text
         /// <see cref="IgnoreSpace"/>, <see cref="Case"/>.
         /// </param>
         private void ApplyPattern(RuleCharacterIterator chars, ISymbolTable symbols,
-            IAppendable rebuiltPat, PatternOptions options)
+            ref ValueStringBuilder rebuiltPat, PatternOptions options)
         {
 
             // Syntax characters: [ ] ^ - & { }
@@ -2447,457 +3227,469 @@ namespace ICU4N.Text
                 opts |= RuleCharacterIteratorOptions.SkipWhitespace;
             }
 
-            StringBuilder patBuf = new StringBuilder(), buf = null;
-            bool usePat = false;
-            UnicodeSet scratch = null;
-            object backup = null;
-
-            // mode: 0=before [, 1=between [...], 2=after ]
-            // lastItem: 0=none, 1=char, 2=set
-            int lastItem = LAST0_START, lastChar = 0, mode = MODE0_NONE;
-            char op = (char)0;
-
-            bool invert = false;
-
-            Clear();
-            string lastString = null;
-
-            while (mode != MODE2_OUTBRACKET && !chars.AtEnd)
+            ValueStringBuilder patBuf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]),
+                buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                //Eclipse stated the following is "dead code"
-                /*
-                if (false) {
-                    // Debugging assertion
-                    if (!((lastItem == 0 && op == 0) ||
-                            (lastItem == 1 && (op == 0 || op == '-')) ||
-                            (lastItem == 2 && (op == 0 || op == '-' || op == '&')))) {
-                        throw new ArgumentException();
-                    }
-                }*/
+                bool usePat = false;
+                UnicodeSet scratch = null;
+                object backup = null;
 
-                int c = 0;
-                bool literal = false;
-                UnicodeSet nested = null;
+                // mode: 0=before [, 1=between [...], 2=after ]
+                // lastItem: 0=none, 1=char, 2=set
+                int lastItem = LAST0_START, lastChar = 0, mode = MODE0_NONE;
+                char op = (char)0;
 
-                // -------- Check for property pattern
+                bool invert = false;
 
-                // setMode: 0=none, 1=unicodeset, 2=propertypat, 3=preparsed
-                int setMode = SETMODE0_NONE;
-                if (ResemblesPropertyPattern(chars, opts))
+                Clear();
+                string lastString = null;
+
+                while (mode != MODE2_OUTBRACKET && !chars.AtEnd)
                 {
-                    setMode = SETMODE2_PROPERTYPAT;
-                }
-
-                // -------- Parse '[' of opening delimiter OR nested set.
-                // If there is a nested set, use `setMode' to define how
-                // the set should be parsed.  If the '[' is part of the
-                // opening delimiter for this pattern, parse special
-                // strings "[", "[^", "[-", and "[^-".  Check for stand-in
-                // characters representing a nested set in the symbol
-                // table.
-
-                else
-                {
-                    // Prepare to backup if necessary
-                    backup = chars.GetPos(backup);
-                    c = chars.Next(opts);
-                    literal = chars.IsEscaped;
-
-                    if (c == '[' && !literal)
-                    {
-                        if (mode == MODE1_INBRACKET)
-                        {
-                            chars.SetPos(backup); // backup
-                            setMode = SETMODE1_UNICODESET;
+                    //Eclipse stated the following is "dead code"
+                    /*
+                    if (false) {
+                        // Debugging assertion
+                        if (!((lastItem == 0 && op == 0) ||
+                                (lastItem == 1 && (op == 0 || op == '-')) ||
+                                (lastItem == 2 && (op == 0 || op == '-' || op == '&')))) {
+                            throw new ArgumentException();
                         }
-                        else
+                    }*/
+
+                    int c = 0;
+                    bool literal = false;
+                    UnicodeSet nested = null;
+
+                    // -------- Check for property pattern
+
+                    // setMode: 0=none, 1=unicodeset, 2=propertypat, 3=preparsed
+                    int setMode = SETMODE0_NONE;
+                    if (ResemblesPropertyPattern(chars, opts))
+                    {
+                        setMode = SETMODE2_PROPERTYPAT;
+                    }
+
+                    // -------- Parse '[' of opening delimiter OR nested set.
+                    // If there is a nested set, use `setMode' to define how
+                    // the set should be parsed.  If the '[' is part of the
+                    // opening delimiter for this pattern, parse special
+                    // strings "[", "[^", "[-", and "[^-".  Check for stand-in
+                    // characters representing a nested set in the symbol
+                    // table.
+
+                    else
+                    {
+                        // Prepare to backup if necessary
+                        backup = chars.GetPos(backup);
+                        c = chars.Next(opts);
+                        literal = chars.IsEscaped;
+
+                        if (c == '[' && !literal)
                         {
-                            // Handle opening '[' delimiter
-                            mode = MODE1_INBRACKET;
-                            patBuf.Append('[');
-                            backup = chars.GetPos(backup); // prepare to backup
-                            c = chars.Next(opts);
-                            literal = chars.IsEscaped;
-                            if (c == '^' && !literal)
+                            if (mode == MODE1_INBRACKET)
                             {
-                                invert = true;
-                                patBuf.Append('^');
+                                chars.SetPos(backup); // backup
+                                setMode = SETMODE1_UNICODESET;
+                            }
+                            else
+                            {
+                                // Handle opening '[' delimiter
+                                mode = MODE1_INBRACKET;
+                                patBuf.Append('[');
                                 backup = chars.GetPos(backup); // prepare to backup
                                 c = chars.Next(opts);
                                 literal = chars.IsEscaped;
+                                if (c == '^' && !literal)
+                                {
+                                    invert = true;
+                                    patBuf.Append('^');
+                                    backup = chars.GetPos(backup); // prepare to backup
+                                    c = chars.Next(opts);
+                                    literal = chars.IsEscaped;
+                                }
+                                // Fall through to handle special leading '-';
+                                // otherwise restart loop for nested [], \p{}, etc.
+                                if (c == '-')
+                                {
+                                    literal = true;
+                                    // Fall through to handle literal '-' below
+                                }
+                                else
+                                {
+                                    chars.SetPos(backup); // backup
+                                    continue;
+                                }
                             }
-                            // Fall through to handle special leading '-';
-                            // otherwise restart loop for nested [], \p{}, etc.
-                            if (c == '-')
+                        }
+                        else if (symbols != null)
+                        {
+                            IUnicodeMatcher m = symbols.LookupMatcher(c); // may be null
+                            if (m != null)
                             {
-                                literal = true;
-                                // Fall through to handle literal '-' below
-                            }
-                            else
-                            {
-                                chars.SetPos(backup); // backup
-                                continue;
+                                try
+                                {
+                                    nested = (UnicodeSet)m;
+                                    setMode = SETMODE3_PREPARSED;
+                                }
+                                catch (InvalidCastException e)
+                                {
+                                    SyntaxError(chars, "Syntax error", e);
+                                }
                             }
                         }
                     }
-                    else if (symbols != null)
-                    {
-                        IUnicodeMatcher m = symbols.LookupMatcher(c); // may be null
-                        if (m != null)
-                        {
-                            try
-                            {
-                                nested = (UnicodeSet)m;
-                                setMode = SETMODE3_PREPARSED;
-                            }
-                            catch (InvalidCastException e)
-                            {
-                                SyntaxError(chars, "Syntax error", e);
-                            }
-                        }
-                    }
-                }
 
-                // -------- Handle a nested set.  This either is inline in
-                // the pattern or represented by a stand-in that has
-                // previously been parsed and was looked up in the symbol
-                // table.
+                    // -------- Handle a nested set.  This either is inline in
+                    // the pattern or represented by a stand-in that has
+                    // previously been parsed and was looked up in the symbol
+                    // table.
 
-                if (setMode != SETMODE0_NONE)
-                {
-                    if (lastItem == LAST1_RANGE)
+                    if (setMode != SETMODE0_NONE)
                     {
-                        if (op != 0)
+                        if (lastItem == LAST1_RANGE)
                         {
-                            SyntaxError(chars, "Char expected after operator");
+                            if (op != 0)
+                            {
+                                SyntaxError(chars, "Char expected after operator");
+                            }
+                            AddUnchecked(lastChar, lastChar);
+                            AppendToPat(ref patBuf, lastChar, false);
+                            lastItem = LAST0_START;
+                            op = (char)0;
                         }
-                        AddUnchecked(lastChar, lastChar);
-                        AppendToPat(patBuf, lastChar, false);
-                        lastItem = LAST0_START;
+
+                        if (op == '-' || op == '&')
+                        {
+                            patBuf.Append(op);
+                        }
+
+                        if (nested == null)
+                        {
+                            if (scratch == null) scratch = new UnicodeSet();
+                            nested = scratch;
+                        }
+                        switch (setMode)
+                        {
+                            case SETMODE1_UNICODESET:
+                                nested.ApplyPattern(chars, symbols, ref patBuf, options);
+                                break;
+                            case SETMODE2_PROPERTYPAT:
+                                chars.SkipIgnored(opts);
+                                nested.ApplyPropertyPattern(chars, ref patBuf, symbols);
+                                break;
+                            case SETMODE3_PREPARSED: // `nested' already parsed
+                                nested.ToPattern(ref patBuf, false);
+                                break;
+                        }
+
+                        usePat = true;
+
+                        if (mode == MODE0_NONE)
+                        {
+                            // Entire pattern is a category; leave parse loop
+                            Set(nested);
+                            mode = MODE2_OUTBRACKET;
+                            break;
+                        }
+
+                        switch (op)
+                        {
+                            case '-':
+                                RemoveAll(nested);
+                                break;
+                            case '&':
+                                RetainAll(nested);
+                                break;
+                            case (char)0:
+                                AddAll(nested);
+                                break;
+                        }
+
                         op = (char)0;
-                    }
+                        lastItem = LAST2_SET;
 
-                    if (op == '-' || op == '&')
-                    {
-                        patBuf.Append(op);
+                        continue;
                     }
-
-                    if (nested == null)
-                    {
-                        if (scratch == null) scratch = new UnicodeSet();
-                        nested = scratch;
-                    }
-                    switch (setMode)
-                    {
-                        case SETMODE1_UNICODESET:
-                            nested.ApplyPattern(chars, symbols, patBuf.AsAppendable(), options);
-                            break;
-                        case SETMODE2_PROPERTYPAT:
-                            chars.SkipIgnored(opts);
-                            nested.ApplyPropertyPattern(chars, patBuf.AsAppendable(), symbols);
-                            break;
-                        case SETMODE3_PREPARSED: // `nested' already parsed
-                            nested.ToPattern(patBuf, false);
-                            break;
-                    }
-
-                    usePat = true;
 
                     if (mode == MODE0_NONE)
                     {
-                        // Entire pattern is a category; leave parse loop
-                        Set(nested);
-                        mode = MODE2_OUTBRACKET;
-                        break;
+                        SyntaxError(chars, "Missing '['");
                     }
 
-                    switch (op)
+                    // -------- Parse special (syntax) characters.  If the
+                    // current character is not special, or if it is escaped,
+                    // then fall through and handle it below.
+
+                    if (!literal)
                     {
-                        case '-':
-                            RemoveAll(nested);
-                            break;
-                        case '&':
-                            RetainAll(nested);
-                            break;
-                        case (char)0:
-                            AddAll(nested);
-                            break;
-                    }
-
-                    op = (char)0;
-                    lastItem = LAST2_SET;
-
-                    continue;
-                }
-
-                if (mode == MODE0_NONE)
-                {
-                    SyntaxError(chars, "Missing '['");
-                }
-
-                // -------- Parse special (syntax) characters.  If the
-                // current character is not special, or if it is escaped,
-                // then fall through and handle it below.
-
-                if (!literal)
-                {
-                    switch (c)
-                    {
-                        case ']':
-                            if (lastItem == LAST1_RANGE)
-                            {
-                                AddUnchecked(lastChar, lastChar);
-                                AppendToPat(patBuf, lastChar, false);
-                            }
-                            // Treat final trailing '-' as a literal
-                            if (op == '-')
-                            {
-                                AddUnchecked(op, op);
-                                patBuf.Append(op);
-                            }
-                            else if (op == '&')
-                            {
-                                SyntaxError(chars, "Trailing '&'");
-                            }
-                            patBuf.Append(']');
-                            mode = MODE2_OUTBRACKET;
-                            continue;
-                        case '-':
-                            if (op == 0)
-                            {
-                                if (lastItem != LAST0_START)
+                        switch (c)
+                        {
+                            case ']':
+                                if (lastItem == LAST1_RANGE)
                                 {
-                                    op = (char)c;
-                                    continue;
+                                    AddUnchecked(lastChar, lastChar);
+                                    AppendToPat(ref patBuf, lastChar, false);
                                 }
-                                else if (lastString != null)
+                                // Treat final trailing '-' as a literal
+                                if (op == '-')
                                 {
-                                    op = (char)c;
-                                    continue;
+                                    AddUnchecked(op, op);
+                                    patBuf.Append(op);
                                 }
-                                else
+                                else if (op == '&')
                                 {
-                                    // Treat final trailing '-' as a literal
-                                    AddUnchecked(c, c);
-                                    c = chars.Next(opts);
-                                    literal = chars.IsEscaped;
-                                    if (c == ']' && !literal)
+                                    SyntaxError(chars, "Trailing '&'");
+                                }
+                                patBuf.Append(']');
+                                mode = MODE2_OUTBRACKET;
+                                continue;
+                            case '-':
+                                if (op == 0)
+                                {
+                                    if (lastItem != LAST0_START)
                                     {
-                                        patBuf.Append("-]");
-                                        mode = MODE2_OUTBRACKET;
+                                        op = (char)c;
                                         continue;
                                     }
+                                    else if (lastString != null)
+                                    {
+                                        op = (char)c;
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        // Treat final trailing '-' as a literal
+                                        AddUnchecked(c, c);
+                                        c = chars.Next(opts);
+                                        literal = chars.IsEscaped;
+                                        if (c == ']' && !literal)
+                                        {
+                                            patBuf.Append("-]");
+                                            mode = MODE2_OUTBRACKET;
+                                            continue;
+                                        }
+                                    }
                                 }
-                            }
-                            SyntaxError(chars, "'-' not after char, string, or set");
-                            break;
-                        case '&':
-                            if (lastItem == LAST2_SET && op == 0)
-                            {
-                                op = (char)c;
-                                continue;
-                            }
-                            SyntaxError(chars, "'&' not after set");
-                            break;
-                        case '^':
-                            SyntaxError(chars, "'^' not after '['");
-                            break;
-                        case '{':
-                            if (op != 0 && op != '-')
-                            {
-                                SyntaxError(chars, "Missing operand after operator");
-                            }
-                            if (lastItem == LAST1_RANGE)
-                            {
-                                AddUnchecked(lastChar, lastChar);
-                                AppendToPat(patBuf, lastChar, false);
-                            }
-                            lastItem = LAST0_START;
-                            if (buf == null)
-                            {
-                                buf = new StringBuilder();
-                            }
-                            else
-                            {
+                                SyntaxError(chars, "'-' not after char, string, or set");
+                                break;
+                            case '&':
+                                if (lastItem == LAST2_SET && op == 0)
+                                {
+                                    op = (char)c;
+                                    continue;
+                                }
+                                SyntaxError(chars, "'&' not after set");
+                                break;
+                            case '^':
+                                SyntaxError(chars, "'^' not after '['");
+                                break;
+                            case '{':
+                                if (op != 0 && op != '-')
+                                {
+                                    SyntaxError(chars, "Missing operand after operator");
+                                }
+                                if (lastItem == LAST1_RANGE)
+                                {
+                                    AddUnchecked(lastChar, lastChar);
+                                    AppendToPat(ref patBuf, lastChar, false);
+                                }
+                                lastItem = LAST0_START;
+                                //if (buf == null)
+                                //{
+                                //    buf = new StringBuilder();
+                                //}
+                                //else
+                                //{
+                                //    buf.Length = 0;
+                                //}
                                 buf.Length = 0;
-                            }
-                            bool ok = false;
-                            while (!chars.AtEnd)
-                            {
-                                c = chars.Next(opts);
-                                literal = chars.IsEscaped;
-                                if (c == '}' && !literal)
+                                bool ok = false;
+                                while (!chars.AtEnd)
                                 {
-                                    ok = true;
-                                    break;
+                                    c = chars.Next(opts);
+                                    literal = chars.IsEscaped;
+                                    if (c == '}' && !literal)
+                                    {
+                                        ok = true;
+                                        break;
+                                    }
+                                    buf.AppendCodePoint(c);
                                 }
-                                AppendCodePoint(buf, c);
-                            }
-                            if (buf.Length < 1 || !ok)
-                            {
-                                SyntaxError(chars, "Invalid multicharacter string");
-                            }
-                            // We have new string. Add it to set and continue;
-                            // we don't need to drop through to the further
-                            // processing
-                            string curString = buf.ToString();
-                            if (op == '-')
-                            {
-#pragma warning disable 612, 618
-                                int lastSingle = CharSequences.GetSingleCodePoint((lastString == null ? "" : lastString));
-                                int curSingle = CharSequences.GetSingleCodePoint(curString);
-#pragma warning restore 612, 618
-                                if (lastSingle != int.MaxValue && curSingle != int.MaxValue)
+                                if (buf.Length < 1 || !ok)
                                 {
-                                    Add(lastSingle, curSingle);
+                                    SyntaxError(chars, "Invalid multicharacter string");
+                                }
+                                // We have new string. Add it to set and continue;
+                                // we don't need to drop through to the further
+                                // processing
+                                string curString = buf.AsSpan().ToString();
+                                if (op == '-')
+                                {
+#pragma warning disable 612, 618
+                                    int lastSingle = CharSequences.GetSingleCodePoint((lastString == null ? "" : lastString));
+                                    int curSingle = CharSequences.GetSingleCodePoint(curString);
+#pragma warning restore 612, 618
+                                    if (lastSingle != int.MaxValue && curSingle != int.MaxValue)
+                                    {
+                                        Add(lastSingle, curSingle);
+                                    }
+                                    else
+                                    {
+                                        try
+                                        {
+                                            StringRange.Expand(lastString, curString, true, strings);
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            SyntaxError(chars, e.Message);
+                                        }
+                                    }
+                                    lastString = null;
+                                    op = (char)0;
                                 }
                                 else
                                 {
-                                    try
-                                    {
-                                        StringRange.Expand(lastString, curString, true, strings);
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        SyntaxError(chars, e.Message);
-                                    }
+                                    Add(curString);
+                                    lastString = curString;
                                 }
-                                lastString = null;
+                                patBuf.Append('{');
+                                AppendToPat(ref patBuf, curString, false);
+                                patBuf.Append('}');
+                                continue;
+                            case SymbolTable.SymbolReference:
+                                //         symbols  nosymbols
+                                // [a-$]   error    error (ambiguous)
+                                // [a$]    anchor   anchor
+                                // [a-$x]  var "x"* literal '$'
+                                // [a-$.]  error    literal '$'
+                                // *We won't get here in the case of var "x"
+                                backup = chars.GetPos(backup);
+                                c = chars.Next(opts);
+                                literal = chars.IsEscaped;
+                                bool anchor = (c == ']' && !literal);
+                                if (symbols == null && !anchor)
+                                {
+                                    c = SymbolTable.SymbolReference;
+                                    chars.SetPos(backup);
+                                    break; // literal '$'
+                                }
+                                if (anchor && op == 0)
+                                {
+                                    if (lastItem == LAST1_RANGE)
+                                    {
+                                        AddUnchecked(lastChar, lastChar);
+                                        AppendToPat(ref patBuf, lastChar, false);
+                                    }
+                                    AddUnchecked(UnicodeMatcher.Ether);
+                                    usePat = true;
+                                    patBuf.Append(SymbolTable.SymbolReference);
+                                    patBuf.Append(']');
+                                    mode = MODE2_OUTBRACKET;
+                                    continue;
+                                }
+                                SyntaxError(chars, "Unquoted '$'");
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
+                    // -------- Parse literal characters.  This includes both
+                    // escaped chars ("\u4E01") and non-syntax characters
+                    // ("a").
+
+                    switch (lastItem)
+                    {
+                        case LAST0_START:
+                            if (op == '-' && lastString != null)
+                            {
+                                SyntaxError(chars, "Invalid range");
+                            }
+                            lastItem = LAST1_RANGE;
+                            lastChar = c;
+                            lastString = null;
+                            break;
+                        case LAST1_RANGE:
+                            if (op == '-')
+                            {
+                                if (lastString != null)
+                                {
+                                    SyntaxError(chars, "Invalid range");
+                                }
+                                if (lastChar >= c)
+                                {
+                                    // Don't allow redundant (a-a) or empty (b-a) ranges;
+                                    // these are most likely typos.
+                                    SyntaxError(chars, "Invalid range");
+                                }
+                                AddUnchecked(lastChar, c);
+                                AppendToPat(ref patBuf, lastChar, false);
+                                patBuf.Append(op);
+                                AppendToPat(ref patBuf, c, false);
+                                lastItem = LAST0_START;
                                 op = (char)0;
                             }
                             else
                             {
-                                Add(curString);
-                                lastString = curString;
+                                AddUnchecked(lastChar, lastChar);
+                                AppendToPat(ref patBuf, lastChar, false);
+                                lastChar = c;
                             }
-                            patBuf.Append('{');
-                            AppendToPat(patBuf, curString, false);
-                            patBuf.Append('}');
-                            continue;
-                        case SymbolTable.SymbolReference:
-                            //         symbols  nosymbols
-                            // [a-$]   error    error (ambiguous)
-                            // [a$]    anchor   anchor
-                            // [a-$x]  var "x"* literal '$'
-                            // [a-$.]  error    literal '$'
-                            // *We won't get here in the case of var "x"
-                            backup = chars.GetPos(backup);
-                            c = chars.Next(opts);
-                            literal = chars.IsEscaped;
-                            bool anchor = (c == ']' && !literal);
-                            if (symbols == null && !anchor)
-                            {
-                                c = SymbolTable.SymbolReference;
-                                chars.SetPos(backup);
-                                break; // literal '$'
-                            }
-                            if (anchor && op == 0)
-                            {
-                                if (lastItem == LAST1_RANGE)
-                                {
-                                    AddUnchecked(lastChar, lastChar);
-                                    AppendToPat(patBuf, lastChar, false);
-                                }
-                                AddUnchecked(UnicodeMatcher.Ether);
-                                usePat = true;
-                                patBuf.Append(SymbolTable.SymbolReference).Append(']');
-                                mode = MODE2_OUTBRACKET;
-                                continue;
-                            }
-                            SyntaxError(chars, "Unquoted '$'");
                             break;
-                        default:
+                        case LAST2_SET:
+                            if (op != 0)
+                            {
+                                SyntaxError(chars, "Set expected after operator");
+                            }
+                            lastChar = c;
+                            lastItem = LAST1_RANGE;
                             break;
                     }
                 }
 
-                // -------- Parse literal characters.  This includes both
-                // escaped chars ("\u4E01") and non-syntax characters
-                // ("a").
-
-                switch (lastItem)
+                if (mode != MODE2_OUTBRACKET)
                 {
-                    case LAST0_START:
-                        if (op == '-' && lastString != null)
-                        {
-                            SyntaxError(chars, "Invalid range");
-                        }
-                        lastItem = LAST1_RANGE;
-                        lastChar = c;
-                        lastString = null;
-                        break;
-                    case LAST1_RANGE:
-                        if (op == '-')
-                        {
-                            if (lastString != null)
-                            {
-                                SyntaxError(chars, "Invalid range");
-                            }
-                            if (lastChar >= c)
-                            {
-                                // Don't allow redundant (a-a) or empty (b-a) ranges;
-                                // these are most likely typos.
-                                SyntaxError(chars, "Invalid range");
-                            }
-                            AddUnchecked(lastChar, c);
-                            AppendToPat(patBuf, lastChar, false);
-                            patBuf.Append(op);
-                            AppendToPat(patBuf, c, false);
-                            lastItem = LAST0_START;
-                            op = (char)0;
-                        }
-                        else
-                        {
-                            AddUnchecked(lastChar, lastChar);
-                            AppendToPat(patBuf, lastChar, false);
-                            lastChar = c;
-                        }
-                        break;
-                    case LAST2_SET:
-                        if (op != 0)
-                        {
-                            SyntaxError(chars, "Set expected after operator");
-                        }
-                        lastChar = c;
-                        lastItem = LAST1_RANGE;
-                        break;
+                    SyntaxError(chars, "Missing ']'");
+                }
+
+                chars.SkipIgnored(opts);
+
+                /*
+                 * Handle global flags (invert, case insensitivity).  If this
+                 * pattern should be compiled case-insensitive, then we need
+                 * to close over case BEFORE COMPLEMENTING.  This makes
+                 * patterns like /[^abc]/i work.
+                 */
+                if ((options & Case) != 0)
+                {
+                    CloseOver(Case);
+                }
+                if (invert)
+                {
+                    Complement();
+                }
+
+                // Use the rebuilt pattern (pat) only if necessary.  Prefer the
+                // generated pattern.
+                if (usePat)
+                {
+                    rebuiltPat.Append(patBuf.AsSpan());
+                }
+                else
+                {
+                    AppendNewPattern(ref rebuiltPat, false, true);
                 }
             }
-
-            if (mode != MODE2_OUTBRACKET)
+            finally
             {
-                SyntaxError(chars, "Missing ']'");
-            }
-
-            chars.SkipIgnored(opts);
-
-            /*
-             * Handle global flags (invert, case insensitivity).  If this
-             * pattern should be compiled case-insensitive, then we need
-             * to close over case BEFORE COMPLEMENTING.  This makes
-             * patterns like /[^abc]/i work.
-             */
-            if ((options & Case) != 0)
-            {
-                CloseOver(Case);
-            }
-            if (invert)
-            {
-                Complement();
-            }
-
-            // Use the rebuilt pattern (pat) only if necessary.  Prefer the
-            // generated pattern.
-            if (usePat)
-            {
-                Append(rebuiltPat, patBuf);
-            }
-            else
-            {
-                AppendNewPattern(rebuiltPat, false, true);
+                patBuf.Dispose();
+                buf.Dispose();
             }
         }
 
+        [DoesNotReturn]
         private static void SyntaxError(RuleCharacterIterator chars, string msg, Exception innerException)
         {
             throw new ArgumentException("Error: " + msg + " at \"" +
@@ -2905,6 +3697,7 @@ namespace ICU4N.Text
                     '"', innerException);
         }
 
+        [DoesNotReturn]
         private static void SyntaxError(RuleCharacterIterator chars, string msg)
         {
             throw new ArgumentException("Error: " + msg + " at \"" +
@@ -2982,7 +3775,7 @@ namespace ICU4N.Text
             CheckFrozen();
             foreach (var o in source)
             {
-                Add(o);
+                Add(o.AsSpan());
             }
             return this;
         }
@@ -3437,20 +4230,20 @@ namespace ICU4N.Text
                             UCharacterProperty.Instance.upropsvec_addPropertyStarts(incl);
                             break;
                         case UPropertySource.CaseAndNormalizer:
-                            Norm2AllModes.GetNFCInstance().Impl.AddPropertyStarts(incl);
+                            Norm2AllModes.NFCInstance.Impl.AddPropertyStarts(incl);
                             UCaseProperties.Instance.AddPropertyStarts(incl);
                             break;
                         case UPropertySource.NFC:
-                            Norm2AllModes.GetNFCInstance().Impl.AddPropertyStarts(incl);
+                            Norm2AllModes.NFCInstance.Impl.AddPropertyStarts(incl);
                             break;
                         case UPropertySource.NFKC:
-                            Norm2AllModes.GetNFKCInstance().Impl.AddPropertyStarts(incl);
+                            Norm2AllModes.NFKCInstance.Impl.AddPropertyStarts(incl);
                             break;
                         case UPropertySource.NFKCCaseFold:
-                            Norm2AllModes.GetNFKC_CFInstance().Impl.AddPropertyStarts(incl);
+                            Norm2AllModes.NFKC_CFInstance.Impl.AddPropertyStarts(incl);
                             break;
                         case UPropertySource.NFCCanonicalIterator:
-                            Norm2AllModes.GetNFCInstance().Impl.AddCanonIterPropertyStarts(incl);
+                            Norm2AllModes.NFCInstance.Impl.AddCanonIterPropertyStarts(incl);
                             break;
                         case UPropertySource.Case:
                             UCaseProperties.Instance.AddPropertyStarts(incl);
@@ -3525,31 +4318,21 @@ namespace ICU4N.Text
         /// Remove leading and trailing Pattern_White_Space and compress
         /// internal Pattern_White_Space to a single space character.
         /// </summary>
-        private static string MungeCharName(string source)
+        private static void MungeCharName(ReadOnlySpan<char> source, ref ValueStringBuilder destination)
         {
             source = PatternProps.TrimWhiteSpace(source);
-            StringBuilder buf = null;
-            for (int i = 0; i < source.Length; ++i)
+            int length = source.Length;
+            for (int i = 0; i < length; ++i)
             {
                 char ch = source[i];
                 if (PatternProps.IsWhiteSpace(ch))
                 {
-                    if (buf == null)
-                    {
-                        buf = new StringBuilder().Append(source, 0, i);
-                    }
-                    else if (buf[buf.Length - 1] == ' ')
-                    {
+                    if (destination[destination.Length - 1] == ' ')
                         continue;
-                    }
                     ch = ' '; // convert to ' '
                 }
-                if (buf != null)
-                {
-                    buf.Append(ch);
-                }
+                destination.Append(ch);
             }
-            return buf == null ? source : buf.ToString();
         }
 
         //----------------------------------------------------------------
@@ -3627,7 +4410,7 @@ namespace ICU4N.Text
         /// </param>
         /// <returns>A reference to this set.</returns>
         /// <stable>ICU 2.4</stable>
-        public virtual UnicodeSet ApplyPropertyAlias(string propertyAlias, string valueAlias)
+        public virtual UnicodeSet ApplyPropertyAlias(string propertyAlias, string valueAlias) // ICU4N TODO: API - Add overload for ReadOnlySpan<char>, if possible
         {
             return ApplyPropertyAlias(propertyAlias, valueAlias, null);
         }
@@ -3731,15 +4514,26 @@ namespace ICU4N.Text
                                 // Must munge name, since
                                 // UChar.charFromName() does not do
                                 // 'loose' matching.
-                                string buf = MungeCharName(valueAlias);
-                                int ch = UChar.GetCharFromExtendedName(buf);
-                                if (ch == -1)
+                                int bufferLength = valueAlias.Length;
+                                ValueStringBuilder buf = bufferLength <= CharStackBufferSize
+                                    ? new ValueStringBuilder(stackalloc char[bufferLength])
+                                    : new ValueStringBuilder(bufferLength);
+                                try
                                 {
-                                    throw new ArgumentException("Invalid character name");
+                                    MungeCharName(valueAlias.AsSpan(), ref buf);
+                                    int ch = UChar.GetCharFromExtendedName(buf.AsSpan());
+                                    if (ch == -1)
+                                    {
+                                        throw new ArgumentException("Invalid character name");
+                                    }
+                                    Clear();
+                                    AddUnchecked(ch);
+                                    return this;
                                 }
-                                Clear();
-                                AddUnchecked(ch);
-                                return this;
+                                finally
+                                {
+                                    buf.Dispose();
+                                }
                             }
 #pragma warning disable 612, 618
                         case UPropertyConstants.Unicode_1_Name:
@@ -3751,9 +4545,21 @@ namespace ICU4N.Text
                                 // Must munge name, since
                                 // VersionInfo.getInstance() does not do
                                 // 'loose' matching.
-                                VersionInfo version = VersionInfo.GetInstance(MungeCharName(valueAlias));
-                                ApplyFilter(new VersionFilter(version), UPropertySource.PropertiesVectorsTrie);
-                                return this;
+                                int bufferLength = valueAlias.Length;
+                                ValueStringBuilder buf = bufferLength <= CharStackBufferSize
+                                    ? new ValueStringBuilder(stackalloc char[bufferLength])
+                                    : new ValueStringBuilder(bufferLength);
+                                try
+                                {
+                                    MungeCharName(valueAlias.AsSpan(), ref buf);
+                                    VersionInfo version = VersionInfo.GetInstance(buf.AsSpan());
+                                    ApplyFilter(new VersionFilter(version), UPropertySource.PropertiesVectorsTrie);
+                                    return this;
+                                }
+                                finally
+                                {
+                                    buf.Dispose();
+                                }
                             }
                         case UProperty.Script_Extensions:
                             v = (UProperty)UChar.GetPropertyValueEnum(UProperty.Script, valueAlias);
@@ -3889,7 +4695,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Parse the given property pattern at the given parse position.
         /// </summary>
-        private UnicodeSet ApplyPropertyPattern(string pattern, ParsePosition ppos, ISymbolTable symbols)
+        private UnicodeSet ApplyPropertyPattern(ReadOnlySpan<char> pattern, ParsePosition ppos, ISymbolTable symbols)
         {
             int pos = ppos.Index;
 
@@ -3905,9 +4711,11 @@ namespace ICU4N.Text
             bool isName = false; // true for \N{pat}, o/w false
             bool invert = false;
 
+
+            ReadOnlySpan<char> patternRegion = pattern.Slice(pos, 2);
             // Look for an opening [:, [:^, \p, or \P
             //if (pattern.RegionMatches(pos, "[:", 0, 2))
-            if (pattern.IndexOf("[:", pos, 2, StringComparison.Ordinal) == pos)
+            if (patternRegion.Equals("[:", StringComparison.Ordinal))
             {
                 posix = true;
                 pos = PatternProps.SkipWhiteSpace(pattern, (pos + 2));
@@ -3919,8 +4727,8 @@ namespace ICU4N.Text
             }
             //else if (pattern.RegionMatches(true, pos, "\\p", 0, 2) ||
             //      pattern.RegionMatches(pos, "\\N", 0, 2))
-            else if (pattern.IndexOf("\\p", pos, 2, StringComparison.OrdinalIgnoreCase) == pos ||
-                  pattern.IndexOf("\\N", pos, 2, StringComparison.Ordinal) == pos)
+            else if (patternRegion.Equals("\\p", StringComparison.OrdinalIgnoreCase) ||
+                patternRegion.Equals("\\N", StringComparison.Ordinal))
             {
                 char c = pattern[pos + 1];
                 invert = (c == 'P');
@@ -3939,7 +4747,7 @@ namespace ICU4N.Text
             }
 
             // Look for the matching close delimiter, either :] or }
-            int close = pattern.IndexOf(posix ? ":]" : "}", pos, StringComparison.Ordinal);
+            int close = pattern.IndexOf((posix ? ":]" : "}"), pos, StringComparison.Ordinal);
             if (close < 0)
             {
                 // Syntax error; close delimiter missing
@@ -3954,15 +4762,15 @@ namespace ICU4N.Text
             if (equals >= 0 && equals < close && !isName)
             {
                 // Equals seen; parse medium/long pattern
-                propName = pattern.Substring(pos, equals - pos); // ICU4N: Corrected 2nd parameter
-                valueName = pattern.Substring(equals + 1, close - (equals + 1)); // ICU4N: Corrected 2nd parameter
+                propName = pattern.Slice(pos, equals - pos).ToString(); // ICU4N: Corrected 2nd parameter
+                valueName = pattern.Slice(equals + 1, close - (equals + 1)).ToString(); // ICU4N: Corrected 2nd parameter
             }
 
             else
             {
                 // Handle case where no '=' is seen, and \N{}
-                propName = pattern.Substring(pos, close - pos); // ICU4N: Corrected 2nd parameter
-                valueName = "";
+                propName = pattern.Slice(pos, close - pos).ToString(); // ICU4N: Corrected 2nd parameter
+                valueName = string.Empty;
 
                 // Handle \N{name}
                 if (isName)
@@ -3977,6 +4785,7 @@ namespace ICU4N.Text
                 }
             }
 
+            // ICU4N TODO: Refactor ApplyPropertyAlias to accept ReadOnlySpan<char> params
             ApplyPropertyAlias(propName, valueName, symbols);
 
             if (invert)
@@ -4002,9 +4811,9 @@ namespace ICU4N.Text
         /// copied from the input pattern, as appropriate.</param>
         /// <param name="symbols">TODO</param>
         private void ApplyPropertyPattern(RuleCharacterIterator chars,
-            IAppendable rebuiltPat, ISymbolTable symbols)
+            ref ValueStringBuilder rebuiltPat, ISymbolTable symbols)
         {
-            string patStr = chars.Lookahead().ToString();
+            ReadOnlySpan<char> patStr = chars.Lookahead();
             ParsePosition pos = new ParsePosition(0);
             ApplyPropertyPattern(patStr, pos, symbols);
             if (pos.Index == 0)
@@ -4012,7 +4821,7 @@ namespace ICU4N.Text
                 SyntaxError(chars, "Invalid property pattern");
             }
             chars.Jumpahead(pos.Index);
-            Append(rebuiltPat, patStr.Substring(0, pos.Index - 0)); // ICU4N: Checked 2nd substring parameter
+            rebuiltPat.Append(patStr.Slice(0, pos.Index - 0)); // ICU4N: Checked 2nd substring parameter
         }
 
         //----------------------------------------------------------------
@@ -4086,7 +4895,7 @@ namespace ICU4N.Text
 
         //  add the result of a full case mapping to the set
         //  use str as a temporary string to avoid constructing one
-        private static void AddCaseMapping(UnicodeSet set, int result, StringBuilder full)
+        private static void AddCaseMapping(UnicodeSet set, int result, ref ValueStringBuilder full)
         {
             if (result >= 0)
             {
@@ -4098,7 +4907,7 @@ namespace ICU4N.Text
                 else
                 {
                     // add a string case mapping from full with length result
-                    set.Add(full.ToString());
+                    set.Add(full.AsSpan());
                     full.Length = 0;
                 }
             }
@@ -4156,48 +4965,54 @@ namespace ICU4N.Text
 
                 int n = RangeCount;
                 int result;
-                StringBuilder full = new StringBuilder();
-
-                for (int i = 0; i < n; ++i)
+                ValueStringBuilder full = new ValueStringBuilder(stackalloc char[8]);
+                try
                 {
-                    int start = GetRangeStart(i);
-                    int end = GetRangeEnd(i);
-
-                    if ((attribute & Case) != 0)
+                    for (int i = 0; i < n; ++i)
                     {
-                        // full case closure
-                        for (int cp = start; cp <= end; ++cp)
+                        int start = GetRangeStart(i);
+                        int end = GetRangeEnd(i);
+
+                        if ((attribute & Case) != 0)
                         {
-                            csp.AddCaseClosure(cp, foldSet);
+                            // full case closure
+                            for (int cp = start; cp <= end; ++cp)
+                            {
+                                csp.AddCaseClosure(cp, foldSet);
+                            }
+                        }
+                        else
+                        {
+                            // add case mappings
+                            // (does not add long s for regular s, or Kelvin for k, for example)
+                            for (int cp = start; cp <= end; ++cp)
+                            {
+                                result = csp.ToFullLower(cp, null, IntPtr.Zero, ref full, CaseLocale.Root);
+                                AddCaseMapping(foldSet, result, ref full);
+
+                                result = csp.ToFullTitle(cp, null, IntPtr.Zero, ref full, CaseLocale.Root);
+                                AddCaseMapping(foldSet, result, ref full);
+
+                                result = csp.ToFullUpper(cp, null, IntPtr.Zero, ref full, CaseLocale.Root);
+                                AddCaseMapping(foldSet, result, ref full);
+
+                                result = csp.ToFullFolding(cp, ref full, 0);
+                                AddCaseMapping(foldSet, result, ref full);
+                            }
                         }
                     }
-                    else
-                    {
-                        // add case mappings
-                        // (does not add long s for regular s, or Kelvin for k, for example)
-                        for (int cp = start; cp <= end; ++cp)
-                        {
-                            result = csp.ToFullLower(cp, null, full, CaseLocale.Root);
-                            AddCaseMapping(foldSet, result, full);
-
-                            result = csp.ToFullTitle(cp, null, full, CaseLocale.Root);
-                            AddCaseMapping(foldSet, result, full);
-
-                            result = csp.ToFullUpper(cp, null, full, CaseLocale.Root);
-                            AddCaseMapping(foldSet, result, full);
-
-                            result = csp.ToFullFolding(cp, full, 0);
-                            AddCaseMapping(foldSet, result, full);
-                        }
-                    }
+                }
+                finally
+                {
+                    full.Dispose();
                 }
                 if (strings.Count > 0)
                 {
                     if ((attribute & Case) != 0)
                     {
-                        foreach (String s in strings)
+                        foreach (string s in strings)
                         {
-                            string str = UChar.FoldCase(s, 0);
+                            string str = UChar.FoldCase(s, FoldCase.Default);
                             if (!csp.AddStringCaseClosure(str, foldSet))
                             {
                                 foldSet.Add(str); // does not map to code points: add the folded string itself
@@ -4277,19 +5092,281 @@ namespace ICU4N.Text
             return this;
         }
 
-        // ICU4N specific - Span(ICharSequence s, SpanCondition spanCondition) moved to UnicodeSetExtension.tt
+        /// <summary>
+        /// Span a string using this UnicodeSet.
+        /// <para/>
+        /// To replace, count elements, or delete spans, see <see cref="UnicodeSetSpanner"/>.
+        /// </summary>
+        /// <param name="s">The string to be spanned.</param>
+        /// <param name="spanCondition">The span condition.</param>
+        /// <returns>The length of the span.</returns>
+        /// <stable>ICU 4.4</stable>
+        public virtual int Span(string s, SpanCondition spanCondition)
+        {
+            return Span(s, 0, spanCondition);
+        }
 
-        // ICU4N specific - Span(ICharSequence s, int start, SpanCondition spanCondition) moved to UnicodeSetExtension.tt
+        /// <summary>
+        /// Span a string using this UnicodeSet.
+        /// <para/>
+        /// To replace, count elements, or delete spans, see <see cref="UnicodeSetSpanner"/>.
+        /// </summary>
+        /// <param name="s">The string to be spanned.</param>
+        /// <param name="spanCondition">The span condition.</param>
+        /// <returns>The length of the span.</returns>
+        /// <stable>ICU 4.4</stable>
+        public virtual int Span(ReadOnlySpan<char> s, SpanCondition spanCondition)
+        {
+            return Span(s, 0, spanCondition);
+        }
 
-        // ICU4N specific - SpanAndCount(ICharSequence s, int start, SpanCondition spanCondition, out int outCount) moved to UnicodeSetExtension.tt
+        /// <summary>
+        /// Span a string using this <see cref="UnicodeSet"/>.
+        /// <list type="bullet">
+        ///     <item><description>If the start index is less than 0, span will start from 0.</description></item>
+        ///     <item><description>If the start index is greater than the string length, span returns the string length.</description></item>
+        /// </list>
+        /// <para/>
+        /// To replace, count elements, or delete spans, see <see cref="UnicodeSetSpanner"/>.
+        /// </summary>
+        /// <param name="s">The string to be spanned.</param>
+        /// <param name="start">The start index that the span begins.</param>
+        /// <param name="spanCondition">The span condition.</param>
+        /// <returns>The string index which ends the span (i.e. exclusive).</returns>
+        /// <stable>ICU 4.4</stable>
+        public virtual int Span(string s, int start, SpanCondition spanCondition)
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
 
-        // ICU4N specific - SpanCodePointsAndCount(ICharSequence s, int start,
-        //    SpanCondition spanCondition, out int outCount) moved to UnicodeSetExtension.tt
+            return Span(s.AsSpan(), start, spanCondition);
+        }
 
-        // ICU4N specific - SpanBack(ICharSequence s, SpanCondition spanCondition) moved to UnicodeSetExtension.tt
+        /// <summary>
+        /// Span a string using this <see cref="UnicodeSet"/>.
+        /// <list type="bullet">
+        ///     <item><description>If the start index is less than 0, span will start from 0.</description></item>
+        ///     <item><description>If the start index is greater than the string length, span returns the string length.</description></item>
+        /// </list>
+        /// <para/>
+        /// To replace, count elements, or delete spans, see <see cref="UnicodeSetSpanner"/>.
+        /// </summary>
+        /// <param name="s">The string to be spanned.</param>
+        /// <param name="start">The start index that the span begins.</param>
+        /// <param name="spanCondition">The span condition.</param>
+        /// <returns>The string index which ends the span (i.e. exclusive).</returns>
+        /// <stable>ICU 4.4</stable>
+        public virtual int Span(ReadOnlySpan<char> s, int start, SpanCondition spanCondition)
+        {
+            int ignoredOutCount;
+            int end = s.Length;
+            if (start < 0)
+            {
+                start = 0;
+            }
+            else if (start >= end)
+            {
+                return end;
+            }
+            if (bmpSet != null)
+            {
+                // Frozen set without strings, or no string is relevant for span().
+                return bmpSet.Span(s, start, spanCondition, out ignoredOutCount);
+            }
+            if (stringSpan != null)
+            {
+                return stringSpan.Span(s, start, spanCondition);
+            }
+            else if (strings.Count > 0)
+            {
+                int which = spanCondition == SpanCondition.NotContained ? UnicodeSetStringSpan.ForwardUtf16NotContained
+                        : UnicodeSetStringSpan.ForwardUtf16Contained;
+                UnicodeSetStringSpan strSpan = new UnicodeSetStringSpan(this, new List<string>(strings), which);
+                if (strSpan.NeedsStringSpanUTF16)
+                {
+                    return strSpan.Span(s, start, spanCondition);
+                }
+            }
 
-        // ICU4N specific - SpanBack(ICharSequence s, int fromIndex, SpanCondition spanCondition) moved to UnicodeSetExtension.tt
+            return SpanCodePointsAndCount(s, start, spanCondition, out ignoredOutCount);
+        }
 
+        /// <summary>
+        /// Same as <see cref="Span(ReadOnlySpan{Char}, SpanCondition)"/> but also counts the smallest number of set elements on any path across the span.
+        /// <para/>
+        /// To replace, count elements, or delete spans, see <see cref="UnicodeSetSpanner"/>.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="start"></param>
+        /// <param name="spanCondition"></param>
+        /// <param name="outCount">Returns the count.</param>
+        /// <returns>The limit (exclusive end) of the span.</returns>
+        [Obsolete("This API is ICU internal only.")]
+        internal virtual int SpanAndCount(ReadOnlySpan<char> s, int start, SpanCondition spanCondition, out int outCount) // ICU4N: Made internal because it is obsolete
+        {
+            outCount = default(int);
+            int end = s.Length;
+            if (start < 0)
+            {
+                start = 0;
+            }
+            else if (start >= end)
+            {
+                return end;
+            }
+            if (stringSpan != null)
+            {
+                // We might also have bmpSet != null,
+                // but fully-contained strings are relevant for counting elements.
+                return stringSpan.SpanAndCount(s, start, spanCondition, out outCount);
+            }
+            else if (bmpSet != null)
+            {
+                return bmpSet.Span(s, start, spanCondition, out outCount);
+            }
+            else if (strings.Count > 0)
+            {
+                int which = spanCondition == SpanCondition.NotContained ? UnicodeSetStringSpan.ForwardUtf16NotContained
+                        : UnicodeSetStringSpan.ForwardUtf16Contained;
+                which |= UnicodeSetStringSpan.WithCount;
+                UnicodeSetStringSpan strSpan = new UnicodeSetStringSpan(this, new List<string>(strings), which);
+                return strSpan.SpanAndCount(s, start, spanCondition, out outCount);
+            }
+
+            return SpanCodePointsAndCount(s, start, spanCondition, out outCount);
+        }
+
+        private int SpanCodePointsAndCount(ReadOnlySpan<char> s, int start,
+            SpanCondition spanCondition, out int outCount)
+        {
+            // Pin to 0/1 values.
+            bool spanContained = (spanCondition != SpanCondition.NotContained);
+
+            int c;
+            int next = start;
+            int length = s.Length;
+            int count = 0;
+            do
+            {
+                c = Character.CodePointAt(s, next);
+                if (spanContained != Contains(c))
+                {
+                    break;
+                }
+                ++count;
+                next += Character.CharCount(c);
+            } while (next < length);
+            outCount = count;
+            return next;
+        }
+
+        /// <summary>
+        /// Span a string backwards (from the end) using this <see cref="UnicodeSet"/>.
+        /// <para/>
+        /// To replace, count elements, or delete spans, see <see cref="UnicodeSetSpanner"/>.
+        /// </summary>
+        /// <param name="s">The string to be spanned.</param>
+        /// <param name="spanCondition">The span condition.</param>
+        /// <returns>The string index which starts the span (i.e. inclusive).</returns>
+        /// <stable>ICU 4.4</stable>
+        public virtual int SpanBack(string s, SpanCondition spanCondition)
+        {
+            return SpanBack(s, s.Length, spanCondition);
+        }
+
+        /// <summary>
+        /// Span a string backwards (from the end) using this <see cref="UnicodeSet"/>.
+        /// <para/>
+        /// To replace, count elements, or delete spans, see <see cref="UnicodeSetSpanner"/>.
+        /// </summary>
+        /// <param name="s">The string to be spanned.</param>
+        /// <param name="spanCondition">The span condition.</param>
+        /// <returns>The string index which starts the span (i.e. inclusive).</returns>
+        /// <stable>ICU 4.4</stable>
+        public virtual int SpanBack(ReadOnlySpan<char> s, SpanCondition spanCondition)
+        {
+            return SpanBack(s, s.Length, spanCondition);
+        }
+
+        /// <summary>
+        /// Span a string backwards (from the <paramref name="fromIndex"/>) using this <see cref="UnicodeSet"/>.
+        /// If the <paramref name="fromIndex"/> is less than 0, SpanBack will return 0.
+        /// If <paramref name="fromIndex"/> is greater than the string length, SpanBack will start from the string length.
+        /// <para/>
+        /// To replace, count elements, or delete spans, see <see cref="UnicodeSetSpanner"/>.
+        /// </summary>
+        /// <param name="s">The string to be spanned.</param>
+        /// <param name="fromIndex">The index of the char (exclusive) that the string should be spanned backwards.</param>
+        /// <param name="spanCondition">The span condition.</param>
+        /// <returns>The string index which starts the span (i.e. inclusive).</returns>
+        /// <stable>ICU 4.4</stable>
+        public virtual int SpanBack(string s, int fromIndex, SpanCondition spanCondition)
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
+            return SpanBack(s.AsSpan(), fromIndex, spanCondition);
+        }
+
+        /// <summary>
+        /// Span a string backwards (from the <paramref name="fromIndex"/>) using this <see cref="UnicodeSet"/>.
+        /// If the <paramref name="fromIndex"/> is less than 0, SpanBack will return 0.
+        /// If <paramref name="fromIndex"/> is greater than the string length, SpanBack will start from the string length.
+        /// <para/>
+        /// To replace, count elements, or delete spans, see <see cref="UnicodeSetSpanner"/>.
+        /// </summary>
+        /// <param name="s">The string to be spanned.</param>
+        /// <param name="fromIndex">The index of the char (exclusive) that the string should be spanned backwards.</param>
+        /// <param name="spanCondition">The span condition.</param>
+        /// <returns>The string index which starts the span (i.e. inclusive).</returns>
+        /// <stable>ICU 4.4</stable>
+        public virtual int SpanBack(ReadOnlySpan<char> s, int fromIndex, SpanCondition spanCondition)
+        {
+            if (fromIndex <= 0)
+            {
+                return 0;
+            }
+            if (fromIndex > s.Length)
+            {
+                fromIndex = s.Length;
+            }
+            if (bmpSet != null)
+            {
+                // Frozen set without strings, or no string is relevant for spanBack().
+                return bmpSet.SpanBack(s, fromIndex, spanCondition);
+            }
+            if (stringSpan != null)
+            {
+                return stringSpan.SpanBack(s, fromIndex, spanCondition);
+            }
+            else if (strings.Count > 0)
+            {
+                int which = (spanCondition == SpanCondition.NotContained)
+                        ? UnicodeSetStringSpan.BackwardUtf16NotContained
+                                : UnicodeSetStringSpan.BackwardUtf16Contained;
+                UnicodeSetStringSpan strSpan = new UnicodeSetStringSpan(this, new List<string>(strings), which);
+                if (strSpan.NeedsStringSpanUTF16)
+                {
+                    return strSpan.SpanBack(s, fromIndex, spanCondition);
+                }
+            }
+
+            // Pin to 0/1 values.
+            bool spanContained = (spanCondition != SpanCondition.NotContained);
+
+            int c;
+            int prev = fromIndex;
+            do
+            {
+                c = Character.CodePointBefore(s, prev);
+                if (spanContained != Contains(c))
+                {
+                    break;
+                }
+                prev -= Character.CharCount(c);
+            } while (prev > 0);
+            return prev;
+        }
 
         /// <summary>
         /// Clone a thawed version of this class, according to the <see cref="IFreezable{T}"/> interface.
@@ -4530,17 +5607,136 @@ namespace ICU4N.Text
             // ICU4N NOTE: Remove() not supported in .NET
         }
 
-        // ICU4N specific - ContainsAll<T>(IEnumerable<T> collection) where T : ICharSequence moved to UnicodeSetExtension.tt
+        /// <seealso cref="ContainsAll(UnicodeSet)"/>
+        /// <stable>ICU 4.4</stable>
+        internal virtual bool ContainsAll(IEnumerable<string> collection) // ICU4N specific - changed from public to internal (we are using IsSupersetOf in .NET)
+        {
+            foreach (var o in collection)
+            {
+                if (!Contains(o))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
 
-        // ICU4N specific - ContainsNone<T>(IEnumerable<T> collection) where T : ICharSequence moved to UnicodeSetExtension.tt
+        /// <seealso cref="ContainsAll(UnicodeSet)"/>
+        /// <stable>ICU 4.4</stable>
+        internal virtual bool ContainsAll(IEnumerable<char[]> collection) // ICU4N specific - changed from public to internal (we are using IsSupersetOf in .NET)
+        {
+            foreach (var o in collection)
+            {
+                if (!Contains(o))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
 
-        // ICU4N specific - ContainsSome<T>(IEnumerable<T> collection) where T : ICharSequence moved to UnicodeSetExtension.tt
+        /// <seealso cref="ContainsNone(UnicodeSet)"/>
+        /// <stable>ICU 4.4</stable>
+        internal bool ContainsNone(IEnumerable<string> collection) // ICU4N: since this is just !Overlaps(), we can exclude this (and overloads) from the public API
+        {
+            foreach (var o in collection)
+            {
+                if (Contains(o))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
 
-        // ICU4N specific - AddAll(params ICharSequence[] collection) moved to UnicodeSetExtension.tt
+        /// <seealso cref="ContainsNone(UnicodeSet)"/>
+        /// <stable>ICU 4.4</stable>
+        internal bool ContainsNone(IEnumerable<char[]> collection) // ICU4N: since this is just !Overlaps(), we can exclude this (and overloads) from the public API
+        {
+            foreach (var o in collection)
+            {
+                if (Contains(o))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
 
-        // ICU4N specific - RemoveAll<T>(IEnumerable<T> collection) where T : ICharSequence moved to UnicodeSetExtension.tt
+        /// <seealso cref="ContainsSome(UnicodeSet)"/>
+        /// <stable>ICU 4.4</stable>
+        internal bool ContainsSome(IEnumerable<string> collection) // ICU4N specific - changed from public to internal (we are using Overlaps in .NET)
+        {
+            return !ContainsNone(collection);
+        }
 
-        // ICU4N specific - RetainAll<T>(IEnumerable<T> collection) where T : ICharSequence moved to UnicodeSetExtension.tt
+        /// <seealso cref="ContainsSome(UnicodeSet)"/>
+        /// <stable>ICU 4.4</stable>
+        internal bool ContainsSome(IEnumerable<char[]> collection) // ICU4N specific - changed from public to internal (we are using Overlaps in .NET)
+        {
+            return !ContainsNone(collection);
+        }
+
+        /// <seealso cref="AddAll(UnicodeSet)"/>
+        /// <stable>ICU 4.4</stable>
+        // See ticket #11395, this is safe.
+        internal virtual UnicodeSet AddAll(params string[] collection) // ICU4N specific - changed from public to internal (we are using UnionWith in .NET)
+        {
+            CheckFrozen();
+            foreach (var csq in collection)
+            {
+                Add(csq);
+            }
+            return this;
+        }
+
+        /// <seealso cref="RemoveAll(UnicodeSet)"/>
+        /// <stable>ICU 4.4</stable>
+        internal virtual UnicodeSet RemoveAll(IEnumerable<string> collection) // ICU4N specific - changed from public to internal (we are using ExceptWith in .NET)
+        {
+            CheckFrozen();
+            foreach (var o in collection)
+            {
+                Remove(o);
+            }
+            return this;
+        }
+
+        /// <seealso cref="RemoveAll(UnicodeSet)"/>
+        /// <stable>ICU 4.4</stable>
+        internal virtual UnicodeSet RemoveAll(IEnumerable<char[]> collection) // ICU4N specific - changed from public to internal (we are using ExceptWith in .NET)
+        {
+            CheckFrozen();
+            foreach (var o in collection)
+            {
+                Remove(o);
+            }
+            return this;
+        }
+
+        /// <seealso cref="RetainAll(UnicodeSet)"/>
+        /// <stable>ICU 4.4</stable>
+        internal virtual UnicodeSet RetainAll(IEnumerable<string> collection) // ICU4N specific - changed from public to internal (we are using IntersectWith in .NET)
+        {
+            CheckFrozen();
+            // TODO optimize
+            UnicodeSet toRetain = new UnicodeSet();
+            toRetain.AddAll(collection);
+            RetainAll(toRetain);
+            return this;
+        }
+
+        /// <seealso cref="RetainAll(UnicodeSet)"/>
+        /// <stable>ICU 4.4</stable>
+        internal virtual UnicodeSet RetainAll(IEnumerable<char[]> collection) // ICU4N specific - changed from public to internal (we are using IntersectWith in .NET)
+        {
+            CheckFrozen();
+            // TODO optimize
+            UnicodeSet toRetain = new UnicodeSet();
+            toRetain.AddAll(collection);
+            RetainAll(toRetain);
+            return this;
+        }
 
         // ICU4N specific - De-nested ComparisonStyle enum
 
@@ -4606,9 +5802,63 @@ namespace ICU4N.Text
             return Compare(this, other);
         }
 
-        // ICU4N specific - Compare(ICharSequence str, int codePoint) moved to UnicodeSetExtension.tt
+        /// <summary>
+        /// Utility to compare a string to a code point.
+        /// Same results as turning the code point into a string (with the [ugly] new StringBuilder().AppendCodePoint(codepoint).ToString())
+        /// and comparing, but much faster (no object creation).
+        /// Actually, there is one difference; a null compares as less.
+        /// Note that this (=String) order is UTF-16 order -- *not* code point order.
+        /// </summary>
+        /// <stable>ICU 4.4</stable>
+        public static int Compare(string str, int codePoint) // ICU4N TODO: API - In .NET, this should not throw when str is null
+        {
+#pragma warning disable 612, 618
+            return CharSequences.Compare(str, codePoint);
+#pragma warning restore 612, 618
+        }
 
-        // ICU4N specific - Compare(int codePoint, ICharSequence str) moved to UnicodeSetExtension.tt
+        /// <summary>
+        /// Utility to compare a string to a code point.
+        /// Same results as turning the code point into a string (with the [ugly] new StringBuilder().AppendCodePoint(codepoint).ToString())
+        /// and comparing, but much faster (no object creation).
+        /// Actually, there is one difference; a null compares as less.
+        /// Note that this (=String) order is UTF-16 order -- *not* code point order.
+        /// </summary>
+        /// <stable>ICU 4.4</stable>
+        public static int Compare(ReadOnlySpan<char> str, int codePoint)
+        {
+#pragma warning disable 612, 618
+            return CharSequences.Compare(str, codePoint);
+#pragma warning restore 612, 618
+        }
+
+        /// <summary>
+        /// Utility to compare a string to a code point.
+        /// Same results as turning the code point into a string and comparing, but much faster (no object creation).
+        /// Actually, there is one difference; a null compares as less.
+        /// Note that this (=String) order is UTF-16 order -- *not* code point order.
+        /// </summary>
+        /// <stable>ICU 4.4</stable>
+        public static int Compare(int codePoint, string str) // ICU4N TODO: API - In .NET, this should not throw when str is null
+        {
+#pragma warning disable 612, 618
+            return -CharSequences.Compare(str, codePoint);
+#pragma warning restore 612, 618
+        }
+
+        /// <summary>
+        /// Utility to compare a string to a code point.
+        /// Same results as turning the code point into a string and comparing, but much faster (no object creation).
+        /// Actually, there is one difference; a null compares as less.
+        /// Note that this (=String) order is UTF-16 order -- *not* code point order.
+        /// </summary>
+        /// <stable>ICU 4.4</stable>
+        public static int Compare(int codePoint, ReadOnlySpan<char> str)
+        {
+#pragma warning disable 612, 618
+            return -CharSequences.Compare(str, codePoint);
+#pragma warning restore 612, 618
+        }
 
         /// <summary>
         /// Utility to compare two enumerators. Warning: the ordering in enumerables is important. For Collections that are ordered,
@@ -4718,7 +5968,25 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public virtual ICollection<string> Strings => strings.AsReadOnly();
 
-        // ICU4N specific - GetSingleCodePoint(ICharSequence s) moved to UnicodeSetExtension.tt
+        /// <summary>
+        /// Return the value of the first code point, if the string is exactly one code point. 
+        /// Otherwise return <see cref="int.MaxValue"/>.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        internal static int GetSingleCodePoint(string s) // ICU4N: Made internal because it is obsolete
+        {
+            return CharSequences.GetSingleCodePoint(s); // ICU4N TODO: API - fix null (should it return MaxValue?)
+        }
+
+        /// <summary>
+        /// Return the value of the first code point, if the string is exactly one code point. 
+        /// Otherwise return <see cref="int.MaxValue"/>.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        internal static int GetSingleCodePoint(ReadOnlySpan<char> s) // ICU4N: Made internal because it is obsolete
+        {
+            return CharSequences.GetSingleCodePoint(s);
+        }
 
         /// <summary>
         /// Simplify the ranges in a Unicode set by merging any ranges that are only separated by characters in the <paramref name="dontCare"/> set.
@@ -4742,11 +6010,71 @@ namespace ICU4N.Text
             return this;
         }
 
-        // ICU4N specific - FindIn(ICharSequence value, int fromIndex, bool findNot) moved to UnicodeSetExtension.tt
+        /// <summary>
+        /// Find the first index at or after <paramref name="fromIndex"/> where the <see cref="UnicodeSet"/> matches at that index.
+        /// If <paramref name="findNot"/> is true, then reverse the sense of the match: find the first place where the <see cref="UnicodeSet"/> doesn't match.
+        /// If there is no match, length is returned.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.Use span instead.")]
+        internal virtual int FindIn(ReadOnlySpan<char> value, int fromIndex, bool findNot) // ICU4N: Made internal because it is obsolete
+        {
+            //TODO add strings, optimize, using ICU4C algorithms
+            int cp;
+            for (; fromIndex < value.Length; fromIndex += UTF16.GetCharCount(cp))
+            {
+                cp = UTF16.CharAt(value, fromIndex);
+                if (Contains(cp) != findNot)
+                {
+                    break;
+                }
+            }
+            return fromIndex;
+        }
 
-        // ICU4N specific - FindLastIn(ICharSequence value, int fromIndex, bool findNot) moved to UnicodeSetExtension.tt
+        /// <summary>
+        /// Find the last index before <paramref name="fromIndex"/> where the <see cref="UnicodeSet"/> matches at that index.
+        /// If <paramref name="findNot"/> is true, then reverse the sense of the match: find the last place where the <see cref="UnicodeSet"/> doesn't match.
+        /// If there is no match, -1 is returned.
+        /// BEFORE index is not in the <see cref="UnicodeSet"/>.
+        /// </summary>
+        [Obsolete("This API is ICU internal only. Use spanBack instead.")]
+        internal virtual int FindLastIn(ReadOnlySpan<char> value, int fromIndex, bool findNot) // ICU4N: Made internal because it is obsolete
+        {
+            //TODO add strings, optimize, using ICU4C algorithms
+            int cp;
+            fromIndex -= 1;
+            for (; fromIndex >= 0; fromIndex -= UTF16.GetCharCount(cp))
+            {
+                cp = UTF16.CharAt(value, fromIndex);
+                if (Contains(cp) != findNot)
+                {
+                    break;
+                }
+            }
+            return fromIndex < 0 ? -1 : fromIndex;
+        }
 
-        // ICU4N specific - StripFrom(ICharSequence source, bool matches) moved to UnicodeSetExtension.tt
+        /// <summary>
+        /// Strips code points from source. If matches is true, script all that match <i>this</i>. 
+        /// If matches is false, then strip all that <i>don't</i> match.
+        /// </summary>
+        /// <param name="source">The source of the <see cref="ReadOnlySpan{Char}"/> to strip from.</param>
+        /// <param name="matches">A bool to either strip all that matches or don't match with the current <see cref="UnicodeSet"/> object.</param>
+        /// <returns>The string after it has been stripped.</returns>
+        [Obsolete("This API is ICU internal only. Use replaceFrom.")]
+        internal virtual string StripFrom(ReadOnlySpan<char> source, bool matches) // ICU4N: Made internal because it is obsolete
+        {
+            using ValueStringBuilder result = source.Length <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                : new ValueStringBuilder(source.Length);
+            for (int pos = 0; pos < source.Length;)
+            {
+                int inside = FindIn(source, pos, !matches);
+                result.Append(source.Slice(pos, inside - pos)); // ICU4N: Corrected 2nd parameter
+                pos = FindIn(source, inside, matches); // get next start
+            }
+            return result.ToString();
+        }
 
         // ICU4N specific - De-nested SpanCondition
 

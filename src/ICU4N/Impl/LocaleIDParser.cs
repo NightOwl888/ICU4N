@@ -1,6 +1,6 @@
 ﻿using ICU4N.Impl.Locale;
 using ICU4N.Support.Collections;
-using ICU4N.Support.Text;
+using ICU4N.Text;
 using J2N.Text;
 using System;
 using System.Collections.Generic;
@@ -12,20 +12,12 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
     /// <summary>
     /// Utility class to parse and normalize locale ids (including POSIX style)
     /// </summary>
-#if FEATURE_SPAN
     public ref struct LocaleIDParser
-#else
-    public sealed class LocaleIDParser : IDisposable
-#endif
     {
         /// <summary>
         /// Char array representing the locale ID.
         /// </summary>
-#if FEATURE_SPAN
         private ReadOnlySpan<char> id;
-#else
-        private char[] id;
-#endif
 
         /// <summary>
         /// Current position in <see cref="id"/> (while parsing).
@@ -35,11 +27,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
         /// <summary>
         /// Temporary buffer for parsed sections of data.
         /// </summary>
-#if FEATURE_SPAN
         private ValueStringBuilder buffer;
-#else
-        private StringBuilder buffer;
-#endif
 
         // um, don't handle POSIX ids unless we request it.  why not?  well... because.
         private bool canonicalize;
@@ -47,11 +35,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
 
         // used when canonicalizing
         private IDictionary<string, string> keywords;
-#if FEATURE_SPAN
         private ReadOnlySpan<char> baseName;
-#else
-        private string baseName;
-#endif
 
         /// <summary>
         /// Parsing constants.
@@ -63,8 +47,6 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
         private const char ITEM_SEPARATOR = ';';
         private const char DOT = '.';
         private const char UNDERSCORE = '_';
-
-#if FEATURE_SPAN
 
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
         public LocaleIDParser(Span<char> initialBuffer, string localeID)
@@ -93,31 +75,13 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             this.keywords = null;
             this.baseName = ReadOnlySpan<char>.Empty;
         }
-#else
-
-        public LocaleIDParser(string localeID)
-            : this(localeID, false)
-        {
-        }
-
-        public LocaleIDParser(string localeID, bool canonicalize)
-        {
-            Reset(localeID, canonicalize);
-        }
-#endif
-
-#if FEATURE_SPAN
 
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void Reset(string localeID)
             => Reset(localeID.AsSpan());
 
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void Reset(string localeID, bool canonicalize)
             => Reset(localeID.AsSpan(), canonicalize);
 #endif
@@ -135,31 +99,11 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             this.canonicalize = canonicalize;
             this.hadCountry = false;
         }
-#else
-
-        public void Reset(string localeID)
-        {
-            Reset(localeID, false);
-        }
-
-        public void Reset(string localeID, bool canonicalize)
-        {
-            id = localeID.ToCharArray();
-            index = 0;
-            buffer = new StringBuilder(id.Length + 5);
-            this.canonicalize = canonicalize;
-            this.hadCountry = false;
-        }
-#endif
 
         private void Reset()
         {
             index = 0;
-#if FEATURE_SPAN
             buffer.Length = 0;
-#else
-            buffer = new StringBuilder(id.Length + 5);
-#endif
         }
 
         // utilities for working on text in the buffer
@@ -182,45 +126,31 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
         /// </summary>
         private string GetString(int start)
         {
-#if FEATURE_SPAN
             return buffer.AsSpan(start).ToString();
-#else
-            return buffer.ToString(start, buffer.Length - start);
-#endif
         }
 
-#if FEATURE_SPAN
         private ReadOnlySpan<char> AsSpan(int start)
         {
             return buffer.AsSpan(start);
         }
-#endif
 
+
+#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
         /// <summary>
         /// Set the length of the buffer to pos, then append the string.
         /// </summary>
-#if FEATURE_SPAN
-
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         private void Set(int pos, string s)
             => Set(pos, s.AsSpan());
 #endif
-
+        /// <summary>
+        /// Set the length of the buffer to pos, then append the string.
+        /// </summary>
         private void Set(int pos, ReadOnlySpan<char> s)
-        {
-            buffer.Length = pos;
-            buffer.Insert(pos, s);
-        }
-#else
-        private void Set(int pos, string s)
         {
             buffer.Delete(pos, buffer.Length - pos); // ICU4N: Corrected 2nd parameter
             buffer.Insert(pos, s);
         }
-#endif
 
         /// <summary>
         /// Append the string to the buffer.
@@ -230,8 +160,6 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             buffer.Append(s);
         }
 
-#if FEATURE_SPAN
-
         /// <summary>
         /// Append the span to the buffer.
         /// </summary>
@@ -239,8 +167,6 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
         {
             buffer.Append(s);
         }
-
-#endif
 
         // utilities for parsing text out of the id
 
@@ -360,11 +286,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
 
             if (buffer.Length - startLength == 3)
             {
-#if FEATURE_SPAN
                 string lang = LocaleIDs.ThreeToTwoLetterLanguage(AsSpan(0));
-#else
-                string lang = LocaleIDs.ThreeToTwoLetterLanguage(GetString(0));
-#endif
                 if (lang != null)
                 {
                     Set(0, lang);
@@ -510,11 +432,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
                 }
                 else if (charsAppended == 3)
                 {
-#if FEATURE_SPAN
                     string region = LocaleIDs.ThreeToTwoLetterRegion(AsSpan(oldBlen));
-#else
-                    string region = LocaleIDs.ThreeToTwoLetterRegion(GetString(oldBlen));
-#endif
                     if (region != null)
                     {
                         Set(oldBlen, region);
@@ -653,8 +571,6 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
         // no need for skipvariant, to get the keywords we'll just scan directly for
         // the keyword separator
 
-
-#if FEATURE_SPAN
         /// <summary>
         /// Copies the normalized language id into <paramref name="destination"/>.
         /// </summary>
@@ -683,7 +599,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             result.CopyTo(destination);
             charsWritten = result.Length;
         }
-#endif
+
         /// <summary>
         /// Returns the normalized language id, or the empty string.
         /// </summary>
@@ -693,8 +609,6 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             return GetString(ParseLanguage());
         }
 
-
-#if FEATURE_SPAN
         /// <summary>
         /// Copies the normalized script id into <paramref name="destination"/>.
         /// </summary>
@@ -725,7 +639,6 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             result.CopyTo(destination);
             charsWritten = result.Length;
         }
-#endif
 
         /// <summary>
         /// Returns the normalized script id, or the empty string.
@@ -737,9 +650,6 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             return GetString(ParseScript());
         }
 
-
-
-#if FEATURE_SPAN
         /// <summary>
         /// Copies the normalized country id into <paramref name="destination"/>.
         /// </summary>
@@ -772,7 +682,6 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             result.CopyTo(destination);
             charsWritten = result.Length;
         }
-#endif
 
         /// <summary>
         /// Returns the normalized country id, or the empty string.
@@ -785,9 +694,6 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             return GetString(ParseCountry());
         }
 
-
-
-#if FEATURE_SPAN
         /// <summary>
         /// Copies the normalized variant id into <paramref name="destination"/>.
         /// </summary>
@@ -822,7 +728,6 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             result.CopyTo(destination);
             charsWritten = result.Length;
         }
-#endif
 
         /// <summary>
         /// Returns the normalized variant id, or the empty string.
@@ -851,8 +756,6 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             );
         }
 
-#if FEATURE_SPAN
-
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
 
         public void SetBaseName(string baseName)
@@ -860,20 +763,13 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
 #endif
 
         public void SetBaseName(ReadOnlySpan<char> baseName)
-#else
-        public void SetBaseName(string baseName)
-#endif
         {
             this.baseName = baseName;
         }
 
         public void ParseBaseName(char separator = UNDERSCORE)
         {
-#if FEATURE_SPAN
             if (!baseName.IsEmpty)
-#else
-            if (baseName != null)
-#endif
             {
                 Set(0, baseName);
             }
@@ -904,7 +800,6 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             }
         }
 
-#if FEATURE_SPAN
         /// <summary>
         /// Copies the normalized base form of the locale id to <paramref name="destination"/>.
         /// The base form does not include keywords.
@@ -976,7 +871,6 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             ParseBaseName();
             return AsSpan(0);
         }
-#endif
 
         /// <summary>
         /// Returns the normalized base form of the locale id.  The base
@@ -984,23 +878,14 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
         /// </summary>
         public string GetBaseName()
         {
-#if FEATURE_SPAN
             if (!baseName.IsEmpty)
             {
                 return baseName.ToString();
             }
-#else
-            if (baseName != null)
-            {
-                return baseName;
-            }
-#endif
             ParseBaseName();
             return GetString(0);
         }
 
-
-#if FEATURE_SPAN
         /// <summary>
         /// Copies the normalized base form of the locale id using hyphen as the
         /// separator to <paramref name="destination"/>. This is for compatibility with <see cref="System.Globalization.CultureInfo.Name"/>.
@@ -1035,7 +920,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             result.CopyTo(destination);
             charsWritten = result.Length;
         }
-#endif
+
         /// <summary>
         /// Returns the normalized base form of the locale id using hyphen as the
         /// separator, for compatibility with <see cref="System.Globalization.CultureInfo.Name"/>.
@@ -1048,7 +933,6 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             return GetString(0);
         }
 
-#if FEATURE_SPAN
         /// <summary>
         /// Copies the normalized full form of the locale id to <paramref name="destination"/>.
         /// The full form includes keywords if they are present.
@@ -1081,7 +965,6 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             result.CopyTo(destination);
             charsWritten = result.Length;
         }
-#endif
 
         /// <summary>
         /// Returns the normalized full form of the locale id.  The full
@@ -1148,14 +1031,10 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             {
             }
             --index;
-#if FEATURE_SPAN
             int bufferLength = index - start;
             Span<char> buffer = bufferLength <= 64 ? stackalloc char[bufferLength] : new char[bufferLength];
             int length = id.Slice(start, index - start).Trim().ToLowerInvariant(buffer);
             return buffer.Slice(0, length).ToString();
-#else
-            return AsciiUtil.ToLower(new string(id, start, index - start).Trim());
-#endif
         }
 
         private string GetValue()
@@ -1165,11 +1044,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             {
             }
             --index;
-#if FEATURE_SPAN
-            return id.Slice(start, index - start).Trim().ToString();
-#else
-            return new string(id, start, index - start).Trim(); // leave case alone
-#endif
+            return id.Slice(start, index - start).Trim().ToString(); // leave case alone
         }
 
         private static IComparer<string> KeyComparer { get; } = StringComparer.OrdinalIgnoreCase;
@@ -1358,10 +1233,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
 
         public void Dispose()
         {
-            // Just for compatibility with ValueStringBuilder (so it can return memory to the array pool)
-#if FEATURE_SPAN
             buffer.Dispose();
-#endif
         }
     }
 }

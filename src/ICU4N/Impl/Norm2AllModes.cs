@@ -1,37 +1,177 @@
-﻿using ICU4N.Text;
+﻿using ICU4N.Support.Text;
+using ICU4N.Text;
 using J2N.IO;
+using J2N.Numerics;
+using J2N.Text;
 using System;
+using System.Runtime.CompilerServices;
+using System.Text;
+#nullable enable
 
 namespace ICU4N.Impl
 {
     // Normalizer2 implementation for the old UNORM_NONE.
     public sealed partial class NoopNormalizer2 : Normalizer2
     {
-        // ICU4N specific: Moved Normalize(ICharSequence, StringBuilder) to Norm2AllModesExtension.tt
+        #region Normalize(ICharSequence, StringBuilder)
 
-        // ICU4N specific: Moved Normalize(ICharSequence, IAppendable) to Norm2AllModesExtension.tt
+        public override StringBuilder Normalize(ReadOnlySpan<char> src, StringBuilder dest)
+        {
+            if (dest is null)
+                throw new ArgumentNullException(nameof(dest));
 
-        // ICU4N specific: Moved NormalizeSecondAndAppend(StringBuilder, ICharSequence) to Norm2AllModesExtension.tt
+            dest.Length = 0;
+            return dest.Append(src);
+        }
 
-        // ICU4N specific: Moved Append(StringBuilder, ICharSequence) to Norm2AllModesExtension.tt
+        internal override void Normalize(scoped ReadOnlySpan<char> src, ref ValueStringBuilder dest)
+        {
+            if (src.Overlaps(dest.RawChars))
+            {
+                throw new ArgumentException($"'{nameof(src)}' cannot be the same memory location as '{nameof(dest)}'");
+            }
 
-        // ICU4N specific: Moved IsNormalized(ICharSequence) to Norm2AllModesExtension.tt
+            dest.Length = 0;
+            dest.Append(src);
+        }
 
-        // ICU4N specific: Moved QuickCheck(ICharSequence) to Norm2AllModesExtension.tt
+        #endregion
 
-        // ICU4N specific: Moved SpanQuickCheckYes(ICharSequence) to Norm2AllModesExtension.tt
+        #region Normalize(ICharSequence, IAppendable)
 
-        public override string GetDecomposition(int c)
+        public override TAppendable Normalize<TAppendable>(ReadOnlySpan<char> src, TAppendable dest)
+        {
+            if (dest is null)
+                throw new ArgumentNullException(nameof(dest));
+
+            // ICU4N: Removed unnecessary try/catch for IOException
+            return dest.Append(src);
+        }
+
+        #endregion Normalize(ICharSequence, IAppendable)
+
+        #region NormalizeSecondAndAppend(StringBuilder, ICharSequence)
+
+        public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, ReadOnlySpan<char> second)
+        {
+            if (first is null)
+                throw new ArgumentNullException(nameof(first));
+
+            return first.Append(second);
+        }
+
+        internal override void NormalizeSecondAndAppend(ref ValueStringBuilder first, ReadOnlySpan<char> second)
+        {
+            if (first.RawChars.Overlaps(second))
+            {
+                throw new ArgumentException($"'{nameof(first)}' cannot be the same memory location as '{nameof(second)}'");
+            }
+
+            first.Append(second);
+        }
+
+        #endregion NormalizeSecondAndAppend(StringBuilder, ICharSequence)
+
+        #region Append(StringBuilder, ICharSequence)
+
+        public override StringBuilder Append(StringBuilder first, ReadOnlySpan<char> second)
+        {
+            if (first is null)
+                throw new ArgumentNullException(nameof(first));
+
+            return first.Append(second);
+        }
+
+        internal override void Append(ref ValueStringBuilder first, ReadOnlySpan<char> second)
+        {
+            if (first.RawChars.Overlaps(second))
+            {
+                throw new ArgumentException($"'{nameof(first)}' cannot be the same memory location as '{nameof(second)}'");
+            }
+
+            first.Append(second);
+        }
+
+        #endregion
+
+        #region IsNormalized(ICharSequence)
+        public override bool IsNormalized(ReadOnlySpan<char> s) => true;
+
+        #endregion
+
+        #region QuickCheck(ICharSequence)
+        public override QuickCheckResult QuickCheck(ReadOnlySpan<char> s) => QuickCheckResult.Yes;
+
+        #endregion QuickCheck(ICharSequence)
+
+        #region SpanQuickCheckYes(ICharSequence)
+        public override int SpanQuickCheckYes(ReadOnlySpan<char> s) => s.Length;
+
+        #endregion SpanQuickCheckYes(ICharSequence)
+
+        public override string? GetDecomposition(int c)
         {
             return null;
         }
+
+        public override bool TryGetDecomposition(int codePoint, Span<char> destination, out int charsLength)
+        {
+            charsLength = 0;
+            return false;
+        }
+
         // No need to override the default GetRawDecomposition().
 
-        public override bool HasBoundaryBefore(int c) { return true; }
+        // No need to override the default TryGetRawDecomposition()
 
-        public override bool HasBoundaryAfter(int c) { return true; }
+        public override bool HasBoundaryBefore(int c) => true;
 
-        public override bool IsInert(int c) { return true; }
+        public override bool HasBoundaryAfter(int c) => true;
+
+        public override bool IsInert(int c) => true;
+
+        public override bool TryNormalize(ReadOnlySpan<char> source, Span<char> destination, out int charsLength)
+        {
+            if (source.Overlaps(destination))
+            {
+                throw new ArgumentException($"'{nameof(source)}' cannot be the same memory location as '{nameof(destination)}'");
+            }
+            bool success = source.TryCopyTo(destination);
+            charsLength = source.Length;
+            return success;
+        }
+
+        public override bool TryNormalizeSecondAndConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength)
+        {
+            bool success = true;
+            if (second.Overlaps(destination))
+            {
+                throw new ArgumentException($"'{nameof(second)}' cannot be the same memory location as '{nameof(destination)}'");
+            }
+            if (!MemoryHelper.AreSame(first, destination))
+            {
+                success = first.TryCopyTo(destination);
+            }
+            success = success && second.TryCopyTo(destination.Slice(first.Length));
+            charsLength = first.Length + second.Length;
+            return success;
+        }
+
+        public override bool TryConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength)
+        {
+            bool success = true;
+            if (second.Overlaps(destination))
+            {
+                throw new ArgumentException($"'{nameof(second)}' cannot be the same memory location as '{nameof(destination)}'");
+            }
+            if (!MemoryHelper.AreSame(first, destination))
+            {
+                success = first.TryCopyTo(destination);
+            }
+            success = success && second.TryCopyTo(destination.Slice(first.Length));
+            charsLength = first.Length + second.Length;
+            return success;
+        }
     }
 
     // Intermediate class:
@@ -40,36 +180,293 @@ namespace ICU4N.Impl
     {
         public Normalizer2WithImpl(Normalizer2Impl ni)
         {
-            Impl = ni;
+            Impl = ni ?? throw new ArgumentNullException(nameof(ni)); // ICU4N: Added guard clause
         }
 
         // normalize
 
-        // ICU4N specific: Moved Normalize(ICharSequence, StringBuilder) to Norm2AllModesExtension.tt
+        /// <summary>
+        /// Returns the normalized form of the source <see cref="ReadOnlySpan{Char}"/>.
+        /// </summary>
+        /// <param name="source">Source <see cref="ReadOnlySpan{Char}"/>.</param>
+        /// <returns>Normalized <paramref name="source"/>.</returns>
+        /// <draft>ICU 4.4</draft>
+        public override string Normalize(ReadOnlySpan<char> source)
+        {
+            int length = source.Length;
+            var buffer = length <= CharStackBufferSize
+                ? new ReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
+                : new ReorderingBuffer(Impl, length);
+            try
+            {
+                Normalize(source, ref buffer);
+                return buffer.ToString();
+            }
+            finally
+            {
+                buffer.Dispose();
+            }
+        }
 
-        // ICU4N specific: Moved Normalize(ICharSequence, IAppendable) to Norm2AllModesExtension.tt
+        /// <summary>
+        /// Normalizes the form of the source <see cref="ReadOnlySpan{Char}"/>
+        /// and places the result in <paramref name="destination"/>.
+        /// </summary>
+        /// <param name="source">Source <see cref="ReadOnlySpan{Char}"/>.</param>
+        /// <param name="destination">The span in which to write the normalized value formatted as a span of characters.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are usable in destination;
+        /// otherwise, this is the length of buffer that will need to be allocated to succeed in another attempt.</param>
+        /// <returns>Normalized <paramref name="source"/>.</returns>
+        /// <draft>ICU 60.1</draft>
+        public override bool TryNormalize(ReadOnlySpan<char> source, Span<char> destination, out int charsLength)
+        {
+            if (source.Overlaps(destination))
+            {
+                throw new ArgumentException($"'{nameof(source)}' cannot be the same memory location as '{nameof(destination)}'");
+            }
+            int length = source.Length;
+            var buffer = length <= CharStackBufferSize
+                ? new ReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
+                : new ReorderingBuffer(Impl, length);
+            try
+            {
+                Normalize(source, ref buffer);
+                charsLength = buffer.Length;
+                return buffer.TryCopyTo(destination, out _);
+            }
+            finally
+            {
+                buffer.Dispose();
+            }
+        }
 
-        // ICU4N specific: Moved Normalize(ICharSequence, ReorderingBuffer) to Norm2AllModesExtension.tt
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool TryNormalizeSecondAndConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength)
+            => TryNormalizeAndConcat(first, second, destination, out charsLength, doNormalize: true);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool TryConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength)
+            => TryNormalizeAndConcat(first, second, destination, out charsLength, doNormalize: false);
+
+        private bool TryNormalizeAndConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength, bool doNormalize)
+        {
+            if (second.Overlaps(destination))
+            {
+                throw new ArgumentException($"'{nameof(second)}' cannot be the same memory location as '{nameof(destination)}'");
+            }
+            int length = first.Length + second.Length;
+            var buffer = length <= CharStackBufferSize
+                ? new ReorderingBuffer(Impl, initialValue: first, stackalloc char[CharStackBufferSize])
+                : new ReorderingBuffer(Impl, initialValue: first, length);
+            try
+            {
+                NormalizeAndAppend(second, doNormalize, ref buffer);
+                charsLength = buffer.Length;
+                return buffer.TryCopyTo(destination, out _);
+            }
+            finally
+            {
+                buffer.Dispose();
+            }
+        }
+
+        #region Normalize(ICharSequence, StringBuilder)
+
+        // ICU4N TODO: Cascade this call to Normalize(ReadOnlySpan<char>, ref ValueStringBuilder) and append the result...?
+        public override StringBuilder Normalize(ReadOnlySpan<char> src, StringBuilder dest)
+        {
+            if (dest is null)
+                throw new ArgumentNullException(nameof(dest));
+
+            dest.Length = 0;
+            int length = src.Length;
+            var buffer = length <= CharStackBufferSize
+                ? new ReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
+                : new ReorderingBuffer(Impl, length);
+            try
+            {
+                Normalize(src, ref buffer);
+                dest.Length = 0;
+                dest.Append(buffer.AsSpan());
+            }
+            finally
+            {
+                buffer.Dispose();
+            }
+            return dest;
+        }
+
+        internal override void Normalize(scoped ReadOnlySpan<char> src, ref ValueStringBuilder dest)
+        {
+            if (src.Overlaps(dest.RawChars))
+            {
+                throw new ArgumentException($"'{nameof(src)}' cannot be the same memory location as '{nameof(dest)}'");
+            }
+
+            dest.Length = 0;
+            int length = src.Length;
+            var buffer = length <= CharStackBufferSize
+                ? new ReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
+                : new ReorderingBuffer(Impl, length);
+            try
+            {
+                Normalize(src, ref buffer);
+                dest.Length = 0;
+                unsafe
+                {
+                    dest.Append(new ReadOnlySpan<char>(buffer.GetCharsPointer(), buffer.Length));
+                }
+            }
+            finally
+            {
+                buffer.Dispose();
+            }
+        }
+
+        #endregion Normalize(ICharSequence, StringBuilder)
+
+        #region Normalize(ICharSequence, IAppendable)
+        public override TAppendable Normalize<TAppendable>(ReadOnlySpan<char> src, TAppendable dest)
+        {
+            int length = src.Length;
+            var buffer = length <= CharStackBufferSize
+                ? new ReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
+                : new ReorderingBuffer(Impl, length);
+            try
+            {
+                Normalize(src, ref buffer);
+                dest.Append(buffer.AsSpan());
+                buffer.Flush();
+            }
+            finally
+            {
+                buffer.Dispose();
+            }
+            return dest;
+        }
+
+        #endregion Normalize(ICharSequence, IAppendable)
+
+        #region Normalize(ICharSequence, ReorderingBuffer)
+        protected abstract void Normalize(string src, ref ReorderingBuffer buffer);
+
+        protected abstract void Normalize(ReadOnlySpan<char> src, ref ReorderingBuffer buffer);
+
+        #endregion Normalize(ICharSequence, ReorderingBuffer)
 
         // normalize and append
 
-        // ICU4N specific: Moved NormalizeSecondAndAppend(StringBuilder, ICharSequence) to Norm2AllModesExtension.tt
+        #region NormalizeSecondAndAppend(StringBuilder, ICharSequence)
 
-        // ICU4N specific: Moved Append(StringBuilder, ICharSequence) to Norm2AllModesExtension.tt
+        public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, ReadOnlySpan<char> second)
+        {
+            return NormalizeSecondAndAppend(first, second, doNormalize: true);
+        }
 
-        // ICU4N specific: Moved NormalizeSecondAndAppend(StringBuilder, ICharSequence, bool) to Norm2AllModesExtension.tt
+        internal override void NormalizeSecondAndAppend(ref ValueStringBuilder first, ReadOnlySpan<char> second)
+        {
+            NormalizeSecondAndAppend(ref first, second, doNormalize: true);
+        }
 
-        // ICU4N specific: Moved NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer) to Norm2AllModesExtension.tt
+        #endregion NormalizeSecondAndAppend(StringBuilder, ICharSequence)
 
+        #region Append(StringBuilder, ICharSequence)
 
-        public override string GetDecomposition(int c)
+        public override StringBuilder Append(StringBuilder first, ReadOnlySpan<char> second)
+        {
+            return NormalizeSecondAndAppend(first, second, false);
+        }
+
+        internal override void Append(ref ValueStringBuilder first, ReadOnlySpan<char> second)
+        {
+            NormalizeSecondAndAppend(ref first, second, false);
+        }
+
+        #endregion
+
+        #region NormalizeSecondAndAppend(StringBuilder, ICharSequence, bool)
+
+        public virtual StringBuilder NormalizeSecondAndAppend(StringBuilder first, ReadOnlySpan<char> second, bool doNormalize)
+        {
+            if (first is null)
+                throw new ArgumentNullException(nameof(first));
+
+            int length = first.Length + second.Length;
+            var sb = length <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                : new ValueStringBuilder(length);
+            try
+            {
+                sb.Append(first);
+                var buffer = new ReorderingBuffer(Impl, ref sb, length);
+                NormalizeAndAppend(second, doNormalize, ref buffer);
+                first.Length = 0;
+                first.Append(buffer.AsSpan());
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+            return first;
+        }
+
+        internal virtual void NormalizeSecondAndAppend(ref ValueStringBuilder first, ReadOnlySpan<char> second, bool doNormalize)
+        {
+            if (first.RawChars.Overlaps(second))
+            {
+                throw new ArgumentException($"'{nameof(first)}' cannot be the same memory location as '{nameof(second)}'");
+            }
+
+            int length = first.Length + second.Length;
+            var sb = length <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                : new ValueStringBuilder(length);
+            try
+            {
+                sb.Append(first.AsSpan());
+                var buffer = new ReorderingBuffer(Impl, ref sb, length);
+                NormalizeAndAppend(second, doNormalize, ref buffer);
+                first.Length = 0;
+                unsafe
+                {
+                    first.Append(new ReadOnlySpan<char>(buffer.GetCharsPointer(), buffer.Length));
+                }
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        #endregion NormalizeSecondAndAppend(StringBuilder, ICharSequence, bool)
+
+        #region NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
+        protected abstract void NormalizeAndAppend(
+            string src, bool doNormalize, ref ReorderingBuffer buffer);
+
+        protected abstract void NormalizeAndAppend(
+            ReadOnlySpan<char> src, bool doNormalize, ref ReorderingBuffer buffer);
+
+        #endregion NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
+
+        public override string? GetDecomposition(int c)
         {
             return Impl.GetDecomposition(c);
         }
 
-        public override string GetRawDecomposition(int c)
+        public override bool TryGetDecomposition(int codePoint, Span<char> destination, out int charsLength)
+        {
+            return Impl.TryGetDecomposition(codePoint, destination, out charsLength);
+        }
+
+        public override string? GetRawDecomposition(int c)
         {
             return Impl.GetRawDecomposition(c);
+        }
+
+        public override bool TryGetRawDecomposition(int codePoint, Span<char> destination, out int charsLength)
+        {
+            return Impl.TryGetRawDecomposition(codePoint, destination, out charsLength);
         }
 
         public override int ComposePair(int a, int b)
@@ -85,9 +482,23 @@ namespace ICU4N.Impl
 
         // quick checks
 
-        // ICU4N specific: Moved IsNormalized(ICharSequence) to Norm2AllModesExtension.tt
+        #region IsNormalized(ICharSequence)
 
-        // ICU4N specific: Moved QuickCheck(ICharSequence s) to Norm2AllModesExtension.tt
+        public override bool IsNormalized(ReadOnlySpan<char> s)
+        {
+            return s.Length == SpanQuickCheckYes(s);
+        }
+
+        #endregion
+
+        #region QuickCheck(ICharSequence s)
+
+        public override QuickCheckResult QuickCheck(ReadOnlySpan<char> s)
+        {
+            return IsNormalized(s) ? QuickCheckResult.Yes : QuickCheckResult.No;
+        }
+
+        #endregion QuickCheck(ICharSequence s)
 
 
         public abstract int GetQuickCheck(int c);
@@ -102,22 +513,67 @@ namespace ICU4N.Impl
         {
         }
 
-        // ICU4N specific: Moved Normalize(ICharSequence, ReorderingBuffer) to Norm2AllModesExtension.tt
+        #region Normalize(ICharSequence, ReorderingBuffer)
+        protected override void Normalize(string src, ref ReorderingBuffer buffer)
+        {
+            if (src is null)
+                throw new ArgumentNullException(nameof(src));
 
-        // ICU4N specific: Moved NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer) to Norm2AllModesExtension.tt
+            Impl.Decompose(src.AsSpan(), ref buffer); // ICU4N: Checked 3rd parameter
+        }
 
-        // ICU4N specific: Moved SpanQuickCheckYes(ICharSequence) to Norm2AllModesExtension.tt
+        protected override void Normalize(ReadOnlySpan<char> src, ref ReorderingBuffer buffer)
+        {
+            if (src.Overlaps(buffer.RawChars))
+            {
+                throw new ArgumentException($"'{nameof(src)}' cannot be the same memory location as '{nameof(buffer)}'");
+            }
+
+            Impl.Decompose(src, ref buffer);
+        }
+
+        #endregion Normalize(ICharSequence, ReorderingBuffer)
+
+        #region NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
+        protected override void NormalizeAndAppend(string src, bool doNormalize, ref ReorderingBuffer buffer)
+        {
+            if (src is null)
+                throw new ArgumentNullException(nameof(src));
+
+            Impl.DecomposeAndAppend(src.AsSpan(), doNormalize, ref buffer);
+        }
+
+        protected override void NormalizeAndAppend(ReadOnlySpan<char> src, bool doNormalize, ref ReorderingBuffer buffer)
+        {
+            if (src.Overlaps(buffer.RawChars))
+            {
+                throw new ArgumentException($"'{nameof(src)}' cannot be the same memory location as '{nameof(buffer)}'");
+            }
+
+            Impl.DecomposeAndAppend(src, doNormalize, ref buffer);
+        }
+
+        #endregion NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
+
+        #region SpanQuickCheckYes(ICharSequence)
+
+        public override int SpanQuickCheckYes(ReadOnlySpan<char> s)
+        {
+            return Impl.DecomposeQuickCheck(s); // ICU4N: Changed to a separate method so we can use a ref struct for a buffer
+        }
+
+        #endregion
 
         public override int GetQuickCheck(int c)
         {
             return Impl.IsDecompYes(Impl.GetNorm16(c)) ? 1 : 0;
         }
 
-        public override bool HasBoundaryBefore(int c) { return Impl.HasDecompBoundaryBefore(c); }
+        public override bool HasBoundaryBefore(int c) => Impl.HasDecompBoundaryBefore(c);
 
-        public override bool HasBoundaryAfter(int c) { return Impl.HasDecompBoundaryAfter(c); }
+        public override bool HasBoundaryAfter(int c) => Impl.HasDecompBoundaryAfter(c);
 
-        public override bool IsInert(int c) { return Impl.IsDecompInert(c); }
+        public override bool IsInert(int c) => Impl.IsDecompInert(c);
     }
 
     public sealed partial class ComposeNormalizer2 : Normalizer2WithImpl
@@ -128,32 +584,116 @@ namespace ICU4N.Impl
             onlyContiguous = fcc;
         }
 
-        // ICU4N specific: Moved Normalize(ICharSequence, ReorderingBuffer) to Norm2AllModesExtension.tt
+        #region Normalize(ICharSequence, ReorderingBuffer)
+        protected override void Normalize(string src, ref ReorderingBuffer buffer)
+        {
+            if (src is null)
+                throw new ArgumentNullException(nameof(src));
 
-        // ICU4N specific: Moved NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer) to Norm2AllModesExtension.tt
+            Impl.Compose(src.AsSpan(), onlyContiguous, doCompose: true, ref buffer);
+        }
 
-        // ICU4N specific: Moved IsNormalized(ICharSequence) to Norm2AllModesExtension.tt
+        protected override void Normalize(ReadOnlySpan<char> src, ref ReorderingBuffer buffer)
+        {
+            if (src.Overlaps(buffer.RawChars))
+            {
+                throw new ArgumentException($"'{nameof(src)}' cannot be the same memory location as '{nameof(buffer)}'");
+            }
 
-        // ICU4N specific: Moved QuickCheck(ICharSequence) to Norm2AllModesExtension.tt
+            Impl.Compose(src, onlyContiguous, doCompose: true, ref buffer);
+        }
 
-        // ICU4N specific: Moved SpanQuickCheckYes(ICharSequence) to Norm2AllModesExtension.tt
+        #endregion Normalize(ICharSequence, ReorderingBuffer)
 
+        #region NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override void NormalizeAndAppend(
+            string src, bool doNormalize, ref ReorderingBuffer buffer)
+        {
+            if (src is null)
+                throw new ArgumentNullException(nameof(src));
+
+            Impl.ComposeAndAppend(src.AsSpan(), doNormalize, onlyContiguous, ref buffer);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override void NormalizeAndAppend(
+            ReadOnlySpan<char> src, bool doNormalize, ref ReorderingBuffer buffer)
+        {
+            if (src.Overlaps(buffer.RawChars))
+            {
+                throw new ArgumentException($"'{nameof(src)}' cannot be the same memory location as '{nameof(buffer)}'");
+            }
+
+            Impl.ComposeAndAppend(src, doNormalize, onlyContiguous, ref buffer);
+        }
+
+        #endregion NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
+
+        #region IsNormalized(ICharSequence)
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool IsNormalized(ReadOnlySpan<char> s)
+        {
+            // 5: small destCapacity for substring normalization
+            var buffer = new ReorderingBuffer(Impl, stackalloc char[5]);
+            try
+            {
+                return Impl.Compose(s, onlyContiguous, doCompose: false, ref buffer);
+            }
+            finally
+            {
+                buffer.Dispose();
+            }
+        }
+
+        #endregion IsNormalized(ICharSequence)
+
+        #region QuickCheck(ICharSequence)
+
+        public override QuickCheckResult QuickCheck(ReadOnlySpan<char> s)
+        {
+            int spanLengthAndMaybe = Impl.ComposeQuickCheck(s, onlyContiguous, doSpan: false);
+            if ((spanLengthAndMaybe & 1) != 0)
+            {
+                return QuickCheckResult.Maybe;
+            }
+            else if ((spanLengthAndMaybe.TripleShift(1)) == s.Length)
+            {
+                return QuickCheckResult.Yes;
+            }
+            else
+            {
+                return QuickCheckResult.No;
+            }
+        }
+
+        #endregion QuickCheck(ICharSequence)
+
+        #region SpanQuickCheckYes(ICharSequence)
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override int SpanQuickCheckYes(ReadOnlySpan<char> s)
+            => Impl.ComposeQuickCheck(s, onlyContiguous, doSpan: true).TripleShift(1); // ICU4N: Checked 3rd parameter
+
+        #endregion SpanQuickCheckYes(ICharSequence)
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override int GetQuickCheck(int c)
-        {
-            return Impl.GetCompQuickCheck(Impl.GetNorm16(c));
-        }
+            => Impl.GetCompQuickCheck(Impl.GetNorm16(c));
 
-        public override bool HasBoundaryBefore(int c) { return Impl.HasCompBoundaryBefore(c); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool HasBoundaryBefore(int c)
+            => Impl.HasCompBoundaryBefore(c);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool HasBoundaryAfter(int c)
-        {
-            return Impl.HasCompBoundaryAfter(c, onlyContiguous);
-        }
+            => Impl.HasCompBoundaryAfter(c, onlyContiguous);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool IsInert(int c)
-        {
-            return Impl.IsCompInert(c, onlyContiguous);
-        }
+                => Impl.IsCompInert(c, onlyContiguous);
 
         private readonly bool onlyContiguous;
     }
@@ -165,23 +705,73 @@ namespace ICU4N.Impl
         {
         }
 
-        // ICU4N specific: Moved Normalize(ICharSequence, ReorderingBuffer) to Norm2AllModesExtension.tt
-
-        // ICU4N specific: Moved NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer) to Norm2AllModesExtension.tt
-
-        // ICU4N specific: Moved SpanQuickCheckYes(ICharSequence) to Norm2AllModesExtension.tt
-
-
-        public override int GetQuickCheck(int c)
+        #region Normalize(ICharSequence, ReorderingBuffer)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override void Normalize(string src, ref ReorderingBuffer buffer)
         {
-            return Impl.IsDecompYes(Impl.GetNorm16(c)) ? 1 : 0;
+            if (src is null)
+                throw new ArgumentNullException(nameof(src));
+
+            Impl.MakeFCD(src.AsSpan(), ref buffer);
         }
 
-        public override bool HasBoundaryBefore(int c) { return Impl.HasFCDBoundaryBefore(c); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override void Normalize(ReadOnlySpan<char> src, ref ReorderingBuffer buffer)
+        {
+            if (src.Overlaps(buffer.RawChars))
+            {
+                throw new ArgumentException($"'{nameof(src)}' cannot be the same memory location as '{nameof(buffer)}'");
+            }
 
-        public override bool HasBoundaryAfter(int c) { return Impl.HasFCDBoundaryAfter(c); }
+            Impl.MakeFCD(src, ref buffer);
+        }
 
-        public override bool IsInert(int c) { return Impl.IsFCDInert(c); }
+        #endregion Normalize(ICharSequence, ReorderingBuffer)
+
+        #region NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override void NormalizeAndAppend(
+            string src, bool doNormalize, ref ReorderingBuffer buffer)
+        {
+            if (src is null)
+                throw new ArgumentNullException(nameof(src));
+
+            Impl.MakeFCDAndAppend(src.AsSpan(), doNormalize, ref buffer);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override void NormalizeAndAppend(
+            ReadOnlySpan<char> src, bool doNormalize, ref ReorderingBuffer buffer)
+        {
+            Impl.MakeFCDAndAppend(src, doNormalize, ref buffer);
+        }
+
+        #endregion NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
+
+        #region SpanQuickCheckYes(ICharSequence)
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override int SpanQuickCheckYes(ReadOnlySpan<char> s)
+            => Impl.MakeFCDQuickCheck(s);
+
+        #endregion SpanQuickCheckYes(ICharSequence)
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override int GetQuickCheck(int c)
+            => Impl.IsDecompYes(Impl.GetNorm16(c)) ? 1 : 0;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool HasBoundaryBefore(int c)
+            => Impl.HasFCDBoundaryBefore(c);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool HasBoundaryAfter(int c)
+            => Impl.HasFCDBoundaryAfter(c);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool IsInert(int c)
+            => Impl.IsFCDInert(c);
     }
 
     public sealed class Norm2AllModes
@@ -222,37 +812,35 @@ namespace ICU4N.Impl
             {
                 throw singleton.exception;
             }
-            return singleton.allModes;
+            return singleton.allModes!;
         }
-        public static Norm2AllModes GetNFCInstance()
-        {
-            return GetInstanceFromSingleton(NFCSingleton.Instance);
-        }
-        public static Norm2AllModes GetNFKCInstance()
-        {
-            return GetInstanceFromSingleton(NFKCSingleton.Instance);
-        }
-        public static Norm2AllModes GetNFKC_CFInstance()
-        {
-            return GetInstanceFromSingleton(NFKC_CFSingleton.Instance);
-        }
+        public static Norm2AllModes NFCInstance
+            => GetInstanceFromSingleton(NFCSingleton.Instance);
+
+        public static Norm2AllModes NFKCInstance
+            => GetInstanceFromSingleton(NFKCSingleton.Instance);
+        public static Norm2AllModes NFKC_CFInstance
+            => GetInstanceFromSingleton(NFKC_CFSingleton.Instance);
         // For use in properties APIs.
-        public static Normalizer2WithImpl GetN2WithImpl(int index)
+        public static Normalizer2WithImpl? GetN2WithImpl(int index)
         {
             switch (index)
             {
-                case 0: return GetNFCInstance().Decomp;  // NFD
-                case 1: return GetNFKCInstance().Decomp; // NFKD
-                case 2: return GetNFCInstance().Comp;    // NFC
-                case 3: return GetNFKCInstance().Comp;   // NFKC
+                case 0: return NFCInstance.Decomp;  // NFD
+                case 1: return NFKCInstance.Decomp; // NFKD
+                case 2: return NFCInstance.Comp;    // NFC
+                case 3: return NFKCInstance.Comp;   // NFKC
                 default: return null;
             }
         }
         public static Norm2AllModes GetInstance(ByteBuffer bytes, string name) // ICU4N TODO: API - Eliminate ByteBuffer
         {
+            if (name is null)
+                throw new ArgumentNullException(nameof(name));
+
             if (bytes == null)
             {
-                Norm2AllModesSingleton singleton;
+                Norm2AllModesSingleton? singleton;
                 if (name.Equals("nfc", StringComparison.OrdinalIgnoreCase))
                 {
                     singleton = NFCSingleton.Instance;
@@ -275,7 +863,7 @@ namespace ICU4N.Impl
                     {
                         throw singleton.exception;
                     }
-                    return singleton.allModes;
+                    return singleton.allModes!;
                 }
             }
             return cache.GetOrCreate(name, (key) =>
@@ -304,11 +892,8 @@ namespace ICU4N.Impl
         /// Gets the FCD normalizer, with the FCD data initialized.
         /// </summary>
         /// <returns>FCD normalizer.</returns>
-        public static Normalizer2 GetFCDNormalizer2()
-        {
-            return GetNFCInstance().Fcd;
-        }
-
+        public static Normalizer2 FCDNormalizer2
+            => NFCInstance.Fcd;
         internal sealed class Norm2AllModesSingleton
         {
             public Norm2AllModesSingleton(string name)
@@ -324,8 +909,8 @@ namespace ICU4N.Impl
                 }
             }
 
-            internal Norm2AllModes allModes;
-            internal Exception exception;
+            internal Norm2AllModes? allModes;
+            internal Exception? exception;
         }
         internal sealed class NFCSingleton
         {

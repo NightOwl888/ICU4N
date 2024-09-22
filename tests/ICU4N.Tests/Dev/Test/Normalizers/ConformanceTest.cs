@@ -235,7 +235,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 pass = false;
             }
             // test api that takes a char[]
-            if (!Normalizer.IsNormalized(field[1].ToCharArray(), 0, field[1].Length, NormalizerMode.NFC, normalizerVersion))
+            if (!Normalizer.IsNormalized(field[1].AsSpan(0, field[1].Length), NormalizerMode.NFC, normalizerVersion))
             {
                 Errln("Normalizer error: isNormalized(NFC(s), Normalizer.NFC) is false");
                 pass = false;
@@ -257,7 +257,8 @@ namespace ICU4N.Dev.Test.Normalizers
             {
                 char[] fcd2 = new char[fcd.Length * 2];
                 char[] src = field[0].ToCharArray();
-                int fcdLen = Normalizer.Normalize(src, 0, src.Length, fcd2, fcd.Length, fcd2.Length, NormalizerMode.FCD, 0);
+                //int fcdLen = Normalizer.Normalize(src, 0, src.Length, fcd2, fcd.Length, fcd2.Length, NormalizerMode.FCD, 0);
+                assertTrue("", Normalizer.TryNormalize(src.AsSpan(0, src.Length), fcd2.AsSpan(fcd.Length, fcd2.Length - fcd.Length), out int fcdLen, NormalizerMode.FCD, 0));
                 if (fcdLen != fcd.Length)
                 {
                     Errln("makeFCD did not return the correct length");
@@ -334,7 +335,7 @@ namespace ICU4N.Dev.Test.Normalizers
             "D", "KD", "C", "KC"
         };
         private static readonly String[] kMessages = {
-            "c3!=D(c%d)", "c5!=KC(c%d)", "c2!=C(c%d)", "c4!=KC(c%d)" // ICU4N TODO: Change string format
+            "c3!=D(c{0})", "c5!=KC(c{0})", "c2!=C(c{0})", "c4!=KC(c{0})"
         };
 
         bool checkNorm(NormalizerMode mode, int options,  // Normalizer2 norm2,

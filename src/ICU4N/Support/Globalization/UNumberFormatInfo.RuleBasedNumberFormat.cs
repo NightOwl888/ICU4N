@@ -31,7 +31,6 @@ namespace ICU4N.Globalization
             }
         }
 
-#if FEATURE_SPAN
         private NumberFormatRules? spellOut;
         private NumberFormatRules? ordinal;
         private NumberFormatRules? duration;
@@ -71,7 +70,6 @@ namespace ICU4N.Globalization
         /// <draft>ICU 60.1</draft>
         public NumberFormatRules NumberingSystem
             => LazyInitializer.EnsureInitialized(ref numberingSystem, () => NumberFormatRules.GetInstance(CultureData.name, NumberPresentation.NumberingSystem))!;
-#endif
 
     }
 }

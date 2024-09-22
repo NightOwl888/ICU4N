@@ -1,9 +1,8 @@
-﻿using ICU4N.Support.Text;
+﻿using ICU4N.Text;
 using System.Diagnostics;
 
 namespace ICU4N.Globalization
 {
-#if FEATURE_SPAN
     public sealed partial class NumberFormatRules
     {
         //-----------------------------------------------------------------------
@@ -34,7 +33,6 @@ namespace ICU4N.Globalization
             // be built, and pass it to the rule set (along with an insertion
             // position of 0 and the number being formatted) to the rule set
             // for formatting
-            //var result = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
             if (number == long.MinValue)
             {
                 // We can't handle this value right now. Provide an accurate default value.
@@ -46,7 +44,6 @@ namespace ICU4N.Globalization
                 ruleSet.Format(number, ref result, pos: 0, info, recursionCount: 0);
             }
             PostProcess(ref result, ruleSet, info);
-            //return result.ToString();
         }
 
         /// <summary>
@@ -94,5 +91,4 @@ namespace ICU4N.Globalization
             }
         }
     }
-#endif
 }

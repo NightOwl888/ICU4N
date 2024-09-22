@@ -6,8 +6,10 @@ using J2N.Collections;
 using J2N.Numerics;
 using J2N.Text;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace ICU4N.Impl.Coll
@@ -40,7 +42,7 @@ namespace ICU4N.Impl.Coll
 
         internal CollationDataBuilder()
         {
-            nfcImpl = Norm2AllModes.GetNFCInstance().Impl;
+            nfcImpl = Norm2AllModes.NFCInstance.Impl;
             base_ = null;
             //baseSettings = null; // ICU4N specific - not used
             trie = null;
@@ -103,7 +105,7 @@ namespace ICU4N.Impl.Coll
         }
 
         /// <summary>
-        /// <c>true</c> if this builder has mappings (e.g., <see cref="Add(ICharSequence, ICharSequence, long[], int)"/> has been called)
+        /// <c>true</c> if this builder has mappings (e.g., <see cref="Add(ReadOnlySpan{char}, ReadOnlySpan{char}, long[], int)"/> has been called)
         /// </summary>
         internal bool HasMappings => modified;
 
@@ -113,7 +115,7 @@ namespace ICU4N.Impl.Coll
             return Collation.IsAssignedCE32(trie.Get(c));
         }
 
-        internal void Add(ICharSequence prefix, ICharSequence s, long[] ces, int cesLength)
+        internal void Add(ReadOnlySpan<char> prefix, ReadOnlySpan<char> s, long[] ces, int cesLength)
         {
             int ce32 = EncodeCEs(ces, cesLength);
             AddCE32(prefix, s, ce32);
@@ -182,7 +184,7 @@ namespace ICU4N.Impl.Coll
             return EncodeExpansion(ces, 0, cesLength);
         }
 
-        internal void AddCE32(ICharSequence prefix, ICharSequence s, int ce32)
+        internal void AddCE32(ReadOnlySpan<char> prefix, ReadOnlySpan<char> s, int ce32)
         {
             if (s.Length == 0)
             {
@@ -241,9 +243,11 @@ namespace ICU4N.Impl.Coll
                     cond = GetConditionalCE32ForCE32(oldCE32);
                     cond.BuiltCE32 = Collation.NO_CE32;
                 }
-                ICharSequence suffix = s.Subsequence(cLength, s.Length - cLength); // ICU4N: Corrected 2nd parameter
-                string context = new StringBuilder().Append((char)prefix.Length).
-                        Append(prefix).Append(suffix).ToString();
+                // ICU4N: Eliminated StringBuilder instance.
+                ReadOnlySpan<char> suffix = s.Slice(cLength, s.Length - cLength); // ICU4N: Corrected 2nd parameter
+                Span<char> prefixLength = stackalloc char[1];
+                prefixLength[0] = (char)prefix.Length;
+                string context = StringHelper.Concat(prefixLength, prefix, suffix);
                 unsafeBackwardSet.AddAll(suffix);
                 for (; ; )
                 {
@@ -374,12 +378,12 @@ namespace ICU4N.Impl.Coll
         /// Does not write beyond <see cref="Collation.MAX_EXPANSION_LENGTH"/>.
         /// </summary>
         /// <returns>Incremented cesLength.</returns>
-        internal int GetCEs(ICharSequence s, long[] ces, int cesLength)
+        internal int GetCEs(ReadOnlyMemory<char> s, long[] ces, int cesLength)
         {
             return GetCEs(s, 0, ces, cesLength);
         }
 
-        internal int GetCEs(ICharSequence prefix, ICharSequence s, long[] ces, int cesLength)
+        internal int GetCEs(ReadOnlySpan<char> prefix, ReadOnlyMemory<char> s, long[] ces, int cesLength)
         {
             int prefixLength = prefix.Length;
             if (prefixLength == 0)
@@ -388,7 +392,18 @@ namespace ICU4N.Impl.Coll
             }
             else
             {
-                return GetCEs(new StringBuilder(prefix.Length).Append(prefix).Append(s).AsCharSequence(), prefixLength, ces, cesLength);
+                int bufferLength = prefix.Length + s.Length;
+                char[] buffer = ArrayPool<char>.Shared.Rent(bufferLength);
+                try
+                {
+                    prefix.CopyTo(buffer.AsSpan(0, prefix.Length));
+                    s.Span.CopyTo(buffer.AsSpan(prefix.Length));
+                    return GetCEs(buffer.AsMemory(0, bufferLength), prefixLength, ces, cesLength);
+                }
+                finally
+                {
+                    ArrayPool<char>.Shared.Return(buffer);
+                }
             }
         }
 
@@ -674,37 +689,47 @@ namespace ICU4N.Impl.Coll
                             return CopyFromBaseCE32(c, ce32, false);
                         }
                         ConditionalCE32 head = new ConditionalCE32("", 0);
-                        StringBuilder context = new StringBuilder("\0");
-                        int index;
-                        if (Collation.IsContractionCE32(ce32))
+                        ValueStringBuilder context = new ValueStringBuilder(stackalloc char[Collator.CharStackBufferSize]);
+                        try
                         {
-                            index = CopyContractionsFromBaseCE32(context, c, ce32, head);
-                        }
-                        else
-                        {
-                            ce32 = CopyFromBaseCE32(c, ce32, true);
-                            head.Next = index = AddConditionalCE32(context.ToString(), ce32);
-                        }
-                        ConditionalCE32 cond = GetConditionalCE32(index);  // the last ConditionalCE32 so far
-                        using (CharsTrieEnumerator prefixes = CharsTrie.GetEnumerator(base_.contexts, trieIndex + 2, 0))
-                        {
-                            while (prefixes.MoveNext())
+                            context.Append('\0');
+                            int index;
+                            if (Collation.IsContractionCE32(ce32))
                             {
-                                CharsTrieEntry entry = prefixes.Current;
-                                context.Length = 0;
-                                context.Append(entry.Chars).Reverse().Insert(0, (char)entry.Chars.Length);
-                                ce32 = entry.Value;
-                                if (Collation.IsContractionCE32(ce32))
-                                {
-                                    index = CopyContractionsFromBaseCE32(context, c, ce32, cond);
-                                }
-                                else
-                                {
-                                    ce32 = CopyFromBaseCE32(c, ce32, true);
-                                    cond.Next = index = AddConditionalCE32(context.ToString(), ce32);
-                                }
-                                cond = GetConditionalCE32(index);
+                                index = CopyContractionsFromBaseCE32(ref context, c, ce32, head);
                             }
+                            else
+                            {
+                                ce32 = CopyFromBaseCE32(c, ce32, true);
+                                head.Next = index = AddConditionalCE32(context.AsSpan().ToString(), ce32);
+                            }
+                            ConditionalCE32 cond = GetConditionalCE32(index);  // the last ConditionalCE32 so far
+                            using (CharsTrieEnumerator prefixes = CharsTrie.GetEnumerator(base_.contexts, trieIndex + 2, 0))
+                            {
+                                while (prefixes.MoveNext())
+                                {
+                                    CharsTrieEntry entry = prefixes.Current;
+                                    context.Length = 0;
+                                    context.Append(entry.Chars.Span);
+                                    context.Reverse();
+                                    context.Insert(0, (char)entry.Chars.Length);
+                                    ce32 = entry.Value;
+                                    if (Collation.IsContractionCE32(ce32))
+                                    {
+                                        index = CopyContractionsFromBaseCE32(ref context, c, ce32, cond);
+                                    }
+                                    else
+                                    {
+                                        ce32 = CopyFromBaseCE32(c, ce32, true);
+                                        cond.Next = index = AddConditionalCE32(context.AsSpan().ToString(), ce32);
+                                    }
+                                    cond = GetConditionalCE32(index);
+                                }
+                            }
+                        }
+                        finally
+                        {
+                            context.Dispose();
                         }
                         ce32 = MakeBuilderContextCE32(head.Next);
                         contextChars.Add(c);
@@ -719,8 +744,16 @@ namespace ICU4N.Impl.Coll
                             return CopyFromBaseCE32(c, ce32, false);
                         }
                         ConditionalCE32 head = new ConditionalCE32("", 0);
-                        StringBuilder context = new StringBuilder("\0");
-                        CopyContractionsFromBaseCE32(context, c, ce32, head);
+                        ValueStringBuilder context = new ValueStringBuilder(stackalloc char[Collator.CharStackBufferSize]);
+                        try
+                        {
+                            context.Append('\0');
+                            CopyContractionsFromBaseCE32(ref context, c, ce32, head);
+                        }
+                        finally
+                        {
+                            context.Dispose();
+                        }
                         ce32 = MakeBuilderContextCE32(head.Next);
                         contextChars.Add(c);
                         break;
@@ -745,7 +778,7 @@ namespace ICU4N.Impl.Coll
         /// Sets <c>cond.Next</c> to the index of the first new item
         /// and returns the index of the last new item.
         /// </summary>
-        private int CopyContractionsFromBaseCE32(StringBuilder context, int c, int ce32,
+        private int CopyContractionsFromBaseCE32(ref ValueStringBuilder context, int c, int ce32,
                 ConditionalCE32 cond)
         {
             int trieIndex = Collation.IndexFromCE32(ce32);
@@ -763,7 +796,7 @@ namespace ICU4N.Impl.Coll
                 ce32 = base_.GetCE32FromContexts(trieIndex);  // Default if no suffix match.
                 Debug.Assert(!Collation.IsContractionCE32(ce32));
                 ce32 = CopyFromBaseCE32(c, ce32, true);
-                cond.Next = index = AddConditionalCE32(context.ToString(), ce32);
+                cond.Next = index = AddConditionalCE32(context.AsSpan().ToString(), ce32);
                 cond = GetConditionalCE32(index);
             }
 
@@ -773,9 +806,9 @@ namespace ICU4N.Impl.Coll
                 while (suffixes.MoveNext())
                 {
                     CharsTrieEntry entry = suffixes.Current;
-                    context.Append(entry.Chars);
+                    context.Append(entry.Chars.Span);
                     ce32 = CopyFromBaseCE32(c, entry.Value, true);
-                    cond.Next = index = AddConditionalCE32(context.ToString(), ce32);
+                    cond.Next = index = AddConditionalCE32(context.AsSpan().ToString(), ce32);
                     // No need to update the unsafeBackwardSet because the tailoring set
                     // is already a copy of the base set.
                     cond = GetConditionalCE32(index);
@@ -917,7 +950,7 @@ namespace ICU4N.Impl.Coll
                             destIndex = dest.AddConditionalCE32(
                                     cond.Context, CopyCE32(cond.Ce32));
                             int suffixStart = cond.PrefixLength + 1;
-                            dest.unsafeBackwardSet.AddAll(cond.Context.Substring(suffixStart));
+                            dest.unsafeBackwardSet.AddAll(cond.Context.AsSpan(suffixStart));
                             prevDestCond.Next = destIndex;
                         }
                     }
@@ -1229,18 +1262,22 @@ namespace ICU4N.Impl.Coll
             Debug.Assert(head.Next >= 0);
             CharsTrieBuilder prefixBuilder = new CharsTrieBuilder();
             CharsTrieBuilder contractionBuilder = new CharsTrieBuilder();
+            Span<char> initialBuffer = stackalloc char[Collator.CharStackBufferSize];
             for (ConditionalCE32 cond = head; ; cond = GetConditionalCE32(cond.Next))
             {
                 // After the list head, the prefix or suffix can be empty, but not both.
                 Debug.Assert(cond == head || cond.HasContext);
                 int prefixLength = cond.PrefixLength;
-                StringBuilder prefix = new StringBuilder().Append(cond.Context, 0, (prefixLength + 1) - 0); // ICU4N: Checked 3rd parameter
-                string prefixString = prefix.ToString();
+                using ValueStringBuilder prefix = prefixLength < Collator.CharStackBufferSize
+                    ? new ValueStringBuilder(initialBuffer)
+                    : new ValueStringBuilder(prefixLength + 1);
+                prefix.Append(cond.Context, 0, prefixLength + 1); // ICU4N: Checked 3rd parameter
+                ReadOnlySpan<char> prefixSpan = prefix.AsSpan();
                 // Collect all contraction suffixes for one prefix.
                 ConditionalCE32 firstCond = cond;
                 ConditionalCE32 lastCond = cond;
                 while (cond.Next >= 0 &&
-                        (cond = GetConditionalCE32(cond.Next)).Context.StartsWith(prefixString, StringComparison.Ordinal))
+                        (cond = GetConditionalCE32(cond.Next)).Context.AsSpan().StartsWith(prefixSpan, StringComparison.Ordinal))
                 {
                     lastCond = cond;
                 }
@@ -1283,8 +1320,8 @@ namespace ICU4N.Impl.Coll
                             int length = cond.PrefixLength;
                             if (length == prefixLength) { break; }
                             if (cond.DefaultCE32 != Collation.NO_CE32 &&
-                                    (length == 0 || prefixString.RegionMatches(
-                                            prefix.Length - length, cond.Context, 1, length, StringComparison.Ordinal)
+                                    (length == 0 || prefixSpan.RegionMatches(
+                                            prefix.Length - length, cond.Context.AsSpan(), 1, length, StringComparison.Ordinal)
                                             /* C++: prefix.endsWith(cond.context, 1, length) */))
                             {
                                 emptySuffixCE32 = cond.DefaultCE32;
@@ -1338,7 +1375,7 @@ namespace ICU4N.Impl.Coll
                 {
                     prefix.Delete(0, 1 - 0);  // Remove the length unit. // ICU4N: Corrected 2nd parameter
                     prefix.Reverse();
-                    prefixBuilder.Add(prefix, ce32);
+                    prefixBuilder.Add(prefix.AsSpan(), ce32);
                     if (cond.Next < 0) { break; }
                 }
             }
@@ -1358,16 +1395,20 @@ namespace ICU4N.Impl.Coll
 
         private int AddContextTrie(int defaultCE32, CharsTrieBuilder trieBuilder)
         {
-            StringBuilder context = new StringBuilder();
-            context.Append((char)(defaultCE32 >> 16)).Append((char)defaultCE32);
-            context.Append(trieBuilder.BuildCharSequence(TrieBuilderOption.Small));
-            // ICU4N: IndexOf method on StringBuilder is extremely slow, so we call ToString() first,
-            // which generally gets better performance.
-            int index = contexts.ToString().IndexOf(context.ToString(), StringComparison.Ordinal);
+            ReadOnlyMemory<char> tbSequence = trieBuilder.BuildCharSequence(TrieBuilderOption.Small);
+            int length = 2 + tbSequence.Length;
+            using ValueStringBuilder context = length <= Collator.CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[length])
+                : new ValueStringBuilder(length);
+            context.Append((char)(defaultCE32 >> 16));
+            context.Append((char)defaultCE32);
+            context.Append(tbSequence.Span);
+            ReadOnlySpan<char> contextSpan = context.AsSpan();
+            int index = contexts.IndexOf(contextSpan, StringComparison.Ordinal);
             if (index < 0)
             {
                 index = contexts.Length;
-                contexts.Append(context);
+                contexts.Append(contextSpan);
             }
             return index;
         }
@@ -1399,7 +1440,7 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        private int GetCEs(ICharSequence s, int start, long[] ces, int cesLength)
+        private int GetCEs(ReadOnlyMemory<char> s, int start, long[] ces, int cesLength)
         {
             if (collIter == null)
             {
@@ -1457,7 +1498,7 @@ namespace ICU4N.Impl.Coll
                 builderData.jamoCE32s = jamoCE32s;
             }
 
-            internal int FetchCEs(ICharSequence str, int start, long[] ces, int cesLength)
+            internal int FetchCEs(ReadOnlyMemory<char> str, int start, long[] ces, int cesLength)
             {
                 // Set the pointers each time, in case they changed due to reallocation.
                 builderData.ce32s = builder.ce32s;
@@ -1466,12 +1507,14 @@ namespace ICU4N.Impl.Coll
                 // Modified copy of CollationIterator.nextCE() and CollationIterator.nextCEFromCE32().
                 Reset();
                 s = str;
+                str.TryGetReference(ref sReference);
                 pos = start;
+                ReadOnlySpan<char> sSpan = s.Span;
                 while (pos < s.Length)
                 {
                     // No need to keep all CEs in the iterator buffer.
                     ClearCEs();
-                    int c = Character.CodePointAt(s, pos);
+                    int c = Character.CodePointAt(sSpan, pos);
                     pos += Character.CharCount(c);
                     int ce32 = builder.trie.Get(c);
                     CollationData d;
@@ -1515,7 +1558,7 @@ namespace ICU4N.Impl.Coll
                 {
                     return Collation.SentinelCodePoint;
                 }
-                int c = Character.CodePointAt(s, pos);
+                int c = Character.CodePointAt(s.Span, pos);
                 pos += Character.CharCount(c);
                 return c;
             }
@@ -1526,19 +1569,19 @@ namespace ICU4N.Impl.Coll
                 {
                     return Collation.SentinelCodePoint;
                 }
-                int c = Character.CodePointBefore(s, pos);
+                int c = Character.CodePointBefore(s.Span, pos);
                 pos -= Character.CharCount(c);
                 return c;
             }
 
             protected override void ForwardNumCodePoints(int num)
             {
-                pos = Character.OffsetByCodePoints(s, pos, num);
+                pos = Character.OffsetByCodePoints(s.Span, pos, num);
             }
 
             protected override void BackwardNumCodePoints(int num)
             {
-                pos = Character.OffsetByCodePoints(s, pos, -num);
+                pos = Character.OffsetByCodePoints(s.Span, pos, -num);
             }
 
             protected override int GetDataCE32(int c)
@@ -1578,7 +1621,8 @@ namespace ICU4N.Impl.Coll
             private readonly CollationDataBuilder builder;
             private readonly CollationData builderData;
             private readonly int[] jamoCE32s = new int[CollationData.JAMO_CE32S_LENGTH];
-            private ICharSequence s;
+            private ReadOnlyMemory<char> s;
+            private object sReference; // ICU4N: Keeps the string or char[] behind s alive for the lifetime of this class
             private int pos;
         }
 
@@ -1602,7 +1646,7 @@ namespace ICU4N.Impl.Coll
                                                          // Characters that have context (prefixes or contraction suffixes).
         private UnicodeSet contextChars = new UnicodeSet();
         // Serialized UCharsTrie structures for finalized contexts.
-        private StringBuilder contexts = new StringBuilder();
+        private OpenStringBuilder contexts = new OpenStringBuilder();
         private UnicodeSet unsafeBackwardSet = new UnicodeSet();
         private bool modified;
 

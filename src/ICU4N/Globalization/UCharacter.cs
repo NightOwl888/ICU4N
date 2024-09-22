@@ -1,10 +1,13 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Impl;
+using ICU4N.Support;
+using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
 using J2N.Text;
 using System;
+using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -125,6 +128,8 @@ namespace ICU4N
     // ICU4N TODO: API Add all members of System.Char to this class
     public static partial class UChar // ICU4N specific - renamed from UCharacter to match .NET and made class static because there are no instance members
     {
+        private const int CharStackBufferSize = 32;
+
         // ICU4N specific - copy UNASSIGNED from UCharacterEnums.ECharacterCategory (since we cannot inherit via interface)
 
         /// <summary>
@@ -420,7 +425,7 @@ namespace ICU4N
         // ICU4N TODO: Tests
         public static UUnicodeCategory GetUnicodeCategory(string s, int index) // ICU4N specific overload to cover System.Char
         {
-            if (s == null)
+            if (s is null)
                 throw new ArgumentNullException(nameof(s));
             if (((uint)index) >= ((uint)s.Length))
             {
@@ -475,7 +480,7 @@ namespace ICU4N
         // ICU4N TODO: Tests
         public static bool IsDefined(string s, int index) // ICU4N specific overload to mimic System.Char
         {
-            if (s == null)
+            if (s is null)
                 throw new ArgumentNullException(nameof(s));
             if (((uint)index) >= ((uint)s.Length))
             {
@@ -523,7 +528,7 @@ namespace ICU4N
         // ICU4N TODO: Tests
         public static bool IsDigit(string s, int index) // ICU4N specific overload to cover System.Char
         {
-            if (s == null)
+            if (s is null)
                 throw new ArgumentNullException(nameof(s));
             if (((uint)index) >= ((uint)s.Length))
             {
@@ -575,7 +580,7 @@ namespace ICU4N
         // ICU4N TODO: Tests
         public static bool IsISOControl(string s, int index) // ICU4N specific overload to mimic System.Char
         {
-            if (s == null)
+            if (s is null)
                 throw new ArgumentNullException(nameof(s));
             if (((uint)index) >= ((uint)s.Length))
             {
@@ -626,7 +631,7 @@ namespace ICU4N
         // ICU4N TODO: Tests
         public static bool IsLetter(string s, int index) // ICU4N specific overload to cover System.Char
         {
-            if (s == null)
+            if (s is null)
                 throw new ArgumentNullException(nameof(s));
             if (((uint)index) >= ((uint)s.Length))
             {
@@ -674,7 +679,7 @@ namespace ICU4N
         // ICU4N TODO: Tests
         public static bool IsLetterOrDigit(string s, int index) // ICU4N specific overload to cover System.Char
         {
-            if (s == null)
+            if (s is null)
                 throw new ArgumentNullException(nameof(s));
             if (((uint)index) >= ((uint)s.Length))
             {
@@ -751,7 +756,7 @@ namespace ICU4N
         // ICU4N TODO: Tests
         public static bool IsLower(string s, int index) // ICU4N specific overload to cover System.Char
         {
-            if (s == null)
+            if (s is null)
                 throw new ArgumentNullException(nameof(s));
             if (((uint)index) >= ((uint)s.Length))
             {
@@ -937,7 +942,7 @@ namespace ICU4N
         // ICU4N TODO: Tests
         public static bool IsWhiteSpace(string s, int index) // ICU4N specific overload to cover System.Char
         {
-            if (s == null)
+            if (s is null)
                 throw new ArgumentNullException(nameof(s));
             if (((uint)index) >= ((uint)s.Length))
             {
@@ -986,7 +991,7 @@ namespace ICU4N
         // ICU4N TODO: Tests
         public static bool IsSpaceChar(string s, int index) // ICU4N specific overload to mimic System.Char
         {
-            if (s == null)
+            if (s is null)
                 throw new ArgumentNullException(nameof(s));
             if (((uint)index) >= ((uint)s.Length))
             {
@@ -1053,7 +1058,7 @@ namespace ICU4N
         // ICU4N TODO: Tests
         public static bool IsTitleCase(string s, int index) // ICU4N specific overload to mimic System.Char
         {
-            if (s == null)
+            if (s is null)
                 throw new ArgumentNullException(nameof(s));
             if (((uint)index) >= ((uint)s.Length))
             {
@@ -1176,7 +1181,7 @@ namespace ICU4N
         // ICU4N TODO: Tests
         public static bool IsUnicodeIdentifierPart(string s, int index) // ICU4N specific overload to mimic System.Char
         {
-            if (s == null)
+            if (s is null)
                 throw new ArgumentNullException(nameof(s));
             if (((uint)index) >= ((uint)s.Length))
             {
@@ -1274,7 +1279,7 @@ namespace ICU4N
         // ICU4N TODO: Tests
         public static bool IsUnicodeIdentifierStart(string s, int index) // ICU4N specific overload to mimic System.Char
         {
-            if (s == null)
+            if (s is null)
                 throw new ArgumentNullException(nameof(s));
             if (((uint)index) >= ((uint)s.Length))
             {
@@ -1356,7 +1361,7 @@ namespace ICU4N
         // ICU4N TODO: Tests
         public static bool IsIdentifierIgnorable(string s, int index) // ICU4N specific overload to mimic System.Char
         {
-            if (s == null)
+            if (s is null)
                 throw new ArgumentNullException(nameof(s));
             if (((uint)index) >= ((uint)s.Length))
             {
@@ -1441,7 +1446,7 @@ namespace ICU4N
         // ICU4N TODO: Tests
         public static bool IsUpper(string s, int index) // ICU4N specific overload to cover System.Char
         {
-            if (s == null)
+            if (s is null)
                 throw new ArgumentNullException(nameof(s));
             if (((uint)index) >= ((uint)s.Length))
             {
@@ -1487,7 +1492,7 @@ namespace ICU4N
         /// </summary>
         /// <param name="utf32">Code point.</param>
         /// <returns>String representation of the code point, null if code point is not
-        /// defined in unicode.
+        /// defined in Unicode.
         /// </returns>
         /// <stable>ICU 2.1</stable>
         public static string ConvertFromUtf32(int utf32) // ICU4N: Renamed from ToString to cover System.Char API
@@ -1497,12 +1502,43 @@ namespace ICU4N
                 return null;
             }
 
-            if (utf32 < SupplementaryMinValue)
+            return ConvertFromUtf32(utf32, stackalloc char[2]).ToString();
+        }
+
+        /// <summary>
+        /// Converts argument code point and returns a string object representing
+        /// the code point's value in UTF-16 format.
+        /// The result is a string whose length is 1 for BMP code points, 2 for supplementary ones.
+        /// <para/>
+        /// Up-to-date Unicode implementation of <see cref="char.ConvertFromUtf32(int)"/>, however
+        /// this implementation differs in that it returns null rather than throwing exceptions if
+        /// the input is not a valid code point.
+        /// </summary>
+        /// <param name="utf32">Code point.</param>
+        /// <param name="buffer">The memory location to store the chars. Typically, it should be <c>stackalloc char[2]</c>
+        /// since it will never be longer than 2 chars.</param>
+        /// <returns>Span representation of the code point. default if code point is not
+        /// defined in Unicode.
+        /// </returns>
+        /// <draft>ICU 60.1</draft>
+        public static ReadOnlySpan<char> ConvertFromUtf32(int utf32, Span<char> buffer) // ICU4N: Renamed from ToString to cover System.Char API
+        {
+            if (utf32 < MinValue || utf32 > MaxValue)
             {
-                return new string(new char[] { (char)utf32 });
+                return default;
             }
 
-            return new string(Character.ToChars(utf32));
+            if (utf32 < SupplementaryMinValue)
+            {
+                buffer[0] = (char)utf32;
+                return buffer.Slice(0, 1);
+            }
+
+            int cpPrime = utf32 - 65536;
+            buffer[0] = (char)(0xD800 | ((cpPrime >> 10) & 0x3FF));
+            buffer[1] = (char)(0xDC00 | (cpPrime & 0x3FF));
+
+            return buffer.Slice(0, 2);
         }
 
         /// <summary>
@@ -1604,7 +1640,7 @@ namespace ICU4N
         // ICU4N TODO: Tests
         public static bool IsSupplementary(string s, int index) // ICU4N specific overload to mimic System.Char
         {
-            if (s == null)
+            if (s is null)
                 throw new ArgumentNullException(nameof(s));
             if (((uint)index) >= ((uint)s.Length))
             {
@@ -1649,7 +1685,7 @@ namespace ICU4N
         // ICU4N TODO: Tests
         public static bool IsBMP(string s, int index) // ICU4N specific overload to mimic System.Char
         {
-            if (s == null)
+            if (s is null)
                 throw new ArgumentNullException(nameof(s));
             if (((uint)index) >= ((uint)s.Length))
             {
@@ -1703,7 +1739,7 @@ namespace ICU4N
         // ICU4N TODO: Tests
         public static bool IsPrintable(string s, int index) // ICU4N specific overload to mimic System.Char
         {
-            if (s == null)
+            if (s is null)
                 throw new ArgumentNullException(nameof(s));
             if (((uint)index) >= ((uint)s.Length))
             {
@@ -1766,7 +1802,7 @@ namespace ICU4N
         // ICU4N TODO: Tests
         public static bool IsBaseForm(string s, int index) // ICU4N specific overload to mimic System.Char
         {
-            if (s == null)
+            if (s is null)
                 throw new ArgumentNullException(nameof(s));
             if (((uint)index) >= ((uint)s.Length))
             {
@@ -1858,7 +1894,7 @@ namespace ICU4N
         /// <stable>ICU 2.1</stable>
         public static int GetCombiningClass(int ch)
         {
-            return Normalizer2.GetNFDInstance().GetCombiningClass(ch);
+            return Normalizer2.NFDInstance.GetCombiningClass(ch);
         }
 
         /// <icu/>
@@ -1959,12 +1995,15 @@ namespace ICU4N
         /// <stable>ICU 3.8</stable>
         public static string GetName(string s, string separator)
         {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
             if (s.Length == 1)
             { // handle common case
                 return GetName(s[0]);
             }
             int cp;
-            StringBuilder sb = new StringBuilder();
+            using ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
             for (int i = 0; i < s.Length; i += Character.CharCount(cp))
             {
                 cp = s.CodePointAt(i);
@@ -2083,6 +2122,8 @@ namespace ICU4N
             return -1;
         }
 
+#nullable enable
+
         /// <icu/>
         /// <summary>
         /// Find a Unicode character by either its name and return its code
@@ -2106,7 +2147,36 @@ namespace ICU4N
         /// <returns>Code point associated with the name or -1 if the name is not
         /// found.</returns>
         /// <stable>ICU 2.6</stable>
-        public static int GetCharFromExtendedName(string name)
+        public static int GetCharFromExtendedName(string? name)
+        {
+            return UCharacterName.Instance.GetCharFromName(
+                    UCharacterNameChoice.ExtendedCharName, name);
+        }
+
+        /// <icu/>
+        /// <summary>
+        /// Find a Unicode character by either its name and return its code
+        /// point value. 
+        /// </summary>
+        /// <remarks>
+        /// All Unicode names are in uppercase.
+        /// Extended names are all lowercase except for numbers and are contained
+        /// within angle brackets.
+        /// The names are searched in the following order
+        /// <list type="bullet">
+        ///     <item><description>Most current Unicode name if there is any</description></item>
+        ///     <item><description>Unicode 1.0 name if there is any</description></item>
+        ///     <item><description>Extended name in the form of
+        ///         "&lt;codepoint_type-codepoint_hex_digits&gt;". E.g. &lt;noncharacter-FFFE&gt;</description></item>
+        /// </list>
+        /// Note calling any methods related to code point names, e.g. Get*Name*()
+        /// incurs a one-time initialization cost to construct the name tables.
+        /// </remarks>
+        /// <param name="name">Codepoint name.</param>
+        /// <returns>Code point associated with the name or -1 if the name is not
+        /// found.</returns>
+        /// <stable>ICU 2.6</stable>
+        public static int GetCharFromExtendedName(ReadOnlySpan<char> name)
         {
             return UCharacterName.Instance.GetCharFromName(
                     UCharacterNameChoice.ExtendedCharName, name);
@@ -2122,7 +2192,22 @@ namespace ICU4N
         /// <param name="name">Unicode name alias whose code point is to be returned.</param>
         /// <returns>Code point or -1 if name is not found.</returns>
         /// <stable>ICU 4.4</stable>
-        public static int GetCharFromNameAlias(string name)
+        public static int GetCharFromNameAlias(string? name)
+        {
+            return UCharacterName.Instance.GetCharFromName(UCharacterNameChoice.CharNameAlias, name);
+        }
+
+        /// <icu/>
+        /// <summary>
+        /// Find a Unicode character by its corrected name alias and return
+        /// its code point value. All Unicode names are in uppercase.
+        /// Note calling any methods related to code point names, e.g. Get*Name*()
+        /// incurs a one-time initialization cost to construct the name tables.
+        /// </summary>
+        /// <param name="name">Unicode name alias whose code point is to be returned.</param>
+        /// <returns>Code point or -1 if name is not found.</returns>
+        /// <stable>ICU 4.4</stable>
+        public static int GetCharFromNameAlias(ReadOnlySpan<char> name)
         {
             return UCharacterName.Instance.GetCharFromName(UCharacterNameChoice.CharNameAlias, name);
         }
@@ -2200,15 +2285,150 @@ namespace ICU4N
         /// </returns>
         /// <seealso cref="UProperty"/>
         /// <seealso cref="NameChoice"/>
-        /// <stable>ICU4N 60.1.0</stable>
+        /// <stable>ICU4N 60.1</stable>
         // ICU4N specific
         public static bool TryGetPropertyName(UProperty property,
-                NameChoice nameChoice, out string result) // ICU4N TODO: Tests
+                NameChoice nameChoice, out ReadOnlySpan<char> result)
         {
             return UPropertyAliases.Instance.TryGetPropertyName(property, nameChoice, out result);
         }
 
-        // ICU4N specific - GetPropertyEnum(ICharSequence propertyAlias) moved to UCharacterExtension.tt
+        // ICU4N TODO: API - Make public? This could be used to check whether a name is defined/valid without throwing an exception.
+        internal static bool TryGetPropertyName(UProperty property,
+                NameChoice nameChoice, out UPropertyAliases.NameFetchError error, out ReadOnlySpan<char> result)
+        {
+            return UPropertyAliases.Instance.TryGetPropertyName(property, nameChoice, out error, out result);
+        }
+
+        /// <summary>
+        /// Return the <see cref="UProperty"/> selector for a given property name, as
+        /// specified in the Unicode database file PropertyAliases.txt.
+        /// Short, long, and any other variants are recognized.
+        /// </summary>
+        /// <remarks>
+        /// In addition, this function maps the synthetic names "gcm" /
+        /// "General_Category_Mask" to the property
+        /// <see cref="UProperty.General_Category_Mask"/>.  These names are not in
+        /// PropertyAliases.txt.
+        /// </remarks>
+        /// <param name="propertyAlias">The property name to be matched.  The name
+        /// is compared using "loose matching" as described in PropertyAliases.txt.</param>
+        /// <returns>a <see cref="UProperty"/> enum.</returns>
+        /// <exception cref="ArgumentException">thrown if <paramref name="propertyAlias"/> is not recognized.</exception>
+        /// <seealso cref="UProperty"/>
+        /// <seealso cref="TryGetPropertyEnum(string, out int)"/>
+        /// <stable>ICU 2.4</stable>
+        public static int GetPropertyEnum(string propertyAlias)
+        {
+            int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
+#pragma warning disable 612, 618
+            if (propEnum == (int)UPropertyConstants.Undefined)
+#pragma warning restore 612, 618
+            {
+                throw new IcuArgumentException("Invalid name: " + propertyAlias);
+            }
+            return propEnum;
+        }
+
+        /// <summary>
+        /// Return the <see cref="UProperty"/> selector for a given property name, as
+        /// specified in the Unicode database file PropertyAliases.txt.
+        /// Short, long, and any other variants are recognized.
+        /// </summary>
+        /// <remarks>
+        /// In addition, this function maps the synthetic names "gcm" /
+        /// "General_Category_Mask" to the property
+        /// <see cref="UProperty.General_Category_Mask"/>.  These names are not in
+        /// PropertyAliases.txt.
+        /// </remarks>
+        /// <param name="propertyAlias">The property name to be matched.  The name
+        /// is compared using "loose matching" as described in PropertyAliases.txt.</param>
+        /// <returns>a <see cref="UProperty"/> enum.</returns>
+        /// <exception cref="ArgumentException">thrown if <paramref name="propertyAlias"/> is not recognized.</exception>
+        /// <seealso cref="UProperty"/>
+        /// <seealso cref="TryGetPropertyEnum(ReadOnlySpan{char}, out int)"/>
+        /// <stable>ICU 2.4</stable>
+        public static int GetPropertyEnum(ReadOnlySpan<char> propertyAlias)
+        {
+            int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
+#pragma warning disable 612, 618
+            if (propEnum == (int)UPropertyConstants.Undefined)
+#pragma warning restore 612, 618
+            {
+                throw new IcuArgumentException("Invalid name: " + propertyAlias.ToString());
+            }
+            return propEnum;
+        }
+
+        /// <summary>
+        /// Get the <see cref="UProperty"/> selector for a given property name, as
+        /// specified in the Unicode database file PropertyAliases.txt.
+        /// Short, long, and any other variants are recognized.
+        /// </summary>
+        /// <remarks>
+        /// In addition, this function maps the synthetic names "gcm" /
+        /// "General_Category_Mask" to the property
+        /// <see cref="UProperty.General_Category_Mask"/>.  These names are not in
+        /// PropertyAliases.txt.
+        /// </remarks>
+        /// <param name="propertyAlias">The property name to be matched.  The name
+        /// is compared using "loose matching" as described in PropertyAliases.txt.</param>
+        /// <param name="result">A <see cref="UProperty"/> enum.</param>
+        /// <returns>
+        /// true if <paramref name="propertyAlias"/> is valid, othewise false.
+        /// </returns>
+        /// <seealso cref="UProperty"/>
+        /// <seealso cref="GetPropertyEnum(string)"/>
+        /// <stable>ICU 60.1</stable>
+        public static bool TryGetPropertyEnum(string propertyAlias, out int result) // ICU4N TODO: Tests
+        {
+            result = 0;
+            int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
+#pragma warning disable 612, 618
+            if (propEnum == (int)UPropertyConstants.Undefined)
+#pragma warning restore 612, 618
+            {
+                return false;
+            }
+            result = propEnum;
+            return true;
+        }
+
+        /// <summary>
+        /// Get the <see cref="UProperty"/> selector for a given property name, as
+        /// specified in the Unicode database file PropertyAliases.txt.
+        /// Short, long, and any other variants are recognized.
+        /// </summary>
+        /// <remarks>
+        /// In addition, this function maps the synthetic names "gcm" /
+        /// "General_Category_Mask" to the property
+        /// <see cref="UProperty.General_Category_Mask"/>.  These names are not in
+        /// PropertyAliases.txt.
+        /// </remarks>
+        /// <param name="propertyAlias">The property name to be matched.  The name
+        /// is compared using "loose matching" as described in PropertyAliases.txt.</param>
+        /// <param name="result">A <see cref="UProperty"/> enum.</param>
+        /// <returns>
+        /// true if <paramref name="propertyAlias"/> is valid, othewise false.
+        /// </returns>
+        /// <seealso cref="UProperty"/>
+        /// <seealso cref="GetPropertyEnum(ReadOnlySpan{char})"/>
+        /// <stable>ICU 60.1</stable>
+        public static bool TryGetPropertyEnum(ReadOnlySpan<char> propertyAlias, out int result) // ICU4N TODO: Tests
+        {
+            result = 0;
+            int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
+#pragma warning disable 612, 618
+            if (propEnum == (int)UPropertyConstants.Undefined)
+#pragma warning restore 612, 618
+            {
+                return false;
+            }
+            result = propEnum;
+            return true;
+        }
+
+#nullable restore
 
         /// <summary>
         /// Return the Unicode name for a given property value, as given in
@@ -2268,7 +2488,7 @@ namespace ICU4N
         /// </returns>
         /// <exception cref="ArgumentException">Thrown if <paramref name="property"/>, 
         /// <paramref name="value"/>, or <paramref name="nameChoice"/> are invalid.</exception>
-        /// <seealso cref="TryGetPropertyValueName(UProperty, int, NameChoice, out string)"/>
+        /// <seealso cref="TryGetPropertyValueName(UProperty, int, NameChoice, out ReadOnlySpan{Char})"/>
         /// <seealso cref="UProperty"/>
         /// <seealso cref="NameChoice"/>
         /// <stable>ICU 2.4</stable>
@@ -2291,8 +2511,11 @@ namespace ICU4N
                 // because PropertyValueAliases.txt does not contain all of them
 
                 // ICU4N specific - using TryGet version instead of falling back on exception
-                UPropertyAliases.Instance.TryGetPropertyValueName(property, value, nameChoice, out string result);
-                return result;
+                if (UPropertyAliases.Instance.TryGetPropertyValueName(property, value, nameChoice, out ReadOnlySpan<char> result))
+                {
+                    return result.ToString();
+                }
+                return null;
             }
             return UPropertyAliases.Instance.GetPropertyValueName(property, value, nameChoice);
         }
@@ -2362,13 +2585,17 @@ namespace ICU4N
         /// If null is returned for a given <paramref name="nameChoice"/>, then 
         /// other <paramref name="nameChoice"/> values may return non-null results.
         /// </returns>
-        /// <seealso cref="TryGetPropertyValueName(UProperty, int, NameChoice, out string)"/>
+        /// <seealso cref="TryGetPropertyValueName(UProperty, int, NameChoice, out ReadOnlySpan{Char})"/>
         /// <seealso cref="UProperty"/>
         /// <seealso cref="NameChoice"/>
         /// <stable>ICU 2.4</stable>
-        public static bool TryGetPropertyValueName(UProperty property,
-               int value,
-               NameChoice nameChoice, out string result) // ICU4N TODO: Tests
+        public static bool TryGetPropertyValueName(UProperty property, int value,
+            NameChoice nameChoice, out ReadOnlySpan<char> result)
+            => TryGetPropertyValueName(property, value, nameChoice, out _, out result);
+
+        // ICU4N TODO: API - Make public? This could be used to check whether a name is defined/valid without throwing an exception.
+        internal static bool TryGetPropertyValueName(UProperty property, int value,
+            NameChoice nameChoice, out UPropertyAliases.NameFetchError error, out ReadOnlySpan<char> result)
         {
             if ((property == UProperty.Canonical_Combining_Class
                     || property == UProperty.Lead_Canonical_Combining_Class
@@ -2383,28 +2610,211 @@ namespace ICU4N
             {
                 // this is hard coded for the valid cc
                 // because PropertyValueAliases.txt does not contain all of them
-                if (!UPropertyAliases.Instance.TryGetPropertyValueName(property, value, nameChoice, out result))
-                {
-                    result = null;
-                }
-                return true;
-            }
-            return UPropertyAliases.Instance.TryGetPropertyValueName(property, value, nameChoice, out result);
-        }
 
-        // ICU4N specific - GetPropertyValueEnum(UProperty property, ICharSequence valueAlias) moved to UCharacterExtension.tt
+                // ICU4N specific - using TryGet version instead of falling back on exception
+                if (UPropertyAliases.Instance.TryGetPropertyValueName(property, value, nameChoice, out UPropertyAliases.NameFetchError err, out result))
+                {
+                    error = err;
+                    return true;
+                }
+                else if (err == UPropertyAliases.NameFetchError.Invalid)
+                {
+                    // ICU4N: Rewrite Invalid as Undefined
+                    // (as was the case when ICU4J swallowed the exception and returned null)
+                    error = UPropertyAliases.NameFetchError.Undefined;
+                    return false;
+                }
+                error = err;
+                return false;
+            }
+            return UPropertyAliases.Instance.TryGetPropertyValueName(property, value, nameChoice, out error, out result);
+        }
 
         /// <summary>
-        /// Same as <see cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>, except doesn't throw exception. Instead, returns <see cref="UPropertyConstants.Undefined"/>.
+        /// Return the property value integer for a given value name, as
+        /// specified in the Unicode database file PropertyValueAliases.txt.
+        /// Short, long, and any other variants are recognized.
         /// </summary>
-        /// <param name="property">Same as <see cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>.</param>
-        /// <param name="valueAlias">Same as <see cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>.</param>
-        /// <returns>Returns <see cref="UPropertyConstants.Undefined"/> if the value is not valid, otherwise the value.</returns>
-        [Obsolete("ICU4N 60.1.0 Use TryGetPropertyValueEnum(UProperty property, ICharSequence valueAlias) instead.")]
-        internal static int GetPropertyValueEnumNoThrow(UProperty property, ICharSequence valueAlias) // ICU4N specific - marked internal, since the functionality is obsolete
+        /// <remarks>
+        /// Some of the names in PropertyValueAliases.txt will only be
+        /// recognized with <see cref="UProperty.General_Category_Mask"/>, not
+        /// <see cref="UProperty.General_Category"/>.  These include: "C" / "Other", "L" /
+        /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
+        /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
+        /// </remarks>
+        /// <param name="property">UProperty selector constant.
+        /// <see cref="UPropertyConstants.Int_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Int_Limit"/> or
+        /// <see cref="UPropertyConstants.Binary_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Binary_Limit"/> or
+        /// <see cref="UPropertyConstants.Mask_Start"/> &lt; = property &lt; <see cref="UPropertyConstants.Mask_Limit"/>.
+        /// Only these properties can be enumerated.
+        /// </param>
+        /// <param name="valueAlias">the value name to be matched.  The name is
+        /// compared using "loose matching" as described in
+        /// PropertyValueAliases.txt.
+        /// </param>
+        /// <returns>
+        /// A value integer.  Note: <see cref="UProperty.General_Category"/>
+        /// values are mask values produced by left-shifting 1 by
+        /// <see cref="UChar.GetUnicodeCategory(int)"/>.  This allows grouped categories such as
+        /// [:L:] to be represented.
+        /// </returns>
+        /// <exception cref="ArgumentException">if <paramref name="property"/> is not a valid <see cref="UProperty"/>
+        /// selector or <paramref name="valueAlias"/> is not a value of this <paramref name="property"/>
+        /// </exception>
+        /// <seealso cref="UProperty"/>
+        /// <seealso cref="TryGetPropertyValueEnum(UProperty, string, out int)"/>
+        /// <stable>ICU 2.4</stable>
+        public static int GetPropertyValueEnum(UProperty property, string valueAlias)
         {
-            return UPropertyAliases.Instance.GetPropertyValueEnumNoThrow((int)property, valueAlias);
+            int propEnum = UPropertyAliases.Instance.GetPropertyValueEnum(property, valueAlias);
+#pragma warning disable 612, 618
+            if (propEnum == (int)UPropertyConstants.Undefined)
+#pragma warning restore 612, 618
+            {
+                throw new IcuArgumentException("Invalid name: " + valueAlias);
+            }
+            return propEnum;
         }
+
+        /// <summary>
+        /// Return the property value integer for a given value name, as
+        /// specified in the Unicode database file PropertyValueAliases.txt.
+        /// Short, long, and any other variants are recognized.
+        /// </summary>
+        /// <remarks>
+        /// Some of the names in PropertyValueAliases.txt will only be
+        /// recognized with <see cref="UProperty.General_Category_Mask"/>, not
+        /// <see cref="UProperty.General_Category"/>.  These include: "C" / "Other", "L" /
+        /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
+        /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
+        /// </remarks>
+        /// <param name="property">UProperty selector constant.
+        /// <see cref="UPropertyConstants.Int_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Int_Limit"/> or
+        /// <see cref="UPropertyConstants.Binary_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Binary_Limit"/> or
+        /// <see cref="UPropertyConstants.Mask_Start"/> &lt; = property &lt; <see cref="UPropertyConstants.Mask_Limit"/>.
+        /// Only these properties can be enumerated.
+        /// </param>
+        /// <param name="valueAlias">the value name to be matched.  The name is
+        /// compared using "loose matching" as described in
+        /// PropertyValueAliases.txt.
+        /// </param>
+        /// <returns>
+        /// A value integer.  Note: <see cref="UProperty.General_Category"/>
+        /// values are mask values produced by left-shifting 1 by
+        /// <see cref="UChar.GetUnicodeCategory(int)"/>.  This allows grouped categories such as
+        /// [:L:] to be represented.
+        /// </returns>
+        /// <exception cref="ArgumentException">if <paramref name="property"/> is not a valid <see cref="UProperty"/>
+        /// selector or <paramref name="valueAlias"/> is not a value of this <paramref name="property"/>
+        /// </exception>
+        /// <seealso cref="UProperty"/>
+        /// <seealso cref="TryGetPropertyValueEnum(UProperty, ReadOnlySpan{char}, out int)"/>
+        /// <stable>ICU 2.4</stable>
+        public static int GetPropertyValueEnum(UProperty property, ReadOnlySpan<char> valueAlias)
+        {
+            int propEnum = UPropertyAliases.Instance.GetPropertyValueEnum(property, valueAlias);
+#pragma warning disable 612, 618
+            if (propEnum == (int)UPropertyConstants.Undefined)
+#pragma warning restore 612, 618
+            {
+                throw new IcuArgumentException("Invalid name: " + valueAlias.ToString());
+            }
+            return propEnum;
+        }
+
+        /// <summary>
+        /// Gets the property value integer for a given value name, as
+        /// specified in the Unicode database file PropertyValueAliases.txt.
+        /// Short, long, and any other variants are recognized.
+        /// </summary>
+        /// <remarks>
+        /// Some of the names in PropertyValueAliases.txt will only be
+        /// recognized with <see cref="UProperty.General_Category_Mask"/>, not
+        /// <see cref="UProperty.General_Category"/>.  These include: "C" / "Other", "L" /
+        /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
+        /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
+        /// </remarks>
+        /// <param name="property">UProperty selector constant.
+        /// <see cref="UPropertyConstants.Int_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Int_Limit"/> or
+        /// <see cref="UPropertyConstants.Binary_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Binary_Limit"/> or
+        /// <see cref="UPropertyConstants.Mask_Start"/> &lt; = property &lt; <see cref="UPropertyConstants.Mask_Limit"/>.
+        /// Only these properties can be enumerated.
+        /// </param>
+        /// <param name="valueAlias">the value name to be matched.  The name is
+        /// compared using "loose matching" as described in
+        /// PropertyValueAliases.txt.
+        /// </param>
+        /// <param name="result">
+        /// A value integer.  Note: <see cref="UProperty.General_Category"/>
+        /// values are mask values produced by left-shifting 1 by
+        /// <see cref="UChar.GetUnicodeCategory(int)"/>.  This allows grouped categories such as
+        /// [:L:] to be represented.
+        /// </param>
+        /// <returns>
+        /// true if <paramref name="property"/> is a valid <see cref="UProperty"/>
+        /// selector and <paramref name="valueAlias"/> is a value of this <paramref name="property"/>; othewise false;
+        /// </returns>
+        /// <see cref="UProperty"/>
+        /// <stable>ICU 60.1</stable>
+        /// <seealso cref="GetPropertyValueEnum(UProperty, string)"/>
+        // ICU4N specific
+        public static bool TryGetPropertyValueEnum(UProperty property, string valueAlias, out int result) // ICU4N TODO: Tests
+        {
+            return UPropertyAliases.Instance.TryGetPropertyValueEnum(property, valueAlias, out result);
+        }
+
+        /// <summary>
+        /// Gets the property value integer for a given value name, as
+        /// specified in the Unicode database file PropertyValueAliases.txt.
+        /// Short, long, and any other variants are recognized.
+        /// </summary>
+        /// <remarks>
+        /// Some of the names in PropertyValueAliases.txt will only be
+        /// recognized with <see cref="UProperty.General_Category_Mask"/>, not
+        /// <see cref="UProperty.General_Category"/>.  These include: "C" / "Other", "L" /
+        /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
+        /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
+        /// </remarks>
+        /// <param name="property">UProperty selector constant.
+        /// <see cref="UPropertyConstants.Int_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Int_Limit"/> or
+        /// <see cref="UPropertyConstants.Binary_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Binary_Limit"/> or
+        /// <see cref="UPropertyConstants.Mask_Start"/> &lt; = property &lt; <see cref="UPropertyConstants.Mask_Limit"/>.
+        /// Only these properties can be enumerated.
+        /// </param>
+        /// <param name="valueAlias">the value name to be matched.  The name is
+        /// compared using "loose matching" as described in
+        /// PropertyValueAliases.txt.
+        /// </param>
+        /// <param name="result">
+        /// A value integer.  Note: <see cref="UProperty.General_Category"/>
+        /// values are mask values produced by left-shifting 1 by
+        /// <see cref="UChar.GetUnicodeCategory(int)"/>.  This allows grouped categories such as
+        /// [:L:] to be represented.
+        /// </param>
+        /// <returns>
+        /// true if <paramref name="property"/> is a valid <see cref="UProperty"/>
+        /// selector and <paramref name="valueAlias"/> is a value of this <paramref name="property"/>; othewise false;
+        /// </returns>
+        /// <see cref="UProperty"/>
+        /// <stable>ICU 60.1</stable>
+        /// <seealso cref="GetPropertyValueEnum(UProperty, ReadOnlySpan{char})"/>
+        // ICU4N specific
+        public static bool TryGetPropertyValueEnum(UProperty property, ReadOnlySpan<char> valueAlias, out int result) // ICU4N TODO: Tests
+        {
+            return UPropertyAliases.Instance.TryGetPropertyValueEnum(property, valueAlias, out result);
+        }
+
+        ///// <summary>
+        ///// Same as <see cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>, except doesn't throw exception. Instead, returns <see cref="UPropertyConstants.Undefined"/>.
+        ///// </summary>
+        ///// <param name="property">Same as <see cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>.</param>
+        ///// <param name="valueAlias">Same as <see cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>.</param>
+        ///// <returns>Returns <see cref="UPropertyConstants.Undefined"/> if the value is not valid, otherwise the value.</returns>
+        //[Obsolete("ICU4N 60.1.0 Use TryGetPropertyValueEnum(UProperty property, ICharSequence valueAlias) instead.")]
+        //internal static int GetPropertyValueEnumNoThrow(UProperty property, ICharSequence valueAlias) // ICU4N specific - marked internal, since the functionality is obsolete
+        //{
+        //    return UPropertyAliases.Instance.GetPropertyValueEnumNoThrow((int)property, valueAlias);
+        //}
 
         /// <icu/>
         /// <summary>
@@ -2459,8 +2869,10 @@ namespace ICU4N
             {
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
-            return ConvertToUtf32(s[index]);
+            return ConvertToUtf32(s[index]); // ICU4N TODO: This doesn't account for surrogate pairs
         }
+
+#nullable enable
 
         /// <summary>
         /// Returns the uppercase version of the argument string.
@@ -2471,7 +2883,10 @@ namespace ICU4N
         /// <stable>ICU 2.1</stable>
         public static string ToUpper(string str)
         {
-            return CaseMapImpl.ToUpper(GetDefaultCaseLocale(), 0, str);
+            if (str is null)
+                throw new ArgumentNullException(nameof(str));
+
+            return CaseMapImpl.ToUpper(GetDefaultCaseLocale(), 0, str.AsSpan());
         }
 
         /// <summary>
@@ -2483,7 +2898,10 @@ namespace ICU4N
         /// <stable>ICU 2.1</stable>
         public static string ToLower(string str)
         {
-            return CaseMapImpl.ToLower(GetDefaultCaseLocale(), 0, str);
+            if (str is null)
+                throw new ArgumentNullException(nameof(str));
+
+            return CaseMapImpl.ToLower(GetDefaultCaseLocale(), 0, str.AsSpan());
         }
 
         /// <summary>
@@ -2507,7 +2925,7 @@ namespace ICU4N
         /// the character should be title cased.</param>
         /// <returns>Lowercase version of the argument string.</returns>
         /// <stable>ICU 2.6</stable>
-        public static string ToTitleCase(string str, BreakIterator breakiter) // ICU4N TODO: API - create overload with no BreakIterator (that passes null)
+        public static string ToTitleCase(string str, BreakIterator? breakiter) // ICU4N TODO: API - create overload with no BreakIterator (that passes null)
         {
             return ToTitleCase(CultureInfo.CurrentCulture, str, breakiter, 0);
         }
@@ -2517,7 +2935,7 @@ namespace ICU4N
             return UCaseProperties.GetCaseLocale(CultureInfo.CurrentCulture);
         }
 
-        private static CaseLocale GetCaseLocale(CultureInfo locale)
+        private static CaseLocale GetCaseLocale(CultureInfo? locale)
         {
             if (locale == null)
             {
@@ -2526,7 +2944,7 @@ namespace ICU4N
             return UCaseProperties.GetCaseLocale(locale);
         }
 
-        private static CaseLocale GetCaseLocale(UCultureInfo locale)
+        private static CaseLocale GetCaseLocale(UCultureInfo? locale)
         {
             if (locale == null)
             {
@@ -2543,9 +2961,12 @@ namespace ICU4N
         /// <param name="str">Source string to be performed on.</param>
         /// <returns>Uppercase version of the argument <paramref name="str"/>.</returns>
         /// <stable>ICU 2.1</stable>
-        public static string ToUpper(CultureInfo locale, string str)
+        public static string ToUpper(CultureInfo? locale, string str)
         {
-            return CaseMapImpl.ToUpper(GetCaseLocale(locale), 0, str);
+            if (str is null)
+                throw new ArgumentNullException(nameof(str));
+
+            return CaseMapImpl.ToUpper(GetCaseLocale(locale), 0, str.AsSpan());
         }
 
         /// <summary>
@@ -2556,9 +2977,12 @@ namespace ICU4N
         /// <param name="str">Source string to be performed on.</param>
         /// <returns>Uppercase version of the argument <paramref name="str"/>.</returns>
         /// <stable>ICU 3.2</stable>
-        public static string ToUpper(UCultureInfo locale, string str)
+        public static string ToUpper(UCultureInfo? locale, string str)
         {
-            return CaseMapImpl.ToUpper(GetCaseLocale(locale), 0, str);
+            if (str is null)
+                throw new ArgumentNullException(nameof(str));
+
+            return CaseMapImpl.ToUpper(GetCaseLocale(locale), 0, str.AsSpan());
         }
 
         /// <summary>
@@ -2569,9 +2993,12 @@ namespace ICU4N
         /// <param name="str">Source string to be performed on.</param>
         /// <returns>Lowercase version of the argument <paramref name="str"/>.</returns>
         /// <stable>ICU 2.1</stable>
-        public static string ToLower(CultureInfo locale, string str)
+        public static string ToLower(CultureInfo? locale, string str)
         {
-            return CaseMapImpl.ToLower(GetCaseLocale(locale), 0, str);
+            if (str is null)
+                throw new ArgumentNullException(nameof(str));
+
+            return CaseMapImpl.ToLower(GetCaseLocale(locale), 0, str.AsSpan());
         }
 
         /// <summary>
@@ -2582,9 +3009,12 @@ namespace ICU4N
         /// <param name="str">Source string to be performed on.</param>
         /// <returns>Lowercase version of the argument <paramref name="str"/>.</returns>
         /// <stable>ICU 3.2</stable>
-        public static string ToLower(UCultureInfo locale, string str)
+        public static string ToLower(UCultureInfo? locale, string str)
         {
-            return CaseMapImpl.ToLower(GetCaseLocale(locale), 0, str);
+            if (str is null)
+                throw new ArgumentNullException(nameof(str));
+
+            return CaseMapImpl.ToLower(GetCaseLocale(locale), 0, str.AsSpan());
         }
 
         /// <summary>
@@ -2609,7 +3039,7 @@ namespace ICU4N
         /// the character should be title cased.</param>
         /// <returns>Lowercase version of the argument <paramref name="str"/>.</returns>
         /// <stable>ICU 2.6</stable>
-        public static string ToTitleCase(CultureInfo locale, string str,
+        public static string ToTitleCase(CultureInfo? locale, string str,
             BreakIterator breakiter)
         {
             return ToTitleCase(locale, str, breakiter, 0);
@@ -2637,8 +3067,8 @@ namespace ICU4N
         /// the character should be title cased.</param>
         /// <returns>Lowercase version of the argument <paramref name="str"/>.</returns>
         /// <stable>ICU 3.2</stable>
-        public static string ToTitleCase(UCultureInfo locale, string str,
-            BreakIterator titleIter)
+        public static string ToTitleCase(UCultureInfo? locale, string str,
+            BreakIterator? titleIter)
         {
             return ToTitleCase(locale, str, titleIter, 0);
         }
@@ -2668,16 +3098,16 @@ namespace ICU4N
         /// <stable>ICU 3.8</stable>
         /// <seealso cref="TitleCaseNoLowerCase"/>
         /// <seealso cref="TitleCaseNoBreakAdjustment"/>
-        public static string ToTitleCase(UCultureInfo locale, string str,
-            BreakIterator titleIter, int options) // ICU4N TODO: API - make options into [Flags] enum
+        public static string ToTitleCase(UCultureInfo? locale, string str,
+            BreakIterator? titleIter, int options) // ICU4N TODO: API - make options into [Flags] enum
         {
             if (titleIter == null && locale == null)
             {
                 locale = UCultureInfo.CurrentCulture;
             }
-            titleIter = CaseMapImpl.GetTitleBreakIterator(locale, options, titleIter);
+            titleIter = CaseMapImpl.GetTitleBreakIterator(locale!, options, titleIter);
             titleIter.SetText(str);
-            return CaseMapImpl.ToTitle(GetCaseLocale(locale), options, titleIter, str);
+            return CaseMapImpl.ToTitle(GetCaseLocale(locale), options, titleIter, str.AsSpan());
         }
 
         /// <summary>
@@ -2736,10 +3166,20 @@ namespace ICU4N
         /// <returns>The modified string, or the original if no modifications were necessary.</returns>
         /// <internal/>
         [Obsolete("ICU internal only")]
-        public static string ToTitleFirst(UCultureInfo locale, string str)
+        internal static string ToTitleFirst(UCultureInfo locale, string str)
         {
             // TODO: Remove this function. Inline it where it is called in CLDR.
-            return TO_TITLE_WHOLE_STRING_NO_LOWERCASE.Apply(locale.ToCultureInfo(), null, str);
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                TO_TITLE_WHOLE_STRING_NO_LOWERCASE.Apply(
+                    locale.ToCultureInfo(), null, str.AsMemory(), ref sb, null);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
         }
 
         private static readonly TitleCaseMap TO_TITLE_WHOLE_STRING_NO_LOWERCASE =
@@ -2771,18 +3211,20 @@ namespace ICU4N
         /// <seealso cref="TitleCaseNoLowerCase"/>
         /// <seealso cref="TitleCaseNoBreakAdjustment"/>
         /// <stable>ICU 54</stable>
-        public static string ToTitleCase(CultureInfo locale, string str,
-            BreakIterator titleIter,
+        public static string ToTitleCase(CultureInfo? locale, string str,
+            BreakIterator? titleIter,
             int options) // ICU4N TODO: API - make options into [Flags] enum
         {
             if (titleIter == null && locale == null)
             {
                 locale = CultureInfo.CurrentCulture;
             }
-            titleIter = CaseMapImpl.GetTitleBreakIterator(locale, options, titleIter);
+            titleIter = CaseMapImpl.GetTitleBreakIterator(locale!, options, titleIter);
             titleIter.SetText(str);
-            return CaseMapImpl.ToTitle(GetCaseLocale(locale), options, titleIter, str);
+            return CaseMapImpl.ToTitle(GetCaseLocale(locale), options, titleIter, str.AsSpan());
         }
+
+#nullable restore
 
         /// <icu/>
         /// <summary>
@@ -2913,7 +3355,10 @@ namespace ICU4N
         /// <stable>ICU 2.6</stable>
         public static string FoldCase(string str, FoldCase foldCase)
         {
-            return CaseMapImpl.Fold((int)foldCase, str);
+            if (str is null)
+                throw new ArgumentNullException(nameof(str));
+
+            return CaseMapImpl.Fold((int)foldCase, str.AsSpan());
         }
 
         /// <icu/>
@@ -3828,10 +4273,61 @@ namespace ICU4N
             return Character.ToCodePoint(high, low);
         }
 
+        /// <summary>
+        /// Same as <see cref="Character.CodePointAt(string, int)"/>.
+        /// Returns the code point at index.
+        /// This examines only the characters at index and index+1.
+        /// </summary>
+        /// <param name="seq">The characters to check.</param>
+        /// <param name="index">The index of the first or only char forming the code point.</param>
+        /// <returns>The code point at the index.</returns>
+        /// <stable>ICU 3.0</stable>
+        public static int CodePointAt(string seq, int index)
+        {
+            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            if (seq is null)
+                throw new ArgumentNullException(nameof(seq));
 
-        // ICU4N specific - CodePointAt(ICharSequence seq, int index) moved to UCharacterExtension.tt
+            char c1 = seq[index++];
+            if (IsHighSurrogate(c1))
+            {
+                if (index < seq.Length)
+                {
+                    char c2 = seq[index];
+                    if (IsLowSurrogate(c2))
+                    {
+                        return ToCodePoint(c1, c2);
+                    }
+                }
+            }
+            return c1;
+        }
 
-        // ICU4N specific - CodePointAt(char[] seq, int index) moved to UCharacterExtension.tt
+        /// <summary>
+        /// Same as <see cref="Character.CodePointAt(ReadOnlySpan{char}, int)"/>.
+        /// Returns the code point at index.
+        /// This examines only the characters at index and index+1.
+        /// </summary>
+        /// <param name="seq">The characters to check.</param>
+        /// <param name="index">The index of the first or only char forming the code point.</param>
+        /// <returns>The code point at the index.</returns>
+        /// <stable>ICU 3.0</stable>
+        public static int CodePointAt(ReadOnlySpan<char> seq, int index)
+        {
+            char c1 = seq[index++];
+            if (IsHighSurrogate(c1))
+            {
+                if (index < seq.Length)
+                {
+                    char c2 = seq[index];
+                    if (IsLowSurrogate(c2))
+                    {
+                        return ToCodePoint(c1, c2);
+                    }
+                }
+            }
+            return c1;
+        }
 
         /// <summary>
         /// Returns the code point at index.
@@ -3842,12 +4338,13 @@ namespace ICU4N
         /// <param name="limit">The limit of the valid text.</param>
         /// <returns>The code point at the index.</returns>
         /// <stable>ICU 3.0</stable>
-        public static int CodePointAt(char[] text, int index, int limit)
+        public static int CodePointAt(ReadOnlySpan<char> text, int index, int limit)
         {
-            if (index >= limit || limit > text.Length)
-            {
-                throw new IndexOutOfRangeException();
-            }
+            if (index < 0 || index >= limit)
+                throw new ArgumentOutOfRangeException(nameof(index));
+            if (limit < 0 || limit > text.Length)
+                throw new ArgumentOutOfRangeException(nameof(limit));
+
             char c1 = text[index++];
             if (IsHighSurrogate(c1))
             {
@@ -3863,9 +4360,61 @@ namespace ICU4N
             return c1;
         }
 
-        // ICU4N specific - CodePointBefore(ICharSequence seq, int index) moved to UCharacterExtension.tt
+        /// <summary>
+        /// Same as <see cref="Character.CodePointBefore(string, int)"/>.
+        /// Return the code point before index.
+        /// This examines only the characters at index-1 and index-2.
+        /// </summary>
+        /// <param name="seq">The characters to check.</param>
+        /// <param name="index">The index after the last or only char forming the code point.</param>
+        /// <returns>The code point before the index.</returns>
+        /// <stable>ICU 3.0</stable>
+        public static int CodePointBefore(string seq, int index)
+        {
+            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            if (seq is null)
+                throw new ArgumentNullException(nameof(seq));
 
-        // ICU4N specific - CodePointBefore(char[] seq, int index) moved to UCharacterExtension.tt
+            char c2 = seq[--index];
+            if (IsLowSurrogate(c2))
+            {
+                if (index > 0)
+                {
+                    char c1 = seq[--index];
+                    if (IsHighSurrogate(c1))
+                    {
+                        return ToCodePoint(c1, c2);
+                    }
+                }
+            }
+            return c2;
+        }
+
+        /// <summary>
+        /// Same as <see cref="Character.CodePointBefore(ReadOnlySpan{char}, int)"/>.
+        /// Return the code point before index.
+        /// This examines only the characters at index-1 and index-2.
+        /// </summary>
+        /// <param name="seq">The characters to check.</param>
+        /// <param name="index">The index after the last or only char forming the code point.</param>
+        /// <returns>The code point before the index.</returns>
+        /// <stable>ICU 3.0</stable>
+        public static int CodePointBefore(ReadOnlySpan<char> seq, int index)
+        {
+            char c2 = seq[--index];
+            if (IsLowSurrogate(c2))
+            {
+                if (index > 0)
+                {
+                    char c1 = seq[--index];
+                    if (IsHighSurrogate(c1))
+                    {
+                        return ToCodePoint(c1, c2);
+                    }
+                }
+            }
+            return c2;
+        }
 
         /// <summary>
         /// Return the code point before index.
@@ -3873,19 +4422,21 @@ namespace ICU4N
         /// </summary>
         /// <param name="text">The characters to check.</param>
         /// <param name="index">The index after the last or only char forming the code point.</param>
-        /// <param name="limit">The start of the valid text.</param>
+        /// <param name="start">The start of the valid text.</param>
         /// <returns>The code point before the index.</returns>
         /// <stable>ICU 3.0</stable>
-        public static int CodePointBefore(char[] text, int index, int limit)
+        public static int CodePointBefore(ReadOnlySpan<char> text, int index, int start)
         {
-            if (index <= limit || limit < 0)
-            {
-                throw new IndexOutOfRangeException();
-            }
+            int len = text.Length;
+            if (start < 0 || start >= len)
+                throw new ArgumentOutOfRangeException(nameof(start));
+            if (index <= start || index > len)
+                throw new ArgumentOutOfRangeException(nameof(index));
+
             char c2 = text[--index];
             if (IsLowSurrogate(c2))
             {
-                if (index > limit)
+                if (index > start)
                 {
                     char c1 = text[--index];
                     if (IsHighSurrogate(c1))
@@ -3902,14 +4453,14 @@ namespace ICU4N
         /// code point into the destination at the given index.
         /// </summary>
         /// <param name="cp">The code point to convert.</param>
-        /// <param name="dst">The destination array into which to put the char(s) representing the code point.</param>
-        /// <param name="dstIndex">The index at which to put the first (or only) char.</param>
+        /// <param name="destination">The destination array into which to put the char(s) representing the code point.</param>
+        /// <param name="destinationIndex">The index at which to put the first (or only) char.</param>
         /// <returns>The count of the number of chars written (1 or 2).</returns>
         /// <exception cref="ArgumentException">If <paramref name="cp"/> is not a valid code point.</exception>
         /// <stable>ICU 3.0</stable>
-        public static int ToChars(int cp, char[] dst, int dstIndex)
+        public static int ToChars(int cp, Span<char> destination, int destinationIndex)
         {
-            return Character.ToChars(cp, dst, dstIndex);
+            return Character.ToChars(cp, destination, destinationIndex);
         }
 
         /// <summary>
@@ -3924,6 +4475,8 @@ namespace ICU4N
             return Character.ToChars(cp);
         }
 
+        // ICU4N TODO: Add other ToChars() overloads including the ability to pass in a Span<char> buffer
+
         /// <summary>
         /// Returns a value representing the directionality of the character.
         /// </summary>
@@ -3937,11 +4490,127 @@ namespace ICU4N
             return (byte)GetDirection(cp);
         }
 
-        // ICU4N specific - CodePointCount(ICharSequence text, int start, int limit) moved to UCharacterExtension.tt
+        /// <summary>
+        /// Equivalent to the <see cref="Character.CodePointCount(string, int, int)"/>
+        /// method, for convenience.  Counts the number of code points in the range
+        /// of text.
+        /// </summary>
+        /// <param name="text">the characters to check</param>
+        /// <param name="start">the start of the range</param>
+        /// <param name="length">The number of characters to consider in the count from <paramref name="text"/>.</param>
+        /// <returns>the number of code points in the range</returns>
+        /// <stable>ICU 3.0</stable>
+        public static int CodePointCount(string text, int start, int length)
+        {
+            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            if (text is null)
+                throw new ArgumentNullException(nameof(text));
 
-        // ICU4N specific - CodePointCount(char[] text, int start, int limit) moved to UCharacterExtension.tt
+            return CodePointCount(text.AsSpan(start, length));
+        }
 
-        // ICU4N specific - OffsetByCodePoints(ICharSequence text, int index, int codePointOffset) moved to UCharacterExtension.tt
+        /// <summary>
+        /// Equivalent to the <see cref="Character.CodePointCount(ReadOnlySpan{Char})"/>
+        /// method, for convenience.  Counts the number of code points in the range
+        /// of text.
+        /// </summary>
+        /// <param name="text">the characters to check</param>
+        /// <returns>the number of code points in the range</returns>
+        /// <stable>ICU 3.0</stable>
+        public static int CodePointCount(ReadOnlySpan<char> text)
+        {
+            int start = 0, limit = text.Length;
+            int len = text.Length;
+            while (limit > start)
+            {
+                char ch = text[--limit];
+                while (ch >= MinLowSurrogate && ch <= MaxLowSurrogate && limit > start)
+                {
+                    ch = text[--limit];
+                    if (ch >= MinHighSurrogate && ch <= MaxHighSurrogate)
+                    {
+                        --len;
+                        break;
+                    }
+                }
+            }
+            return len;
+        }
+
+        /// <summary>
+        /// Equivalent to the <see cref="Character.OffsetByCodePoints(string, int, int)"/>
+        /// method, for convenience.  Adjusts the char index by a code point offset.
+        /// </summary>
+        /// <param name="text">The characters to check.</param>
+        /// <param name="index">The index to adjust.</param>
+        /// <param name="codePointOffset">The number of code points by which to offset the index.</param>
+        /// <returns>The adjusted index.</returns>
+        /// <stable>ICU 3.0</stable>
+        public static int OffsetByCodePoints(string text, int index, int codePointOffset)
+        {
+            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            if (text is null)
+                throw new ArgumentNullException(nameof(text));
+
+            return OffsetByCodePoints(text.AsSpan(), index, codePointOffset);
+        }
+
+        /// <summary>
+        /// Equivalent to the <see cref="Character.OffsetByCodePoints(ReadOnlySpan{char}, int, int)"/>
+        /// method, for convenience.  Adjusts the char index by a code point offset.
+        /// </summary>
+        /// <param name="text">The characters to check.</param>
+        /// <param name="index">The index to adjust.</param>
+        /// <param name="codePointOffset">The number of code points by which to offset the index.</param>
+        /// <returns>The adjusted index.</returns>
+        /// <stable>ICU 3.0</stable>
+        public static int OffsetByCodePoints(ReadOnlySpan<char> text, int index, int codePointOffset)
+        {
+            int length = text.Length;
+            if (index < 0 || index > length)
+                throw new ArgumentOutOfRangeException(nameof(index), SR.ArgumentOutOfRange_Index);
+
+            // ICU4N: Use implementation from J2N, which has been benchmarked and is known to be reliable
+
+            int x = index;
+            if (codePointOffset >= 0)
+            {
+                int i;
+                for (i = 0; x < length && i < codePointOffset; i++)
+                {
+                    if (char.IsHighSurrogate(text[x++]))
+                    {
+                        if (x < length && char.IsLowSurrogate(text[x]))
+                        {
+                            x++;
+                        }
+                    }
+                }
+                if (i < codePointOffset)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(codePointOffset));
+                }
+            }
+            else
+            {
+                int i;
+                for (i = codePointOffset; x > 0 && i < 0; i++)
+                {
+                    if (char.IsLowSurrogate(text[--x]))
+                    {
+                        if (x > 0 && char.IsHighSurrogate(text[x - 1]))
+                        {
+                            x--;
+                        }
+                    }
+                }
+                if (i < 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(codePointOffset));
+                }
+            }
+            return x;
+        }
 
         /// <summary>
         /// Adjusts the char index by a code point offset.
@@ -3957,68 +4626,51 @@ namespace ICU4N
             int codePointOffset)
         {
             // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
-            if (text == null)
+            if (text is null)
                 throw new ArgumentNullException(nameof(text));
 
-            int limit = start + count;
-            if (start < 0 || limit < start || limit > text.Length || index < start || index > limit)
-            {
-                throw new IndexOutOfRangeException("index ( " + index +
-                        ") out of range " + start +
-                        ", " + limit +
-                        " in array 0, " + text.Length);
-            }
+            // ICU4N: Use implementation from J2N, which has been benchmarked and is known to be reliable
 
-            if (codePointOffset < 0)
+            if (start < 0)
+                throw new ArgumentOutOfRangeException(nameof(start), SR.ArgumentOutOfRange_NeedNonNegNum);
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count), SR.ArgumentOutOfRange_NeedNonNegNum);
+            if (count > text.Length - start || index < start || index > start + count)
+                throw new ArgumentOutOfRangeException(SR.ArgumentOutOfRange_IndexLength);
+
+            int x = index;
+            if (codePointOffset >= 0)
             {
-                while (++codePointOffset <= 0)
+                int limit = start + count;
+                int i;
+                for (i = 0; x < limit && i < codePointOffset; i++)
                 {
-                    char ch = text[--index];
-                    if (index < start)
+                    if (char.IsHighSurrogate(text[x++]) && x < limit && char.IsLowSurrogate(text[x]))
                     {
-                        throw new IndexOutOfRangeException("index ( " + index +
-                                ") < start (" + start +
-                                ")");
+                        x++;
                     }
-                    while (ch >= MinLowSurrogate && ch <= MaxLowSurrogate && index > start)
-                    {
-                        ch = text[--index];
-                        if (ch < MinHighSurrogate || ch > MaxHighSurrogate)
-                        {
-                            if (++codePointOffset > 0)
-                            {
-                                return index + 1;
-                            }
-                        }
-                    }
+                }
+                if (i < codePointOffset)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(codePointOffset));
                 }
             }
             else
             {
-                while (--codePointOffset >= 0)
+                int i;
+                for (i = codePointOffset; x > start && i < 0; i++)
                 {
-                    char ch = text[index++];
-                    if (index > limit)
+                    if (char.IsLowSurrogate(text[--x]) && x > start && char.IsHighSurrogate(text[x - 1]))
                     {
-                        throw new IndexOutOfRangeException("index ( " + index +
-                                ") > limit (" + limit +
-                                ")");
-                    }
-                    while (ch >= MinHighSurrogate && ch <= MaxHighSurrogate && index < limit)
-                    {
-                        ch = text[index++];
-                        if (ch < MinLowSurrogate || ch > MaxLowSurrogate)
-                        {
-                            if (--codePointOffset < 0)
-                            {
-                                return index - 1;
-                            }
-                        }
+                        x--;
                     }
                 }
+                if (i < 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(codePointOffset));
+                }
             }
-
-            return index;
+            return x;
         }
 
         // private variables -------------------------------------------------
@@ -4153,6 +4805,15 @@ namespace ICU4N
         // private constructor -----------------------------------------------
 
         // ICU4N spcicific - Made class static, so we cannot have constructors
+
+        // resources
+
+        private static class SR
+        {
+            public const string ArgumentOutOfRange_NeedNonNegNum = "Non-negative number required.";
+            public const string ArgumentOutOfRange_Index = "Index was out of range. Must be non-negative and less than the size of the string/array/collection.";
+            public const string ArgumentOutOfRange_IndexLength = "Index and length must refer to a location within the string.";
+        }
     }
 }
 
@@ -4170,6 +4831,8 @@ namespace ICU4N.Text.Unicode
     /// <stable>ICU 2.4</stable>
     public sealed class UnicodeBlock
     {
+        private const int CharStackBufferSize = 32;
+
         // block id corresponding to icu4c -----------------------------------
 
         /// <stable>ICU 2.4</stable>
@@ -5841,17 +6504,36 @@ namespace ICU4N.Text.Unicode
                     UCharacterProperty.Instance.GetIntPropertyValue(ch, UProperty.Block));
         }
 
+#nullable enable
+
         /// <summary>
         /// Returns the Unicode block with the given name. This matches
         /// against the official UCD name (ignoring case).
         /// </summary>
         /// <param name="blockName">The name of the block to match.</param>
         /// <returns>The <see cref="UnicodeBlock"/> with that name.</returns>
-        /// <exception cref="ArgumentException">If the blockName could not be matched.</exception>
+        /// <exception cref="ArgumentException">If the <paramref name="blockName"/> could not be matched.</exception>
+        /// <exception cref="ArgumentNullException">If <paramref name="blockName"/> is <c>null</c>.</exception>
         /// <stable>ICU 3.0</stable>
-        public static UnicodeBlock ForName(string blockName) // ICU4N TODO: API - rename GetInstance() ? ForName is a Java-ism.
+        public static UnicodeBlock GetInstance(string blockName)
         {
-            IDictionary<string, UnicodeBlock> m = null;
+            if (blockName is null)
+                throw new ArgumentNullException(nameof(blockName));
+
+            return GetInstance(blockName.AsSpan());
+        }
+
+        /// <summary>
+        /// Returns the Unicode block with the given name. This matches
+        /// against the official UCD name (ignoring case).
+        /// </summary>
+        /// <param name="blockName">The name of the block to match.</param>
+        /// <returns>The <see cref="UnicodeBlock"/> with that name.</returns>
+        /// <exception cref="ArgumentException">If the <paramref name="blockName"/> could not be matched.</exception>
+        /// <stable>ICU 3.0</stable>
+        public static UnicodeBlock GetInstance(ReadOnlySpan<char> blockName)
+        {
+            IDictionary<string, UnicodeBlock>? m = null;
             if (mref != null)
             {
 #if FEATURE_TYPEDWEAKREFERENCE
@@ -5861,15 +6543,18 @@ namespace ICU4N.Text.Unicode
                 m = (IDictionary<string, UnicodeBlock>) mref.Target;
 #endif
             }
-            if (m == null)
+            if (m is null)
             {
                 m = new Dictionary<string, UnicodeBlock>(BLOCKS_.Length);
                 for (int i = 0; i < BLOCKS_.Length; ++i)
                 {
                     UnicodeBlock b2 = BLOCKS_[i];
-                    string name = TrimBlockName(
-                            UChar.GetPropertyValueName(UProperty.Block, b2.ID,
-                                    NameChoice.Long));
+                    if (!UChar.TryGetPropertyValueName(UProperty.Block, b2.ID,
+                                    NameChoice.Long, out ReadOnlySpan<char> valueName))
+                    {
+                        throw new IcuArgumentException("Invalid property (value) name choice");
+                    }
+                    string name = TrimBlockName(valueName);
                     m[name] = b2;
                 }
 #if FEATURE_TYPEDWEAKREFERENCE
@@ -5878,12 +6563,12 @@ namespace ICU4N.Text.Unicode
                 mref = new WeakReference(m);
 #endif
             }
-            UnicodeBlock b = m[TrimBlockName(blockName)];
-            if (b == null)
+            if (!m.TryGetValue(TrimBlockName(blockName), out UnicodeBlock? b) || b is null)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("blockName could not be matched.");
             }
             return b;
+            
         }
 #if FEATURE_TYPEDWEAKREFERENCE
         private static WeakReference<IDictionary<string, UnicodeBlock>> mref;
@@ -5891,19 +6576,39 @@ namespace ICU4N.Text.Unicode
         private static WeakReference mref;
 #endif
 
-        private static string TrimBlockName(string name)
+        private static string TrimBlockName(ReadOnlySpan<char> name)
         {
-            string upper = name.ToUpperInvariant();
-            StringBuilder result = new StringBuilder(upper.Length);
-            for (int i = 0; i < upper.Length; i++)
+            char[]? arrayToReturnToPool = null;
+            try
             {
-                char c = upper[i];
-                if (c != ' ' && c != '_' && c != '-')
+                int bufferLength = name.Length + 8;
+                Span<char> upper = bufferLength <= CharStackBufferSize
+                    ? stackalloc char[CharStackBufferSize]
+                    : (arrayToReturnToPool = ArrayPool<char>.Shared.Rent(bufferLength));
+
+                int upperNameLength = name.ToUpperInvariant(upper);
+                while (upperNameLength < 0) // rare
                 {
-                    result.Append(c);
+                    ArrayPool<char>.Shared.ReturnIfNotNull(arrayToReturnToPool);
+                    bufferLength *= 2;
+                    upper = arrayToReturnToPool = ArrayPool<char>.Shared.Rent(bufferLength);
+                    upperNameLength = name.ToUpperInvariant(upper);
                 }
+                int current = 0;
+                for (int i = 0; i < upperNameLength; i++)
+                {
+                    char c = upper[i];
+                    if (c != ' ' && c != '_' && c != '-')
+                    {
+                        upper[current++] = c;
+                    }
+                }
+                return upper.Slice(0, current).ToString();
             }
-            return result.ToString();
+            finally
+            {
+                ArrayPool<char>.Shared.ReturnIfNotNull(arrayToReturnToPool);
+            }
         }
 
         /// <icu/>

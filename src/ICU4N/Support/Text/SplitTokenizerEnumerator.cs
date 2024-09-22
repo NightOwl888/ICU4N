@@ -1,5 +1,5 @@
 ﻿using System;
-#if FEATURE_SPAN
+
 namespace ICU4N.Text
 {
     /// <summary>
@@ -745,7 +745,7 @@ namespace ICU4N.Text
     /// <see cref="MultiDelimiterSplitTokenizerEnumerator"/>.
     /// </summary>
     [Flags]
-    internal enum TrimBehavior
+    public enum TrimBehavior
     {
         /// <summary>
         /// Trim the beginning of the token.
@@ -969,4 +969,3 @@ namespace ICU4N.Text
         public SplitEntry Current { get; private set; }
     }
 }
-#endif

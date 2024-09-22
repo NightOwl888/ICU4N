@@ -169,15 +169,9 @@ namespace ICU4N.Dev.Test.Format
         {
             ParseRuleStatus expectedStatus = (ParseRuleStatus)expectedStatusObj;
             ParseRuleStatus status;
-#if FEATURE_SPAN
             status = PluralRules.TryParseDescription(rules.AsSpan(), out PluralRules _, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context);
             assertEquals("source incorrect for " + rules, expectedSource ?? string.Empty, source.ToString());
             assertEquals("context incorrect for " + rules, expectedContext ?? string.Empty, context.ToString());
-#else
-            status = PluralRules.TryParseDescription(rules, out PluralRules _, out string source, out string context);
-            assertEquals("source incorrect for " + rules, expectedSource, source);
-            assertEquals("context incorrect for " + rules, expectedContext, context);
-#endif
             assertEquals("expected status incorrect for " + rules, expectedStatus, status);
         }
 
@@ -1382,7 +1376,6 @@ namespace ICU4N.Dev.Test.Format
                 }
             }
 
-#if FEATURE_SPAN
             var iter = new PluralRules.SimpleTokenizerEnumerator(text);
             for (int i = 0; i < expectedTokens.Length; i++)
             {
@@ -1399,10 +1392,8 @@ namespace ICU4N.Dev.Test.Format
                     assertEquals("mismatched delimiter", actualDelimiter, expectedDelimiter);
                 }
             }
-#endif
         }
 
-#if FEATURE_SPAN
         [Test]
         public void TestSimpleTokenizerEnumerator2()
         {
@@ -1421,7 +1412,6 @@ namespace ICU4N.Dev.Test.Format
                 assertEquals("mismatched token", actualToken, expectedToken);
             }
         }
-#endif
     }
 
     internal enum StandardPluralCategories

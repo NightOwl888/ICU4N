@@ -45,6 +45,19 @@
         string ToReplacerPattern(bool escapeUnprintable);
 
         /// <summary>
+        /// Returns a string representation of this replacer.  If the
+        /// result of calling this function is passed to the appropriate
+        /// parser, typically TransliteratorParser, it will produce another
+        /// replacer that is equal to this one.
+        /// </summary>
+        /// <param name="escapeUnprintable">If TRUE then convert unprintable
+        /// character to their hex escape representations, \\uxxxx or
+        /// \\Uxxxxxxxx.  Unprintable characters are defined by
+        /// <see cref="Impl.Utility.IsUnprintable(int)"/></param>
+        /// <param name="destination">A <see cref="ValueStringBuilder"/> to append the result.</param>
+        void ToReplacerPattern(bool escapeUnprintable, ref ValueStringBuilder destination);
+
+        /// <summary>
         /// Union the set of all characters that may output by this object
         /// into the given set.
         /// </summary>

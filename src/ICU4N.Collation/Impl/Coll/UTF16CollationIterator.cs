@@ -1,5 +1,6 @@
 ﻿using J2N;
 using J2N.Text;
+using System;
 
 namespace ICU4N.Impl.Coll
 {
@@ -18,10 +19,12 @@ namespace ICU4N.Impl.Coll
         {
         }
 
-        public UTF16CollationIterator(CollationData d, bool numeric, ICharSequence s, int p)
+        // ICU4N: The value for s must have a reference to it that has a lifetime longer than this class.
+        public UTF16CollationIterator(CollationData d, bool numeric, ReadOnlyMemory<char> s, int p)
             : base(d, numeric)
         {
             seq = s;
+            seq.TryGetReference(ref seqReference);
             start = 0;
             pos = p;
             limit = s.Length;
@@ -52,10 +55,12 @@ namespace ICU4N.Impl.Coll
 
         public override int Offset => pos - start;
 
-        public virtual void SetText(bool numeric, ICharSequence s, int p)
+        // ICU4N: The value for s must have a reference to it that has a lifetime longer than this class.
+        public virtual void SetText(bool numeric, ReadOnlyMemory<char> s, int p)
         {
             Reset(numeric);
             seq = s;
+            seq.TryGetReference(ref seqReference);
             start = 0;
             pos = p;
             limit = s.Length;
@@ -67,10 +72,11 @@ namespace ICU4N.Impl.Coll
             {
                 return Collation.SentinelCodePoint;
             }
-            char c = seq[pos++];
+            ReadOnlySpan<char> seqSpan = seq.Span;
+            char c = seqSpan[pos++];
             char trail;
             if (char.IsHighSurrogate(c) && pos != limit &&
-                    char.IsLowSurrogate(trail = seq[pos]))
+                    char.IsLowSurrogate(trail = seqSpan[pos]))
             {
                 ++pos;
                 return Character.ToCodePoint(c, trail);
@@ -87,10 +93,11 @@ namespace ICU4N.Impl.Coll
             {
                 return Collation.SentinelCodePoint;
             }
-            char c = seq[--pos];
+            ReadOnlySpan<char> seqSpan = seq.Span;
+            char c = seqSpan[--pos];
             char lead;
             if (char.IsLowSurrogate(c) && pos != start &&
-                    char.IsHighSurrogate(lead = seq[pos - 1]))
+                    char.IsHighSurrogate(lead = seqSpan[pos - 1]))
             {
                 --pos;
                 return Character.ToCodePoint(lead, c);
@@ -107,7 +114,7 @@ namespace ICU4N.Impl.Coll
             {
                 return NoCodePointAndCE32;
             }
-            char c = seq[pos++];
+            char c = seq.Span[pos++];
             return MakeCodePointAndCE32Pair(c, trie.GetFromU16SingleLead(c));
         }
 
@@ -115,7 +122,7 @@ namespace ICU4N.Impl.Coll
         {
             if (pos == limit) { return (char)0; }
             char trail;
-            if (char.IsLowSurrogate(trail = seq[pos])) { ++pos; }
+            if (char.IsLowSurrogate(trail = seq.Span[pos])) { ++pos; }
             return trail;
         }
 
@@ -123,12 +130,13 @@ namespace ICU4N.Impl.Coll
 
         protected override void ForwardNumCodePoints(int num)
         {
+            ReadOnlySpan<char> seqSpan = seq.Span;
             while (num > 0 && pos != limit)
             {
-                char c = seq[pos++];
+                char c = seqSpan[pos++];
                 --num;
                 if (char.IsHighSurrogate(c) && pos != limit &&
-                        char.IsLowSurrogate(seq[pos]))
+                        char.IsLowSurrogate(seqSpan[pos]))
                 {
                     ++pos;
                 }
@@ -137,19 +145,21 @@ namespace ICU4N.Impl.Coll
 
         protected override void BackwardNumCodePoints(int num)
         {
+            ReadOnlySpan<char> seqSpan = seq.Span;
             while (num > 0 && pos != start)
             {
-                char c = seq[--pos];
+                char c = seqSpan[--pos];
                 --num;
                 if (char.IsLowSurrogate(c) && pos != start &&
-                        char.IsHighSurrogate(seq[pos - 1]))
+                        char.IsHighSurrogate(seqSpan[pos - 1]))
                 {
                     --pos;
                 }
             }
         }
 
-        protected ICharSequence seq;
+        protected ReadOnlyMemory<char> seq;
+        protected object seqReference; // ICU4N: Keeps the string or char[] behind seq alive for the lifetime of this class
         protected int start;
         protected int pos;
         protected int limit;

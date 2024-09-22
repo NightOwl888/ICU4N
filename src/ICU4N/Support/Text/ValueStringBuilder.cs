@@ -1,28 +1,32 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-#if FEATURE_SPAN
-
 using System;
 using System.Buffers;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 #nullable enable
 
-namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
+namespace ICU4N.Text
 {
-    internal unsafe ref partial struct ValueStringBuilder
+    [StructLayout(LayoutKind.Sequential)]
+    internal ref partial struct ValueStringBuilder
     {
         private char[]? _arrayToReturnToPool;
         private Span<char> _chars;
         private int _pos;
+        private int _maxLength;
+        private bool _capacityExceeded;
 
         public ValueStringBuilder(Span<char> initialBuffer)
         {
             _arrayToReturnToPool = null;
             _chars = initialBuffer;
             _pos = 0;
+            _maxLength = 0;
+            _capacityExceeded = false;
         }
 
         public ValueStringBuilder(int initialCapacity)
@@ -30,6 +34,8 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
             _arrayToReturnToPool = ArrayPool<char>.Shared.Rent(initialCapacity);
             _chars = _arrayToReturnToPool;
             _pos = 0;
+            _maxLength = 0;
+            _capacityExceeded = false;
         }
 
         public int Length
@@ -40,19 +46,42 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
                 Debug.Assert(value >= 0);
                 Debug.Assert(value <= _chars.Length);
                 _pos = value;
+                UpdateMaxLength();
             }
         }
 
         public int Capacity => _chars.Length;
 
+        public bool CapacityExceeded => _capacityExceeded;
+
+        /// <summary>
+        /// The maximum length that was reached during the lifetime of this instance.
+        /// This is the minimum buffer size required for the operation to succeed when
+        /// <see cref="CapacityExceeded"/> is <c>true</c>.
+        /// </summary>
+        public int MaxLength => _maxLength;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void UpdateMaxLength()
+        {
+            if (_pos > _maxLength)
+                _maxLength = _pos;
+        }
+
         public void EnsureCapacity(int capacity)
+            => EnsureCapacity(capacity, out _);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void EnsureCapacity(int capacity, out int newCapacity) // Internal for testing
         {
             // This is not expected to be called this with negative capacity
             Debug.Assert(capacity >= 0);
 
+            newCapacity = default;
+
             // If the caller has a bug and calls this with negative capacity, make sure to call Grow to throw an exception.
             if ((uint)capacity > (uint)_chars.Length)
-                Grow(capacity - _pos);
+                Grow(capacity - _pos, out newCapacity);
         }
 
         /// <summary>
@@ -84,7 +113,7 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
         // also work, but since that requires LangVersion=>11.0 and that causes more compiler
         // errors, we are going with this for now. Note we also marked this struct unsafe
         // just like NumberBuffer is (it wasn't that way originally).
-        public char* GetCharsPointer()
+        public unsafe char* GetCharsPointer()
         {
             // This is safe to do since we are a ref struct
             return (char*)Unsafe.AsPointer(ref _chars[0]);
@@ -108,6 +137,64 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
 
         /// <summary>Returns the underlying storage of the builder.</summary>
         public Span<char> RawChars => _chars;
+
+        /// <summary>
+        /// Returns a memory around the contents of the builder.
+        /// <para/>
+        /// NOTE: This can only be used if this instance is constructed using the <see cref="ValueStringBuilder(int)"/>
+        /// or <see cref="ValueStringBuilder()"/> constructors and you ensure that the returned value goes out of scope
+        /// prior to calling <see cref="Dispose()"/>.
+        /// </summary>
+        /// <param name="terminate">Ensures that the builder has a null char after <see cref="Length"/></param>
+        public ReadOnlyMemory<char> AsMemory(bool terminate)
+        {
+            Debug.Assert(_arrayToReturnToPool != null, "ValueStringBuilder must be constructed using ValueStringBuilder(int) or ValueStringBuilder() to use as memory.");
+            if (terminate)
+            {
+                EnsureCapacity(Length + 1);
+                _chars[Length] = '\0';
+            }
+            return _arrayToReturnToPool.AsMemory(0, _pos);
+        }
+
+        /// <summary>
+        /// Returns a memory around the contents of the builder.
+        /// <para/>
+        /// NOTE: This can only be used if this instance is constructed using the <see cref="ValueStringBuilder(int)"/>
+        /// or <see cref="ValueStringBuilder()"/> constructors and you ensure that the returned value goes out of scope
+        /// prior to calling <see cref="Dispose()"/>.
+        /// </summary>
+        public ReadOnlyMemory<char> AsMemory()
+        {
+            Debug.Assert(_arrayToReturnToPool != null, "ValueStringBuilder must be constructed using ValueStringBuilder(int) or ValueStringBuilder() to use as memory.");
+            return _arrayToReturnToPool.AsMemory(0, _pos);
+        }
+
+        /// <summary>
+        /// Returns a memory around the contents of the builder.
+        /// <para/>
+        /// NOTE: This can only be used if this instance is constructed using the <see cref="ValueStringBuilder(int)"/>
+        /// or <see cref="ValueStringBuilder()"/> constructors and you ensure that the returned value goes out of scope
+        /// prior to calling <see cref="Dispose()"/>.
+        /// </summary>
+        public ReadOnlyMemory<char> AsMemory(int start)
+        {
+            Debug.Assert(_arrayToReturnToPool != null, "ValueStringBuilder must be constructed using ValueStringBuilder(int) or ValueStringBuilder() to use as memory.");
+            return _arrayToReturnToPool.AsMemory(start, _pos - start);
+        }
+
+        /// <summary>
+        /// Returns a memory around the contents of the builder.
+        /// <para/>
+        /// NOTE: This can only be used if this instance is constructed using the <see cref="ValueStringBuilder(int)"/>
+        /// or <see cref="ValueStringBuilder()"/> constructors and you ensure that the returned value goes out of scope
+        /// prior to calling <see cref="Dispose()"/>.
+        /// </summary>
+        public ReadOnlyMemory<char> AsMemory(int start, int length)
+        {
+            Debug.Assert(_arrayToReturnToPool != null, "ValueStringBuilder must be constructed using ValueStringBuilder(int) or ValueStringBuilder() to use as memory.");
+            return _arrayToReturnToPool.AsMemory(start, length);
+        }
 
         /// <summary>
         /// Returns a span around the contents of the builder.
@@ -143,6 +230,20 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
             }
         }
 
+        public bool FitsInitialBuffer(out int charsLength)
+        {
+            if (_capacityExceeded)
+            {
+                charsLength = _maxLength;
+                return false;
+            }
+            else
+            {
+                charsLength = _pos;
+                return true;
+            }
+        }
+
         public void Insert(int index, char value)
             => Insert(index, value, count: 1);
 
@@ -157,6 +258,7 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
             _chars.Slice(index, remaining).CopyTo(_chars.Slice(index + count));
             _chars.Slice(index, count).Fill(value);
             _pos += count;
+            UpdateMaxLength();
         }
 
         public void Insert(int index, string? s)
@@ -186,9 +288,10 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
 #endif
                 .CopyTo(_chars.Slice(index));
             _pos += count;
+            UpdateMaxLength();
         }
 
-        public void Insert(int index, ReadOnlySpan<char> s)
+        public void Insert(int index, scoped ReadOnlySpan<char> s)
         {
             int count = s.Length;
 
@@ -206,11 +309,31 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
             _chars.Slice(index, remaining).CopyTo(_chars.Slice(index + count));
             s.CopyTo(_chars.Slice(index));
             _pos += count;
+            UpdateMaxLength();
         }
 
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+        private void InsertBlank(int index, int numberOfChars)
+        {
+            int count = numberOfChars;
+
+            if (count == 0)
+            {
+                return;
+            }
+
+            if (_pos > (_chars.Length - count))
+            {
+                Grow(count);
+            }
+
+            int remaining = _pos - index;
+            _chars.Slice(index, remaining).CopyTo(_chars.Slice(index + count));
+            _pos += count;
+            UpdateMaxLength();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Append(char c)
         {
             int pos = _pos;
@@ -218,6 +341,7 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
             {
                 _chars[pos] = c;
                 _pos = pos + 1;
+                UpdateMaxLength();
             }
             else
             {
@@ -225,9 +349,7 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
             }
         }
 
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void Append(string? s)
         {
             if (s == null)
@@ -240,6 +362,7 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
             {
                 _chars[pos] = s[0];
                 _pos = pos + 1;
+                UpdateMaxLength();
             }
             else
             {
@@ -261,6 +384,7 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
 #endif
                 .CopyTo(_chars.Slice(pos));
             _pos += s.Length;
+            UpdateMaxLength();
         }
 
         public void Append(char c, int count)
@@ -276,6 +400,7 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
                 dst[i] = c;
             }
             _pos += count;
+            UpdateMaxLength();
         }
 
         public unsafe void Append(char* value, int length)
@@ -292,9 +417,10 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
                 dst[i] = *value++;
             }
             _pos += length;
+            UpdateMaxLength();
         }
 
-        public void Append(ReadOnlySpan<char> value)
+        public void Append(scoped ReadOnlySpan<char> value)
         {
             int pos = _pos;
             if (pos > _chars.Length - value.Length)
@@ -304,11 +430,10 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
 
             value.CopyTo(_chars.Slice(_pos));
             _pos += value.Length;
+            UpdateMaxLength();
         }
 
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public Span<char> AppendSpan(int length)
         {
             int origPos = _pos;
@@ -318,21 +443,8 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
             }
 
             _pos = origPos + length;
+            UpdateMaxLength();
             return _chars.Slice(origPos, length);
-        }
-
-        public void AppendCodePoint(int codePoint)
-        {
-            int length = J2N.Character.ToChars(codePoint, out char high, out char low);
-
-            if (_pos > _chars.Length - length)
-            {
-                Grow(length);
-            }
-
-            Append(high);
-            if (length == 2)
-                Append(low);
         }
 
         public void Remove(int startIndex, int length)
@@ -366,22 +478,27 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
         /// <param name="additionalCapacityBeyondPos">
         /// Number of chars requested beyond current position.
         /// </param>
-        [MethodImpl(MethodImplOptions.NoInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void Grow(int additionalCapacityBeyondPos)
+            => Grow(additionalCapacityBeyondPos, out _);
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void Grow(int additionalCapacityBeyondPos, out int newCapacity)
         {
             Debug.Assert(additionalCapacityBeyondPos > 0);
             Debug.Assert(_pos > _chars.Length - additionalCapacityBeyondPos, "Grow called incorrectly, no resize is needed.");
+
+            _capacityExceeded = true;
 
             const uint ArrayMaxLength = 0x7FFFFFC7; // same as Array.MaxLength
 
             // Increase to at least the required size (_pos + additionalCapacityBeyondPos), but try
             // to double the size if possible, bounding the doubling to not go beyond the max array length.
-            int newCapacity = (int)Math.Max(
+            newCapacity = (int)Math.Max(
                 (uint)(_pos + additionalCapacityBeyondPos),
                 Math.Min((uint)_chars.Length * 2, ArrayMaxLength));
 
-            // Make sure to let Rent throw an exception if the caller has a bug and the desired capacity is negative.
-            // This could also go negative if the actual required length wraps around.
+            // Make sure to let Rent throw an exception if the caller has a bug and the desired capacity is negative
             char[] poolArray = ArrayPool<char>.Shared.Rent(newCapacity);
 
             _chars.Slice(0, _pos).CopyTo(poolArray);
@@ -394,9 +511,7 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
             }
         }
 
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void Dispose()
         {
             char[]? toReturn = _arrayToReturnToPool;
@@ -408,5 +523,3 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
         }
     }
 }
-
-#endif

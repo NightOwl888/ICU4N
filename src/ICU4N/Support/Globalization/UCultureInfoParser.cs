@@ -108,10 +108,30 @@ namespace ICU4N.Globalization
          * @stable ICU 4.2
          */
         public UCultureInfoBuilder SetLanguageTag(string languageTag)
+            => SetLanguageTag(languageTag.AsSpan());
+
+        /**
+         * Resets the Builder to match the provided IETF BCP 47
+         * language tag.  Discards the existing state.  Null and the
+         * empty string cause the builder to be reset, like {@link
+         * #clear}.  Grandfathered tags (see {@link
+         * UCultureInfo.GetCultureInfoByIetfLanguageTag(string)}) are converted to their canonical
+         * form before being processed.  Otherwise, the language tag
+         * must be well-formed (see {@link UCultureInfo}) or an exception is
+         * thrown (unlike <code>UCultureInfo.GetCultureInfoByIetfLanguageTag(string)</code>, which
+         * just discards ill-formed and following portions of the
+         * tag).
+         *
+         * @param languageTag the language tag
+         * @return This builder.
+         * @throws IllformedLocaleException if <code>languageTag</code> is ill-formed
+         * @see UCultureInfo.GetCultureInfoByIetfLanguageTag(string)
+         *
+         * @stable ICU 4.2
+         */
+        public UCultureInfoBuilder SetLanguageTag(ReadOnlySpan<char> languageTag)
         {
-            ParseStatus sts = new ParseStatus();
-            LanguageTag tag = LanguageTag.Parse(languageTag, sts);
-            if (sts.IsError)
+            if (!LanguageTag.TryParse(languageTag, out LanguageTag tag, out ParseStatus sts))
             {
                 throw new IllformedLocaleException(sts.ErrorMessage, sts.ErrorIndex);
             }

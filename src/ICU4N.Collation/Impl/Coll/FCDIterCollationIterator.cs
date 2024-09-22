@@ -2,6 +2,7 @@
 using ICU4N.Text;
 using J2N;
 using J2N.Text;
+using System;
 using System.Diagnostics;
 using System.Text;
 
@@ -328,7 +329,7 @@ namespace ICU4N.Impl.Coll
             // Collect the characters being checked, in case they need to be normalized.
             if (s == null)
             {
-                s = new StringBuilder();
+                s = new OpenStringBuilder();
             }
             else
             {
@@ -363,7 +364,7 @@ namespace ICU4N.Impl.Coll
                         }
                         s.AppendCodePoint(c);
                     }
-                    Normalize(s);
+                    Normalize(s.AsSpan());
                     start = pos;
                     limit = pos + s.Length;
                     state = State.InNormIterAtLimit;
@@ -438,7 +439,7 @@ namespace ICU4N.Impl.Coll
             // Collect the characters being checked, in case they need to be normalized.
             if (s == null)
             {
-                s = new StringBuilder();
+                s = new OpenStringBuilder();
             }
             else
             {
@@ -476,7 +477,7 @@ namespace ICU4N.Impl.Coll
                         s.AppendCodePoint(c);
                     }
                     s.Reverse();
-                    Normalize(s);
+                    Normalize(s.AsSpan());
                     limit = pos;
                     start = pos - s.Length;
                     state = State.InNormIterAtStart;
@@ -497,14 +498,28 @@ namespace ICU4N.Impl.Coll
             return true;
         }
 
-        private void Normalize(StringBuilder s) // ICU4N specific - changed s parameter from ICharSequence to StringBuilder
+        private void Normalize(ReadOnlySpan<char> s) // ICU4N specific - changed s parameter from ICharSequence to ReadOnlySpan<char>
         {
             if (normalized == null)
             {
-                normalized = new StringBuilder();
+                normalized = new OpenStringBuilder();
             }
-            // NFD without argument checking.
-            nfcImpl.Decompose(s, normalized);
+
+            var sb = s.Length <= Collator.CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[Collator.CharStackBufferSize])
+                : new ValueStringBuilder(s.Length);
+            try
+            {
+                // NFD without argument checking.
+                nfcImpl.Decompose(s, ref sb);
+
+                normalized.Length = 0;
+                normalized.Append(sb.AsSpan());
+            }
+            finally
+            {
+                sb.Dispose();
+            }
         }
 
         private enum State
@@ -547,7 +562,7 @@ namespace ICU4N.Impl.Coll
         private int limit;
 
         private readonly Normalizer2Impl nfcImpl;
-        private StringBuilder s;
-        private StringBuilder normalized;
+        private OpenStringBuilder s;
+        private OpenStringBuilder normalized;
     }
 }

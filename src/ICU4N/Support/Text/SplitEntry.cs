@@ -1,6 +1,5 @@
 ﻿using System;
 
-#if FEATURE_SPAN
 namespace ICU4N.Text
 {
     /// <summary>
@@ -34,4 +33,3 @@ namespace ICU4N.Text
         public static implicit operator ReadOnlySpan<char>(SplitEntry entry) => entry.Text;
     }
 }
-#endif

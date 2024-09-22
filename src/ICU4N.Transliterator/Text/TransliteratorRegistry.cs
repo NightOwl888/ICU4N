@@ -10,12 +10,14 @@ using System.Reflection;
 using System.Resources;
 using System.Text;
 using Data = ICU4N.Text.RuleBasedTransliterator.Data;
-using StringBuffer = System.Text.StringBuilder;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ICU4N.Text
 {
     internal class TransliteratorRegistry
     {
+        private const int CharStackBufferSize = 32;
+
         // char constants
         private const char LOCALE_SEP = '_';
 
@@ -320,23 +322,30 @@ namespace ICU4N.Text
             availableIDs = new List<CaseInsensitiveString>();
         }
 
+#nullable enable
+
         /// <summary>
         /// Given a simple <paramref name="id"/> (forward direction, no inline filter, not
         /// compound) attempt to instantiate it from the registry.  Return
-        /// 0 on failure.
+        /// <c>null</c> on failure.
         /// <para/>
-        /// Return a non-empty <paramref name="aliasReturn"/> value if the <paramref name="id"/> points to an alias.
+        /// Return a non-empty <paramref name="alias"/> value if the <paramref name="id"/> points to an alias.
         /// We cannot instantiate it ourselves because the alias may contain
-        /// filters or compounds, which we do not understand.  Caller should
-        /// make <paramref name="aliasReturn"/> empty before calling.
+        /// filters or compounds, which we do not understand.
         /// </summary>
-        public virtual Transliterator Get(string id,
-                                  StringBuffer aliasReturn)
+        public virtual Transliterator? Get(string id,
+                                  out string alias)
         {
             object[] entry = Find(id);
-            return (entry == null) ? null
-                : InstantiateEntry(id, entry, aliasReturn);
+            if (entry is null)
+            {
+                alias = string.Empty;
+                return null;
+            }
+            return InstantiateEntry(id, entry, out alias);
         }
+
+#nullable restore
 
         /// <summary>
         /// Register a <see cref="Type"/>.  This adds an entry to the
@@ -745,69 +754,77 @@ namespace ICU4N.Text
                 return null;
             }
 
-            for (int pass = 0; pass < 2; ++pass)
+            ValueStringBuilder tag = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                StringBuilder tag = new StringBuilder();
-                // First try either TransliteratorTo_xxx or
-                // TransliterateFrom_xxx, then try the bidirectional
-                // Transliterate_xxx.  This precedence order is arbitrary
-                // but must be consistent and documented.
-                if (pass == 0)
+                for (int pass = 0; pass < 2; ++pass)
                 {
-                    tag.Append(direction == Transliterator.Forward ?
-                               "TransliterateTo" : "TransliterateFrom");
-                }
-                else
-                {
-                    tag.Append("Transliterate");
-                }
-                tag.Append(specToFind.Get().ToUpperInvariant());
-
-                try
-                {
-                    // The Transliterate*_xxx resource is an array of
-                    // strings of the format { <v0>, <r0>, ... }.  Each
-                    // <vi> is a variant name, and each <ri> is a rule.
-                    string[] subres = res.GetStringArray(tag.ToString());
-
-                    // assert(subres != null);
-                    // assert(subres.length % 2 == 0);
-                    int i = 0;
-                    if (variant.Length != 0)
+                    tag.Length = 0;
+                    // First try either TransliteratorTo_xxx or
+                    // TransliterateFrom_xxx, then try the bidirectional
+                    // Transliterate_xxx.  This precedence order is arbitrary
+                    // but must be consistent and documented.
+                    if (pass == 0)
                     {
-                        for (i = 0; i < subres.Length; i += 2)
+                        tag.Append(direction == Transliterator.Forward ?
+                                   "TransliterateTo" : "TransliterateFrom");
+                    }
+                    else
+                    {
+                        tag.Append("Transliterate");
+                    }
+                    tag.AppendUpperInvariant(specToFind.Get());
+
+                    try
+                    {
+                        // The Transliterate*_xxx resource is an array of
+                        // strings of the format { <v0>, <r0>, ... }.  Each
+                        // <vi> is a variant name, and each <ri> is a rule.
+                        string[] subres = res.GetStringArray(tag.AsSpan().ToString());
+
+                        // assert(subres != null);
+                        // assert(subres.length % 2 == 0);
+                        int i = 0;
+                        if (variant.Length != 0)
                         {
-                            if (subres[i].Equals(variant, StringComparison.OrdinalIgnoreCase))
+                            for (i = 0; i < subres.Length; i += 2)
                             {
-                                break;
+                                if (subres[i].Equals(variant, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    break;
+                                }
                             }
                         }
-                    }
 
-                    if (i < subres.Length)
+                        if (i < subres.Length)
+                        {
+                            // We have a match, or there is no variant and i == 0.
+                            // We have succeeded in loading a string from the
+                            // locale resources.  Return the rule string which
+                            // will itself become the registry entry.
+
+                            // The direction is always forward for the
+                            // TransliterateTo_xxx and TransliterateFrom_xxx
+                            // items; those are unidirectional forward rules.
+                            // For the bidirectional Transliterate_xxx items,
+                            // the direction is the value passed in to this
+                            // function.
+                            TransliterationDirection dir = (pass == 0) ? Transliterator.Forward : direction;
+                            return new Object[] { new LocaleEntry(subres[i + 1], dir) };
+                        }
+
+                    }
+                    catch (MissingManifestResourceException e)
                     {
-                        // We have a match, or there is no variant and i == 0.
-                        // We have succeeded in loading a string from the
-                        // locale resources.  Return the rule string which
-                        // will itself become the registry entry.
-
-                        // The direction is always forward for the
-                        // TransliterateTo_xxx and TransliterateFrom_xxx
-                        // items; those are unidirectional forward rules.
-                        // For the bidirectional Transliterate_xxx items,
-                        // the direction is the value passed in to this
-                        // function.
-                        TransliterationDirection dir = (pass == 0) ? Transliterator.Forward : direction;
-                        return new Object[] { new LocaleEntry(subres[i + 1], dir) };
+                        ////CLOVER:OFF
+                        if (DEBUG) Console.Out.WriteLine("missing resource: " + e);
+                        ////CLOVER:ON
                     }
-
                 }
-                catch (MissingManifestResourceException e)
-                {
-                    ////CLOVER:OFF
-                    if (DEBUG) Console.Out.WriteLine("missing resource: " + e);
-                    ////CLOVER:ON
-                }
+            }
+            finally
+            {
+                tag.Dispose();
             }
 
             // If we get here we had a missing resource exception or we
@@ -912,18 +929,19 @@ namespace ICU4N.Text
         /// Given an Entry object, instantiate it.  Caller owns result.  Return
         /// 0 on failure.
         /// <para/>
-        /// Return a non-empty <paramref name="aliasReturn"/> value if the <paramref name="ID"/> points to an alias.
+        /// Return a non-empty <paramref name="alias"/> value if the <paramref name="ID"/> points to an alias.
         /// We cannot instantiate it ourselves because the alias may contain
-        /// filters or compounds, which we do not understand.  Caller should
-        /// make <paramref name="aliasReturn"/> empty before calling.
+        /// filters or compounds, which we do not understand.
         /// <para/>
         /// The entry object is assumed to reside in the dynamic store.  It may be
         /// modified.
         /// </summary>
         private Transliterator InstantiateEntry(string ID,
                                                 object[] entryWrapper,
-                                                StringBuffer aliasReturn)
+                                                out string alias)
         {
+            alias = string.Empty;
+
             // We actually modify the entry object in some cases.  If it
             // is a string, we may partially parse it and turn it into a
             // more processed precursor.  This makes the next
@@ -957,7 +975,7 @@ namespace ICU4N.Text
                 }
                 else if (entry is AliasEntry)
                 {
-                    aliasReturn.Append(((AliasEntry)entry).Alias);
+                    alias = ((AliasEntry)entry).Alias;
                     return null;
                 }
                 else if (entry is ITransliteratorFactory)
@@ -1035,8 +1053,8 @@ namespace ICU4N.Text
                     // direction.
                     if (parser.CompoundFilter != null)
                     {
-                        entryWrapper[0] = new AliasEntry(parser.CompoundFilter.ToPattern(false) + ";"
-                                + parser.IdBlockVector[0]);
+                        entryWrapper[0] = new AliasEntry(string.Concat(parser.CompoundFilter.ToPattern(false), ";",
+                                parser.IdBlockVector[0]));
                     }
                     else
                     {

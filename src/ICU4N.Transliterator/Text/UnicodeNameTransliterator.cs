@@ -51,35 +51,43 @@ namespace ICU4N.Text
             int cursor = offsets.Start;
             int limit = offsets.Limit;
 
-            StringBuilder str = new StringBuilder();
-            str.Append(OPEN_DELIM);
-            int len;
-            string name;
-
-            while (cursor < limit)
+            ValueStringBuilder str = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                int c = text.Char32At(cursor);
-                if ((name = UChar.GetExtendedName(c)) != null)
-                {
+                str.Append(OPEN_DELIM);
+                int len;
+                string name;
 
-                    str.Length = OPEN_DELIM_LEN;
-                    str.Append(name).Append(CLOSE_DELIM);
-
-                    int clen = UTF16.GetCharCount(c);
-                    text.Replace(cursor, clen, str.ToString()); // ICU4N: Corrected 2nd parameter
-                    len = str.Length;
-                    cursor += len; // advance cursor by 1 and adjust for new text
-                    limit += len - clen; // change in length
-                }
-                else
+                while (cursor < limit)
                 {
-                    ++cursor;
+                    int c = text.Char32At(cursor);
+                    if ((name = UChar.GetExtendedName(c)) != null)
+                    {
+
+                        str.Length = OPEN_DELIM_LEN;
+                        str.Append(name);
+                        str.Append(CLOSE_DELIM);
+
+                        int clen = UTF16.GetCharCount(c);
+                        text.Replace(cursor, clen, str.AsSpan()); // ICU4N: Corrected 2nd parameter
+                        len = str.Length;
+                        cursor += len; // advance cursor by 1 and adjust for new text
+                        limit += len - clen; // change in length
+                    }
+                    else
+                    {
+                        ++cursor;
+                    }
                 }
+
+                offsets.ContextLimit += limit - offsets.Limit;
+                offsets.Limit = limit;
+                offsets.Start = cursor;
             }
-
-            offsets.ContextLimit += limit - offsets.Limit;
-            offsets.Limit = limit;
-            offsets.Start = cursor;
+            finally
+            {
+                str.Dispose();
+            }
         }
 
         /// <seealso cref="Transliterator.AddSourceTargetSet(UnicodeSet, UnicodeSet, UnicodeSet)"/>

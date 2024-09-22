@@ -2,6 +2,7 @@
 using ICU4N.Support.Text;
 using J2N;
 using System;
+using System.Buffers;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
@@ -64,6 +65,18 @@ namespace ICU4N.Text
         }
 
         /// <summary>
+        /// Returns a <see cref="UCharacterIterator"/> object given a source string.
+        /// </summary>
+        /// <param name="source">A string.</param>
+        /// <returns><see cref="UCharacterIterator"/> object.</returns>
+        /// <exception cref="ArgumentException">If the argument is null.</exception>
+        /// <stable>ICU 2.4</stable>
+        public static UCharacterIterator GetInstance(ReadOnlySpan<char> source)
+        {
+            return new ReplaceableUCharacterIterator(source);
+        }
+
+        /// <summary>
         /// Returns a <see cref="UCharacterIterator"/> object given a source character array.
         /// </summary>
         /// <param name="source">An array of UTF-16 code units.</param>
@@ -97,6 +110,18 @@ namespace ICU4N.Text
         /// <exception cref="ArgumentException">If the argument is null.</exception>
         /// <stable>ICU 2.4</stable>
         public static UCharacterIterator GetInstance(StringBuffer source)
+        {
+            return new ReplaceableUCharacterIterator(source);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="UCharacterIterator"/> object given a source <see cref="OpenStringBuilder"/>.
+        /// </summary>
+        /// <param name="source">A string buffer of UTF-16 code units.</param>
+        /// <returns><see cref="UCharacterIterator"/> object.</returns>
+        /// <exception cref="ArgumentException">If the argument is null.</exception>
+        /// <stable>ICU 2.4</stable>
+        internal static UCharacterIterator GetInstance(OpenStringBuilder source)
         {
             return new ReplaceableUCharacterIterator(source);
         }
@@ -269,8 +294,9 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Fills the buffer with the underlying text storage of the iterator. If the buffer capacity is not enough a
-        /// exception is thrown. The capacity of the fill in buffer should at least be equal to length of text in the
+        /// Fills the buffer with the underlying text storage of the iterator.
+        /// If the buffer capacity is not enough, the return value will be <c>false</c>.
+        /// The capacity of the fill in buffer should at least be equal to length of text in the
         /// iterator obtained by getting <see cref="Length"/>.
         /// </summary>
         /// <remarks>
@@ -278,44 +304,14 @@ namespace ICU4N.Text
         /// <code>
         /// UChacterIterator iter = new UCharacterIterator.GetInstance(text);
         /// char[] buf = new char[iter.Length];
-        /// iter.GetText(buf);
-        /// </code>
-        /// OR
-        /// <code>
-        /// char[] buf= new char[1];
-        /// int len = 0;
-        /// while (true)
-        /// {
-        ///     try
-        ///     {
-        ///         len = iter.GetText(buf);
-        ///         break;
-        ///     }
-        ///     catch (IndexOutOfRangeException)
-        ///     {
-        ///         buf = new char[iter.Length];
-        ///     }
-        /// }
+        /// bool success = iter.TryGetText(buf);
         /// </code>
         /// </remarks>
-        /// <param name="fillIn">An array of chars to fill with the underlying UTF-16 code units.</param>
-        /// <param name="offset">The position within the array to start putting the data.</param>
-        /// <returns>The number of code units added to fillIn, as a convenience.</returns>
-        /// <exception cref="IndexOutOfRangeException">Exception if there is not enough room after offset in the array, or if offset &lt; 0.</exception>
-        /// <stable>ICU 2.4</stable>
-        public abstract int GetText(char[] fillIn, int offset); // ICU4N TODO: API - try to work out how to check for an invalid state rather than rely on exception to be thrown
-
-        /// <summary>
-        /// Convenience override for <see cref="GetText(char[], int)"/> that provides an offset of 0.
-        /// </summary>
-        /// <param name="fillIn">An array of chars to fill with the underlying UTF-16 code units.</param>
-        /// <returns>The number of code units added to fillIn, as a convenience.</returns>
-        /// <exception cref="IndexOutOfRangeException">If there is not enough room in the array.</exception>
-        /// <stable>ICU 2.4</stable>
-        public int GetText(char[] fillIn)
-        {
-            return GetText(fillIn, 0);
-        }
+        /// <param name="destination">A <see cref="Span{Char}"/> to fill with the underlying UTF-16 code units.</param>
+        /// <param name="charsLength">Upon successful return, contains the number of chars coped into <paramref name="destination"/>.
+        /// If the return value is <c>false</c>, this will contain the number of chars to allocate for a successful copy.</param>
+        /// <returns><c>true</c> if the copy opertion completed successfully; <c>false</c> if <paramref name="destination"/> was not long enough.</returns>
+        public abstract bool TryGetText(Span<char> destination, out int charsLength);
 
         /// <summary>
         /// Convenience method for returning the underlying text storage as as string.
@@ -324,9 +320,16 @@ namespace ICU4N.Text
         /// <stable>ICU 2.4</stable>
         public virtual string GetText()
         {
-            char[] text = new char[Length];
-            GetText(text);
-            return new string(text);
+            char[] text = ArrayPool<char>.Shared.Rent(Length);
+            try
+            {
+                TryGetText(text, out _);
+                return new string(text, 0, Length);
+            }
+            finally
+            {
+                ArrayPool<char>.Shared.Return(text);
+            }
         }
 
         /// <summary>

@@ -1,5 +1,8 @@
 ﻿using ICU4N.Globalization;
+using ICU4N.Support.Collections;
+using ICU4N.Text;
 using ICU4N.Util;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Resources;
@@ -9,6 +12,8 @@ namespace ICU4N.Impl
 {
     public class ICUCurrencyDisplayInfoProvider : ICurrencyDisplayInfoProvider
     {
+        private const int CharStackBufferSize = 32;
+
         private object hasDataIfNotNull; // ICU4N specific - lazy check to be sure we have data, since we cannot determine this by whether the assembly is installed
 
         public ICUCurrencyDisplayInfoProvider()
@@ -178,12 +183,11 @@ namespace ICU4N.Impl
 
             public override string GetPluralName(string isoCode, string pluralKey)
             {
-                StandardPlural? plural = StandardPluralUtil.OrNullFromString(pluralKey);
                 string[] pluralsData = FetchPluralsData(isoCode);
 
                 // See http://unicode.org/reports/tr35/#Currencies, especially the fallback rule.
                 string result = null;
-                if (plural != null)
+                if (StandardPluralUtil.TryGetValue(pluralKey, out StandardPlural plural))
                 {
                     result = pluralsData[1 + (int)plural];
                 }
@@ -422,15 +426,15 @@ namespace ICU4N.Impl
                     IResourceTable table = value.GetTable();
                     for (int i = 0; table.GetKeyAndValue(i, key, value); i++)
                     {
-                        if (key.ContentEquals("Currencies"))
+                        if (key.SequenceEqual("Currencies"))
                         {
                             ConsumeCurrenciesTable(key, value);
                         }
-                        else if (key.ContentEquals("Currencies%variant"))
+                        else if (key.SequenceEqual("Currencies%variant"))
                         {
                             ConsumeCurrenciesVariantTable(key, value);
                         }
-                        else if (key.ContentEquals("CurrencyPlurals"))
+                        else if (key.SequenceEqual("CurrencyPlurals"))
                         {
                             ConsumeCurrencyPluralsTable(key, value);
                         }
@@ -571,8 +575,7 @@ namespace ICU4N.Impl
                         IResourceTable pluralsTable = value.GetTable();
                         for (int j = 0; pluralsTable.GetKeyAndValue(j, key, value); j++)
                         {
-                            StandardPlural? plural = StandardPluralUtil.OrNullFromString(key.ToString());
-                            if (plural == null)
+                            if (!StandardPluralUtil.TryGetValue(key, out _))
                             {
                                 throw new ICUException("Could not make StandardPlural from keyword " + key);
                             }
@@ -588,8 +591,7 @@ namespace ICU4N.Impl
                     IResourceTable pluralsTable = value.GetTable();
                     for (int j = 0; pluralsTable.GetKeyAndValue(j, key, value); j++)
                     {
-                        StandardPlural? plural = StandardPluralUtil.OrNullFromString(key.ToString());
-                        if (plural == null)
+                        if (!StandardPluralUtil.TryGetValue(key, out StandardPlural plural))
                         {
                             throw new ICUException("Could not make StandardPlural from keyword " + key);
                         }
@@ -622,12 +624,12 @@ namespace ICU4N.Impl
                     for (int i = 0; spacingTypesTable.GetKeyAndValue(i, key, value); ++i)
                     {
                         CurrencySpacingInfo.SpacingType type;
-                        if (key.ContentEquals("beforeCurrency"))
+                        if (key.SequenceEqual("beforeCurrency"))
                         {
                             type = CurrencySpacingInfo.SpacingType.Before;
                             spacingInfo.HasBeforeCurrency = true;
                         }
-                        else if (key.ContentEquals("afterCurrency"))
+                        else if (key.SequenceEqual("afterCurrency"))
                         {
                             type = CurrencySpacingInfo.SpacingType.After;
                             spacingInfo.HasAfterCurrency = true;
@@ -641,15 +643,15 @@ namespace ICU4N.Impl
                         for (int j = 0; patternsTable.GetKeyAndValue(j, key, value); ++j)
                         {
                             CurrencySpacingInfo.SpacingPattern pattern;
-                            if (key.ContentEquals("currencyMatch"))
+                            if (key.SequenceEqual("currencyMatch"))
                             {
                                 pattern = CurrencySpacingInfo.SpacingPattern.CurrencyMatch;
                             }
-                            else if (key.ContentEquals("surroundingMatch"))
+                            else if (key.SequenceEqual("surroundingMatch"))
                             {
                                 pattern = CurrencySpacingInfo.SpacingPattern.SurroundingMatch;
                             }
-                            else if (key.ContentEquals("insertBetween"))
+                            else if (key.SequenceEqual("insertBetween"))
                             {
                                 pattern = CurrencySpacingInfo.SpacingPattern.InsertBetween;
                             }

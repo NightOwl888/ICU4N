@@ -461,6 +461,13 @@ namespace ICU4N.Dev.Test.Translit
                 return "";
             }
 
+            public override bool TryToPattern(bool escapeUnprintable, Span<char> destination, out int charsLength)
+            {
+                destination = default;
+                charsLength = 0;
+                return true;
+            }
+
             public override bool MatchesIndexValue(int v)
             {
                 return false;
@@ -2882,11 +2889,13 @@ namespace ICU4N.Dev.Test.Translit
                     Errln("UScript.getScript for codepoint 0x" + Hex(i) + " failed");
                 }
 
-                if (!UScript.TryGetName(code, out string id))
+                if (!UScript.TryGetName(code, out ReadOnlySpan<char> idSpan))
                     Errln("UScript.TryGetName for codepoint 0x" + Hex(i) + " failed");
+                string id = idSpan.ToString();
 
-                if (!UScript.TryGetShortName(code, out string abbr))
+                if (!UScript.TryGetShortName(code, out ReadOnlySpan<char> abbrSpan))
                     Errln("UScript.TryGetShortName for codepoint 0x" + Hex(i) + " failed");
+                string abbr = abbrSpan.ToString();
 
                 if (!scriptIdsChecked.Contains(id))
                 {
@@ -3385,8 +3394,8 @@ namespace ICU4N.Dev.Test.Translit
         {
 
 
-            Normalizer2 nfc = Normalizer2.GetNFCInstance();
-            Normalizer2 nfd = Normalizer2.GetNFDInstance();
+            Normalizer2 nfc = Normalizer2.NFCInstance;
+            Normalizer2 nfd = Normalizer2.NFDInstance;
 
             //        Normalizer2 nfkd = Normalizer2.GetInstance(null, "nfkd", Mode.DECOMPOSE);
             //        UnicodeSet nfkdSource = new UnicodeSet();

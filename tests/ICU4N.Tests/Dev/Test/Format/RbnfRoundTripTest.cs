@@ -309,7 +309,6 @@ namespace ICU4N.Dev.Test.Format
                 //e.printStackTrace();
             }
 
-#if FEATURE_SPAN
             try
             {
                 long count = 0;
@@ -360,7 +359,6 @@ namespace ICU4N.Dev.Test.Format
                 Errln("Test failed with exception: " + e.ToString());
                 //e.printStackTrace();
             }
-#endif
         }
 
 

@@ -1,18 +1,16 @@
 ﻿namespace ICU4N.Impl.Locale
 {
-    public class ParseStatus
+    public ref struct ParseStatus
     {
         private int _parseLength = 0;
         private int _errorIndex = -1;
         private string _errorMsg = null;
 
-        public void Reset()
+        public ParseStatus()
         {
-            _parseLength = 0;
-            _errorIndex = -1;
-            _errorMsg = null;
         }
 
+        // ICU4N: Eliminated Reset() because it is cheap to create a new instance
         public bool IsError => _errorIndex >= 0;
 
         public int ErrorIndex

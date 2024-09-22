@@ -500,7 +500,7 @@ namespace ICU4N.Impl
             ICUResourceBundleImpl impl = (ICUResourceBundleImpl)this;
             readerValue.reader = impl.wholeBundle.reader;
             readerValue.res = impl.GetResource();
-            key.SetString(this.m_key != null ? this.m_key : "");
+            key.SetValue(this.m_key != null ? this.m_key : "");
             sink.Put(key, readerValue, m_parent == null);
             if (m_parent != null)
             {
@@ -892,9 +892,7 @@ namespace ICU4N.Impl
             }
         }
 
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         private static bool EmbeddedResourceFileExists(Assembly assembly, string baseName, string localeID)
         {
             var icuPath = Path.Combine(baseName, string.Concat(localeID, ".res"));
@@ -903,9 +901,7 @@ namespace ICU4N.Impl
             return assembly.GetManifestResourceInfo(ResourceUtil.ConvertResourceName(icuPath)) != null;
         }
 
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         private static bool LooksLikeACultureName(string cultureName)
                 => (cultureName.Length > 1 && cultureName.Length <= 3) || cultureName.IndexOf('-') >= 2;
 

@@ -1,5 +1,6 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Text;
+using J2N.Text;
 using NUnit.Framework;
 using System;
 using StringBuffer = System.Text.StringBuilder;
@@ -23,13 +24,14 @@ namespace ICU4N.Dev.Test.Translit
             // get a couple of characters of each script for testing
 
             StringBuffer testBuffer = new StringBuffer();
+            Span<char> charBuffer = stackalloc char[2];
             for (int script = 0; script < UScript.CodeLimit; ++script)
             {
                 UnicodeSet test = new UnicodeSet().ApplyPropertyAlias("script", UScript.GetName(script));
                 int count = Math.Min(20, test.Count);
                 for (int i = 0; i < count; ++i)
                 {
-                    testBuffer.Append(UTF16.ValueOf(test[i]));
+                    testBuffer.Append(UTF16.ValueOf(test[i], charBuffer));
                 }
             }
             {
@@ -103,15 +105,16 @@ namespace ICU4N.Dev.Test.Translit
             // get a couple of characters of each script for testing
 
             StringBuffer testBuffer = new StringBuffer();
+            Span<char> charBuffer = stackalloc char[2];
             for (int script = 0; script < UScript.CodeLimit; ++script)
             {
-                if (UScript.TryGetName(script, out string name))
+                if (UScript.TryGetName(script, out ReadOnlySpan<char> name))
                 {
-                    UnicodeSet test = new UnicodeSet().ApplyPropertyAlias("script", name);
+                    UnicodeSet test = new UnicodeSet().ApplyPropertyAlias("script", name.ToString());
                     int count = Math.Min(20, test.Count);
                     for (int i = 0; i < count; ++i)
                     {
-                        testBuffer.Append(UTF16.ValueOf(test[i]));
+                        testBuffer.Append(UTF16.ValueOf(test[i], charBuffer));
                     }
                 }
             }
@@ -139,8 +142,10 @@ namespace ICU4N.Dev.Test.Translit
                         continue;
                     }
 
-                    if (UScript.TryGetName(script, out string scriptName))
+                    string scriptName = null;
+                    if (UScript.TryGetName(script, out ReadOnlySpan<char> scriptNameSpan))
                     {
+                        scriptName = scriptNameSpan.ToString();
                         UCultureInfo locale = new UCultureInfo(scriptName);
                         if (locale.Language.Equals("new") || locale.Language.Equals("pau"))
                         {
@@ -169,8 +174,9 @@ namespace ICU4N.Dev.Test.Translit
                     }
 
                     string shortScriptName = "";
-                    if (UScript.TryGetName(script, out scriptName))  // 4-letter script code
+                    if (UScript.TryGetName(script, out scriptNameSpan))  // 4-letter script code
                     {
+                        scriptName = scriptNameSpan.ToString();
                         try
                         {
                             t = Transliterator.GetInstance("any-" + shortScriptName);

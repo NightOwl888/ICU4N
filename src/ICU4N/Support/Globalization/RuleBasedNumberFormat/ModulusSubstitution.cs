@@ -1,5 +1,4 @@
-﻿using ICU4N.Support.Text;
-using ICU4N.Text;
+﻿using ICU4N.Text;
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -7,7 +6,6 @@ using System.Globalization;
 
 namespace ICU4N.Globalization
 {
-#if FEATURE_SPAN
     //===================================================================
     // ModulusSubstitution
     //===================================================================
@@ -340,5 +338,4 @@ namespace ICU4N.Globalization
         /// </summary>
         private protected override char TokenChar => '>';
     }
-#endif
 }

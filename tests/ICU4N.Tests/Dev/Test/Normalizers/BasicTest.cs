@@ -15,7 +15,7 @@ using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Dev.Test.Normalizers
 {
-    public class BasicTest : TestFmwk
+    public partial class BasicTest : TestFmwk
     {
         string[][] canonTests = {
             // Input                Decomposed              Composed
@@ -808,37 +808,47 @@ namespace ICU4N.Dev.Test.Normalizers
 
         private void backAndForth(Normalizer iter, string[][] tests)
         {
-            for (int i = 0; i < tests.Length; i++)
+            ValueStringBuilder forward = new ValueStringBuilder(stackalloc char[32]);
+            ValueStringBuilder reverse = new ValueStringBuilder(stackalloc char[32]);
+            try
             {
-                iter.SetText(tests[i][0]);
+                for (int i = 0; i < tests.Length; i++)
+                {
+                    iter.SetText(tests[i][0]);
 
-                // Run through the iterator forwards and stick it into a
-                // StringBuffer
-                StringBuffer forward = new StringBuffer();
-                for (int ch = iter.First(); ch != Normalizer.Done; ch = iter.Next())
-                {
-                    forward.Append(ch);
-                }
+                    // Run through the iterator forwards and stick it into a
+                    // StringBuffer
+                    forward.Length = 0;
+                    for (int ch = iter.First(); ch != Normalizer.Done; ch = iter.Next())
+                    {
+                        forward.Append(ch);
+                    }
 
-                // Now do it backwards
-                StringBuffer reverse = new StringBuffer();
-                for (int ch = iter.Last(); ch != Normalizer.Done; ch = iter.Previous())
-                {
-                    reverse.Insert(0, ch);
-                }
+                    // Now do it backwards
+                    reverse.Length = 0;
+                    for (int ch = iter.Last(); ch != Normalizer.Done; ch = iter.Previous())
+                    {
+                        reverse.Insert(0, ch);
+                    }
 
-                if (!forward.ToString().Equals(reverse.ToString()))
-                {
-                    Errln("FAIL: Forward/reverse mismatch for input "
-                        + Hex(tests[i][0]) + ", forward: " + Hex(forward)
-                        + ", backward: " + Hex(reverse));
+                    if (!forward.AsSpan().Equals(reverse.AsSpan(), StringComparison.Ordinal))
+                    {
+                        Errln("FAIL: Forward/reverse mismatch for input "
+                            + Hex(tests[i][0]) + ", forward: " + Hex(forward.AsSpan())
+                            + ", backward: " + Hex(reverse.AsSpan()));
+                    }
+                    else if (IsVerbose())
+                    {
+                        Logln("Ok: Forward/reverse for input " + Hex(tests[i][0])
+                              + ", forward: " + Hex(forward.AsSpan()) + ", backward: "
+                              + Hex(reverse.AsSpan()));
+                    }
                 }
-                else if (IsVerbose())
-                {
-                    Logln("Ok: Forward/reverse for input " + Hex(tests[i][0])
-                          + ", forward: " + Hex(forward) + ", backward: "
-                          + Hex(reverse));
-                }
+            }
+            finally
+            {
+                forward.Dispose();
+                reverse.Dispose();
             }
         }
 
@@ -872,26 +882,39 @@ namespace ICU4N.Dev.Test.Normalizers
                 int reqLength = 0;
                 while (true)
                 {
-                    try
+                    if (Normalizer.TryNormalize(input, output, out reqLength, mode, 0))
                     {
-                        reqLength = Normalizer.Normalize(input, output, mode, 0);
                         if (reqLength <= output.Length)
                         {
                             break;
                         }
                     }
-                    catch (IndexOutOfRangeException e)
+                    else
                     {
-                        output = new char[int.Parse(e.Message, CultureInfo.InvariantCulture)];
+                        output = new char[reqLength];
                         continue;
                     }
+
+                    //try
+                    //{
+                    //    reqLength = Normalizer.Normalize(input, output, mode, 0);
+                    //    if (reqLength <= output.Length)
+                    //    {
+                    //        break;
+                    //    }
+                    //}
+                    //catch (IndexOutOfRangeException e)
+                    //{
+                    //    output = new char[int.Parse(e.Message, CultureInfo.InvariantCulture)];
+                    //    continue;
+                    //}
                 }
-                if (!expect.Equals(new string(output, 0, reqLength)))
+                if (!expect.AsSpan().Equals(output.AsSpan(0, reqLength), StringComparison.Ordinal))
                 {
                     Errln("FAIL: case " + i
                         + " expected '" + expect + "' (" + Hex(expect) + ")"
                         + " but got '" + new string(output)
-                        + "' (" + Hex(new string(output)) + ")");
+                        + "' (" + Hex(output) + ")");
                 }
             }
         }
@@ -925,26 +948,39 @@ namespace ICU4N.Dev.Test.Normalizers
                 int reqLength = 0;
                 while (true)
                 {
-                    try
+                    if (Normalizer.TryDecompose(input, output, out reqLength, mode == NormalizerMode.NFKD, 0))
                     {
-                        reqLength = Normalizer.Decompose(input, output, mode == NormalizerMode.NFKD, 0);
                         if (reqLength <= output.Length)
                         {
                             break;
                         }
                     }
-                    catch (IndexOutOfRangeException e)
+                    else
                     {
-                        output = new char[int.Parse(e.Message, CultureInfo.InvariantCulture)];
+                        output = new char[reqLength];
                         continue;
                     }
+
+                    //try
+                    //{
+                    //    reqLength = Normalizer.Decompose(input, output, mode == NormalizerMode.NFKD, 0);
+                    //    if (reqLength <= output.Length)
+                    //    {
+                    //        break;
+                    //    }
+                    //}
+                    //catch (IndexOutOfRangeException e)
+                    //{
+                    //    output = new char[int.Parse(e.Message, CultureInfo.InvariantCulture)];
+                    //    continue;
+                    //}
                 }
-                if (!expect.Equals(new string(output, 0, reqLength)))
+                if (!expect.AsSpan().Equals(output.AsSpan(0, reqLength), StringComparison.Ordinal))
                 {
                     Errln("FAIL: case " + i
                         + " expected '" + expect + "' (" + Hex(expect) + ")"
                         + " but got '" + new string(output)
-                        + "' (" + Hex(new string(output)) + ")");
+                        + "' (" + Hex(output) + ")");
                 }
             }
             output = new char[1];
@@ -954,37 +990,51 @@ namespace ICU4N.Dev.Test.Normalizers
                 string expect = Utility.Unescape(tests[i][outCol]);
 
                 Logln("Normalizing '" + new string(input) + "' (" +
-                            Hex(new string(input)) + ")");
+                            Hex(input) + ")");
                 int reqLength = 0;
                 while (true)
                 {
-                    try
+                    if (Normalizer.TryDecompose(input.AsSpan(0, input.Length), output.AsSpan(0, output.Length), out reqLength, mode == NormalizerMode.NFKD, 0))
                     {
-                        reqLength = Normalizer.Decompose(input, 0, input.Length, output, 0, output.Length, mode == NormalizerMode.NFKD, 0);
                         if (reqLength <= output.Length)
                         {
                             break;
                         }
                     }
-                    catch (IndexOutOfRangeException e)
+                    else
                     {
-                        output = new char[int.Parse(e.Message, CultureInfo.InvariantCulture)];
+                        output = new char[reqLength];
                         continue;
                     }
+
+                    //try
+                    //{
+                    //    reqLength = Normalizer.Decompose(input, 0, input.Length, output, 0, output.Length, mode == NormalizerMode.NFKD, 0);
+                    //    if (reqLength <= output.Length)
+                    //    {
+                    //        break;
+                    //    }
+                    //}
+                    //catch (IndexOutOfRangeException e)
+                    //{
+                    //    output = new char[int.Parse(e.Message, CultureInfo.InvariantCulture)];
+                    //    continue;
+                    //}
                 }
-                if (!expect.Equals(new string(output, 0, reqLength)))
+                if (!expect.AsSpan().Equals(output.AsSpan(0, reqLength), StringComparison.Ordinal))
                 {
                     Errln("FAIL: case " + i
                         + " expected '" + expect + "' (" + Hex(expect) + ")"
                         + " but got '" + new string(output)
-                        + "' (" + Hex(new string(output)) + ")");
+                        + "' (" + Hex(output) + ")");
                 }
                 char[] output2 = new char[reqLength * 2];
                 System.Array.Copy(output, 0, output2, 0, reqLength);
-                int retLength = Normalizer.Decompose(input, 0, input.Length, output2, reqLength, output2.Length, mode == NormalizerMode.NFKC, 0);
+                //int retLength = Normalizer.Decompose(input, 0, input.Length, output2, reqLength, output2.Length, mode == NormalizerMode.NFKC, 0);
+                bool success = Normalizer.TryDecompose(input.AsSpan(0, input.Length), output2.AsSpan(reqLength, output2.Length - reqLength), out int retLength, mode == NormalizerMode.NFKC, 0);
                 if (retLength != reqLength)
                 {
-                    Logln("FAIL: Normalizer.compose did not return the expected length. Expected: " + reqLength + " Got: " + retLength);
+                    Logln("FAIL: Normalizer.TryDecompose did not return the expected length. Expected: " + reqLength + " Got: " + retLength);
                 }
             }
         }
@@ -1019,19 +1069,32 @@ namespace ICU4N.Dev.Test.Normalizers
                 int reqLength = 0;
                 while (true)
                 {
-                    try
+                    if (Normalizer.TryCompose(input, output, out reqLength, mode == NormalizerMode.NFKC, 0))
                     {
-                        reqLength = Normalizer.Compose(input, output, mode == NormalizerMode.NFKC, 0);
                         if (reqLength <= output.Length)
                         {
                             break;
                         }
                     }
-                    catch (IndexOutOfRangeException e)
+                    else
                     {
-                        output = new char[int.Parse(e.Message, CultureInfo.InvariantCulture)];
+                        output = new char[reqLength];
                         continue;
                     }
+
+                    //try
+                    //{
+                    //    reqLength = Normalizer.Compose(input, output, mode == NormalizerMode.NFKC, 0);
+                    //    if (reqLength <= output.Length)
+                    //    {
+                    //        break;
+                    //    }
+                    //}
+                    //catch (IndexOutOfRangeException e)
+                    //{
+                    //    output = new char[int.Parse(e.Message, CultureInfo.InvariantCulture)];
+                    //    continue;
+                    //}
                 }
                 if (!expect.Equals(new string(output, 0, reqLength)))
                 {
@@ -1048,25 +1111,39 @@ namespace ICU4N.Dev.Test.Normalizers
                 string expect = Utility.Unescape(tests[i][outCol]);
 
                 Logln("Normalizing '" + new string(input) + "' (" +
-                            Hex(new string(input)) + ")");
+                            Hex(input) + ")");
                 int reqLength = 0;
                 while (true)
                 {
-                    try
+                    if (Normalizer.TryCompose(input.AsSpan(0, input.Length), output.AsSpan(0, output.Length), out reqLength, mode == NormalizerMode.NFKC, 0))
                     {
-                        reqLength = Normalizer.Compose(input, 0, input.Length, output, 0, output.Length, mode == NormalizerMode.NFKC, 0);
                         if (reqLength <= output.Length)
                         {
                             break;
                         }
                     }
-                    catch (IndexOutOfRangeException e)
+                    else
                     {
-                        output = new char[int.Parse(e.Message, CultureInfo.InvariantCulture)];
+                        output = new char[reqLength];
                         continue;
                     }
+
+                    //try
+                    //{
+                    //    reqLength = Normalizer.Compose(input, 0, input.Length, output, 0, output.Length, mode == NormalizerMode.NFKC, 0);
+                    //    if (reqLength <= output.Length)
+                    //    {
+                    //        break;
+                    //    }
+                    //}
+                    //catch (IndexOutOfRangeException e)
+                    //{
+                    //    output = new char[int.Parse(e.Message, CultureInfo.InvariantCulture)];
+                    //    continue;
+                    //}
                 }
-                if (!expect.Equals(new string(output, 0, reqLength)))
+                //if (!expect.Equals(new string(output, 0, reqLength)))
+                if (!expect.AsSpan().Equals(output.AsSpan(0, reqLength), StringComparison.Ordinal))
                 {
                     Errln("FAIL: case " + i
                         + " expected '" + expect + "' (" + Hex(expect) + ")"
@@ -1076,7 +1153,8 @@ namespace ICU4N.Dev.Test.Normalizers
 
                 char[] output2 = new char[reqLength * 2];
                 System.Array.Copy(output, 0, output2, 0, reqLength);
-                int retLength = Normalizer.Compose(input, 0, input.Length, output2, reqLength, output2.Length, mode == NormalizerMode.NFKC, 0);
+                //int retLength = Normalizer.Compose(input, 0, input.Length, output2, reqLength, output2.Length, mode == NormalizerMode.NFKC, 0);
+                bool success = Normalizer.TryCompose(input.AsSpan(0, input.Length), output2.AsSpan(reqLength, output2.Length - reqLength), out int retLength, mode == NormalizerMode.NFKC, 0);
                 if (retLength != reqLength)
                 {
                     Logln("FAIL: Normalizer.compose did not return the expected length. Expected: " + reqLength + " Got: " + retLength);
@@ -1262,55 +1340,62 @@ namespace ICU4N.Dev.Test.Normalizers
             int ch;
             Normalizer iter = new Normalizer(new StringCharacterIterator(Utility.Unescape(input)),
                                                     NormalizerMode.NFKC, 0);
-            StringBuffer got = new StringBuffer();
-            for (ch = iter.First(); ch != Normalizer.Done; ch = iter.Next())
+            Span<char> codePointBuffer = stackalloc char[2];
+            ValueStringBuilder got = new ValueStringBuilder(stackalloc char[32]);
+            try
             {
-                if (index >= expected.Length)
+                for (ch = iter.First(); ch != Normalizer.Done; ch = iter.Next())
                 {
-                    Errln("FAIL: " + "Unexpected character '" + (char)ch +
-                           "' (" + Hex(ch) + ")" + " at index " + index);
-                    break;
+                    if (index >= expected.Length)
+                    {
+                        Errln("FAIL: " + "Unexpected character '" + (char)ch +
+                               "' (" + Hex(ch) + ")" + " at index " + index);
+                        break;
+                    }
+                    got.Append(UChar.ConvertFromUtf32(ch, codePointBuffer));
+                    index++;
                 }
-                got.Append(UChar.ConvertFromUtf32(ch));
-                index++;
-            }
-            if (!expected.Equals(got.ToString()))
-            {
-                Errln("FAIL: " + "got '" + got + "' (" + Hex(got) + ")"
-                        + " but expected '" + expected + "' ("
-                        + Hex(expected) + ")");
-            }
-            if (got.Length < expected.Length)
-            {
-                Errln("FAIL: " + "Only got " + index + " chars, expected "
-                               + expected.Length);
-            }
-
-            Logln("Reverse Iteration\n");
-            iter.SetIndexOnly(iter.EndIndex);
-            got.Length = 0;
-            for (ch = iter.Previous(); ch != Normalizer.Done; ch = iter.Previous())
-            {
-                if (index >= expected.Length)
+                if (!expected.AsSpan().Equals(got.AsSpan(), StringComparison.Ordinal))
                 {
-                    Errln("FAIL: " + "Unexpected character '" + (char)ch
-                                   + "' (" + Hex(ch) + ")" + " at index " + index);
-                    break;
+                    Errln("FAIL: " + "got '" + got.AsSpan().ToString() + "' (" + Hex(got.AsSpan()) + ")"
+                            + " but expected '" + expected + "' ("
+                            + Hex(expected) + ")");
                 }
-                got.Append(UChar.ConvertFromUtf32(ch));
-            }
-            if (!expectedReverse.Equals(got.ToString()))
-            {
-                Errln("FAIL: " + "got '" + got + "' (" + Hex(got) + ")"
-                               + " but expected '" + expected
-                               + "' (" + Hex(expected) + ")");
-            }
-            if (got.Length < expected.Length)
-            {
-                Errln("FAIL: " + "Only got " + index + " chars, expected "
-                          + expected.Length);
-            }
+                if (got.Length < expected.Length)
+                {
+                    Errln("FAIL: " + "Only got " + index + " chars, expected "
+                                   + expected.Length);
+                }
 
+                Logln("Reverse Iteration\n");
+                iter.SetIndexOnly(iter.EndIndex);
+                got.Length = 0;
+                for (ch = iter.Previous(); ch != Normalizer.Done; ch = iter.Previous())
+                {
+                    if (index >= expected.Length)
+                    {
+                        Errln("FAIL: " + "Unexpected character '" + (char)ch
+                                       + "' (" + Hex(ch) + ")" + " at index " + index);
+                        break;
+                    }
+                    got.Append(UChar.ConvertFromUtf32(ch, codePointBuffer));
+                }
+                if (!expectedReverse.AsSpan().Equals(got.AsSpan(), StringComparison.Ordinal))
+                {
+                    Errln("FAIL: " + "got '" + got.AsSpan().ToString() + "' (" + Hex(got.AsSpan()) + ")"
+                                   + " but expected '" + expected
+                                   + "' (" + Hex(expected) + ")");
+                }
+                if (got.Length < expected.Length)
+                {
+                    Errln("FAIL: " + "Only got " + index + " chars, expected "
+                              + expected.Length);
+                }
+            }
+            finally
+            {
+                got.Dispose();
+            }
         }
         //--------------------------------------------------------------------------
         // helper class for TestPreviousNext()
@@ -1643,22 +1728,22 @@ namespace ICU4N.Dev.Test.Normalizers
 
                 char[] fillIn1 = new char[clone.Length];
                 char[] fillIn2 = new char[iter.Length];
-                int len = clone.GetText(fillIn1);
-                iter.GetText(fillIn2, 0);
+                clone.TryGetText(fillIn1, out int len);
+                iter.TryGetText(fillIn2, out _);
                 if (!Utility.ArrayRegionMatches(fillIn1, 0, fillIn2, 0, len))
                 {
-                    Errln("error in Normalizer.GetText(). Normalizer: " +
-                                    Utility.Hex(new string(fillIn1)) +
-                                    " Iter: " + Utility.Hex(new string(fillIn2)));
+                    Errln("error in Normalizer.TryGetText(). Normalizer: " +
+                                    Utility.Hex(fillIn1) +
+                                    " Iter: " + Utility.Hex(fillIn2));
                 }
 
                 clone.SetText(fillIn1);
-                len = clone.GetText(fillIn2);
+                clone.TryGetText(fillIn2, out len);
                 if (!Utility.ArrayRegionMatches(fillIn1, 0, fillIn2, 0, len))
                 {
-                    Errln("error in Normalizer.SetText() or Normalizer.GetText()" +
-                                    Utility.Hex(new string(fillIn1)) +
-                                    " Iter: " + Utility.Hex(new string(fillIn2)));
+                    Errln("error in Normalizer.SetText() or Normalizer.TryGetText()" +
+                                    Utility.Hex(fillIn1) +
+                                    " Iter: " + Utility.Hex(fillIn2));
                 }
 
                 // test setText(UChar *), getUMode() and setMode()
@@ -1753,7 +1838,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 right = (string)cases[i][2];
                 expect = (string)cases[i][3];
                 {
-                    result = Normalizer.Concatenate(left, right, mode, 0);
+                    result = Normalizer.Concat(left, right, mode, 0);
                     if (!result.Equals(expect))
                     {
                         Errln("error in Normalizer.Concatenate(), cases[] failed"
@@ -1762,7 +1847,7 @@ namespace ICU4N.Dev.Test.Normalizers
                     }
                 }
                 {
-                    result = Normalizer.Concatenate(left.ToCharArray(), right.ToCharArray(), mode, 0);
+                    result = Normalizer.Concat(left.AsSpan(), right.AsSpan(), mode, 0);
                     if (!result.Equals(expect))
                     {
                         Errln("error in Normalizer.Concatenate(), cases[] failed"
@@ -1780,27 +1865,31 @@ namespace ICU4N.Dev.Test.Normalizers
 
             // Concatenates 're' with '\u0301sum\u00e9 is HERE' and places the result at
             // position 3 of string 'My resume is here'.
-            Normalizer.Concatenate(left.ToCharArray(), 0, 2, right.ToCharArray(), 2, 15,
-                                             destination, 3, 17, mode, 0);
+            Normalizer.TryConcat(left.AsSpan(0, 2), right.AsSpan(2, 15 - 2),
+                                             destination.AsSpan(3, 17 - 3), out int charsLength, mode, 0);
             if (!new string(destination).Equals(expect))
             {
-                Errln("error in Normalizer.Concatenate(), cases2[] failed"
+                Errln("error in Normalizer.TryConcat(), cases2[] failed"
                       + ", result==expect: expected: "
                       + Hex(expect) + " =========> got: " + Hex(destination));
             }
 
             // Error case when result of concatenation won't fit into destination array.
-            try
-            {
-                Normalizer.Concatenate(left.ToCharArray(), 0, 2, right.ToCharArray(), 2, 15,
-                                             destination, 3, 16, mode, 0);
-            }
-            catch (IndexOutOfRangeException e)
-            {
-                assertTrue("Normalizer.Concatenate() failed", e.Message.Equals("14"));
-                return;
-            }
-            fail("Normalizer.Concatenate() tested for failure but passed");
+            assertFalse("Normalizer.TryConcat() tested for failure but passed", Normalizer.TryConcat(left.AsSpan(0, 2), right.AsSpan(2, 15 - 2),
+                                             destination.AsSpan(3, 16 - 3), out charsLength, mode, 0));
+            assertEquals("Normalizer.TryConcat() failed", 14, charsLength);
+
+            //try
+            //{
+            //    Normalizer.TryConcat(left.AsSpan(0, 2), right.AsSpan(2, 15 - 2),
+            //                                 destination.AsSpan(3, 16 - 3), out charsLength, mode, 0);
+            //}
+            //catch (IndexOutOfRangeException e)
+            //{
+            //    assertTrue("Normalizer.TryConcat() failed", e.Message.Equals("14"));
+            //    return;
+            //}
+            //fail("Normalizer.TryConcat() tested for failure but passed");
         }
 
         private readonly int RAND_MAX = 0x7fff;
@@ -1838,17 +1927,17 @@ namespace ICU4N.Dev.Test.Normalizers
 
             int count = 0;
 
-            if (Normalizer.QuickCheck(FAST, 0, FAST.Length, NormalizerMode.FCD, 0) != QuickCheckResult.Yes)
+            if (Normalizer.QuickCheck(FAST.AsSpan(0, FAST.Length), NormalizerMode.FCD, 0) != QuickCheckResult.Yes)
                 Errln("Normalizer.QuickCheck(FCD) failed: expected value for fast Normalizer.quickCheck is NormalizerQuickCheckResult.Yes\n");
-            if (Normalizer.QuickCheck(FALSE, 0, FALSE.Length, NormalizerMode.FCD, 0) != QuickCheckResult.No)
+            if (Normalizer.QuickCheck(FALSE.AsSpan(0, FALSE.Length), NormalizerMode.FCD, 0) != QuickCheckResult.No)
                 Errln("Normalizer.QuickCheck(FCD) failed: expected value for error Normalizer.quickCheck is NormalizerQuickCheckResult.No\n");
-            if (Normalizer.QuickCheck(TRUE, 0, TRUE.Length, NormalizerMode.FCD, 0) != QuickCheckResult.Yes)
+            if (Normalizer.QuickCheck(TRUE.AsSpan(0, TRUE.Length), NormalizerMode.FCD, 0) != QuickCheckResult.Yes)
                 Errln("Normalizer.QuickCheck(FCD) failed: expected value for correct Normalizer.quickCheck is NormalizerQuickCheckResult.Yes\n");
 
 
             while (count < 4)
             {
-                QuickCheckResult fcdresult = Normalizer.QuickCheck(datastr[count], 0, datastr[count].Length, NormalizerMode.FCD, 0);
+                QuickCheckResult fcdresult = Normalizer.QuickCheck(datastr[count].AsSpan(0, datastr[count].Length), NormalizerMode.FCD, 0);
                 if (result[count] != fcdresult)
                 {
                     Errln("Normalizer.QuickCheck(FCD) failed: Data set " + count
@@ -1874,14 +1963,18 @@ namespace ICU4N.Dev.Test.Normalizers
                 {
                     data[size] = datachar[rand.Next(RAND_MAX) * 50 / RAND_MAX];
                     Logln("0x" + data[size]);
-                    normStart += Normalizer.Normalize(data, size, size + 1,
-                                                        norm, normStart, 100,
-                                                        NormalizerMode.NFD, 0);
+                    //normStart += Normalizer.Normalize(data, size, size + 1,
+                    //                                    norm, normStart, 100,
+                    //                                    NormalizerMode.NFD, 0);
+                    assertTrue("", Normalizer.TryNormalize(data.AsSpan(size, 1), norm.AsSpan(normStart, 100 - normStart), out int charsLength, NormalizerMode.NFD, 0));
+                    normStart += charsLength;
                     size++;
                 }
                 Logln("\n");
 
-                nfdsize = Normalizer.Normalize(data, 0, size, nfd, 0, nfd.Length, NormalizerMode.NFD, 0);
+                assertTrue("", Normalizer.TryNormalize(data.AsSpan(0, size), nfd.AsSpan(0, nfd.Length), out nfdsize, NormalizerMode.NFD, 0));
+
+                //nfdsize = Normalizer.Normalize(data, 0, size, nfd, 0, nfd.Length, NormalizerMode.NFD, 0);
                 //    nfdsize = unorm_normalize(data, size, UNORM_NFD, UCOL_IGNORE_HANGUL,
                 //                      nfd, 100, &status);
                 if (nfdsize != normStart || Utility.ArrayRegionMatches(nfd, 0, norm, 0, nfdsize) == false)
@@ -1897,9 +1990,9 @@ namespace ICU4N.Dev.Test.Normalizers
                     Logln("result NormalizerQuickCheckResult.No\n");
                 }
 
-                if (Normalizer.QuickCheck(data, 0, data.Length, NormalizerMode.FCD, 0) != testresult)
+                if (Normalizer.QuickCheck(data.AsSpan(0, data.Length), NormalizerMode.FCD, 0) != testresult)
                 {
-                    Errln("Normalizer.QuickCheck(FCD) failed: expected " + testresult + " for random data: " + Hex(new string(data)));
+                    Errln("Normalizer.QuickCheck(FCD) failed: expected " + testresult + " for random data: " + Hex(data));
                 }
             }
         }
@@ -1969,8 +2062,8 @@ namespace ICU4N.Dev.Test.Normalizers
 
             int cmpStrings = Normalizer.Compare(s1, s2, normalizerComparison, foldCase, unicodeVersion);
             int cmpArrays = Normalizer.Compare(
-                    s1.ToCharArray(), 0, s1.Length,
-                    s2.ToCharArray(), 0, s2.Length, normalizerComparison, foldCase, unicodeVersion);
+                    s1.AsSpan(0, s1.Length),
+                    s2.AsSpan(0, s2.Length), normalizerComparison, foldCase, unicodeVersion);
             assertEquals("compare strings == compare char arrays", cmpStrings, cmpArrays);
             return cmpStrings;
         }
@@ -2298,7 +2391,7 @@ namespace ICU4N.Dev.Test.Normalizers
             // test cases with i and I to make sure Turkic works
             char[] iI = { (char)0x49, (char)0x69, (char)0x130, (char)0x131 };
             UnicodeSet set = new UnicodeSet(), iSet = new UnicodeSet();
-            Normalizer2Impl nfcImpl = Norm2AllModes.GetNFCInstance().Impl;
+            Normalizer2Impl nfcImpl = Norm2AllModes.NFCInstance.Impl;
             nfcImpl.EnsureCanonIterData();
 
             string s1, s2;
@@ -2313,7 +2406,7 @@ namespace ICU4N.Dev.Test.Normalizers
             }
 
             // test all of these precomposed characters
-            Normalizer2 nfcNorm2 = Normalizer2.GetNFCInstance();
+            Normalizer2 nfcNorm2 = Normalizer2.NFCInstance;
             UnicodeSetIterator it = new UnicodeSetIterator(set);
             int c;
             while (it.Next() && (c = it.Codepoint) != UnicodeSetIterator.IsString)
@@ -2667,36 +2760,44 @@ namespace ICU4N.Dev.Test.Normalizers
 
             // For each character about which we are unsure, see if it changes when we add
             // one of the back-combining characters.
-            Normalizer2 norm2 = Normalizer2.GetNFCInstance();
-            StringBuilder s = new StringBuilder();
-            iter.Reset(unsure);
-            while (iter.Next())
+            Normalizer2 norm2 = Normalizer2.NFCInstance;
+            ValueStringBuilder s = new ValueStringBuilder(stackalloc char[32]);
+            try
             {
-                int c = iter.Codepoint;
-                s.Delete(0, 0x7fffffff - 0).AppendCodePoint(c); // ICU4N: Corrected 2nd parameter of Delete
-                int cLength = s.Length;
-                int tccc = UChar.GetIntPropertyValue(c, UProperty.Trail_Canonical_Combining_Class);
-                for (int i = 0; i < numCombineBack; ++i)
+                iter.Reset(unsure);
+                while (iter.Next())
                 {
-                    // If c's decomposition ends with a character with non-zero combining class, then
-                    // c can only change if it combines with a character with a non-zero combining class.
-                    int cc2 = combineBackCharsAndCc[2 * i + 1];
-                    if (tccc == 0 || cc2 != 0)
+                    int c = iter.Codepoint;
+                    s.Delete(0, 0x7fffffff - 0); // ICU4N: Corrected 2nd parameter of Delete
+                    s.AppendCodePoint(c);
+                    int cLength = s.Length;
+                    int tccc = UChar.GetIntPropertyValue(c, UProperty.Trail_Canonical_Combining_Class);
+                    for (int i = 0; i < numCombineBack; ++i)
                     {
-                        int c2 = combineBackCharsAndCc[2 * i];
-                        s.AppendCodePoint(c2);
-                        if (!norm2.IsNormalized(s))
+                        // If c's decomposition ends with a character with non-zero combining class, then
+                        // c can only change if it combines with a character with a non-zero combining class.
+                        int cc2 = combineBackCharsAndCc[2 * i + 1];
+                        if (tccc == 0 || cc2 != 0)
                         {
-                            // System.out.format("remove U+%04x (tccc=%d) + U+%04x (cc=%d)\n", c, tccc, c2, cc2);
-                            skipSets[C].Remove(c);
-                            skipSets[KC].Remove(c);
-                            break;
+                            int c2 = combineBackCharsAndCc[2 * i];
+                            s.AppendCodePoint(c2);
+                            if (!norm2.IsNormalized(s.AsSpan()))
+                            {
+                                // System.out.format("remove U+%04x (tccc=%d) + U+%04x (cc=%d)\n", c, tccc, c2, cc2);
+                                skipSets[C].Remove(c);
+                                skipSets[KC].Remove(c);
+                                break;
+                            }
+                            s.Delete(cLength, 0x7fffffff - cLength); // ICU4N: Corrected 2nd parameter of Delete
                         }
-                        s.Delete(cLength, 0x7fffffff - cLength); // ICU4N: Corrected 2nd parameter of Delete
                     }
                 }
+                return skipSets;
             }
-            return skipSets;
+            finally
+            {
+                s.Dispose();
+            }
         }
 
         private static string[] kModeStrings = {
@@ -2845,8 +2946,10 @@ namespace ICU4N.Dev.Test.Normalizers
         {
             char[] term = { 'r', '\u00e9', 's', 'u', 'm', '\u00e9' };
             char[] decomposed_term = new char[10 + term.Length + 2];
-            int rc = Normalizer.Decompose(term, 0, term.Length, decomposed_term, 0, decomposed_term.Length, true, 0);
-            int rc1 = Normalizer.Decompose(term, 0, term.Length, decomposed_term, 10, decomposed_term.Length, true, 0);
+            //int rc = Normalizer.Decompose(term, 0, term.Length, decomposed_term, 0, decomposed_term.Length, true, 0);
+            //int rc1 = Normalizer.Decompose(term, 0, term.Length, decomposed_term, 10, decomposed_term.Length, true, 0);
+            Normalizer.TryDecompose(term.AsSpan(0, term.Length), decomposed_term.AsSpan(0, decomposed_term.Length), out int rc, true, 0);
+            Normalizer.TryDecompose(term.AsSpan(0, term.Length), decomposed_term.AsSpan(10, decomposed_term.Length - 10), out int rc1, true, 0);
             if (rc != rc1)
             {
                 Errln("Normalizer decompose did not return correct length");
@@ -2913,7 +3016,7 @@ namespace ICU4N.Dev.Test.Normalizers
         [Test]
         public void TestGetRawDecomposition()
         {
-            Normalizer2 n2 = Normalizer2.GetNFKCInstance();
+            Normalizer2 n2 = Normalizer2.NFKCInstance;
             /*
              * Raw decompositions from NFKC data are the Unicode Decomposition_Mapping values,
              * without recursive decomposition.
@@ -2936,89 +3039,16 @@ namespace ICU4N.Dev.Test.Normalizers
             assertEquals("nfkc.getRawDecomposition(Hangul syllable U+AC01) failed", "\uac00\u11a8", decomp);
         }
 
-        [Test]
-        public void TestCustomComp()
-        {
-            string[][] pairs ={
-            new string[] { "\\uD801\\uE000\\uDFFE", "" },
-            new string[] { "\\uD800\\uD801\\uE000\\uDFFE\\uDFFF", "\\uD7FF\\uFFFF" },
-            new string[] { "\\uD800\\uD801\\uDFFE\\uDFFF", "\\uD7FF\\U000107FE\\uFFFF" },
-            new string[] { "\\uE001\\U000110B9\\u0345\\u0308\\u0327", "\\uE002\\U000110B9\\u0327\\u0345" },
-            new string[] { "\\uE010\\U000F0011\\uE012", "\\uE011\\uE012" },
-            new string[] { "\\uE010\\U000F0011\\U000F0011\\uE012", "\\uE011\\U000F0010" },
-            new string[] { "\\uE111\\u1161\\uE112\\u1162", "\\uAE4C\\u1102\\u0062\\u1162" },
-            new string[] { "\\uFFF3\\uFFF7\\U00010036\\U00010077", "\\U00010037\\U00010037\\uFFF6\\U00010037" }
-        };
-            Normalizer2 customNorm2;
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-            Assembly assembly = typeof(BasicTest).GetTypeInfo().Assembly;
-#else
-            Assembly assembly = typeof(BasicTest).Assembly;
-#endif
-            customNorm2 =
-                Normalizer2.GetInstance(
-                    //BasicTest.class.getResourceAsStream("/com/ibm/icu/dev/data/testdata/testnorm.nrm"),
-                    assembly.GetManifestResourceStream("ICU4N.Dev.Data.TestData.testnorm.nrm"),
-                        "testnorm",
-                        Normalizer2Mode.Compose);
-            for (int i = 0; i < pairs.Length; ++i)
-            {
-                string[] pair = pairs[i];
-                string input = Utility.Unescape(pair[0]);
-                string expected = Utility.Unescape(pair[1]);
-                string result = customNorm2.Normalize(input);
-                if (!result.Equals(expected))
-                {
-                    Errln("custom compose Normalizer2 did not normalize input " + i + " as expected");
-                }
-            }
-        }
+        // ICU4N: Moved TestCustomComp() to BasicTest.generated.tt
 
-        [Test]
-        public void TestCustomFCC()
-        {
-            string[][] pairs ={
-                new string[] { "\\uD801\\uE000\\uDFFE", "" },
-                new string[] { "\\uD800\\uD801\\uE000\\uDFFE\\uDFFF", "\\uD7FF\\uFFFF" },
-                new string[] { "\\uD800\\uD801\\uDFFE\\uDFFF", "\\uD7FF\\U000107FE\\uFFFF" },
-                // The following expected result is different from CustomComp
-                // because of only-contiguous composition.
-                new string[] { "\\uE001\\U000110B9\\u0345\\u0308\\u0327", "\\uE001\\U000110B9\\u0327\\u0308\\u0345" },
-                new string[] { "\\uE010\\U000F0011\\uE012", "\\uE011\\uE012" },
-                new string[] { "\\uE010\\U000F0011\\U000F0011\\uE012", "\\uE011\\U000F0010" },
-                new string[] { "\\uE111\\u1161\\uE112\\u1162", "\\uAE4C\\u1102\\u0062\\u1162" },
-                new string[] { "\\uFFF3\\uFFF7\\U00010036\\U00010077", "\\U00010037\\U00010037\\uFFF6\\U00010037" }
-            };
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-            Assembly assembly = typeof(BasicTest).GetTypeInfo().Assembly;
-#else
-            Assembly assembly = typeof(BasicTest).Assembly;
-#endif
-            Normalizer2 customNorm2;
-            customNorm2 =
-                Normalizer2.GetInstance(
-                    //BasicTest.class.getResourceAsStream("/com/ibm/icu/dev/data/testdata/testnorm.nrm"),
-                    assembly.GetManifestResourceStream("ICU4N.Dev.Data.TestData.testnorm.nrm"),
-                        "testnorm",
-                        Normalizer2Mode.ComposeContiguous);
-            for (int i = 0; i < pairs.Length; ++i)
-            {
-                string[] pair = pairs[i];
-                string input = Utility.Unescape(pair[0]);
-                string expected = Utility.Unescape(pair[1]);
-                string result = customNorm2.Normalize(input);
-                if (!result.Equals(expected))
-                {
-                    Errln("custom FCC Normalizer2 did not normalize input " + i + " as expected");
-                }
-            }
-        }
+        // ICU4N: Moved TestCustomFCC() to BasicTest.generated.tt
+
 
         [Test]
         public void TestCanonIterData()
         {
             // For now, just a regression test.
-            Normalizer2Impl impl = Norm2AllModes.GetNFCInstance().Impl.EnsureCanonIterData();
+            Normalizer2Impl impl = Norm2AllModes.NFCInstance.Impl.EnsureCanonIterData();
             // U+0FB5 TIBETAN SUBJOINED LETTER SSA is the trailing character
             // in some decomposition mappings where there is a composition exclusion.
             // In fact, U+0FB5 is normalization-inert (NFC_QC=Yes, NFD_QC=Yes, ccc=0)
@@ -3049,127 +3079,15 @@ namespace ICU4N.Dev.Test.Normalizers
             }
         }
 
-        [Test]
-        public void TestFilteredNormalizer2()
-        {
-            Normalizer2 nfcNorm2 = Normalizer2.GetNFCInstance();
-            UnicodeSet filter = new UnicodeSet("[^\u00a0-\u00ff\u0310-\u031f]");
-            FilteredNormalizer2 fn2 = new FilteredNormalizer2(nfcNorm2, filter);
-            int c;
-            for (c = 0; c <= 0x3ff; ++c)
-            {
-                int expectedCC = filter.Contains(c) ? nfcNorm2.GetCombiningClass(c) : 0;
-                int cc = fn2.GetCombiningClass(c);
-                assertEquals(
-                        "FilteredNormalizer2(NFC, ^A0-FF,310-31F).getCombiningClass(U+" + Hex(c) +
-                        ")==filtered NFC.getCC()",
-                        expectedCC, cc);
-            }
+        // ICU4N: Moved TestFilteredNormalizer2() to BasicTest.generated.tt
 
-            // More coverage.
-            StringBuilder sb = new StringBuilder();
-            assertEquals("filtered normalize()", "ää\u0304",
-                    fn2.Normalize("a\u0308ä\u0304", sb).ToString());
-            assertTrue("filtered hasBoundaryAfter()", fn2.HasBoundaryAfter('ä'));
-            assertTrue("filtered isInert()", fn2.IsInert(0x0313));
-        }
+        // ICU4N: Moved TestFilteredAppend() to BasicTest.generated.tt
 
-        [Test]
-        public void TestFilteredAppend()
-        {
-            Normalizer2 nfcNorm2 = Normalizer2.GetNFCInstance();
-            UnicodeSet filter = new UnicodeSet("[^\u00a0-\u00ff\u0310-\u031f]");
-            FilteredNormalizer2 fn2 = new FilteredNormalizer2(nfcNorm2, filter);
+        // ICU4N: Moved TestGetEasyToUseInstance() to BasicTest.generated.tt
 
-            // Append two strings that each contain a character outside the filter set.
-            StringBuilder sb = new StringBuilder("a\u0313a");
-            string second = "\u0301\u0313";
-            assertEquals("append()", "a\u0313á\u0313", fn2.Append(sb, second).ToString());
+        // ICU4N: Moved TestLowMappingToEmpty_D() to BasicTest.generated.tt
 
-            // Same, and also normalize the second string.
-            sb.Replace(0, 0x7fffffff - 0, "a\u0313a"); // ICU4N: Checked 2nd parameter
-            assertEquals(
-                "normalizeSecondAndAppend()",
-                "a\u0313á\u0313", fn2.NormalizeSecondAndAppend(sb, second).ToString());
-
-            // Normalizer2.Normalize(string) uses spanQuickCheckYes() and normalizeSecondAndAppend().
-            assertEquals("normalize()", "a\u0313á\u0313", fn2.Normalize("a\u0313a\u0301\u0313"));
-        }
-
-        [Test]
-        public void TestGetEasyToUseInstance()
-        {
-            // Test input string:
-            // U+00A0 -> <noBreak> 0020
-            // U+00C7 0301 = 1E08 = 0043 0327 0301
-            string @in = "\u00A0\u00C7\u0301";
-            Normalizer2 n2 = Normalizer2.GetNFCInstance();
-            string @out = n2.Normalize(@in);
-            assertEquals(
-                    "getNFCInstance() did not return an NFC instance " +
-                    "(normalizes to " + Prettify(@out) + ')',
-                    "\u00A0\u1E08", @out);
-
-            n2 = Normalizer2.GetNFDInstance();
-            @out = n2.Normalize(@in);
-            assertEquals(
-                    "getNFDInstance() did not return an NFD instance " +
-                    "(normalizes to " + Prettify(@out) + ')',
-                    "\u00A0C\u0327\u0301", @out);
-
-            n2 = Normalizer2.GetNFKCInstance();
-            @out = n2.Normalize(@in);
-            assertEquals(
-                    "getNFKCInstance() did not return an NFKC instance " +
-                    "(normalizes to " + Prettify(@out) + ')',
-                    " \u1E08", @out);
-
-            n2 = Normalizer2.GetNFKDInstance();
-            @out = n2.Normalize(@in);
-            assertEquals(
-                    "getNFKDInstance() did not return an NFKD instance " +
-                    "(normalizes to " + Prettify(@out) + ')',
-                    " C\u0327\u0301", @out);
-
-            n2 = Normalizer2.GetNFKCCasefoldInstance();
-            @out = n2.Normalize(@in);
-            assertEquals(
-                    "getNFKCCasefoldInstance() did not return an NFKC_Casefold instance " +
-                    "(normalizes to " + Prettify(@out) + ')',
-                    " \u1E09", @out);
-        }
-
-        [Test]
-        public void TestLowMappingToEmpty_D()
-        {
-            Normalizer2 n2 = Normalizer2.GetInstance(null, "nfkc_cf", Normalizer2Mode.Decompose);
-            checkLowMappingToEmpty(n2);
-
-            string sh = "\u00AD";
-            assertFalse("soft hyphen is not normalized", n2.IsNormalized(sh));
-            string result = n2.Normalize(sh);
-            assertTrue("soft hyphen normalizes to empty", result == string.Empty);
-            assertEquals("soft hyphen QC=No", QuickCheckResult.No, n2.QuickCheck(sh));
-            assertEquals("soft hyphen spanQuickCheckYes", 0, n2.SpanQuickCheckYes(sh));
-
-            string s = "\u00ADÄ\u00AD\u0323";
-            result = n2.Normalize(s);
-            assertEquals("normalize string with soft hyphens", "a\u0323\u0308", result);
-        }
-
-        [Test]
-        public void TestLowMappingToEmpty_FCD()
-        {
-            Normalizer2 n2 = Normalizer2.GetInstance(null, "nfkc_cf", Normalizer2Mode.FCD);
-            checkLowMappingToEmpty(n2);
-
-            string sh = "\u00AD";
-            assertTrue("soft hyphen is FCD", n2.IsNormalized(sh));
-
-            string s = "\u00ADÄ\u00AD\u0323";
-            string result = n2.Normalize(s);
-            assertEquals("normalize string with soft hyphens", "\u00ADa\u0323\u0308", result);
-        }
+        // ICU4N: Moved TestLowMappingToEmpty_FCD() to BasicTest.generated.tt
 
         private void checkLowMappingToEmpty(Normalizer2 n2)
         {
@@ -3181,52 +3099,18 @@ namespace ICU4N.Dev.Test.Normalizers
             assertFalse("soft hyphen is not inert", n2.IsInert(0xad));
         }
 
-        [Test]
-        public void TestNormalizeIllFormedText()
-        {
-            Normalizer2 nfkc_cf = Normalizer2.GetNFKCCasefoldInstance();
-            // Normalization behavior for ill-formed text is not defined.
-            // ICU currently treats ill-formed sequences as normalization-inert
-            // and copies them unchanged.
-            string src = "  A\uD800ÄA\u0308\uD900A\u0308\u00ad\u0323\uDBFFÄ\u0323," +
-                    "\u00ad\uDC00\u1100\u1161가\u11A8가\u3133  \uDFFF";
-            string expected = "  a\uD800ää\uD900ạ\u0308\uDBFFạ\u0308,\uDC00가각갃  \uDFFF";
-            string result = nfkc_cf.Normalize(src);
-            assertEquals("normalize", expected, result);
-        }
+        // ICU4N: Moved TestNormalizeIllFormedText() to BasicTest.generated.tt
 
-        [Test]
-        public void TestComposeJamoTBase()
-        {
-            // Algorithmic composition of Hangul syllables must not combine with JAMO_T_BASE = U+11A7
-            // which is not a conjoining Jamo Trailing consonant.
-            Normalizer2 nfkc = Normalizer2.GetNFKCInstance();
-            string s = "\u1100\u1161\u11A7\u1100\u314F\u11A7가\u11A7";
-            string expected = "가\u11A7가\u11A7가\u11A7";
-            string result = nfkc.Normalize(s);
-            assertEquals("normalize(LV+11A7)", expected, result);
-            assertFalse("isNormalized(LV+11A7)", nfkc.IsNormalized(s));
-            assertTrue("isNormalized(normalized)", nfkc.IsNormalized(result));
-        }
+        // ICU4N: Moved TestComposeJamoTBase() to BasicTest.generated.tt
 
-        [Test]
-        public void TestComposeBoundaryAfter()
-        {
-            Normalizer2 nfkc = Normalizer2.GetNFKCInstance();
-            // U+02DA and U+FB2C do not have compose-boundaries-after.
-            string s = "\u02DA\u0339 \uFB2C\u05B6";
-            string expected = " \u0339\u030A \u05E9\u05B6\u05BC\u05C1";
-            string result = nfkc.Normalize(s);
-            assertEquals("nfkc", expected, result);
-            assertFalse("U+02DA boundary-after", nfkc.HasBoundaryAfter(0x2DA));
-            assertFalse("U+FB2C boundary-after", nfkc.HasBoundaryAfter(0xFB2C));
-        }
+        // ICU4N: Moved TestComposeBoundaryAfter() to BasicTest.generated.tt
+
 
         [Test]
         public void TestNFC()
         {
             // Coverage tests.
-            Normalizer2 nfc = Normalizer2.GetNFCInstance();
+            Normalizer2 nfc = Normalizer2.NFCInstance;
             assertTrue("nfc.hasBoundaryAfter(space)", nfc.HasBoundaryAfter(' '));
             assertFalse("nfc.hasBoundaryAfter(ä)", nfc.HasBoundaryAfter('ä'));
         }
@@ -3235,7 +3119,7 @@ namespace ICU4N.Dev.Test.Normalizers
         public void TestNFD()
         {
             // Coverage tests.
-            Normalizer2 nfd = Normalizer2.GetNFDInstance();
+            Normalizer2 nfd = Normalizer2.NFDInstance;
             assertTrue("nfd.hasBoundaryAfter(space)", nfd.HasBoundaryAfter(' '));
             assertFalse("nfd.hasBoundaryAfter(ä)", nfd.HasBoundaryAfter('ä'));
         }
@@ -3262,21 +3146,12 @@ namespace ICU4N.Dev.Test.Normalizers
             // Use the deprecated Mode Normalizer.NONE for coverage of the internal NoopNormalizer2
             // as far as its methods are reachable that way.
             assertEquals("NONE.Concatenate()", "ä\u0327",
-                    Normalizer.Concatenate("ä", "\u0327", NormalizerMode.None, 0));
-            assertTrue("NONE.IsNormalized()", Normalizer.IsNormalized("ä\u0327", NormalizerMode.None, 0));
+                    Normalizer.Concat("ä", "\u0327", NormalizerMode.None, 0));
+            string input = "ä\u0327";
+            assertTrue("NONE.IsNormalized()", Normalizer.IsNormalized(input, NormalizerMode.None, 0));
         }
 
-        [Test]
-        public void TestNoopNormalizer2()
-        {
-            // Use the internal class directly for coverage of methods that are not publicly reachable.
-            Normalizer2 noop = Norm2AllModes.NoopNormalizer2;
-            assertEquals("noop.normalizeSecondAndAppend()", "ä\u0327",
-                    noop.NormalizeSecondAndAppend(new StringBuilder("ä"), "\u0327").ToString());
-            assertEquals("noop.getDecomposition()", null, noop.GetDecomposition('ä'));
-            assertTrue("noop.hasBoundaryAfter()", noop.HasBoundaryAfter(0x0308));
-            assertTrue("noop.isInert()", noop.IsInert(0x0308));
-        }
+        // ICU4N: Moved TestNoopNormalizer2() to BasicTest.generated.tt
 
         /*
          * Abstract class Normalizer2 has non-abstract methods which are overwritten by
@@ -3287,66 +3162,63 @@ namespace ICU4N.Dev.Test.Normalizers
 
             public TestNormalizer2() { }
 
-            public override StringBuffer Normalize(string src, StringBuffer dest) { return null; }
+            public override StringBuffer Normalize(ReadOnlySpan<char> src, StringBuffer dest) => null;
 
-            public override StringBuffer Normalize(StringBuffer src, StringBuffer dest) { return null; }
+            internal override void Normalize(scoped ReadOnlySpan<char> src, ref ValueStringBuilder dest)
+            {
+            }
 
-            public override StringBuffer Normalize(char[] src, StringBuffer dest) { return null; }
+            public override TAppendable Normalize<TAppendable>(ReadOnlySpan<char> src, TAppendable dest) => default;
 
-            public override StringBuilder Normalize(ICharSequence src, StringBuilder dest) { return null; }
+            public override StringBuffer NormalizeSecondAndAppend(StringBuffer first, ReadOnlySpan<char> second) => null;
 
-            public override IAppendable Normalize(string src, IAppendable dest) { return null; }
-            public override IAppendable Normalize(StringBuffer src, IAppendable dest) { return null; }
-            public override IAppendable Normalize(char[] src, IAppendable dest) { return null; }
-            public override IAppendable Normalize(ICharSequence src, IAppendable dest) { return null; }
+            internal override void NormalizeSecondAndAppend(ref ValueStringBuilder first, ReadOnlySpan<char> second)
+            {
+            }
 
-            public override StringBuffer NormalizeSecondAndAppend(StringBuffer first, string second) { return null; }
+            public override StringBuffer Append(StringBuffer first, ReadOnlySpan<char> second) => null;
 
-            public override StringBuffer NormalizeSecondAndAppend(StringBuffer first, StringBuffer second) { return null; }
-
-            public override StringBuffer NormalizeSecondAndAppend(StringBuffer first, char[] second) { return null; }
-
-            public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, ICharSequence second) { return null; }
-
-            public override StringBuffer Append(StringBuffer first, string second) { return null; }
-
-            public override StringBuffer Append(StringBuffer first, StringBuffer second) { return null; }
-
-            public override StringBuffer Append(StringBuffer first, char[] second) { return null; }
-
-            public override StringBuilder Append(StringBuilder first, ICharSequence second) { return null; }
+            internal override void Append(ref ValueStringBuilder first, ReadOnlySpan<char> second)
+            {
+            }
 
             public override string GetDecomposition(int c) { return null; }
 
-            public override bool IsNormalized(string s) { return false; }
+            public override bool TryGetDecomposition(int codePoint, Span<char> destination, out int charsLength)
+            {
+                charsLength = 0;
+                return false;
+            }
 
-            public override bool IsNormalized(StringBuffer s) { return false; }
+            public override bool IsNormalized(ReadOnlySpan<char> s) => false;
 
-            public override bool IsNormalized(char[] s) { return false; }
+            public override QuickCheckResult QuickCheck(ReadOnlySpan<char> s) => (QuickCheckResult)(-1);
 
-            public override bool IsNormalized(ICharSequence s) { return false; }
-
-            public override QuickCheckResult QuickCheck(string s) { return (QuickCheckResult)(-1); }
-
-            public override QuickCheckResult QuickCheck(StringBuffer s) { return (QuickCheckResult)(-1); }
-
-            public override QuickCheckResult QuickCheck(char[] s) { return (QuickCheckResult)(-1); }
-
-            public override QuickCheckResult QuickCheck(ICharSequence s) { return (QuickCheckResult)(-1); }
-
-            public override int SpanQuickCheckYes(string s) { return 0; }
-
-            public override int SpanQuickCheckYes(StringBuffer s) { return 0; }
-
-            public override int SpanQuickCheckYes(char[] s) { return 0; }
-
-            public override int SpanQuickCheckYes(ICharSequence s) { return 0; }
+            public override int SpanQuickCheckYes(ReadOnlySpan<char> s) => 0;
 
             public override bool HasBoundaryBefore(int c) { return false; }
 
             public override bool HasBoundaryAfter(int c) { return false; }
 
             public override bool IsInert(int c) { return false; }
+
+            public override bool TryNormalize(ReadOnlySpan<char> source, Span<char> destination, out int charsLength)
+            {
+                charsLength = 0;
+                return false;
+            }
+
+            public override bool TryNormalizeSecondAndConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength)
+            {
+                charsLength = 0;
+                return false;
+            }
+
+            public override bool TryConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength)
+            {
+                charsLength = 0;
+                return false;
+            }
         }
 
         TestNormalizer2 tnorm2 = new TestNormalizer2();

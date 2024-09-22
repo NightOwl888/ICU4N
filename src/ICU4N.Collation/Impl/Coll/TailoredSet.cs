@@ -1,7 +1,9 @@
-﻿using ICU4N.Support.Text;
+﻿using ICU4N.Globalization;
+using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N.Text;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -27,11 +29,13 @@ namespace ICU4N.Impl.Coll
     /// </summary>
     public sealed class TailoredSet
     {
+        private const int CharStackBufferSize = 32;
+
         private CollationData data;
         private CollationData baseData;
         private UnicodeSet tailored;
-        private StringBuilder unreversedPrefix = new StringBuilder();
-        private string suffix;
+        private OpenStringBuilder unreversedPrefix = new OpenStringBuilder();
+        private ReadOnlyMemory<char> suffix;
 
         public TailoredSet(UnicodeSet t)
         {
@@ -108,18 +112,18 @@ namespace ICU4N.Impl.Coll
                 {
                     int baseIndex = Collation.IndexFromCE32(baseCE32);
                     baseCE32 = baseData.GetFinalCE32(baseData.GetCE32FromContexts(baseIndex));
-                    ComparePrefixes(c, data.contexts, dataIndex + 2, baseData.contexts, baseIndex + 2);
+                    ComparePrefixes(c, data.contexts.AsMemory(), dataIndex + 2, baseData.contexts.AsMemory(), baseIndex + 2);
                 }
                 else
                 {
-                    AddPrefixes(data, c, data.contexts, dataIndex + 2);
+                    AddPrefixes(data, c, data.contexts.AsMemory(), dataIndex + 2);
                 }
             }
             else if (Collation.IsPrefixCE32(baseCE32))
             {
                 int baseIndex = Collation.IndexFromCE32(baseCE32);
                 baseCE32 = baseData.GetFinalCE32(baseData.GetCE32FromContexts(baseIndex));
-                AddPrefixes(baseData, c, baseData.contexts, baseIndex + 2);
+                AddPrefixes(baseData, c, baseData.contexts.AsMemory(), baseIndex + 2);
             }
 
             if (Collation.IsContractionCE32(ce32))
@@ -144,18 +148,18 @@ namespace ICU4N.Impl.Coll
                     {
                         baseCE32 = baseData.GetFinalCE32(baseData.GetCE32FromContexts(baseIndex));
                     }
-                    CompareContractions(c, data.contexts, dataIndex + 2, baseData.contexts, baseIndex + 2);
+                    CompareContractions(c, data.contexts.AsMemory(), dataIndex + 2, baseData.contexts.AsMemory(), baseIndex + 2);
                 }
                 else
                 {
-                    AddContractions(c, data.contexts, dataIndex + 2);
+                    AddContractions(c, data.contexts.AsMemory(), dataIndex + 2);
                 }
             }
             else if (Collation.IsContractionCE32(baseCE32))
             {
                 int baseIndex = Collation.IndexFromCE32(baseCE32);
                 baseCE32 = baseData.GetFinalCE32(baseData.GetCE32FromContexts(baseIndex));
-                AddContractions(c, baseData.contexts, baseIndex + 2);
+                AddContractions(c, baseData.contexts.AsMemory(), baseIndex + 2);
             }
 
             int tag;
@@ -262,10 +266,9 @@ namespace ICU4N.Impl.Coll
             }
             else if (tag == Collation.HANGUL_TAG)
             {
-                StringBuilder jamos = new StringBuilder();
-                int length = Hangul.Decompose(c, jamos);
+                ReadOnlySpan<char> jamos = Hangul.GetDecomposition(c, stackalloc char[3]); // ICU4N: Renamed from Hangul.Decompose()
                 if (tailored.Contains(jamos[0]) || tailored.Contains(jamos[1])
-                        || (length == 3 && tailored.Contains(jamos[2])))
+                        || (jamos.Length == 3 && tailored.Contains(jamos[2])))
                 {
                     Add(c);
                 }
@@ -276,26 +279,26 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        private void ComparePrefixes(int c, string p, int pidx, string q, int qidx) // ICU4N specific - changed p and q from ICharSequence to string
+        private void ComparePrefixes(int c, ReadOnlyMemory<char> p, int pidx, ReadOnlyMemory<char> q, int qidx)
         {
             // Parallel iteration over prefixes of both tables.
             using (CharsTrieEnumerator prefixes = new CharsTrie(p, pidx).GetEnumerator())
             using (CharsTrieEnumerator basePrefixes = new CharsTrie(q, qidx).GetEnumerator())
             {
-                string tp = null; // Tailoring prefix.
-                string bp = null; // Base prefix.
-                                  // Use a string with a U+FFFF as the limit sentinel.
-                                  // U+FFFF is untailorable and will not occur in prefixes.
-                string none = "\uffff";
+                ReadOnlyMemory<char> tp = default; // Tailoring prefix.
+                ReadOnlyMemory<char> bp = default; // Base prefix.
+                                                   // Use a string with a U+FFFF as the limit sentinel.
+                                                   // U+FFFF is untailorable and will not occur in prefixes.
+                ReadOnlyMemory<char> none = "\uffff".AsMemory();
                 CharsTrieEntry te = null, be = null;
                 for (; ; )
                 {
-                    if (tp == null)
+                    if (tp.IsEmpty)
                     {
                         if (prefixes.MoveNext())
                         {
                             te = prefixes.Current;
-                            tp = te.Chars.ToString();
+                            tp = te.Chars;
                         }
                         else
                         {
@@ -303,12 +306,12 @@ namespace ICU4N.Impl.Coll
                             tp = none;
                         }
                     }
-                    if (bp == null)
+                    if (bp.IsEmpty)
                     {
                         if (basePrefixes.MoveNext())
                         {
                             be = basePrefixes.Current;
-                            bp = be.Chars.ToString();
+                            bp = be.Chars;
                         }
                         else
                         {
@@ -316,16 +319,17 @@ namespace ICU4N.Impl.Coll
                             bp = none;
                         }
                     }
-                    if (Utility.SameObjects(tp, none) && Utility.SameObjects(bp, none))
+                    ReadOnlySpan<char> tpSpan = tp.Span, bpSpan = bp.Span, noneSpan = none.Span;
+                    if (tpSpan.Equals(noneSpan, StringComparison.Ordinal) && bpSpan.Equals(noneSpan, StringComparison.Ordinal))
                     {
                         break;
                     }
-                    int cmp = tp.CompareToOrdinal(bp);
+                    int cmp = tpSpan.CompareTo(bpSpan, StringComparison.Ordinal);
                     if (cmp < 0)
                     {
                         // tp occurs in the tailoring but not in the base.
                         Debug.Assert(te != null);
-                        AddPrefix(data, tp, c, te.Value);
+                        AddPrefix(data, tpSpan, c, te.Value);
                         te = null;
                         tp = null;
                     }
@@ -333,13 +337,13 @@ namespace ICU4N.Impl.Coll
                     {
                         // bp occurs in the base but not in the tailoring.
                         Debug.Assert(be != null);
-                        AddPrefix(baseData, bp, c, be.Value);
+                        AddPrefix(baseData, bpSpan, c, be.Value);
                         be = null;
                         bp = null;
                     }
                     else
                     {
-                        SetPrefix(tp);
+                        SetPrefix(tpSpan);
                         Debug.Assert(te != null && be != null);
                         Compare(c, te.Value, be.Value);
                         ResetPrefix();
@@ -350,27 +354,27 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        private void CompareContractions(int c, string p, int pidx, string q, int qidx) // ICU4N specific - changed p and q from ICharSequence to string
+        private void CompareContractions(int c, ReadOnlyMemory<char> p, int pidx, ReadOnlyMemory<char> q, int qidx)
         {
             // Parallel iteration over suffixes of both tables.
             using (CharsTrieEnumerator suffixes = new CharsTrie(p, pidx).GetEnumerator())
             using (CharsTrieEnumerator baseSuffixes = new CharsTrie(q, qidx).GetEnumerator())
             {
-                string ts = null; // Tailoring suffix.
-                string bs = null; // Base suffix.
+                ReadOnlyMemory<char> ts = default; // Tailoring suffix.
+                ReadOnlyMemory<char> bs = default; // Base suffix.
                                   // Use a string with two U+FFFF as the limit sentinel.
                                   // U+FFFF is untailorable and will not occur in contractions except maybe
                                   // as a single suffix character for a root-collator boundary contraction.
-                string none = "\uffff\uffff";
+                ReadOnlyMemory<char> none = "\uffff\uffff".AsMemory();
                 CharsTrieEntry te = null, be = null;
                 for (; ; )
                 {
-                    if (ts == null)
+                    if (ts.IsEmpty)
                     {
                         if (suffixes.MoveNext())
                         {
                             te = suffixes.Current;
-                            ts = te.Chars.ToString();
+                            ts = te.Chars;
                         }
                         else
                         {
@@ -378,12 +382,12 @@ namespace ICU4N.Impl.Coll
                             ts = none;
                         }
                     }
-                    if (bs == null)
+                    if (bs.IsEmpty)
                     {
                         if (baseSuffixes.MoveNext())
                         {
                             be = baseSuffixes.Current;
-                            bs = be.Chars.ToString();
+                            bs = be.Chars;
                         }
                         else
                         {
@@ -391,22 +395,23 @@ namespace ICU4N.Impl.Coll
                             bs = none;
                         }
                     }
-                    if (Utility.SameObjects(ts, none) && Utility.SameObjects(bs, none))
+                    ReadOnlySpan<char> tsSpan = ts.Span, bsSpan = bs.Span, noneSpan = none.Span;
+                    if (tsSpan.Equals(noneSpan, StringComparison.Ordinal) && bsSpan.Equals(noneSpan, StringComparison.Ordinal))
                     {
                         break;
                     }
-                    int cmp = ts.CompareToOrdinal(bs);
+                    int cmp = tsSpan.CompareTo(bsSpan, StringComparison.Ordinal);
                     if (cmp < 0)
                     {
                         // ts occurs in the tailoring but not in the base.
-                        AddSuffix(c, ts);
+                        AddSuffix(c, tsSpan);
                         te = null;
                         ts = null;
                     }
                     else if (cmp > 0)
                     {
                         // bs occurs in the base but not in the tailoring.
-                        AddSuffix(c, bs);
+                        AddSuffix(c, bsSpan);
                         be = null;
                         bs = null;
                     }
@@ -422,109 +427,79 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        private void AddPrefixes(CollationData d, int c, string p, int pidx) // ICU4N specific - changed p from ICharSequence to string
+        private void AddPrefixes(CollationData d, int c, ReadOnlyMemory<char> p, int pidx)
         {
             using (CharsTrieEnumerator prefixes = new CharsTrie(p, pidx).GetEnumerator())
             {
                 while (prefixes.MoveNext())
                 {
                     var e = prefixes.Current;
-                    AddPrefix(d, e.Chars, c, e.Value);
+                    AddPrefix(d, e.Chars.Span, c, e.Value);
                 }
             }
         }
 
-        // ICU4N specific overload
-        private void AddPrefix(CollationData d, string pfx, int c, int ce32) // ICU4N specific - changed pfx from ICharSequence to string
+        private void AddPrefix(CollationData d, ReadOnlySpan<char> pfx, int c, int ce32)
         {
             SetPrefix(pfx);
             ce32 = d.GetFinalCE32(ce32);
             if (Collation.IsContractionCE32(ce32))
             {
                 int idx = Collation.IndexFromCE32(ce32);
-                AddContractions(c, d.contexts, idx + 2);
+                AddContractions(c, d.contexts.AsMemory(), idx + 2);
             }
             tailored.Add(unreversedPrefix.AppendCodePoint(c).ToString());
             ResetPrefix();
         }
 
-        private void AddPrefix(CollationData d, ICharSequence pfx, int c, int ce32)
-        {
-            SetPrefix(pfx);
-            ce32 = d.GetFinalCE32(ce32);
-            if (Collation.IsContractionCE32(ce32))
-            {
-                int idx = Collation.IndexFromCE32(ce32);
-                AddContractions(c, d.contexts, idx + 2);
-            }
-            tailored.Add(unreversedPrefix.AppendCodePoint(c).ToString());
-            ResetPrefix();
-        }
-
-        // ICU4N specific overload
-        private void AddContractions(int c, string p, int pidx)
+        private void AddContractions(int c, ReadOnlyMemory<char> p, int pidx)
         {
             using (CharsTrieEnumerator suffixes = new CharsTrie(p, pidx).GetEnumerator())
             {
                 while (suffixes.MoveNext())
                 {
                     var e = suffixes.Current;
-                    AddSuffix(c, e.Chars);
+                    AddSuffix(c, e.Chars.Span);
                 }
             }
         }
 
-        private void AddContractions(int c, ICharSequence p, int pidx)
+        private void AddSuffix(int c, ReadOnlySpan<char> sfx)
         {
-            using (CharsTrieEnumerator suffixes = new CharsTrie(p, pidx).GetEnumerator())
-            {
-                while (suffixes.MoveNext())
-                {
-                    var e = suffixes.Current;
-                    AddSuffix(c, e.Chars);
-                }
-            }
-        }
-
-        // ICU4N specific overload
-        private void AddSuffix(int c, string sfx)
-        {
-            tailored.Add(new StringBuilder(unreversedPrefix.ToString()).AppendCodePoint(c).Append(sfx));
-        }
-
-        private void AddSuffix(int c, ICharSequence sfx)
-        {
-            tailored.Add(new StringBuilder(unreversedPrefix.ToString()).AppendCodePoint(c).Append(sfx));
+            int length = unreversedPrefix.Length + 2 + sfx.Length;
+            using var sb = length <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[length])
+                : new ValueStringBuilder(length);
+            sb.Append(unreversedPrefix.AsSpan());
+            sb.AppendCodePoint(c);
+            sb.Append(sfx);
+            tailored.Add(sb.AsSpan());
         }
 
         private void Add(int c)
         {
-            if (unreversedPrefix.Length == 0 && suffix == null)
+            if (unreversedPrefix.Length == 0 && suffix.IsEmpty)
             {
                 tailored.Add(c);
             }
             else
             {
-                StringBuilder s = new StringBuilder(unreversedPrefix.ToString());
+                int length = unreversedPrefix.Length + 2 + suffix.Length;
+                using var s = length <= CharStackBufferSize
+                    ? new ValueStringBuilder(stackalloc char[length])
+                    : new ValueStringBuilder(length);
+                s.Append(unreversedPrefix.AsSpan());
                 s.AppendCodePoint(c);
-                if (suffix != null)
+                if (!suffix.IsEmpty)
                 {
-                    s.Append(suffix);
+                    s.Append(suffix.Span);
                 }
-                tailored.Add(s);
+                tailored.Add(s.AsSpan());
             }
         }
 
-        // ICU4N specific overload
         // Prefixes are reversed in the data structure.
-        private void SetPrefix(string pfx)
-        {
-            unreversedPrefix.Length = 0;
-            unreversedPrefix.Append(pfx).Reverse();
-        }
-
-        // Prefixes are reversed in the data structure.
-        private void SetPrefix(ICharSequence pfx)
+        private void SetPrefix(ReadOnlySpan<char> pfx)
         {
             unreversedPrefix.Length = 0;
             unreversedPrefix.Append(pfx).Reverse();

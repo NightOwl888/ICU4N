@@ -12,7 +12,7 @@ namespace ICU4N.Text
         internal readonly UnicodeSet sourceCache;
         internal readonly ISet<string> sourceStrings;
         internal static readonly UnicodeSet NON_STARTERS = new UnicodeSet("[:^ccc=0:]").Freeze();
-        internal static Normalizer2 NFC = Normalizer2.GetNFCInstance();
+        internal static Normalizer2 NFC = Normalizer2.NFCInstance;
         //internal static readonly UnicodeSet TRAILING_COMBINING = new UnicodeSet();
 
         public SourceTargetUtility(ITransform<string, string> transform)

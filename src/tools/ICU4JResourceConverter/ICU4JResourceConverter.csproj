@@ -2,7 +2,8 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework Condition="'$(VisualStudioVersion)' &gt;= '16.10'">net7.0</TargetFramework>
 
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 
@@ -13,9 +14,11 @@
     <Compile Include="..\..\ICU4N\Impl\LocaleIDParser.cs" Link="Shared\LocaleIDParser.cs" />
     <Compile Include="..\..\ICU4N\Impl\LocaleIDs.cs" Link="Shared\LocaleIDs.cs" />
     <Compile Include="..\..\ICU4N\Impl\Locale\AsciiUtil.cs" Link="Shared\AsciiUtil.cs" />
+    <Compile Include="..\..\ICU4N\Support\ArrayPoolExtensions.cs" Link="Shared\ArrayPoolExtensions.cs" />
     <Compile Include="..\..\ICU4N\Support\Collections\DictionaryExtensions.cs" Link="Shared\DictionaryExtensions.cs" />
     <Compile Include="..\..\ICU4N\Support\Globalization\LocaleID.cs" Link="Shared\LocaleID.cs" />
     <Compile Include="..\..\ICU4N\Support\Text\ValueStringBuilder.cs" Link="Shared\ValueStringBuilder.cs" />
+    <Compile Include="..\..\ICU4N\Support\Text\ValueStringBuilder.CharSequence.cs" Link="Shared\ValueStringBuilder.CharSequence.cs" />
   </ItemGroup>
 
   <ItemGroup>

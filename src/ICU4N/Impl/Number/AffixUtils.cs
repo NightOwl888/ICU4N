@@ -119,14 +119,14 @@ namespace ICU4N.Numerics
             public string GetSymbol(Type type);
         }
 
-        // ICU4N specific: Moved EstimateLength(ICharSequence patternString) to AffixUtilsExtension.tt
+        // ICU4N specific: Moved EstimateLength(ICharSequence patternString) to AffixUtils.generated.tt
 
 
         // ICU4N TODO: API - Where supported, convert these to use Span<char> and make them TryEscape() so we can use the stack.
 
-        // ICU4N specific: Escape(ICharSequence input, StringBuilder output) to AffixUtilsExtension.tt
+        // ICU4N specific: Moved Escape(ICharSequence input, StringBuilder output) to AffixUtils.generated.tt
 
-        // ICU4N specific: Escape(ICharSequence input) to AffixUtilsExtension.tt
+        // ICU4N specific: Moved Escape(ICharSequence input) to AffixUtils.generated.tt
 
 
 
@@ -161,26 +161,26 @@ namespace ICU4N.Numerics
 
         // ICU4N TODO: API - Where supported, convert these to use Span<char> and make them TryEscape() so we can use the stack.
 
-        // ICU4N specific: Unescape(
+        // ICU4N specific: Moved Unescape(
         //      ICharSequence affixPattern,
         //      NumberStringBuilder output,
         //      int position,
-        //      ISymbolProvider provider) to AffixUtilsExtension.tt
+        //      ISymbolProvider provider) to AffixUtils.generated.tt
 
-        // ICU4N specific: UnescapedCodePointCount(ICharSequence affixPattern, ISymbolProvider provider) to AffixUtilsExtension.tt
+        // ICU4N specific: Moved UnescapedCodePointCount(ICharSequence affixPattern, ISymbolProvider provider) to AffixUtils.generated.tt
 
-        // ICU4N specific: ContainsType(ICharSequence affixPattern, Type type) to AffixUtilsExtension.tt
+        // ICU4N specific: Moved ContainsType(ICharSequence affixPattern, Type type) to AffixUtils.generated.tt
 
-        // ICU4N specific: HasCurrencySymbols(ICharSequence affixPattern) to AffixUtilsExtension.tt
+        // ICU4N specific: Moved HasCurrencySymbols(ICharSequence affixPattern) to AffixUtils.generated.tt
 
 
         // ICU4N TODO: Refactor this - We can pass in an allocated Span<char> to make the replacement.
 
-        // ICU4N specific: ReplaceType(ICharSequence affixPattern, Type type, char replacementChar) to AffixUtilsExtension.tt
+        // ICU4N specific: Moved ReplaceType(ICharSequence affixPattern, Type type, char replacementChar) to AffixUtils.generated.tt
 
-        // ICU4N specific: NextToken(long tag, ICharSequence patternString) to AffixUtilsExtension.tt
+        // ICU4N specific: Moved NextToken(long tag, ICharSequence patternString) to AffixUtils.generated.tt
 
-        // ICU4N specific: HasNext(long tag, ICharSequence affixPattern) to AffixUtilsExtension.tt
+        // ICU4N specific: Moved HasNext(long tag, ICharSequence affixPattern) to AffixUtils.generated.tt
 
         /// <summary>
         /// This function helps determine the identity of the token consumed by <see cref="NextToken(long, ICharSequence)"/>.

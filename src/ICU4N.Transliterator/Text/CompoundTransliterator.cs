@@ -1,7 +1,10 @@
 ﻿using ICU4N.Impl;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
+using System.Text.RegularExpressions;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
@@ -194,16 +197,23 @@ namespace ICU4N.Text
             // ID.
             if (direction == Reverse && fixReverseID)
             {
-                StringBuilder newID = new StringBuilder();
-                for (i = 0; i < count; ++i)
+                ValueStringBuilder newID = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                try
                 {
-                    if (i > 0)
+                    for (i = 0; i < count; ++i)
                     {
-                        newID.Append(ID_DELIM);
+                        if (i > 0)
+                        {
+                            newID.Append(ID_DELIM);
+                        }
+                        newID.Append(trans[i].ID);
                     }
-                    newID.Append(trans[i].ID);
+                    ID = newID.ToString();
                 }
-                ID = newID.ToString();
+                finally
+                {
+                    newID.Dispose();
+                }
             }
 
             ComputeMaximumContextLength();
@@ -248,7 +258,7 @@ namespace ICU4N.Text
         /// Append <paramref name="c"/> to <paramref name="buf"/>, unless <paramref name="buf"/> 
         /// is empty or buf already ends in <paramref name="c"/>.
         /// </summary>
-        private static void SmartAppend(StringBuilder buf, char c)
+        private static void SmartAppend(ref ValueStringBuilder buf, char c)
         {
             if (buf.Length != 0 &&
                 buf[buf.Length - 1] != c)
@@ -256,6 +266,8 @@ namespace ICU4N.Text
                 buf.Append(c);
             }
         }
+
+#nullable enable
 
         /// <summary>
         /// Override Transliterator:
@@ -269,22 +281,63 @@ namespace ICU4N.Text
         /// <returns>The rule string.</returns>
         public override string ToRules(bool escapeUnprintable)
         {
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                ToRules(escapeUnprintable, ref sb);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Override Transliterator:
+        /// Create a rule string that can be passed to <see cref="Transliterator.CreateFromRules(string, string, TransliterationDirection)"/>
+        /// to recreate this transliterator.
+        /// </summary>
+        /// <param name="escapeUnprintable">If TRUE then convert unprintable
+        /// character to their hex escape representations, \\uxxxx or
+        /// \\Uxxxxxxxx.  Unprintable characters are those other than
+        /// U+000A, U+0020..U+007E.</param>
+        /// <param name="destination">Upon return from this method, will contain the rule string.</param>
+        internal override void ToRules(bool escapeUnprintable, ref ValueStringBuilder destination)
+        {
             // We do NOT call toRules() on our component transliterators, in
             // general.  If we have several rule-based transliterators, this
             // yields a concatenation of the rules -- not what we want.  We do
             // handle compound RBT transliterators specially -- those for which
             // compoundRBTIndex >= 0.  For the transliterator at compoundRBTIndex,
             // we do call toRules() recursively.
-            StringBuilder rulesSource = new StringBuilder();
             if (numAnonymousRBTs >= 1 && Filter != null)
             {
                 // If we are a compound RBT and if we have a global
                 // filter, then emit it at the top.
-                rulesSource.Append("::").Append(Filter.ToPattern(escapeUnprintable)).Append(ID_DELIM);
+                destination.Append("::");
+                char[]? matcherPatternArray = null;
+                try
+                {
+                    Span<char> matcherPattern = stackalloc char[CharStackBufferSize];
+                    if (!Filter.TryToPattern(escapeUnprintable, matcherPattern, out int matcherPatternLength))
+                    {
+                        // Not enough buffer, use the array pool
+                        matcherPattern = matcherPatternArray = ArrayPool<char>.Shared.Rent(matcherPatternLength);
+                        bool success = Filter.TryToPattern(escapeUnprintable, matcherPattern, out matcherPatternLength);
+                        Debug.Assert(success); // Unexpected
+                    }
+                    destination.Append(matcherPattern.Slice(0, matcherPatternLength));
+                }
+                finally
+                {
+                    ArrayPool<char>.Shared.ReturnIfNotNull(matcherPatternArray);
+                }
+                destination.Append(ID_DELIM);
             }
             for (int i = 0; i < trans.Length; ++i)
             {
-                string rule;
+                SmartAppend(ref destination, '\n');
 
                 // Anonymous RuleBasedTransliterators (inline rules and
                 // ::BEGIN/::END blocks) are given IDs that begin with
@@ -292,9 +345,9 @@ namespace ICU4N.Text
                 // (and insert "::Null;" if we have two in a row)
                 if (trans[i].ID.StartsWith("%Pass", StringComparison.Ordinal))
                 {
-                    rule = trans[i].ToRules(escapeUnprintable);
                     if (numAnonymousRBTs > 1 && i > 0 && trans[i - 1].ID.StartsWith("%Pass", StringComparison.Ordinal))
-                        rule = "::Null;" + rule;
+                        destination.Append("::Null;");
+                    trans[i].ToRules(escapeUnprintable, ref destination);
 
                     // we also use toRules() on CompoundTransliterators (which we
                     // check for by looking for a semicolon in the ID)-- this gets
@@ -303,20 +356,18 @@ namespace ICU4N.Text
                 }
                 else if (trans[i].ID.IndexOf(';') >= 0)
                 {
-                    rule = trans[i].ToRules(escapeUnprintable);
-
-                    // for everything else, use baseToRules()
+                    trans[i].ToRules(escapeUnprintable, ref destination);
                 }
-                else
+                else // for everything else, use baseToRules()
                 {
-                    rule = trans[i].BaseToRules(escapeUnprintable);
+                    trans[i].BaseToRules(escapeUnprintable, ref destination);
                 }
-                SmartAppend(rulesSource, '\n');
-                rulesSource.Append(rule);
-                SmartAppend(rulesSource, ID_DELIM);
+                
+                SmartAppend(ref destination, ID_DELIM);
             }
-            return rulesSource.ToString();
         }
+
+#nullable restore
 
         /// <seealso cref="Transliterator.AddSourceTargetSet(UnicodeSet, UnicodeSet, UnicodeSet)"/>
 #pragma warning disable 672

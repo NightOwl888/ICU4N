@@ -2,9 +2,9 @@
 using J2N;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using JCG = J2N.Collections.Generic;
-using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
 {
@@ -37,6 +37,8 @@ namespace ICU4N.Text
     /// <stable>ICU 2.4</stable>
     public sealed class CanonicalEnumerator // ICU4N specific - renamed from CanonicalIterator
     {
+        private const int CharStackBufferSize = 32;
+
         /// <summary>
         /// Construct a <see cref="CanonicalEnumerator"/> object.
         /// </summary>
@@ -44,7 +46,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.4</stable>
         public CanonicalEnumerator(string source)
         {
-            Norm2AllModes allModes = Norm2AllModes.GetNFCInstance();
+            Norm2AllModes allModes = Norm2AllModes.NFCInstance;
             nfd = allModes.Decomp;
             nfcImpl = allModes.Impl.EnsureCanonIterData();
             SetSource(source);
@@ -202,35 +204,79 @@ namespace ICU4N.Text
                 return;
             }
 
-            // otherwise iterate through the string, and recursively permute all the other characters
-            ISet<string> subpermute = new JCG.HashSet<string>();
-            int cp;
-            for (int i = 0; i < source.Length; i += UTF16.GetCharCount(cp))
+            PermuteInternal(source.AsSpan(), skipZeros, output);
+        }
+
+        /// <summary>
+        /// Simple implementation of permutation.
+        /// <para/>
+        /// <b>Warning: The strings are not guaranteed to be in any particular order.</b>
+        /// </summary>
+        /// <param name="source">The string to find permutations for.</param>
+        /// <param name="skipZeros">Set to true to skip characters with canonical combining class zero.</param>
+        /// <param name="output">The set to add the results to.</param>
+        /// <internal/>
+        [Obsolete("This API is ICU internal only.")]
+        public static void Permute(ReadOnlySpan<char> source, bool skipZeros, ISet<string> output)
+        {
+            // TODO: optimize
+            //if (PROGRESS) System.out.println("Permute: " + source);
+
+            // optimization:
+            // if zero or one character, just return a set with it
+            // we check for length < 2 to keep from counting code points all the time
+            if (source.Length <= 2 && UTF16.CountCodePoint(source) <= 1)
             {
-                cp = UTF16.CharAt(source, i);
+                output.Add(source.ToString());
+                return;
+            }
 
-                // optimization:
-                // if the character is canonical combining class zero,
-                // don't permute it
-                if (skipZeros && i != 0 && UChar.GetCombiningClass(cp) == 0)
+            PermuteInternal(source, skipZeros, output);
+        }
+
+        [Obsolete("This API is ICU internal only.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void PermuteInternal(ReadOnlySpan<char> source, bool skipZeros, ISet<string> output)
+        {
+            ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                // otherwise iterate through the string, and recursively permute all the other characters
+                ISet<string> subpermute = new JCG.HashSet<string>();
+                int cp;
+                for (int i = 0; i < source.Length; i += UTF16.GetCharCount(cp))
                 {
-                    //System.out.println("Skipping " + Utility.hex(UTF16.valueOf(source, i)));
-                    continue;
-                }
+                    cp = UTF16.CharAt(source, i);
 
-                // see what the permutations of the characters before and after this one are
-                subpermute.Clear();
-                Permute(source.Substring(0, i - 0) // ICU4N: Checked 2nd parameter
-                    + source.Substring(i + UTF16.GetCharCount(cp)), skipZeros, subpermute); // ICU4N: Substring only has 1 parameter
+                    // optimization:
+                    // if the character is canonical combining class zero,
+                    // don't permute it
+                    if (skipZeros && i != 0 && UChar.GetCombiningClass(cp) == 0)
+                    {
+                        //System.out.println("Skipping " + Utility.hex(UTF16.valueOf(source, i)));
+                        continue;
+                    }
 
-                // prefix this character to all of them
-                string chStr = UTF16.ValueOf(source, i);
-                foreach (string s in subpermute)
-                {
-                    string piece = chStr + s;
-                    //if (PROGRESS) System.out.println("  Piece: " + piece);
-                    output.Add(piece);
+                    // see what the permutations of the characters before and after this one are
+                    subpermute.Clear();
+                    buffer.Length = 0;
+                    buffer.Append(source.Slice(0, i)); // ICU4N: Checked 2nd parameter
+                    buffer.Append(source.Slice(i + UTF16.GetCharCount(cp)));
+                    Permute(buffer.AsSpan(), skipZeros, subpermute); // ICU4N: Substring only has 1 parameter
+
+                    // prefix this character to all of them
+                    ReadOnlySpan<char> chStr = UTF16.ValueOf(source, i);
+                    foreach (string s in subpermute)
+                    {
+                        string piece = StringHelper.Concat(chStr, s.AsSpan());
+                        //if (PROGRESS) System.out.println("  Piece: " + piece);
+                        output.Add(piece);
+                    }
                 }
+            }
+            finally
+            {
+                buffer.Dispose();
             }
         }
 
@@ -335,40 +381,50 @@ namespace ICU4N.Text
             if (PROGRESS) Console.Out.WriteLine("Adding: " + Utility.Hex(segment));
 
             result.Add(segment);
-            StringBuffer workingBuffer = new StringBuffer();
-            UnicodeSet starts = new UnicodeSet();
-
-            // cycle through all the characters
-            int cp;
-            for (int i = 0; i < segment.Length; i += Character.CharCount(cp))
+            ValueStringBuilder workingBuffer = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            ValueStringBuilder segmentBuffer = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
+                UnicodeSet starts = new UnicodeSet();
 
-                // see if any character is at the start of some decomposition
-                cp = segment.CodePointAt(i);
-                if (!nfcImpl.GetCanonStartSet(cp, starts))
+                // cycle through all the characters
+                int cp;
+                for (int i = 0; i < segment.Length; i += Character.CharCount(cp))
                 {
-                    continue;
-                }
-                // if so, see which decompositions match
-                for (UnicodeSetIterator iter = new UnicodeSetIterator(starts); iter.Next();)
-                {
-                    int cp2 = iter.Codepoint;
-                    ISet<string> remainder = Extract(cp2, segment, i, workingBuffer);
-                    if (remainder == null)
+
+                    // see if any character is at the start of some decomposition
+                    cp = segment.CodePointAt(i);
+                    if (!nfcImpl.GetCanonStartSet(cp, starts))
                     {
                         continue;
                     }
-
-                    // there were some matches, so add all the possibilities to the set.
-                    string prefix = segment.Substring(0, i - 0); // ICU4N: Checked 2nd parameter
-                    prefix += UTF16.ValueOf(cp2);
-                    foreach (string item in remainder)
+                    // if so, see which decompositions match
+                    for (UnicodeSetIterator iter = new UnicodeSetIterator(starts); iter.Next();)
                     {
-                        result.Add(prefix + item);
+                        int cp2 = iter.Codepoint;
+                        ISet<string> remainder = Extract(cp2, segment, i, ref workingBuffer);
+                        if (remainder == null)
+                        {
+                            continue;
+                        }
+
+                        // there were some matches, so add all the possibilities to the set.
+                        segmentBuffer.Length = 0;
+                        segmentBuffer.Append(segment.AsSpan(0, i)); // ICU4N: Checked 2nd parameter
+                        segmentBuffer.AppendCodePoint(cp2);
+                        foreach (string item in remainder)
+                        {
+                            result.Add(StringHelper.Concat(segmentBuffer.AsSpan(), item.AsSpan()));
+                        }
                     }
                 }
+                return result;
             }
-            return result;
+            finally
+            {
+                workingBuffer.Dispose();
+                segmentBuffer.Dispose();
+            }
             /*
             Set result = new HashSet();
             if (PROGRESS) System.out.println("Adding: " + NAME.transliterate(segment));
@@ -417,10 +473,11 @@ namespace ICU4N.Text
         /// <param name="segmentPos"></param>
         /// <param name="buf"></param>
         /// <returns></returns>
-        private ISet<string> Extract(int comp, string segment, int segmentPos, StringBuffer buf)
+        private ISet<string> Extract(int comp, string segment, int segmentPos, ref ValueStringBuilder buf)
         {
-            if (PROGRESS) Console.Out.WriteLine(" extract: " + Utility.Hex(UTF16.ValueOf(comp))
-                + ", " + Utility.Hex(segment.Substring(segmentPos)));
+            Span<char> codePointBuffer = stackalloc char[2];
+            if (PROGRESS) Console.Out.WriteLine(" extract: " + Utility.Hex(UTF16.ValueOf(comp, codePointBuffer))
+                + ", " + Utility.Hex(segment.AsSpan(segmentPos)));
 
             string decomp = nfcImpl.GetDecomposition(comp);
             if (decomp == null)
@@ -442,10 +499,10 @@ namespace ICU4N.Text
                 cp = UTF16.CharAt(segment, i);
                 if (cp == decompCp)
                 { // if equal, eat another cp from decomp
-                    if (PROGRESS) Console.Out.WriteLine("  matches: " + Utility.Hex(UTF16.ValueOf(cp)));
+                    if (PROGRESS) Console.Out.WriteLine("  matches: " + Utility.Hex(UTF16.ValueOf(cp, codePointBuffer)));
                     if (decompPos == decomp.Length)
                     { // done, have all decomp characters!
-                        buf.Append(segment.Substring(i + UTF16.GetCharCount(cp))); // add remaining segment chars
+                        buf.Append(segment.AsSpan(i + UTF16.GetCharCount(cp))); // add remaining segment chars
                         ok = true;
                         break;
                     }
@@ -455,9 +512,9 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    if (PROGRESS) Console.Out.WriteLine("  buffer: " + Utility.Hex(UTF16.ValueOf(cp)));
+                    if (PROGRESS) Console.Out.WriteLine("  buffer: " + Utility.Hex(UTF16.ValueOf(cp, codePointBuffer)));
                     // brute force approach
-                    UTF16.Append(buf, cp);
+                    buf.AppendCodePoint(cp);
                     /* TODO: optimize
                     // since we know that the classes are monotonically increasing, after zero
                     // e.g. 0 5 7 9 0 3
@@ -474,7 +531,7 @@ namespace ICU4N.Text
             if (!ok) return null; // we failed, characters left over
             if (PROGRESS) Console.Out.WriteLine("Matches");
             if (buf.Length == 0) return SET_WITH_NULL_STRING; // succeed, but no remainder
-            string remainder = buf.ToString();
+            string remainder = buf.AsSpan().ToString();
 
             // brute force approach
             // to check to make sure result is canonically equivalent
@@ -483,7 +540,8 @@ namespace ICU4N.Text
             if (!segment.regionMatches(segmentPos, trial, 0, segment.length() - segmentPos)) return null;
             */
 
-            if (0 != Normalizer.Compare(UTF16.ValueOf(comp) + remainder, segment.Substring(segmentPos), 0)) return null;
+            buf.InsertCodePoint(0, comp);
+            if (0 != Normalizer.Compare(buf.AsSpan(), segment.AsSpan(segmentPos), 0)) return null;
 
             // get the remaining combinations
             return GetEquivalents2(remainder);

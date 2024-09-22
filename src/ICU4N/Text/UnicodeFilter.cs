@@ -59,6 +59,8 @@ namespace ICU4N.Text
 
         public abstract string ToPattern(bool escapeUnprintable);
 
+        public abstract bool TryToPattern(bool escapeUnprintable, Span<char> destination, out int charsLength);
+
         public abstract bool MatchesIndexValue(int v);
 
         public abstract void AddMatchSetTo(UnicodeSet toUnionTo);

@@ -1,4 +1,5 @@
-﻿using J2N.Text;
+﻿using ICU4N.Text;
+using J2N.Text;
 using System;
 using System.Text;
 using StringBuffer = System.Text.StringBuilder;
@@ -205,7 +206,7 @@ namespace ICU4N.Support.Text
         //    }
 
         internal static bool UpTo(string str, ParsePosition position,
-                StringBuffer buffer, char stop)
+            ref ValueStringBuilder buffer, char stop)
         {
             int index = position.Index, length = str.Length;
             bool lastQuote = false, quote = false;
@@ -236,8 +237,8 @@ namespace ICU4N.Support.Text
             return false;
         }
 
-        internal static bool UpToWithQuotes(String str, ParsePosition position,
-                StringBuffer buffer, char stop, char start)
+        internal static bool UpToWithQuotes(string str, ParsePosition position,
+            ref ValueStringBuilder buffer, char stop, char start)
         {
             int index = position.Index, length = str.Length, count = 1;
             bool quote = false;

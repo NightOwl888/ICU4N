@@ -499,47 +499,58 @@ namespace ICU4N.Globalization
 
             public void Put(int index, IResourceTable table, ResourceKey key, ResourceValue value, bool noFallback)
             {
-                switch (key.ToString()) // ICU4N: This is the same list as DecimalFormatSymbols.SYMBOL_KEYS
+                // ICU4N: This is the same list as DecimalFormatSymbols.SYMBOL_KEYS
+                if (key.SequenceEqual("decimal"))
                 {
-                    case "decimal":
-                        cultureData.decimalSeparator ??= value.ToString();
-                        break;
-                    case "group":
-                        cultureData.groupSeparator ??= value.ToString();
-                        break;
-                    case "list":
-                        cultureData.patternSeparator ??= value.ToString();
-                        break;
-                    case "percentSign":
-                        cultureData.percent ??= value.ToString();
-                        break;
-                    case "minusSign":
-                        cultureData.negativeSign ??= value.ToString();
-                        break;
-                    case "plusSign":
-                        cultureData.positiveSign ??= value.ToString();
-                        break;
-                    case "exponential":
-                        cultureData.exponentSeparator ??= value.ToString();
-                        break;
-                    case "perMille":
-                        cultureData.perMille ??= value.ToString();
-                        break;
-                    case "infinity":
-                        cultureData.positiveInfinity ??= value.ToString();
-                        break;
-                    case "nan":
-                        cultureData.naN ??= value.ToString();
-                        break;
-                    case "currencyDecimal":
-                        cultureData.monetaryDecimal ??= value.ToString();
-                        break;
-                    case "currencyGroup":
-                        cultureData.monetaryGroupSeparator ??= value.ToString();
-                        break;
-                    case "superscriptingExponent":
-                        cultureData.exponentMultiplicationSign ??= value.ToString();
-                        break;
+                    cultureData.decimalSeparator ??= value.ToString();
+                }
+                else if (key.SequenceEqual("group"))
+                {
+                    cultureData.groupSeparator ??= value.ToString();
+                }
+                else if (key.SequenceEqual("list"))
+                {
+                    cultureData.patternSeparator ??= value.ToString();
+                }
+                else if (key.SequenceEqual("percentSign"))
+                {
+                    cultureData.percent ??= value.ToString();
+                }
+                else if (key.SequenceEqual("minusSign"))
+                {
+                    cultureData.negativeSign ??= value.ToString();
+                }
+                else if (key.SequenceEqual("plusSign"))
+                {
+                    cultureData.positiveSign ??= value.ToString();
+                }
+                else if (key.SequenceEqual("exponential"))
+                {
+                    cultureData.exponentSeparator ??= value.ToString();
+                }
+                else if (key.SequenceEqual("perMille"))
+                {
+                    cultureData.perMille ??= value.ToString();
+                }
+                else if (key.SequenceEqual("infinity"))
+                {
+                    cultureData.positiveInfinity ??= value.ToString();
+                }
+                else if (key.SequenceEqual("nan"))
+                {
+                    cultureData.naN ??= value.ToString();
+                }
+                else if (key.SequenceEqual("currencyDecimal"))
+                {
+                    cultureData.monetaryDecimal ??= value.ToString();
+                }
+                else if (key.SequenceEqual("currencyGroup"))
+                {
+                    cultureData.monetaryGroupSeparator ??= value.ToString();
+                }
+                else if (key.SequenceEqual("superscriptingExponent"))
+                {
+                    cultureData.exponentMultiplicationSign ??= value.ToString();
                 }
             }
         }
@@ -592,23 +603,26 @@ namespace ICU4N.Globalization
 
             public void Put(int index, IResourceTable table, ResourceKey key, ResourceValue value, bool noFallback)
             {
-                switch (key.ToString()) // ICU4N: This is the same list as in NumberFormat.GetPatternForStyleAndNumberingSystem()
+                // ICU4N: This is the same list as in NumberFormat.GetPatternForStyleAndNumberingSystem()
+                if (key.SequenceEqual("decimalFormat"))
                 {
-                    case "decimalFormat":
-                        cultureData.decimalFormat ??= value.ToString();
-                        break;
-                    case "currencyFormat":
-                        cultureData.currencyFormat ??= value.ToString();
-                        break;
-                    case "accountingFormat":
-                        cultureData.accountingFormat ??= value.ToString();
-                        break;
-                    case "percentFormat":
-                        cultureData.percentFormat ??= value.ToString();
-                        break;
-                    case "scientificFormat":
-                        cultureData.scientificFormat ??= value.ToString();
-                        break;
+                    cultureData.decimalFormat ??= value.ToString();
+                }
+                else if (key.SequenceEqual("currencyFormat"))
+                {
+                    cultureData.currencyFormat ??= value.ToString();
+                }
+                else if (key.SequenceEqual("accountingFormat"))
+                {
+                    cultureData.accountingFormat ??= value.ToString();
+                }
+                else if (key.SequenceEqual("percentFormat"))
+                {
+                    cultureData.percentFormat ??= value.ToString();
+                }
+                else if (key.SequenceEqual("scientificFormat"))
+                {
+                    cultureData.scientificFormat ??= value.ToString();
                 }
             }
         }

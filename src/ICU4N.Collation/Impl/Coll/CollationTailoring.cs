@@ -35,7 +35,7 @@ namespace ICU4N.Impl.Coll
         {
             if (ownedData == null)
             {
-                Normalizer2Impl nfcImpl = Norm2AllModes.GetNFCInstance().Impl;
+                Normalizer2Impl nfcImpl = Norm2AllModes.NFCInstance.Impl;
                 ownedData = new CollationData(nfcImpl);
             }
             data = ownedData;

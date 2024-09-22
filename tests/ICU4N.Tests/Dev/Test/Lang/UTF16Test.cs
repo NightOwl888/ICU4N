@@ -63,7 +63,7 @@ namespace ICU4N.Dev.Test.Lang
                     strsize--;
                 }
 
-                if (UTF16.CountCodePoint(strbuff) != strsize + (i / 100) + 1)
+                if (UTF16.CountCodePoint(strbuff.ToString()) != strsize + (i / 100) + 1)
                 {
                     Errln("FAIL Counting code points in string appended with " +
                           " 0x" + (i).ToHexString());
@@ -112,7 +112,7 @@ namespace ICU4N.Dev.Test.Lang
                 {
                     Errln("FAIL checking bound type at index " + i);
                 }
-                if (UTF16.Bounds(array, 0, length, i) != boundtype[i])
+                if (UTF16.Bounds(array.AsSpan(0, length), i) != boundtype[i])
                 {
                     Errln("FAIL checking bound type at index " + i);
                 }
@@ -127,7 +127,7 @@ namespace ICU4N.Dev.Test.Lang
                    UTF16.TrailSurrogateBoundary};
             try
             {
-                UTF16.Bounds(array, start, limit, -1);
+                UTF16.Bounds(array.AsSpan(start, limit - start), -1);
                 Errln("FAIL Out of bounds index in bounds should fail");
             }
             catch (Exception e)
@@ -138,7 +138,7 @@ namespace ICU4N.Dev.Test.Lang
 
             for (int i = 0; i < limit - start; i++)
             {
-                if (UTF16.Bounds(array, start, limit, i) != subboundtype1[i])
+                if (UTF16.Bounds(array.AsSpan(start, limit - start), i) != subboundtype1[i])
                 {
                     Errln("FAILED Subarray bounds in [" + start + ", " + limit +
                 "] expected " + subboundtype1[i] + " at offset " + i);
@@ -154,7 +154,7 @@ namespace ICU4N.Dev.Test.Lang
             limit = 9;
             for (int i = 0; i < limit - start; i++)
             {
-                if (UTF16.Bounds(array, start, limit, i) != subboundtype2[i])
+                if (UTF16.Bounds(array.AsSpan(start, limit - start), i) != subboundtype2[i])
                 {
                     Errln("FAILED Subarray bounds in [" + start + ", " + limit +
                 "] expected " + subboundtype2[i] + " at offset " + i);
@@ -169,7 +169,7 @@ namespace ICU4N.Dev.Test.Lang
             limit = 8;
             for (int i = 0; i < limit - start; i++)
             {
-                if (UTF16.Bounds(array, start, limit, i) != subboundtype3[i])
+                if (UTF16.Bounds(array.AsSpan(start, limit - start), i) != subboundtype3[i])
                 {
                     Errln("FAILED Subarray bounds in [" + start + ", " + limit +
                 "] expected " + subboundtype3[i] + " at offset " + i);
@@ -183,33 +183,34 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestCharAt()
         {
-            StringBuffer strbuff =
-          new StringBuffer("12345\ud800\udc0167890\ud800\udc02");
-            if (UTF16.CharAt(strbuff, 0) != '1' || UTF16.CharAt(strbuff, 2) != '3'
-                || UTF16.CharAt(strbuff, 5) != 0x10001 ||
-          UTF16.CharAt(strbuff, 6) != 0x10001 ||
-          UTF16.CharAt(strbuff, 12) != 0x10002 ||
-          UTF16.CharAt(strbuff, 13) != 0x10002)
+            using ValueStringBuilder strbuff =
+                new ValueStringBuilder(stackalloc char[32]);
+            strbuff.Append("12345\ud800\udc0167890\ud800\udc02");
+            if (UTF16.CharAt(strbuff.AsSpan(), 0) != '1' || UTF16.CharAt(strbuff.AsSpan(), 2) != '3'
+                || UTF16.CharAt(strbuff.AsSpan(), 5) != 0x10001 ||
+                  UTF16.CharAt(strbuff.AsSpan(), 6) != 0x10001 ||
+                  UTF16.CharAt(strbuff.AsSpan(), 12) != 0x10002 ||
+                  UTF16.CharAt(strbuff.AsSpan(), 13) != 0x10002)
             {
                 Errln("FAIL Getting character from string buffer error");
             }
             String str = strbuff.ToString();
             if (UTF16.CharAt(str, 0) != '1' || UTF16.CharAt(str, 2) != '3' ||
-          UTF16.CharAt(str, 5) != 0x10001 || UTF16.CharAt(str, 6) != 0x10001
-          || UTF16.CharAt(str, 12) != 0x10002 ||
-          UTF16.CharAt(str, 13) != 0x10002)
+                UTF16.CharAt(str, 5) != 0x10001 || UTF16.CharAt(str, 6) != 0x10001
+                || UTF16.CharAt(str, 12) != 0x10002 ||
+                UTF16.CharAt(str, 13) != 0x10002)
             {
                 Errln("FAIL Getting character from string error");
             }
             char[] array = str.ToCharArray();
             int start = 0;
             int limit = str.Length;
-            if (UTF16.CharAt(array, start, limit, 0) != '1' ||
-          UTF16.CharAt(array, start, limit, 2) != '3' ||
-          UTF16.CharAt(array, start, limit, 5) != 0x10001 ||
-          UTF16.CharAt(array, start, limit, 6) != 0x10001 ||
-          UTF16.CharAt(array, start, limit, 12) != 0x10002 ||
-          UTF16.CharAt(array, start, limit, 13) != 0x10002)
+            if (UTF16.CharAt(array.AsSpan(start, limit - start), 0) != '1' ||
+                UTF16.CharAt(array.AsSpan(start, limit - start), 2) != '3' ||
+                UTF16.CharAt(array.AsSpan(start, limit - start), 5) != 0x10001 ||
+                UTF16.CharAt(array.AsSpan(start, limit - start), 6) != 0x10001 ||
+                UTF16.CharAt(array.AsSpan(start, limit - start), 12) != 0x10002 ||
+                UTF16.CharAt(array.AsSpan(start, limit - start), 13) != 0x10002)
             {
                 Errln("FAIL Getting character from array error");
             }
@@ -218,7 +219,7 @@ namespace ICU4N.Dev.Test.Lang
             limit = 13;
             try
             {
-                UTF16.CharAt(array, start, limit, -1);
+                UTF16.CharAt(array.AsSpan(start, limit - start), -1);
                 Errln("FAIL out of bounds error expected");
             }
             catch (Exception e)
@@ -227,34 +228,34 @@ namespace ICU4N.Dev.Test.Lang
             }
             try
             {
-                UTF16.CharAt(array, start, limit, 8);
+                UTF16.CharAt(array.AsSpan(start, limit - start), 8);
                 Errln("FAIL out of bounds error expected");
             }
             catch (Exception e)
             {
                 Console.Out.Write("");
             }
-            if (UTF16.CharAt(array, start, limit, 0) != 0xdc01)
+            if (UTF16.CharAt(array.AsSpan(start, limit - start), 0) != 0xdc01)
             {
                 Errln("FAIL Expected result in subarray 0xdc01");
             }
-            if (UTF16.CharAt(array, start, limit, 6) != 0xd800)
+            if (UTF16.CharAt(array.AsSpan(start, limit - start), 6) != 0xd800)
             {
                 Errln("FAIL Expected result in subarray 0xd800");
             }
             ReplaceableString replaceable = new ReplaceableString(str);
             if (UTF16.CharAt(replaceable, 0) != '1' ||
                 UTF16.CharAt(replaceable, 2) != '3' ||
-          UTF16.CharAt(replaceable, 5) != 0x10001 ||
-          UTF16.CharAt(replaceable, 6) != 0x10001 ||
-          UTF16.CharAt(replaceable, 12) != 0x10002 ||
-          UTF16.CharAt(replaceable, 13) != 0x10002)
+                UTF16.CharAt(replaceable, 5) != 0x10001 ||
+                UTF16.CharAt(replaceable, 6) != 0x10001 ||
+                UTF16.CharAt(replaceable, 12) != 0x10002 ||
+                UTF16.CharAt(replaceable, 13) != 0x10002)
             {
                 Errln("FAIL Getting character from replaceable error");
             }
 
-            StringBuffer strbuffer = new StringBuffer("0xD805");
-            UTF16.CharAt(strbuffer.AsCharSequence(), 0);
+            OpenStringBuilder strbuffer = new OpenStringBuilder("0xD805");
+            UTF16.CharAt(strbuffer.AsSpan(), 0);
         }
 
         /**
@@ -263,50 +264,52 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestCountCodePoint()
         {
-            StringBuffer strbuff = new StringBuffer("");
+            OpenStringBuilder strbuff = new OpenStringBuilder("");
             char[] array = null;
-            if (UTF16.CountCodePoint(strbuff) != 0 ||
+            if (UTF16.CountCodePoint(strbuff.AsSpan()) != 0 ||
             UTF16.CountCodePoint("") != 0 ||
-            UTF16.CountCodePoint(array, 0, 0) != 0)
+            UTF16.CountCodePoint(array.AsSpan(0, 0)) != 0)
             {
                 Errln("FAIL Counting code points for empty strings");
             }
 
-            strbuff = new StringBuffer("this is a string ");
+            strbuff = new OpenStringBuilder("this is a string ");
             String str = strbuff.ToString();
             array = str.ToCharArray();
             int size = str.Length;
 
-            if (UTF16.CountCodePoint(array, 0, 0) != 0)
+            if (UTF16.CountCodePoint(array.AsSpan(0, 0)) != 0)
             {
                 Errln("FAIL Counting code points for 0 offset array");
             }
 
             if (UTF16.CountCodePoint(str) != size ||
-            UTF16.CountCodePoint(strbuff) != size ||
-            UTF16.CountCodePoint(array, 0, size) != size)
+            UTF16.CountCodePoint(strbuff.AsSpan()) != size ||
+            UTF16.CountCodePoint(array.AsSpan(0, size)) != size)
             {
                 Errln("FAIL Counting code points");
             }
 
-            UTF16.Append(strbuff, 0x10000);
+            //UTF16.Append(strbuff, 0x10000);
+            strbuff.AppendCodePoint(0x10000);
             str = strbuff.ToString();
             array = str.ToCharArray();
             if (UTF16.CountCodePoint(str) != size + 1 ||
-            UTF16.CountCodePoint(strbuff) != size + 1 ||
-            UTF16.CountCodePoint(array, 0, size + 1) != size + 1 ||
-            UTF16.CountCodePoint(array, 0, size + 2) != size + 1)
+            UTF16.CountCodePoint(strbuff.AsSpan()) != size + 1 ||
+            UTF16.CountCodePoint(array.AsSpan(0, size + 1)) != size + 1 ||
+            UTF16.CountCodePoint(array.AsSpan(0, size + 2)) != size + 1)
             {
                 Errln("FAIL Counting code points");
             }
-            UTF16.Append(strbuff, 0x61);
+            //UTF16.Append(strbuff, 0x61);
+            strbuff.AppendCodePoint(0x61);
             str = strbuff.ToString();
             array = str.ToCharArray();
             if (UTF16.CountCodePoint(str) != size + 2 ||
-            UTF16.CountCodePoint(strbuff) != size + 2 ||
-            UTF16.CountCodePoint(array, 0, size + 1) != size + 1 ||
-            UTF16.CountCodePoint(array, 0, size + 2) != size + 1 ||
-            UTF16.CountCodePoint(array, 0, size + 3) != size + 2)
+            UTF16.CountCodePoint(strbuff.AsSpan()) != size + 2 ||
+            UTF16.CountCodePoint(array.AsSpan(0, size + 1)) != size + 1 ||
+            UTF16.CountCodePoint(array.AsSpan(0, size + 2)) != size + 1 ||
+            UTF16.CountCodePoint(array.AsSpan(0, size + 3)) != size + 2)
             {
                 Errln("FAIL Counting code points");
             }
@@ -405,52 +408,52 @@ namespace ICU4N.Dev.Test.Lang
         {
             // jitterbug 47
             String str = "a\uD800\uDC00b";
-            StringBuffer strbuff = new StringBuffer(str);
+            OpenStringBuilder strbuff = new OpenStringBuilder(str);
             char[] array = str.ToCharArray();
             int limit = str.Length;
             if (UTF16.FindCodePointOffset(str, 0) != 0 ||
             UTF16.FindOffsetFromCodePoint(str, 0) != 0 ||
-            UTF16.FindCodePointOffset(strbuff, 0) != 0 ||
-            UTF16.FindOffsetFromCodePoint(strbuff, 0) != 0 ||
-            UTF16.FindCodePointOffset(array, 0, limit, 0) != 0 ||
-            UTF16.FindOffsetFromCodePoint(array, 0, limit, 0) != 0)
+            UTF16.FindCodePointOffset(strbuff.AsSpan(), 0) != 0 ||
+            UTF16.FindOffsetFromCodePoint(strbuff.AsSpan(), 0) != 0 ||
+            UTF16.FindCodePointOffset(array.AsSpan(0, limit), 0) != 0 ||
+            UTF16.FindOffsetFromCodePoint(array.AsSpan(0, limit), 0) != 0)
             {
                 Errln("FAIL Getting the first codepoint offset to a string with " +
                   "supplementary characters");
             }
             if (UTF16.FindCodePointOffset(str, 1) != 1 ||
             UTF16.FindOffsetFromCodePoint(str, 1) != 1 ||
-            UTF16.FindCodePointOffset(strbuff, 1) != 1 ||
-            UTF16.FindOffsetFromCodePoint(strbuff, 1) != 1 ||
-            UTF16.FindCodePointOffset(array, 0, limit, 1) != 1 ||
-            UTF16.FindOffsetFromCodePoint(array, 0, limit, 1) != 1)
+            UTF16.FindCodePointOffset(strbuff.AsSpan(), 1) != 1 ||
+            UTF16.FindOffsetFromCodePoint(strbuff.AsSpan(), 1) != 1 ||
+            UTF16.FindCodePointOffset(array.AsSpan(0, limit), 1) != 1 ||
+            UTF16.FindOffsetFromCodePoint(array.AsSpan(0, limit), 1) != 1)
             {
                 Errln("FAIL Getting the second codepoint offset to a string with " +
                   "supplementary characters");
             }
             if (UTF16.FindCodePointOffset(str, 2) != 1 ||
             UTF16.FindOffsetFromCodePoint(str, 2) != 3 ||
-            UTF16.FindCodePointOffset(strbuff, 2) != 1 ||
-            UTF16.FindOffsetFromCodePoint(strbuff, 2) != 3 ||
-            UTF16.FindCodePointOffset(array, 0, limit, 2) != 1 ||
-            UTF16.FindOffsetFromCodePoint(array, 0, limit, 2) != 3)
+            UTF16.FindCodePointOffset(strbuff.AsSpan(), 2) != 1 ||
+            UTF16.FindOffsetFromCodePoint(strbuff.AsSpan(), 2) != 3 ||
+            UTF16.FindCodePointOffset(array.AsSpan(0, limit), 2) != 1 ||
+            UTF16.FindOffsetFromCodePoint(array.AsSpan(0, limit), 2) != 3)
             {
                 Errln("FAIL Getting the third codepoint offset to a string with " +
                   "supplementary characters");
             }
             if (UTF16.FindCodePointOffset(str, 3) != 2 ||
             UTF16.FindOffsetFromCodePoint(str, 3) != 4 ||
-            UTF16.FindCodePointOffset(strbuff, 3) != 2 ||
-            UTF16.FindOffsetFromCodePoint(strbuff, 3) != 4 ||
-            UTF16.FindCodePointOffset(array, 0, limit, 3) != 2 ||
-            UTF16.FindOffsetFromCodePoint(array, 0, limit, 3) != 4)
+            UTF16.FindCodePointOffset(strbuff.AsSpan(), 3) != 2 ||
+            UTF16.FindOffsetFromCodePoint(strbuff.AsSpan(), 3) != 4 ||
+            UTF16.FindCodePointOffset(array.AsSpan(0, limit), 3) != 2 ||
+            UTF16.FindOffsetFromCodePoint(array.AsSpan(0, limit), 3) != 4)
             {
                 Errln("FAIL Getting the last codepoint offset to a string with " +
                   "supplementary characters");
             }
             if (UTF16.FindCodePointOffset(str, 4) != 3 ||
-            UTF16.FindCodePointOffset(strbuff, 4) != 3 ||
-            UTF16.FindCodePointOffset(array, 0, limit, 4) != 3)
+            UTF16.FindCodePointOffset(strbuff.AsSpan(), 4) != 3 ||
+            UTF16.FindCodePointOffset(array.AsSpan(0, limit), 4) != 3)
             {
                 Errln("FAIL Getting the length offset to a string with " +
                   "supplementary characters");
@@ -479,7 +482,7 @@ namespace ICU4N.Dev.Test.Lang
             }
             try
             {
-                UTF16.FindCodePointOffset(strbuff, 5);
+                UTF16.FindCodePointOffset(strbuff.AsSpan(), 5);
                 Errln("FAIL Getting the a non-existence codepoint to a string " +
                   "with supplementary characters");
             }
@@ -490,7 +493,7 @@ namespace ICU4N.Dev.Test.Lang
             }
             try
             {
-                UTF16.FindOffsetFromCodePoint(strbuff, 4);
+                UTF16.FindOffsetFromCodePoint(strbuff.AsSpan(), 4);
                 Errln("FAIL Getting the a non-existence codepoint to a string " +
                   "with supplementary characters");
             }
@@ -501,7 +504,7 @@ namespace ICU4N.Dev.Test.Lang
             }
             try
             {
-                UTF16.FindCodePointOffset(array, 0, limit, 5);
+                UTF16.FindCodePointOffset(array.AsSpan(0, limit), 5);
                 Errln("FAIL Getting the a non-existence codepoint to a string " +
                   "with supplementary characters");
             }
@@ -512,7 +515,7 @@ namespace ICU4N.Dev.Test.Lang
             }
             try
             {
-                UTF16.FindOffsetFromCodePoint(array, 0, limit, 4);
+                UTF16.FindOffsetFromCodePoint(array.AsSpan(0, limit), 4);
                 Errln("FAIL Getting the a non-existence codepoint to a string " +
                   "with supplementary characters");
             }
@@ -522,11 +525,11 @@ namespace ICU4N.Dev.Test.Lang
                 Logln("Passed out of bounds codepoint offset");
             }
 
-            if (UTF16.FindCodePointOffset(array, 1, 3, 0) != 0 ||
-            UTF16.FindOffsetFromCodePoint(array, 1, 3, 0) != 0 ||
-            UTF16.FindCodePointOffset(array, 1, 3, 1) != 0 ||
-            UTF16.FindCodePointOffset(array, 1, 3, 2) != 1 ||
-            UTF16.FindOffsetFromCodePoint(array, 1, 3, 1) != 2)
+            if (UTF16.FindCodePointOffset(array.AsSpan(1, 3 - 1), 0) != 0 ||
+            UTF16.FindOffsetFromCodePoint(array.AsSpan(1, 3 - 1), 0) != 0 ||
+            UTF16.FindCodePointOffset(array.AsSpan(1, 3 - 1), 1) != 0 ||
+            UTF16.FindCodePointOffset(array.AsSpan(1, 3 - 1), 2) != 1 ||
+            UTF16.FindOffsetFromCodePoint(array.AsSpan(1, 3 - 1), 1) != 2)
             {
                 Errln("FAIL Getting valid codepoint offset in sub array");
             }
@@ -698,10 +701,10 @@ namespace ICU4N.Dev.Test.Lang
             }
 
             // Test with the StringBuffer flavor of moveCodePointOffset
-            StringBuffer sb = new StringBuffer(s);
+            OpenStringBuilder sb = new OpenStringBuilder(s);
             try
             {
-                int result = UTF16.MoveCodePointOffset(sb, startIdx, amount);
+                int result = UTF16.MoveCodePointOffset(sb.AsSpan(), startIdx, amount);
                 if (result != expectedResult)
                 {
                     Errln("FAIL: UTF16.MoveCodePointOffset(StringBuffer \"" + s + "\", " + startIdx + ", " + amount + ")" +
@@ -722,7 +725,7 @@ namespace ICU4N.Dev.Test.Lang
             char[] ca = s.ToCharArray();
             try
             {
-                int result = UTF16.MoveCodePointOffset(ca, 0, s.Length, startIdx, amount);
+                int result = UTF16.MoveCodePointOffset(ca.AsSpan(0, s.Length), startIdx, amount);
                 if (result != expectedResult)
                 {
                     Errln("FAIL: UTF16.MoveCodePointOffset(char[] \"" + s + "\", 0, " + s.Length
@@ -741,33 +744,35 @@ namespace ICU4N.Dev.Test.Lang
                 }
             }
 
-            // Put the test string into the interior of a char array,
-            //   run test on the subsection of the array.
-            char[] ca2 = new char[s.Length + 2];
-            ca2[0] = (char)0xd800;
-            ca2[s.Length + 1] = (char)0xd8ff;
-            //s.getChars(0, s.Length, ca2, 1);
-            s.CopyTo(0, ca2, 1, s.Length);
-            try
-            {
-                int result = UTF16.MoveCodePointOffset(ca2, 1, s.Length + 1, startIdx, amount);
-                if (result != expectedResult)
-                {
-                    Errln("UTF16.MoveCodePointOffset(char[] \"" + "." + s + ".\", 1, " + (s.Length + 1)
-                            + ", " + startIdx + ", " + amount + ")" +
-                             " returned " + result + ", expected result was " +
-                            (expectedResult == -1 ? "exception" : expectedResult.ToString(CultureInfo.InvariantCulture)));
-                }
-            }
-            catch (IndexOutOfRangeException e)
-            {
-                if (expectedResult != -1)
-                {
-                    Errln("UTF16.MoveCodePointOffset(char[] \"" + "." + s + ".\", 1, " + (s.Length + 1)
-                            + ", " + startIdx + ", " + amount + ")" +
-                            " returned exception" + ", expected result was " + expectedResult);
-                }
-            }
+            // ICU4N: This test is moot because the offsets are tracked by ReadOnlySpan<char>, not us
+
+            //// Put the test string into the interior of a char array,
+            ////   run test on the subsection of the array.
+            //char[] ca2 = new char[s.Length + 2];
+            //ca2[0] = (char)0xd800;
+            //ca2[s.Length + 1] = (char)0xd8ff;
+            ////s.getChars(0, s.Length, ca2, 1);
+            //s.CopyTo(0, ca2, 1, s.Length);
+            //try
+            //{
+            //    int result = UTF16.MoveCodePointOffset(ca2.AsSpan(1, s.Length + 1), startIdx, amount);
+            //    if (result != expectedResult)
+            //    {
+            //        Errln("UTF16.MoveCodePointOffset(char[] \"" + "." + s + ".\", 1, " + (s.Length + 1)
+            //                + ", " + startIdx + ", " + amount + ")" +
+            //                 " returned " + result + ", expected result was " +
+            //                (expectedResult == -1 ? "exception" : expectedResult.ToString(CultureInfo.InvariantCulture)));
+            //    }
+            //}
+            //catch (IndexOutOfRangeException e)
+            //{
+            //    if (expectedResult != -1)
+            //    {
+            //        Errln("UTF16.MoveCodePointOffset(char[] \"" + "." + s + ".\", 1, " + (s.Length + 1)
+            //                + ", " + startIdx + ", " + amount + ")" +
+            //                " returned exception" + ", expected result was " + expectedResult);
+            //    }
+            //}
 
         }
 
@@ -902,17 +907,17 @@ namespace ICU4N.Dev.Test.Lang
             }
 
             char[] strarray = str.ToCharArray();
-            if (UTF16.MoveCodePointOffset(strarray, 9, 13, 0, 2) != 3)
+            if (UTF16.MoveCodePointOffset(strarray.AsSpan(9, 13 - 9), 0, 2) != 3)
             {
                 Errln("FAIL: Moving offset 0 by 2 codepoint in subarray [9, 13] " +
                 "expected result 3");
             }
-            if (UTF16.MoveCodePointOffset(strarray, 9, 13, 1, 2) != 4)
+            if (UTF16.MoveCodePointOffset(strarray.AsSpan(9, 13 - 9), 1, 2) != 4)
             {
                 Errln("FAIL: Moving offset 1 by 2 codepoint in subarray [9, 13] " +
                 "expected result 4");
             }
-            if (UTF16.MoveCodePointOffset(strarray, 11, 14, 0, 2) != 3)
+            if (UTF16.MoveCodePointOffset(strarray.AsSpan(11, 14 - 11), 0, 2) != 3)
             {
                 Errln("FAIL: Moving offset 0 by 2 codepoint in subarray [11, 14] "
                         + "expected result 3");
@@ -1038,7 +1043,8 @@ namespace ICU4N.Dev.Test.Lang
                 Errln("FAIL: valueof(char32)");
             }
             String str = "01234\ud800\udc0056789";
-            StringBuffer strbuff = new StringBuffer(str);
+            //StringBuffer strbuff = new StringBuffer(str);
+            ReadOnlySpan<char> strbuff = str.AsSpan();
             char[] array = str.ToCharArray();
             int length = str.Length;
 
@@ -1046,9 +1052,9 @@ namespace ICU4N.Dev.Test.Lang
                  "\ud800\udc00", "5", "6", "7", "8", "9"};
             for (int i = 0; i < length; i++)
             {
-                if (!UTF16.ValueOf(str, i).Equals(expected[i]) ||
-                        !UTF16.ValueOf(strbuff, i).Equals(expected[i]) ||
-                        !UTF16.ValueOf(array, 0, length, i).Equals(expected[i]))
+                if (!UTF16.ValueOf(str, i).Equals(expected[i], StringComparison.Ordinal) ||
+                        !UTF16.ValueOf(strbuff, i).Equals(expected[i], StringComparison.Ordinal) ||
+                        !UTF16.ValueOf(array.AsSpan(0, length), i).Equals(expected[i], StringComparison.Ordinal))
                 {
                     Errln("FAIL: valueOf() expected " + expected[i]);
                 }
@@ -1073,7 +1079,7 @@ namespace ICU4N.Dev.Test.Lang
             }
             try
             {
-                UTF16.ValueOf(array, 0, length, -1);
+                UTF16.ValueOf(array.AsSpan(0, length), -1);
                 Errln("FAIL: out of bounds error expected");
             }
             catch (Exception e)
@@ -1100,21 +1106,21 @@ namespace ICU4N.Dev.Test.Lang
             }
             try
             {
-                UTF16.ValueOf(array, 0, length, length);
+                UTF16.ValueOf(array.AsSpan(0, length), length);
                 Errln("FAIL: out of bounds error expected");
             }
             catch (Exception e)
             {
                 Console.Out.Write("");
             }
-            if (!UTF16.ValueOf(array, 6, length, 0).Equals("\udc00") ||
-            !UTF16.ValueOf(array, 0, 6, 5).Equals("\ud800"))
+            if (!UTF16.ValueOf(array.AsSpan(6, length - 6), 0).Equals("\udc00", StringComparison.Ordinal) ||
+                !UTF16.ValueOf(array.AsSpan(0, 6), 5).Equals("\ud800", StringComparison.Ordinal))
             {
                 Errln("FAIL: error getting partial supplementary character");
             }
             try
             {
-                UTF16.ValueOf(array, 3, 5, -1);
+                UTF16.ValueOf(array.AsSpan(3, 5 - 3), -1);
                 Errln("FAIL: out of bounds error expected");
             }
             catch (Exception e)
@@ -1123,7 +1129,60 @@ namespace ICU4N.Dev.Test.Lang
             }
             try
             {
-                UTF16.ValueOf(array, 3, 5, 3);
+                UTF16.ValueOf(array.AsSpan(3, 5 - 3), 3);
+                Errln("FAIL: out of bounds error expected");
+            }
+            catch (Exception e)
+            {
+                Console.Out.Write("");
+            }
+        }
+
+        [Test]
+        public void TestValueOf_Int32_Span_Int32()
+        {
+            Span<char> actual = stackalloc char[2];
+            int length;
+            length = UTF16.ValueOf(0x61, actual, 0);
+            if (!System.MemoryExtensions.Equals(actual.Slice(0, length), "a".AsSpan(), StringComparison.Ordinal))
+            { 
+                Errln("FAIL: valueof(char32, destination, destinationIndex)");
+            }
+            length = UTF16.ValueOf(0x10000, actual, 0);
+            if (!System.MemoryExtensions.Equals(actual.Slice(0, length), "\ud800\udc00".AsSpan(), StringComparison.Ordinal))
+            {
+                Errln("FAIL: valueof(char32, destination, destinationIndex)");
+            }
+            try
+            {
+                UTF16.ValueOf(0x61, actual, 3);
+                Errln("FAIL: out of bounds error expected");
+            }
+            catch (Exception e)
+            {
+                Console.Out.Write("");
+            }
+            try
+            {
+                UTF16.ValueOf(0x61, actual, -1);
+                Errln("FAIL: out of bounds error expected");
+            }
+            catch (Exception e)
+            {
+                Console.Out.Write("");
+            }
+            try
+            {
+                UTF16.ValueOf(UTF16.CodePointMinValue - 1, actual, 0);
+                Errln("FAIL: out of bounds error expected");
+            }
+            catch (Exception e)
+            {
+                Console.Out.Write("");
+            }
+            try
+            {
+                UTF16.ValueOf(UTF16.CodePointMaxValue + 1, actual, 0);
                 Errln("FAIL: out of bounds error expected");
             }
             catch (Exception e)
@@ -1571,7 +1630,7 @@ namespace ICU4N.Dev.Test.Lang
         }
 
         [Test]
-        public void TestReverse()
+        public void TestReverse() // ICU4N TODO: API - Reversing a StringBuilder is nonsensical in .NET, so we can eliminate this API. Better to reverse ValueStringBuilder/OpenStringBuilder/Span<char> instead.
         {
             StringBuffer test = new StringBuffer(
                              "backwards words say to used I");
@@ -1588,10 +1647,11 @@ namespace ICU4N.Dev.Test.Lang
             UTF16.Append(testbuffer, 0x00c4);
             UTF16.Append(testbuffer, 0x1ed0);
             result = UTF16.Reverse(testbuffer);
+            string resultString = result.ToString();
             if (result[0] != 0x1ed0 ||
                 result[1] != 0xc4 ||
-                UTF16.CharAt(result, 2) != 0x1d15f ||
-                UTF16.CharAt(result, 4) != 0x2f999)
+                UTF16.CharAt(resultString, 2) != 0x1d15f ||
+                UTF16.CharAt(resultString, 4) != 0x2f999)
             {
                 Errln("reverse() failed with supplementary characters");
             }
@@ -1807,7 +1867,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 for (int i = 0; i <= length; ++i)
                 {
-                    StringBuffer s = new StringBuffer(str.Substring(0, i)); // ICU4N: Checked 2nd parameter
+                    ReadOnlySpan<char> s = str.AsSpan(0, i); // ICU4N: Checked 2nd parameter
                     for (int number = -1; number <= ((length - i) + 2); ++number)
                     {
                         bool flag = UTF16.HasMoreCodePointsThan(s, number);
@@ -1829,9 +1889,9 @@ namespace ICU4N.Dev.Test.Lang
                     for (int number = -2; number <= 2; ++number)
                     {
                         bool flag = UTF16.HasMoreCodePointsThan(
-                                       (StringBuffer)null, number);
+                                       (ReadOnlySpan<char>)null, number);
                         if (flag
-                            != (UTF16.CountCodePoint((StringBuffer)null) > number))
+                            != (UTF16.CountCodePoint((ReadOnlySpan<char>)null) > number))
                         {
                             Errln("hasMoreCodePointsThan(null, " + number + ") = "
                               + flag + " is wrong");
@@ -1850,13 +1910,13 @@ namespace ICU4N.Dev.Test.Lang
                         for (int number = -1; number <= ((limit - start) + 2);
                              ++number)
                         {
-                            bool flag = UTF16.HasMoreCodePointsThan(strarray,
-                                       start, limit, number);
-                            if (flag != (UTF16.CountCodePoint(strarray, start,
-                                                              limit) > number))
+                            bool flag = UTF16.HasMoreCodePointsThan(strarray.AsSpan(
+                                       start, limit - start), number);
+                            if (flag != (UTF16.CountCodePoint(strarray.AsSpan(start,
+                                                              limit - start)) > number)) // ICU4N: Corrected 2nd substring parameter
                             {
                                 Errln("hasMoreCodePointsThan("
-                                      + Utility.Hex(str.Substring(start, limit - start)) // ICU4N: Corrected 2nd substring parameter
+                                      + Utility.Hex(str.AsSpan(start, limit - start)) // ICU4N: Corrected 2nd substring parameter
                                       + ", " + start + ", " + limit + ", " + number
                                       + ") = " + flag + " is wrong");
                             }
@@ -1874,9 +1934,9 @@ namespace ICU4N.Dev.Test.Lang
                     for (int number = -2; number <= 2; ++number)
                     {
                         bool flag = UTF16.HasMoreCodePointsThan(
-                                       (StringBuffer)null, number);
+                                       (ReadOnlySpan<char>)null, number);
                         if (flag
-                            != (UTF16.CountCodePoint((StringBuffer)null) > number))
+                            != (UTF16.CountCodePoint((ReadOnlySpan<char>)null) > number))
                         {
                             Errln("hasMoreCodePointsThan(null, " + number + ") = "
                               + flag + " is wrong");
@@ -1885,35 +1945,37 @@ namespace ICU4N.Dev.Test.Lang
                 }
             }
 
-            // bad input
-            try
-            {
-                UTF16.HasMoreCodePointsThan(strarray, -2, -1, 5);
-                Errln("hasMoreCodePointsThan(chararray) with negative indexes has to throw an exception");
-            }
-            catch (Exception e)
-            {
-                Logln("PASS: UTF16.hasMoreCodePointsThan failed as expected");
-            }
-            try
-            {
-                UTF16.HasMoreCodePointsThan(strarray, 5, 2, 5);
-                Errln("hasMoreCodePointsThan(chararray) with limit less than start index has to throw an exception");
-            }
-            catch (Exception e)
-            {
-                Logln("PASS: UTF16.hasMoreCodePointsThan failed as expected");
-            }
-            try
-            {
-                if (UTF16.HasMoreCodePointsThan(strarray, -2, 2, 5))
-                {
-                    Errln("hasMoreCodePointsThan(chararray) with negative start indexes can't return true");
-                }
-            }
-            catch (Exception e)
-            {
-            }
+            // ICU4N: Since we are using the ReadOnlySpan<char> overload to replace this, checking the offsets is moot
+
+            //// bad input
+            //try
+            //{
+            //    UTF16.HasMoreCodePointsThan(strarray.AsSpan(-2, -1), 5);
+            //    Errln("hasMoreCodePointsThan(chararray) with negative indexes has to throw an exception");
+            //}
+            //catch (Exception e)
+            //{
+            //    Logln("PASS: UTF16.hasMoreCodePointsThan failed as expected");
+            //}
+            //try
+            //{
+            //    UTF16.HasMoreCodePointsThan(strarray.AsSpan(5, 2 - 5), 5);
+            //    Errln("hasMoreCodePointsThan(chararray) with limit less than start index has to throw an exception");
+            //}
+            //catch (Exception e)
+            //{
+            //    Logln("PASS: UTF16.hasMoreCodePointsThan failed as expected");
+            //}
+            //try
+            //{
+            //    if (UTF16.HasMoreCodePointsThan(strarray.AsSpan(-2, 2 - -2), 5))
+            //    {
+            //        Errln("hasMoreCodePointsThan(chararray) with negative start indexes can't return true");
+            //    }
+            //}
+            //catch (Exception e)
+            //{
+            //}
         }
 
         [Test]
@@ -1998,7 +2060,7 @@ namespace ICU4N.Dev.Test.Lang
                 try
                 {
                     String str = UTF16.NewString(codePoints, s, c);
-                    if (rc == -1 || !str.Equals(cpString.Substring(rs, rc))) // ICU4N: (rs + rc) - rs == rc
+                    if (rc == -1 || !str.AsSpan().Equals(cpString.AsSpan(rs, rc), StringComparison.Ordinal)) // ICU4N: (rs + rc) - rs == rc
                     {
                         Errln("failed codePoints iter: " + i + " start: " + s + " len: " + c);
                     }

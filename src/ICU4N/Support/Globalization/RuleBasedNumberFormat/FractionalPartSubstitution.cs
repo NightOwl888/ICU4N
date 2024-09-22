@@ -1,12 +1,11 @@
 ﻿using ICU4N.Numerics;
-using ICU4N.Support.Text;
+using ICU4N.Text;
 using System;
 using System.Diagnostics;
 #nullable enable
 
 namespace ICU4N.Globalization
 {
-#if FEATURE_SPAN
     //===================================================================
     // FractionalPartSubstitution
     //===================================================================
@@ -266,5 +265,4 @@ namespace ICU4N.Globalization
         /// </summary>
         private protected override char TokenChar => '>';
     }
-#endif
 }

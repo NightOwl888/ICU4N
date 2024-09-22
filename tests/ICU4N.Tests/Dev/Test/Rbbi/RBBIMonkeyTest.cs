@@ -157,7 +157,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 catch (ArgumentException e)
                 {
                     Console.Error.Write("{0}: error {1} creating UnicodeSet {2}", fMonkeyImpl.fRuleFileName, e.ToString(), name);
-                    throw e;
+                    throw; // ICU4N: CA2200 Rethrow to preserve stack information
                 }
 
                 // Get an expanded equivalent pattern from the UnicodeSet.
@@ -377,7 +377,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 {
                     Console.Error.Write("{0}: Error creating regular expression for rule {1}. Expansion is \n\"{2}\"",
                             fMonkeyImpl.fRuleFileName, name, thisRule.fExpandedRule);
-                    throw e;
+                    throw; // ICU4N: CA2200 Rethrow to preserve stack information
                 }
                 // Put this new rule into the vector of all Rules.
 

@@ -4,14 +4,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using JCG = J2N.Collections.Generic;
-using CaseInsensitiveChar = ICU4N.Impl.Locale.InternalLocaleBuilder.CaseInsensitiveChar;
-using CaseInsensitiveString = ICU4N.Impl.Locale.InternalLocaleBuilder.CaseInsensitiveString;
 using ICU4N.Support.Collections;
+using ICU4N.Text;
 
 namespace ICU4N.Impl.Locale
 {
     public class LocaleExtensions
     {
+        private const int CharStackBufferSize = 32;
+
         private IDictionary<char, Extension> _map;
         private string _id;
 #if FEATURE_IREADONLYCOLLECTIONS
@@ -61,11 +62,13 @@ namespace ICU4N.Impl.Locale
         {
         }
 
+#nullable enable
+
         /// <summary>
         /// Internal constructor, only used by <see cref="InternalLocaleBuilder"/>.
         /// </summary>
-        internal LocaleExtensions(IDictionary<CaseInsensitiveChar, string> extensions,
-                ISet<CaseInsensitiveString> uattributes, IDictionary<CaseInsensitiveString, string> ukeywords)
+        internal LocaleExtensions(IDictionary<char, string?>? extensions,
+                ISet<string>? uattributes, IDictionary<string, string>? ukeywords)
         {
             bool hasExtension = (extensions != null && extensions.Count > 0);
             bool hasUAttributes = (uattributes != null && uattributes.Count > 0);
@@ -82,10 +85,10 @@ namespace ICU4N.Impl.Locale
             _map = new JCG.SortedDictionary<char, Extension>();
             if (hasExtension)
             {
-                foreach (var ext in extensions)
+                foreach (var ext in extensions!)
                 {
-                    char key = AsciiUtil.ToLower(ext.Key.Value);
-                    string value = ext.Value;
+                    char key = AsciiUtil.ToLower(ext.Key);
+                    string? value = ext.Value;
 
                     if (LanguageTag.IsPrivateusePrefixChar(key))
                     {
@@ -97,31 +100,31 @@ namespace ICU4N.Impl.Locale
                         }
                     }
 
-                    Extension e = new Extension(key, AsciiUtil.ToLower(value));
+                    Extension e = new Extension(key, AsciiUtil.ToLower(value!));
                     _map[key] = e;
                 }
             }
 
             if (hasUAttributes || hasUKeywords)
             {
-                JCG.SortedSet<string> uaset = null;
-                JCG.SortedDictionary<string, string> ukmap = null;
+                JCG.SortedSet<string>? uaset = null;
+                JCG.SortedDictionary<string, string>? ukmap = null;
 
                 if (hasUAttributes)
                 {
-                    uaset = new JCG.SortedSet<string>(StringComparer.Ordinal);
-                    foreach (CaseInsensitiveString cis in uattributes)
+                    uaset = new JCG.SortedSet<string>(AsciiStringComparer.Ordinal);
+                    foreach (string cis in uattributes!)
                     {
-                        uaset.Add(AsciiUtil.ToLower(cis.Value));
+                        uaset.Add(AsciiUtil.ToLower(cis));
                     }
                 }
 
                 if (hasUKeywords)
                 {
-                    ukmap = new JCG.SortedDictionary<string, string>(StringComparer.Ordinal);
-                    foreach (var kwd in ukeywords)
+                    ukmap = new JCG.SortedDictionary<string, string>(AsciiStringComparer.Ordinal);
+                    foreach (var kwd in ukeywords!)
                     {
-                        string key = AsciiUtil.ToLower(kwd.Key.Value);
+                        string key = AsciiUtil.ToLower(kwd.Key);
                         string type = AsciiUtil.ToLower(kwd.Value);
                         ukmap[key] = type;
                     }
@@ -142,6 +145,8 @@ namespace ICU4N.Impl.Locale
                 _id = ToID(_map);
             }
         }
+
+#nullable restore
 
         public virtual ICollection<char> Keys => _map.Keys.AsReadOnly();
 
@@ -248,34 +253,41 @@ namespace ICU4N.Impl.Locale
 
         private static string ToID(IDictionary<char, Extension> map)
         {
-            StringBuilder buf = new StringBuilder();
-            Extension privuse = null;
-            foreach (var entry in map)
+            ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                char singleton = entry.Key;
-                Extension extension = entry.Value;
-                if (LanguageTag.IsPrivateusePrefixChar(singleton))
+                Extension privuse = null;
+                foreach (var entry in map)
                 {
-                    privuse = extension;
+                    char singleton = entry.Key;
+                    Extension extension = entry.Value;
+                    if (LanguageTag.IsPrivateusePrefixChar(singleton))
+                    {
+                        privuse = extension;
+                    }
+                    else
+                    {
+                        if (buf.Length > 0)
+                        {
+                            buf.Append(LanguageTag.Separator);
+                        }
+                        buf.Append(extension.ID);
+                    }
                 }
-                else
+                if (privuse != null)
                 {
                     if (buf.Length > 0)
                     {
                         buf.Append(LanguageTag.Separator);
                     }
-                    buf.Append(extension);
+                    buf.Append(privuse.ID);
                 }
+                return buf.ToString();
             }
-            if (privuse != null)
+            finally
             {
-                if (buf.Length > 0)
-                {
-                    buf.Append(LanguageTag.Separator);
-                }
-                buf.Append(privuse);
+                buf.Dispose();
             }
-            return buf.ToString();
         }
 
 

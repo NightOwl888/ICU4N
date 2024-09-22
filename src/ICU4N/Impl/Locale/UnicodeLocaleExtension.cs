@@ -1,6 +1,8 @@
-﻿using J2N.Collections.Generic.Extensions;
+﻿using ICU4N.Text;
+using J2N.Collections.Generic.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using JCG = J2N.Collections.Generic;
 
@@ -8,6 +10,8 @@ namespace ICU4N.Impl.Locale
 {
     public class UnicodeLocaleExtension : Extension
     {
+        private const int CharStackBufferSize = 32;
+
         public const char Singleton = 'u';
 
         private static readonly JCG.SortedSet<string> EMPTY_SORTED_SET = new JCG.SortedSet<string>(StringComparer.Ordinal);
@@ -27,7 +31,7 @@ namespace ICU4N.Impl.Locale
                 {
                     ["ca"] = "japanese"
                 },
-                m_value = "ca-japanese"
+                Value = "ca-japanese"
             };
         }
         private static UnicodeLocaleExtension LoadNumberThai() // ICU4N: Avoid static constructor
@@ -38,7 +42,7 @@ namespace ICU4N.Impl.Locale
                 {
                     ["nu"] = "thai"
                 },
-                m_value = "nu-thai"
+                Value = "nu-thai"
             };
         }
 
@@ -62,23 +66,33 @@ namespace ICU4N.Impl.Locale
 
             if (_attributes.Count > 0 || _keywords.Count > 0)
             {
-                StringBuilder sb = new StringBuilder();
-                foreach (string attribute in _attributes)
+                ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                try
                 {
-                    sb.Append(LanguageTag.Separator).Append(attribute);
-                }
-                foreach (var keyword in _keywords)
-                {
-                    string key = keyword.Key;
-                    string value = keyword.Value;
-
-                    sb.Append(LanguageTag.Separator).Append(key);
-                    if (value.Length > 0)
+                    foreach (string attribute in _attributes)
                     {
-                        sb.Append(LanguageTag.Separator).Append(value);
+                        sb.Append(LanguageTag.Separator);
+                        sb.Append(attribute);
                     }
+                    foreach (var keyword in _keywords)
+                    {
+                        string key = keyword.Key;
+                        string value = keyword.Value;
+
+                        sb.Append(LanguageTag.Separator);
+                        sb.Append(key);
+                        if (value.Length > 0)
+                        {
+                            sb.Append(LanguageTag.Separator);
+                            sb.Append(value);
+                        }
+                    }
+                    Value = sb.AsSpan(1, sb.Length - 1).ToString();   // skip leading '-'
                 }
-                m_value = sb.ToString(1, sb.Length - 1);   // skip leading '-'
+                finally
+                {
+                    sb.Dispose();
+                }
             }
         }
 
@@ -99,38 +113,69 @@ namespace ICU4N.Impl.Locale
             return result;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsSingletonChar(char c)
         {
             return (Singleton == AsciiUtil.ToLower(c));
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsAttribute(string s)
         {
             // 3*8alphanum
             return (s.Length >= 3) && (s.Length <= 8) && AsciiUtil.IsAlphaNumeric(s);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsAttribute(ReadOnlySpan<char> s)
+        {
+            // 3*8alphanum
+            return (s.Length >= 3) && (s.Length <= 8) && AsciiUtil.IsAlphaNumeric(s);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsKey(string s)
         {
             // 2alphanum
             return (s.Length == 2) && AsciiUtil.IsAlphaNumeric(s);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsKey(ReadOnlySpan<char> s)
+        {
+            // 2alphanum
+            return (s.Length == 2) && AsciiUtil.IsAlphaNumeric(s);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsTypeSubtag(string s)
         {
             // 3*8alphanum
             return (s.Length >= 3) && (s.Length <= 8) && AsciiUtil.IsAlphaNumeric(s);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsTypeSubtag(ReadOnlySpan<char> s)
+        {
+            // 3*8alphanum
+            return (s.Length >= 3) && (s.Length <= 8) && AsciiUtil.IsAlphaNumeric(s);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsType(string s)
+        {
+            return IsType(s.AsSpan());
+        }
+
+        public static bool IsType(ReadOnlySpan<char> s)
         {
             // sequence of type subtags delimited by '-'
             int startIdx = 0;
             bool sawSubtag = false;
             while (true)
             {
-                int idx = s.IndexOf(LanguageTag.Separator, startIdx, StringComparison.Ordinal);
-                string subtag = idx < 0 ? s.Substring(startIdx) : s.Substring(startIdx, idx - startIdx); // ICU4N: Corrected 2nd parameter
+                int idx = s.IndexOf(LanguageTag.Separator, startIdx);
+                ReadOnlySpan<char> subtag = idx < 0 ? s.Slice(startIdx) : s.Slice(startIdx, idx - startIdx); // ICU4N: Corrected 2nd parameter
                 if (!IsTypeSubtag(subtag))
                 {
                     return false;

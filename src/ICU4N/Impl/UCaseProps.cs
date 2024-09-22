@@ -1,53 +1,67 @@
 ﻿using ICU4N.Globalization;
+using ICU4N.Impl.Locale;
+using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
 using J2N.IO;
+using J2N.Text;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
+#nullable enable
 
 namespace ICU4N.Impl
 {
+    // ICU4N specific - Instead of using ContextIterator from ICU4J, ported the
+    // UCaseContextIterator directly from ICU4C. Although not as user-friendly,
+    // this is more flexible because it doesn't limit us to using the heap to
+    // allocate strings. This means we can support ReadOnlySpan<char> as well
+    // as classes and structs on the the heap.
     /// <summary>
-    /// Enumerator for string case mappings, which need to look at the
+    /// Iterator function for string case mappings, which need to look at the
     /// context (surrounding text) of a given character for conditional mappings.
-    /// </summary>
-    /// <remarks>
-    /// The enumerator only needs to go backward or forward away from the
-    /// character in question. It does not use any indexes on this interface.
+    /// <para/>
+    /// The iterator only needs to go backward or forward away from the
+    /// character in question. It does not use any indexes on this interface
     /// It does not support random access or an arbitrary change of
     /// iteration direction.
     /// <para/>
     /// The code point being case-mapped itself is never returned by
-    /// this enumerator.
-    /// </remarks>
-    public interface ICasePropertiesContextEnumerator // ICU4N specific - renamed from IContextIterator
+    /// this iterator.
+    /// </summary>
+    /// <param name="context">A pointer to the iterator's working data.
+    /// This may be a ref struct, struct, or a class.</param>
+    /// <param name="direction">If &lt;0 then start iterating backward from the character;
+    ///                         if &gt;0 then start iterating forward from the character;
+    ///                         if 0 then continue iterating in the current direction.
+    ///            </param>
+    /// <returns>Next code point, or &lt;0 when the iteration is done.</returns>
+    // ICU4N: Ported from ucase.h instead of using an interface, which would bind us to the heap.
+    [CLSCompliant(false)]
+    public delegate int UCaseContextIterator(IntPtr context, sbyte direction); // ICU4N: In C++ context was a void*, but in C# we use IntPtr to allow for managed types to be used.
+
+    /// <summary>
+    /// Sample struct which may be used by some implementations of
+    /// <see cref="UCaseContextIterator"/>.
+    /// </summary>
+    public ref struct UCaseContext
     {
-        /// <summary>
-        /// Reset the enumerator for forward or backward iteration.
-        /// </summary>
-        /// <param name="forward">
-        /// If <c>true</c>, begin iterating forward from the first code point
-        /// after the one that is being case-mapped.
-        /// If <c>false</c>, begin iterating backward from the first code point
-        /// before the one that is being case-mapped.
-        /// </param>
-        void Reset(bool forward);
-
-        /// <summary>
-        /// Returns the current code point.
-        /// </summary>
-        int Current { get; }
-
-        /// <summary>
-        /// Iterate moving in the direction determined by the <see cref="Reset(bool)"/> call.
-        /// </summary>
-        /// <returns><c>true</c> if the enumerator was successfully advanced to the next element; 
-        /// <c>false</c> if the enumerator has reached the end.</returns>
-        bool MoveNext();
+        [CLSCompliant(false)]
+        public IntPtr p; // ICU4N: void* in C++. In C# we use IntPtr to allow managed types, since this may be an IReplaceable instance.
+        public int start, index, limit;
+        public int cpStart, cpLimit;
+        [CLSCompliant(false)]
+        public sbyte dir;
+        public bool b1, b2, b3;
     }
+
+    /// <internal/>
+    // ICU4N: In C++ context was a void*, but in C# we use IntPtr to allow for managed types to be used.
+    internal delegate int UCaseMapFull(int c, UCaseContextIterator? iter, IntPtr context, ref ValueStringBuilder output, CaseLocale caseLocale);
 
     /// <summary>
     /// Casing locale types for <see cref="UCaseProperties.GetCaseLocale(string)"/>,
@@ -97,6 +111,8 @@ namespace ICU4N.Impl
     /// <created>2005jan29</created>
     public sealed partial class UCaseProperties
     {
+        private const int CharStackBufferSize = 32;
+
         // constructors etc. --------------------------------------------------- ***
 
         // port of ucase_openProps()
@@ -164,6 +180,9 @@ namespace ICU4N.Impl
 
         public void AddPropertyStarts(UnicodeSet set)
         {
+            if (set is null)
+                throw new ArgumentNullException(nameof(set)); // ICU4N: Added guard clause
+
             /* add the start code point of each same-value range of the trie */
             using (var trieIterator = trie.GetEnumerator())
             {
@@ -364,6 +383,9 @@ namespace ICU4N.Impl
         /// </remarks>
         public void AddCaseClosure(int c, UnicodeSet set)
         {
+            if (set is null)
+                throw new ArgumentNullException(nameof(set)); // ICU4N: Added guard clause
+
             /*
              * Hardcode the case closure of i and its relatives and ignore the
              * data file data for these characters.
@@ -538,6 +560,9 @@ namespace ICU4N.Impl
         /// <returns>true if the string was found.</returns>
         public bool AddStringCaseClosure(string s, UnicodeSet set)
         {
+            if (set is null)
+                throw new ArgumentNullException(nameof(set)); // ICU4N: Added guard clause
+
             int i, length, start, limit, result, unfoldOffset, unfoldRows, unfoldRowWidth, unfoldStringWidth;
 
             if (unfold == null || s == null)
@@ -584,7 +609,7 @@ namespace ICU4N.Impl
 
                     for (i = unfoldStringWidth; i < unfoldRowWidth && unfold[unfoldOffset + i] != 0; i += UTF16.GetCharCount(c))
                     {
-                        c = UTF16.CharAt(unfold, unfoldOffset, unfold.Length, i);
+                        c = UTF16.CharAt(unfold.AsSpan(unfoldOffset), i); // ICU4N: changed to ReadOnlySpan<char> overload
                         set.Add(c);
                         AddCaseClosure(c, set);
                     }
@@ -726,8 +751,6 @@ namespace ICU4N.Impl
          *     zero or more case-ignorable characters.
          */
 
-        // ICU4N specific - de-nested IContextIterator and renamed
-
         /// <summary>
         /// For string case mappings, a single character (a code point) is mapped
         /// either to itself (in which case in-place mapping functions do nothing),
@@ -749,10 +772,16 @@ namespace ICU4N.Impl
 
         public static CaseLocale GetCaseLocale(CultureInfo locale)
         {
+            if (locale is null)
+                throw new ArgumentNullException(nameof(locale)); // ICU4N: Added guard clause
+
             return GetCaseLocale(locale.TwoLetterISOLanguageName);
         }
         public static CaseLocale GetCaseLocale(UCultureInfo locale)
         {
+            if (locale is null)
+                throw new ArgumentNullException(nameof(locale)); // ICU4N: Added guard clause
+
             return GetCaseLocale(locale.Language);
         }
         /// <summary>Accepts both 2- and 3-letter language subtags.</summary>
@@ -808,17 +837,19 @@ namespace ICU4N.Impl
         }
 
         /// <summary>Is followed by {case-ignorable}* cased  ? (dir determines looking forward/backward)</summary>
-        private bool IsFollowedByCasedLetter(ICasePropertiesContextEnumerator iter, bool forward)
+        private bool IsFollowedByCasedLetter(UCaseContextIterator? iter, IntPtr context, sbyte dir)
         {
+            int c;
+
             if (iter == null)
             {
                 return false;
             }
 
-            for (iter.Reset(forward); iter.MoveNext();)
+            for (/* dir!=0 sets direction */; (c = iter(context, dir)) >= 0; dir = 0)
             {
                 // ICU4N: Simplfied version of GetTypeOrIgnorable
-                if (IsCaseIgnorable(iter.Current, out CaseType type))
+                if (IsCaseIgnorable(c, out CaseType type))
                 {
                     /* case-ignorable, continue with the loop */
                 }
@@ -836,18 +867,20 @@ namespace ICU4N.Impl
         }
 
         /// <summary>Is preceded by Soft_Dotted character with no intervening cc=230 ?</summary>
-        private bool IsPrecededBySoftDotted(ICasePropertiesContextEnumerator iter)
+        private bool IsPrecededBySoftDotted(UCaseContextIterator? iter, IntPtr context)
         {
+            int c;
             DotType dotType;
+            sbyte dir;
 
             if (iter == null)
             {
                 return false;
             }
 
-            for (iter.Reset(forward: false); iter.MoveNext();)
+            for (dir = -1; (c = iter(context, dir)) >= 0; dir = 0)
             {
-                dotType = GetDotType(iter.Current);
+                dotType = GetDotType(c);
                 if (dotType == DotType.SoftDotted)
                 {
                     return true; /* preceded by TYPE_i */
@@ -896,19 +929,19 @@ namespace ICU4N.Impl
          */
 
         /// <summary>Is preceded by base character 'I' with no intervening cc=230 ?</summary>
-        private bool IsPrecededBy_I(ICasePropertiesContextEnumerator iter)
+        private bool IsPrecededBy_I(UCaseContextIterator? iter, IntPtr context)
         {
             int c;
             DotType dotType;
+            sbyte dir;
 
             if (iter == null)
             {
                 return false;
             }
 
-            for (iter.Reset(forward: false); iter.MoveNext();)
+            for (dir = -1; (c = iter(context, dir)) >= 0; dir = 0)
             {
-                c = iter.Current;
                 if (c == 0x49)
                 {
                     return true; /* preceded by I */
@@ -924,19 +957,20 @@ namespace ICU4N.Impl
         }
 
         /// <summary>Is followed by one or more cc==230 ?</summary>
-        private bool IsFollowedByMoreAbove(ICasePropertiesContextEnumerator iter)
+        private bool IsFollowedByMoreAbove(UCaseContextIterator? iter, IntPtr context)
         {
-            //int c;
+            int c;
             DotType dotType;
+            sbyte dir;
 
             if (iter == null)
             {
                 return false;
             }
 
-            for (iter.Reset(forward: true); iter.MoveNext();)
+            for (dir = 1; (c = iter(context, dir)) >= 0; dir = 0)
             {
-                dotType = GetDotType(iter.Current);
+                dotType = GetDotType(c);
                 if (dotType == DotType.Above)
                 {
                     return true; /* at least one cc==230 following */
@@ -951,19 +985,19 @@ namespace ICU4N.Impl
         }
 
         /// <summary>Is followed by a dot above (without cc==230 in between) ?</summary>
-        private bool IsFollowedByDotAbove(ICasePropertiesContextEnumerator iter)
+        private bool IsFollowedByDotAbove(UCaseContextIterator? iter, IntPtr context)
         {
             int c;
             DotType dotType;
+            sbyte dir;
 
             if (iter == null)
             {
                 return false;
             }
 
-            for (iter.Reset(forward: true); iter.MoveNext();)
+            for (dir = 1; (c = iter(context, dir)) >= 0; dir = 0)
             {
-                c = iter.Current;
                 if (c == 0x307)
                 {
                     return true;
@@ -986,23 +1020,465 @@ namespace ICU4N.Impl
                 iDotAcute = "i\u0307\u0301",
                 iDotTilde = "i\u0307\u0303";
 
-        // ICU4N specific - ToFullLower(int c, IContextIterator iter, IAppendable output, int caseLocale) moved to UCasePropsExtension.tt
 
-        // ICU4N specific - ToUpperOrTitle(int c, IContextIterator iter,
-        //    IAppendable output,
-        //    int loc,
-        //    bool upperNotTitle) moved to UCasePropsExtension.tt
+        /// <summary>
+        /// Get the full lowercase mapping for <paramref name="c"/>.
+        /// </summary>
+        /// <param name="c">Character to be mapped.</param>
+        /// <param name="iter">
+        /// Character iterator, used for context-sensitive mappings.
+        /// See <see cref="UCaseContextIterator"/> for details.
+        /// If iter==null then a context-independent result is returned.
+        /// </param>
+        /// <param name="context">Pointer to be passed into <paramref name="iter"/>.</param>
+        /// <param name="output">If the mapping result is a string, then it is appended to <paramref name="output"/>.</param>
+        /// <param name="caseLocale">Case locale value from <see cref="GetCaseLocale(System.Globalization.CultureInfo)"/>.</param>
+        /// <returns>Output code point or string length, see <see cref="MaxStringLength"/>.</returns>
+        /// <seealso cref="UCaseContextIterator"/>
+        /// <seealso cref="MaxStringLength"/>
+        /// <internal/>
+        [CLSCompliant(false)]
+        public int ToFullLower(int c, UCaseContextIterator? iter, IntPtr context, IAppendable output, CaseLocale caseLocale) // ICU4N TODO: API: Factor this out and use ValueStringBuilder to return a Span<T>
+        {
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                int result = ToFullLower(c, iter, context, ref sb, caseLocale);
+                output.Append(sb.AsSpan());
+                return result;
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
 
-        // ICU4N specific - ToFullUpper(int c, IContextIterator iter,
-        //    IAppendable output,
-        //    int caseLocale) moved to UCasePropsExtension.tt
+        /// <summary>
+        /// Get the full lowercase mapping for <paramref name="c"/>.
+        /// </summary>
+        /// <param name="c">Character to be mapped.</param>
+        /// <param name="iter">
+        /// Character iterator, used for context-sensitive mappings.
+        /// See <see cref="UCaseContextIterator"/> for details.
+        /// If iter==null then a context-independent result is returned.
+        /// </param>
+        /// <param name="context">Pointer to be passed into <paramref name="iter"/>.</param>
+        /// <param name="output">If the mapping result is a string, then it is appended to <paramref name="output"/>.</param>
+        /// <param name="caseLocale">Case locale value from <see cref="GetCaseLocale(System.Globalization.CultureInfo)"/>.</param>
+        /// <returns>Output code point or string length, see <see cref="MaxStringLength"/>.</returns>
+        /// <seealso cref="UCaseContextIterator"/>
+        /// <seealso cref="MaxStringLength"/>
+        /// <internal/>
+        [CLSCompliant(false)]
+        public int ToFullLower(int c, UCaseContextIterator? iter, IntPtr context, StringBuilder output, CaseLocale caseLocale) // ICU4N TODO: API: Factor this out and use ValueStringBuilder to return a Span<T>
+        {
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                int result = ToFullLower(c, iter, context, ref sb, caseLocale);
+                output.Append(sb.AsSpan());
+                return result;
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
 
-        // ICU4N specific - ToFullTitle(int c, IContextIterator iter,
-        //    IAppendable output,
-        //    int caseLocale) moved to UCasePropsExtension.tt
+        /// <summary>
+        /// Get the full lowercase mapping for <paramref name="c"/>.
+        /// </summary>
+        /// <param name="c">Character to be mapped.</param>
+        /// <param name="iter">
+        /// A delegate used for context-sensitive mappings.
+        /// See <see cref="UCaseContextIterator"/> for details.
+        /// If iter==<c>null</c> then a context-independent result is returned.
+        /// </param>
+        /// <param name="context">The context (surrounding text) to look at for conditional character mappings.</param>
+        /// <param name="output">If the mapping result is a string, then it is appended to <paramref name="output"/>.</param>
+        /// <param name="caseLocale">Case locale value from <see cref="GetCaseLocale(System.Globalization.CultureInfo)"/>.</param>
+        /// <returns>Output code point or string length, see <see cref="MaxStringLength"/>.</returns>
+        /// <seealso cref="UCaseContextIterator"/>
+        /// <seealso cref="MaxStringLength"/>
+        /// <internal/>
+        internal int ToFullLower(int c, UCaseContextIterator? iter, IntPtr context, ref ValueStringBuilder output, CaseLocale caseLocale)
+        {
+            int result, props;
 
+            result = c;
+            props = trie.Get(c);
+            if (!PropsHasException(props))
+            {
+                if (GetCaseTypeFromProps(props) >= CaseType.Upper)
+                {
+                    result = c + GetDelta(props);
+                }
+            }
+            else
+            {
+                int excOffset = GetExceptionsOffset(props), excOffset2;
+                int excWord = exceptions[excOffset++];
+                int full;
 
+                excOffset2 = excOffset;
 
+                if ((excWord & EXC_CONDITIONAL_SPECIAL) != 0)
+                {
+                    /* use hardcoded conditions and mappings */
+                    /*
+                     * Test for conditional mappings first
+                     *   (otherwise the unconditional default mappings are always taken),
+                     * then test for characters that have unconditional mappings in SpecialCasing.txt,
+                     * then get the UnicodeData.txt mappings.
+                     */
+                    if (caseLocale == CaseLocale.Lithuanian &&
+                            /* base characters, find accents above */
+                            (((c == 0x49 || c == 0x4a || c == 0x12e) &&
+                                IsFollowedByMoreAbove(iter, context)) ||
+                            /* precomposed with accent above, no need to find one */
+                            (c == 0xcc || c == 0xcd || c == 0x128))
+                        )
+                    {
+                        /*
+                            # Lithuanian
+
+                            # Lithuanian retains the dot in a lowercase i when followed by accents.
+
+                            # Introduce an explicit dot above when lowercasing capital I's and J's
+                            # whenever there are more accents above.
+                            # (of the accents used in Lithuanian: grave, acute, tilde above, and ogonek)
+
+                            0049; 0069 0307; 0049; 0049; lt More_Above; # LATIN CAPITAL LETTER I
+                            004A; 006A 0307; 004A; 004A; lt More_Above; # LATIN CAPITAL LETTER J
+                            012E; 012F 0307; 012E; 012E; lt More_Above; # LATIN CAPITAL LETTER I WITH OGONEK
+                            00CC; 0069 0307 0300; 00CC; 00CC; lt; # LATIN CAPITAL LETTER I WITH GRAVE
+                            00CD; 0069 0307 0301; 00CD; 00CD; lt; # LATIN CAPITAL LETTER I WITH ACUTE
+                            0128; 0069 0307 0303; 0128; 0128; lt; # LATIN CAPITAL LETTER I WITH TILDE
+                         */
+                        // ICU4N: Removed unnecessary try/catch
+                        switch (c)
+                        {
+                            case 0x49:  /* LATIN CAPITAL LETTER I */
+                                output.Append(iDot);
+                                return 2;
+                            case 0x4a:  /* LATIN CAPITAL LETTER J */
+                                output.Append(jDot);
+                                return 2;
+                            case 0x12e: /* LATIN CAPITAL LETTER I WITH OGONEK */
+                                output.Append(iOgonekDot);
+                                return 2;
+                            case 0xcc:  /* LATIN CAPITAL LETTER I WITH GRAVE */
+                                output.Append(iDotGrave);
+                                return 3;
+                            case 0xcd:  /* LATIN CAPITAL LETTER I WITH ACUTE */
+                                output.Append(iDotAcute);
+                                return 3;
+                            case 0x128: /* LATIN CAPITAL LETTER I WITH TILDE */
+                                output.Append(iDotTilde);
+                                return 3;
+                            default:
+                                return 0; /* will not occur */
+                        }
+                        /* # Turkish and Azeri */
+                    }
+                    else if (caseLocale == CaseLocale.Turkish && c == 0x130)
+                    {
+                        /*
+                            # I and i-dotless; I-dot and i are case pairs in Turkish and Azeri
+                            # The following rules handle those cases.
+
+                            0130; 0069; 0130; 0130; tr # LATIN CAPITAL LETTER I WITH DOT ABOVE
+                            0130; 0069; 0130; 0130; az # LATIN CAPITAL LETTER I WITH DOT ABOVE
+                         */
+                        return 0x69;
+                    }
+                    else if (caseLocale == CaseLocale.Turkish && c == 0x307 && IsPrecededBy_I(iter, context))
+                    {
+                        /*
+                            # When lowercasing, remove dot_above in the sequence I + dot_above, which will turn into i.
+                            # This matches the behavior of the canonically equivalent I-dot_above
+
+                            0307; ; 0307; 0307; tr After_I; # COMBINING DOT ABOVE
+                            0307; ; 0307; 0307; az After_I; # COMBINING DOT ABOVE
+                         */
+                        return 0; /* remove the dot (continue without output) */
+                    }
+                    else if (caseLocale == CaseLocale.Turkish && c == 0x49 && !IsFollowedByDotAbove(iter, context))
+                    {
+                        /*
+                            # When lowercasing, unless an I is before a dot_above, it turns into a dotless i.
+
+                            0049; 0131; 0049; 0049; tr Not_Before_Dot; # LATIN CAPITAL LETTER I
+                            0049; 0131; 0049; 0049; az Not_Before_Dot; # LATIN CAPITAL LETTER I
+                         */
+                        return 0x131;
+                    }
+                    else if (c == 0x130)
+                    {
+                        /*
+                            # Preserve canonical equivalence for I with dot. Turkic is handled below.
+
+                            0130; 0069 0307; 0130; 0130; # LATIN CAPITAL LETTER I WITH DOT ABOVE
+                         */
+                        // ICU4N: Removed unnecessary try/catch
+                        output.Append(iDot);
+                        return 2;
+                    }
+                    else if (c == 0x3a3 &&
+                              !IsFollowedByCasedLetter(iter, context, dir: 1) &&
+                              IsFollowedByCasedLetter(iter, context, dir: -1) /* -1=preceded */)
+                    {
+                        /* greek capital sigma maps depending on surrounding cased letters (see SpecialCasing.txt) */
+                        /*
+                            # Special case for final form of sigma
+
+                            03A3; 03C2; 03A3; 03A3; Final_Sigma; # GREEK CAPITAL LETTER SIGMA
+                         */
+                        return 0x3c2; /* greek small final sigma */
+                    }
+                    else
+                    {
+                        /* no known conditional special case mapping, use a normal mapping */
+                    }
+                }
+                else if (HasSlot(excWord, EXC_FULL_MAPPINGS))
+                {
+                    long value = GetSlotValueAndOffset(excWord, EXC_FULL_MAPPINGS, excOffset);
+                    full = (int)value & FULL_LOWER;
+                    if (full != 0)
+                    {
+                        /* start of full case mapping strings */
+                        excOffset = (int)(value >> 32) + 1;
+
+                        // ICU4N: removed unnecessary try/catch
+
+                        // append the lowercase mapping
+                        output.Append(exceptions.AsSpan(excOffset, full)); // ICU4N: (excOffset + full) - excOffset == full
+
+                        /* return the string length */
+                        return full;
+                    }
+                }
+
+                if (HasSlot(excWord, EXC_LOWER))
+                {
+                    result = GetSlotValue(excWord, EXC_LOWER, excOffset2);
+                }
+            }
+
+            return (result == c) ? ~result : result;
+        }
+
+        /* internal */
+        private int ToUpperOrTitle(int c,
+            UCaseContextIterator? iter, IntPtr context,
+            ref ValueStringBuilder output,
+            CaseLocale caseLocale,
+            bool upperNotTitle)
+        {
+            int result;
+            int props;
+
+            result = c;
+            props = trie.Get(c);
+            if (!PropsHasException(props))
+            {
+                if (GetCaseTypeFromProps(props) == CaseType.Lower)
+                {
+                    result = c + GetDelta(props);
+                }
+            }
+            else
+            {
+                int excOffset = GetExceptionsOffset(props), excOffset2;
+                int excWord = exceptions[excOffset++];
+                int full, index;
+
+                excOffset2 = excOffset;
+
+                if ((excWord & EXC_CONDITIONAL_SPECIAL) != 0)
+                {
+                    /* use hardcoded conditions and mappings */
+                    if (caseLocale == CaseLocale.Turkish && c == 0x69)
+                    {
+                        /*
+                            # Turkish and Azeri
+
+                            # I and i-dotless; I-dot and i are case pairs in Turkish and Azeri
+                            # The following rules handle those cases.
+
+                            # When uppercasing, i turns into a dotted capital I
+
+                            0069; 0069; 0130; 0130; tr; # LATIN SMALL LETTER I
+                            0069; 0069; 0130; 0130; az; # LATIN SMALL LETTER I
+                        */
+                        return 0x130;
+                    }
+                    else if (caseLocale == CaseLocale.Lithuanian && c == 0x307 && IsPrecededBySoftDotted(iter, context))
+                    {
+                        /*
+                            # Lithuanian
+
+                            # Lithuanian retains the dot in a lowercase i when followed by accents.
+
+                            # Remove DOT ABOVE after "i" with upper or titlecase
+
+                            0307; 0307; ; ; lt After_Soft_Dotted; # COMBINING DOT ABOVE
+                         */
+                        return 0; /* remove the dot (continue without output) */
+                    }
+                    else
+                    {
+                        /* no known conditional special case mapping, use a normal mapping */
+                    }
+                }
+                else if (HasSlot(excWord, EXC_FULL_MAPPINGS))
+                {
+                    long value = GetSlotValueAndOffset(excWord, EXC_FULL_MAPPINGS, excOffset);
+                    full = (int)value & 0xffff;
+
+                    /* start of full case mapping strings */
+                    excOffset = (int)(value >> 32) + 1;
+
+                    /* skip the lowercase and case-folding result strings */
+                    excOffset += full & FULL_LOWER;
+                    full >>= 4;
+                    excOffset += full & 0xf;
+                    full >>= 4;
+
+                    if (upperNotTitle)
+                    {
+                        full &= 0xf;
+                    }
+                    else
+                    {
+                        /* skip the uppercase result string */
+                        excOffset += full & 0xf;
+                        full = (full >> 4) & 0xf;
+                    }
+
+                    if (full != 0)
+                    {
+                        // ICU4N: Removed unnecessary try/catch
+
+                        // append the result string
+                        output.Append(exceptions.AsSpan(excOffset, full)); // ICU4N: (excOffset + full) - excOffset == full
+
+                        /* return the string length */
+                        return full;
+                    }
+                }
+
+                if (!upperNotTitle && HasSlot(excWord, EXC_TITLE))
+                {
+                    index = EXC_TITLE;
+                }
+                else if (HasSlot(excWord, EXC_UPPER))
+                {
+                    /* here, titlecase is same as uppercase */
+                    index = EXC_UPPER;
+                }
+                else
+                {
+                    return ~c;
+                }
+                result = GetSlotValue(excWord, index, excOffset2);
+            }
+
+            return (result == c) ? ~result : result;
+        }
+
+        [CLSCompliant(false)]
+        public int ToFullUpper(int c,
+            UCaseContextIterator? iter, IntPtr context,
+            IAppendable output,
+            CaseLocale caseLocale) // ICU4N TODO: API: Factor this out and use ValueStringBuilder to return a Span<T>
+        {
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                int result = ToFullUpper(c, iter, context, ref sb, caseLocale);
+                output.Append(sb.AsSpan());
+                return result;
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        [CLSCompliant(false)]
+        public int ToFullUpper(int c,
+            UCaseContextIterator? iter, IntPtr context,
+            StringBuilder output,
+            CaseLocale caseLocale) // ICU4N TODO: API: Factor this out and use ValueStringBuilder to return a Span<T>
+        {
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                int result = ToFullUpper(c, iter, context, ref sb, caseLocale);
+                output.Append(sb.AsSpan());
+                return result;
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        internal int ToFullUpper(int c,
+            UCaseContextIterator? iter, IntPtr context,
+            ref ValueStringBuilder output,
+            CaseLocale caseLocale)
+        {
+            return ToUpperOrTitle(c, iter, context, ref output, caseLocale, true);
+        }
+
+        [CLSCompliant(false)]
+        public int ToFullTitle(int c,
+            UCaseContextIterator? iter, IntPtr context,
+            IAppendable output,
+            CaseLocale caseLocale) // ICU4N TODO: API: Factor this out and use ValueStringBuilder to return a Span<T>
+        {
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                int result = ToFullTitle(c, iter, context, ref sb, caseLocale);
+                output.Append(sb.AsSpan());
+                return result;
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        [CLSCompliant(false)]
+        public int ToFullTitle(int c,
+            UCaseContextIterator? iter, IntPtr context,
+            StringBuilder output,
+            CaseLocale caseLocale) // ICU4N TODO: API: Factor this out and use ValueStringBuilder to return a Span<T>
+        {
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                int result = ToFullTitle(c, iter, context, ref sb, caseLocale);
+                output.Append(sb.AsSpan());
+                return result;
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        internal int ToFullTitle(int c,
+            UCaseContextIterator? iter, IntPtr context,
+            ref ValueStringBuilder output,
+            CaseLocale caseLocale)
+        {
+            return ToUpperOrTitle(c, iter, context, ref output, caseLocale, false);
+        }
 
         /* case folding ------------------------------------------------------------- */
 
@@ -1123,23 +1599,162 @@ namespace ICU4N.Impl
             return c;
         }
 
-        // ICU4N specific - ToFullFolding(int c, IAppendable output, int options) moved to UCasePropsExtension.tt
+        /* case folding ------------------------------------------------------------- */
 
+        public int ToFullFolding(int c, IAppendable output, int options) // ICU4N TODO: API: Factor this out and use ValueStringBuilder to return a Span<T>
+        {
+            if (output is null)
+                throw new ArgumentNullException(nameof(output));
+
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                int result = ToFullFolding(c, ref sb, options);
+                output.Append(sb.AsSpan());
+                return result;
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        public int ToFullFolding(int c, StringBuilder output, int options) // ICU4N TODO: API: Factor this out and use ValueStringBuilder to return a Span<T>
+        {
+            if (output is null)
+                throw new ArgumentNullException(nameof(output));
+
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                int result = ToFullFolding(c, ref sb, options);
+                output.Append(sb.AsSpan());
+                return result;
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        // Issue for canonical caseless match (UAX #21):
+        // Turkic casefolding (using "T" mappings in CaseFolding.txt) does not preserve
+        // canonical equivalence, unlike default-option casefolding.
+        // For example, I-grave and I + grave fold to strings that are not canonically
+        // equivalent.
+        // For more details, see the comment in unorm_compare() in unorm.cpp
+        // and the intermediate prototype changes for Jitterbug 2021.
+        // (For example, revision 1.104 of uchar.c and 1.4 of CaseFolding.txt.)
+        // 
+        // This did not get fixed because it appears that it is not possible to fix
+        // it for uppercase and lowercase characters (I-grave vs. i-grave)
+        // together in a way that they still fold to common result strings.
+
+
+        internal int ToFullFolding(int c, ref ValueStringBuilder output, int options)
+        {
+            int result;
+            int props;
+
+            result = c;
+            props = trie.Get(c);
+            if (!PropsHasException(props))
+            {
+                if (GetCaseTypeFromProps(props) >= CaseType.Upper)
+                {
+                    result = c + GetDelta(props);
+                }
+            }
+            else
+            {
+                int excOffset = GetExceptionsOffset(props), excOffset2;
+                int excWord = exceptions[excOffset++];
+                int full, index;
+
+                excOffset2 = excOffset;
+
+                if ((excWord & EXC_CONDITIONAL_FOLD) != 0)
+                {
+                    /* use hardcoded conditions and mappings */
+                    if ((options & FOLD_CASE_OPTIONS_MASK) == UChar.FoldCaseDefault)
+                    {
+                        /* default mappings */
+                        if (c == 0x49)
+                        {
+                            /* 0049; C; 0069; # LATIN CAPITAL LETTER I */
+                            return 0x69;
+                        }
+                        else if (c == 0x130)
+                        {
+                            /* 0130; F; 0069 0307; # LATIN CAPITAL LETTER I WITH DOT ABOVE */
+
+                            // ICU4N: Removed unnecessary try/catch
+                            output.Append(iDot);
+                            return 2;
+                        }
+                    }
+                    else
+                    {
+                        /* Turkic mappings */
+                        if (c == 0x49)
+                        {
+                            /* 0049; T; 0131; # LATIN CAPITAL LETTER I */
+                            return 0x131;
+                        }
+                        else if (c == 0x130)
+                        {
+                            /* 0130; T; 0069; # LATIN CAPITAL LETTER I WITH DOT ABOVE */
+                            return 0x69;
+                        }
+                    }
+                }
+                else if (HasSlot(excWord, EXC_FULL_MAPPINGS))
+                {
+                    long value = GetSlotValueAndOffset(excWord, EXC_FULL_MAPPINGS, excOffset);
+                    full = (int)value & 0xffff;
+
+                    /* start of full case mapping strings */
+                    excOffset = (int)(value >> 32) + 1;
+
+                    /* skip the lowercase result string */
+                    excOffset += full & FULL_LOWER;
+                    full = (full >> 4) & 0xf;
+
+                    if (full != 0)
+                    {
+                        // ICU4N: Removed unnecessary try/catch
+
+                        // append the result string
+                        output.Append(exceptions, excOffset, full); // ICU4N: (excOffset + full) - excOffset == full
+
+                        /* return the string length */
+                        return full;
+                    }
+                }
+
+                if (HasSlot(excWord, EXC_FOLD))
+                {
+                    index = EXC_FOLD;
+                }
+                else if (HasSlot(excWord, EXC_LOWER))
+                {
+                    index = EXC_LOWER;
+                }
+                else
+                {
+                    return ~c;
+                }
+                result = GetSlotValue(excWord, index, excOffset2);
+            }
+
+            return (result == c) ? ~result : result;
+        }
 
 
         /* case mapping properties API ---------------------------------------------- */
 
-        
-        private static StringBuilder dummyStringBuilder = new StringBuilder();
-
-        /// <summary>
-        /// We need a <see cref="StringBuilder"/> for multi-code point output from the
-        /// full case mapping functions. However, we do not actually use that output,
-        /// we just check whether the input character was mapped to anything else.
-        /// We use a shared <see cref="StringBuilder"/> to avoid allocating a new one in each call.
-        /// We remove its contents each time so that it does not grow large over time.
-        /// </summary>
-        public static StringBuilder DummyStringBuilder => dummyStringBuilder;
+        // ICU4N: Removed dummyStringBuilder because we use ValueStringBuilder, which does the
+        // entire operation on the stack.
 
         public bool HasBinaryProperty(int c, UProperty which)
         {
@@ -1158,39 +1773,92 @@ namespace ICU4N.Impl
                 case UProperty.Case_Ignorable:
                     // ICU4N: Simplfied version of GetTypeOrIgnorable
                     return IsCaseIgnorable(c, out CaseType _);
-                    //return (GetTypeOrIgnorable(c) >> 2) != 0;
+                //return (GetTypeOrIgnorable(c) >> 2) != 0;
                 /*
-                 * Note: The following Changes_When_Xyz are defined as testing whether
-                 * the NFD form of the input changes when Xyz-case-mapped.
-                 * However, this simpler implementation of these properties,
-                 * ignoring NFD, passes the tests.
-                 * The implementation needs to be changed if the tests start failing.
-                 * When that happens, optimizations should be used to work with the
-                 * per-single-code point ucase_toFullXyz() functions unless
-                 * the NFD form has more than one code point,
-                 * and the property starts set needs to be the union of the
-                 * start sets for normalization and case mappings.
-                 */
+                    * Note: The following Changes_When_Xyz are defined as testing whether
+                    * the NFD form of the input changes when Xyz-case-mapped.
+                    * However, this simpler implementation of these properties,
+                    * ignoring NFD, passes the tests.
+                    * The implementation needs to be changed if the tests start failing.
+                    * When that happens, optimizations should be used to work with the
+                    * per-single-code point ucase_toFullXyz() functions unless
+                    * the NFD form has more than one code point,
+                    * and the property starts set needs to be the union of the
+                    * start sets for normalization and case mappings.
+                    */
                 case UProperty.Changes_When_Lowercased:
-                    dummyStringBuilder.Length = 0;
-                    return ToFullLower(c, null, dummyStringBuilder, CaseLocale.Root) >= 0;
+                    return ChangesWhenLowercased(c);
                 case UProperty.Changes_When_Uppercased:
-                    dummyStringBuilder.Length = 0;
-                    return ToFullUpper(c, null, dummyStringBuilder, CaseLocale.Root) >= 0;
+                    return ChangesWhenUppercased(c);
                 case UProperty.Changes_When_Titlecased:
-                    dummyStringBuilder.Length = 0;
-                    return ToFullTitle(c, null, dummyStringBuilder, CaseLocale.Root) >= 0;
+                    return ChangesWhenTitlecased(c);
                 /* case UProperty.CHANGES_WHEN_CASEFOLDED: -- in UCharacterProperty.java */
                 case UProperty.Changes_When_Casemapped:
-                    dummyStringBuilder.Length = 0;
-                    return
-                ToFullLower(c, null, dummyStringBuilder, CaseLocale.Root) >= 0 ||
-                ToFullUpper(c, null, dummyStringBuilder, CaseLocale.Root) >= 0 ||
-                ToFullTitle(c, null, dummyStringBuilder, CaseLocale.Root) >= 0;
+                    return ChangesWhenCasemapped(c);
                 default:
                     return false;
             }
         }
+
+        // ICU4N: Use helper methods to wrap ValueStringBuilder creation/destruction for these checks
+        // so we don't have to do this for the other HasBinaryProperty() options.
+        private bool ChangesWhenLowercased(int c)
+        {
+            var dummyStringBuilder = new ValueStringBuilder(stackalloc char[8]);
+            try
+            {
+                return ToFullLower(c, null, IntPtr.Zero, ref dummyStringBuilder, CaseLocale.Root) >= 0;
+            }
+            finally
+            {
+                dummyStringBuilder.Dispose();
+            }
+        }
+
+        private bool ChangesWhenUppercased(int c)
+        {
+            var dummyStringBuilder = new ValueStringBuilder(stackalloc char[8]);
+            try
+            {
+                return ToFullUpper(c, null, IntPtr.Zero, ref dummyStringBuilder, CaseLocale.Root) >= 0;
+            }
+            finally
+            {
+                dummyStringBuilder.Dispose();
+            }
+        }
+
+        private bool ChangesWhenTitlecased(int c)
+        {
+            var dummyStringBuilder = new ValueStringBuilder(stackalloc char[8]);
+            try
+            {
+                return ToFullTitle(c, null, IntPtr.Zero, ref dummyStringBuilder, CaseLocale.Root) >= 0;
+            }
+            finally
+            {
+                dummyStringBuilder.Dispose();
+            }
+        }
+
+        private bool ChangesWhenCasemapped(int c)
+        {
+            var dummyStringBuilder = new ValueStringBuilder(stackalloc char[8]);
+            try
+            {
+                if (ToFullLower(c, null, IntPtr.Zero, ref dummyStringBuilder, CaseLocale.Root) >= 0) return true;
+                dummyStringBuilder.Length = 0;
+                if (ToFullUpper(c, null, IntPtr.Zero, ref dummyStringBuilder, CaseLocale.Root) >= 0) return true;
+                dummyStringBuilder.Length = 0;
+                return ToFullTitle(c, null, IntPtr.Zero, ref dummyStringBuilder, CaseLocale.Root) >= 0;
+            }
+            finally
+            {
+                dummyStringBuilder.Dispose();
+            }
+        }
+
+#nullable restore
 
         // data members -------------------------------------------------------- ***
         private int[] indexes;

@@ -6,7 +6,9 @@ using J2N;
 using J2N.IO;
 using J2N.Text;
 using System;
+using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Text;
 using StringBuffer = System.Text.StringBuilder;
 
@@ -250,6 +252,8 @@ namespace ICU4N.Text
         : ICloneable
 #endif
     {
+        private const int CharStackBufferSize = 64;
+
         // The input text and our position in it
         private UCharacterIterator text;
         private Normalizer2 norm2;
@@ -264,7 +268,7 @@ namespace ICU4N.Text
         private int nextIndex;
 
         // A buffer for holding intermediate results
-        private StringBuilder buffer;
+        private OpenStringBuilder buffer;
         private int bufferPos;
 
         // Helper classes to defer loading of normalization data.
@@ -279,7 +283,7 @@ namespace ICU4N.Text
         }
         private sealed class NFDModeImpl
         {
-            private static readonly ModeImpl instance = new ModeImpl(Normalizer2.GetNFDInstance());
+            private static readonly ModeImpl instance = new ModeImpl(Normalizer2.NFDInstance);
             /// <summary>
             /// public singleton instance
             /// </summary>
@@ -287,7 +291,7 @@ namespace ICU4N.Text
         }
         private sealed class NFKDModeImpl
         {
-            private static readonly ModeImpl instance = new ModeImpl(Normalizer2.GetNFKDInstance());
+            private static readonly ModeImpl instance = new ModeImpl(Normalizer2.NFKDInstance);
             /// <summary>
             /// public singleton instance
             /// </summary>
@@ -295,7 +299,7 @@ namespace ICU4N.Text
         }
         private sealed class NFCModeImpl
         {
-            private static readonly ModeImpl instance = new ModeImpl(Normalizer2.GetNFCInstance());
+            private static readonly ModeImpl instance = new ModeImpl(Normalizer2.NFCInstance);
             /// <summary>
             /// public singleton instance
             /// </summary>
@@ -303,7 +307,7 @@ namespace ICU4N.Text
         }
         private sealed class NFKCModeImpl
         {
-            private static readonly ModeImpl instance = new ModeImpl(Normalizer2.GetNFKCInstance());
+            private static readonly ModeImpl instance = new ModeImpl(Normalizer2.NFKCInstance);
             /// <summary>
             /// public singleton instance
             /// </summary>
@@ -311,7 +315,7 @@ namespace ICU4N.Text
         }
         private sealed class FCDModeImpl
         {
-            private static readonly ModeImpl instance = new ModeImpl(Norm2AllModes.GetFCDNormalizer2());
+            private static readonly ModeImpl instance = new ModeImpl(Norm2AllModes.FCDNormalizer2);
             /// <summary>
             /// public singleton instance
             /// </summary>
@@ -329,7 +333,7 @@ namespace ICU4N.Text
         private sealed class NFD32ModeImpl
         {
             private static readonly ModeImpl instance =
-                new ModeImpl(new FilteredNormalizer2(Normalizer2.GetNFDInstance(),
+                new ModeImpl(new FilteredNormalizer2(Normalizer2.NFDInstance,
                                                  Unicode32.Instance));
             /// <summary>
             /// public singleton instance
@@ -339,7 +343,7 @@ namespace ICU4N.Text
         private sealed class NFKD32ModeImpl
         {
             private static readonly ModeImpl instance =
-                new ModeImpl(new FilteredNormalizer2(Normalizer2.GetNFKDInstance(),
+                new ModeImpl(new FilteredNormalizer2(Normalizer2.NFKDInstance,
                                                  Unicode32.Instance));
             /// <summary>
             /// public singleton instance
@@ -349,7 +353,7 @@ namespace ICU4N.Text
         private sealed class NFC32ModeImpl
         {
             private static readonly ModeImpl instance =
-                new ModeImpl(new FilteredNormalizer2(Normalizer2.GetNFCInstance(),
+                new ModeImpl(new FilteredNormalizer2(Normalizer2.NFCInstance,
                                                  Unicode32.Instance));
             /// <summary>
             /// public singleton instance
@@ -359,7 +363,7 @@ namespace ICU4N.Text
         private sealed class NFKC32ModeImpl
         {
             private static readonly ModeImpl instance =
-                new ModeImpl(new FilteredNormalizer2(Normalizer2.GetNFKCInstance(),
+                new ModeImpl(new FilteredNormalizer2(Normalizer2.NFKCInstance,
                                                  Unicode32.Instance));
             /// <summary>
             /// public singleton instance
@@ -369,7 +373,7 @@ namespace ICU4N.Text
         private sealed class FCD32ModeImpl
         {
             private static readonly ModeImpl instance =
-                new ModeImpl(new FilteredNormalizer2(Norm2AllModes.GetFCDNormalizer2(),
+                new ModeImpl(new FilteredNormalizer2(Norm2AllModes.FCDNormalizer2,
                                                  Unicode32.Instance));
             /// <summary>
             /// public singleton instance
@@ -720,6 +724,20 @@ namespace ICU4N.Text
         /// <summary>
         /// Creates a new <see cref="Normalizer"/> object for iterating over the
         /// normalized form of a given string.
+        /// </summary>
+        /// <param name="str">The string to be normalized.  The normalization
+        /// will start at the beginning of the string.</param>
+        /// <param name="mode">The normalization mode.</param>
+        /// <draft>ICU4N 60.1</draft>
+        [Obsolete("ICU 56 Use Normalizer2 instead.")]
+        public Normalizer(ReadOnlySpan<char> str, NormalizerMode mode)
+            : this(str, mode, NormalizerUnicodeVersion.Default)
+        {
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="Normalizer"/> object for iterating over the
+        /// normalized form of a given string.
         /// <para/>
         /// The <paramref name="unicodeVersion"/> parameter specifies which optional
         /// <see cref="Normalizer"/> features are to be enabled for this object.
@@ -740,7 +758,33 @@ namespace ICU4N.Text
             this.mode = GetModeInstance(mode);
             this.options = (int)unicodeVersion;
             norm2 = this.mode.GetNormalizer2(this.options);
-            buffer = new StringBuilder();
+            buffer = new OpenStringBuilder();
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="Normalizer"/> object for iterating over the
+        /// normalized form of a given string.
+        /// <para/>
+        /// The <paramref name="unicodeVersion"/> parameter specifies which optional
+        /// <see cref="Normalizer"/> features are to be enabled for this object.
+        /// </summary>
+        /// <param name="str">The string to be normalized.  The normalization
+        /// will start at the beginning of the string.</param>
+        /// <param name="mode">The normalization mode.</param>
+        /// <param name="unicodeVersion">The Unicode version to use.
+        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
+        /// If you want the default behavior corresponding to one of the
+        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
+        /// </param>
+        /// <draft>ICU4N 60.1</draft>
+        [Obsolete("ICU 56 Use Normalizer2 instead.")]
+        public Normalizer(ReadOnlySpan<char> str, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
+        {
+            this.text = UCharacterIterator.GetInstance(str);
+            this.mode = GetModeInstance(mode);
+            this.options = (int)unicodeVersion;
+            norm2 = this.mode.GetNormalizer2(this.options);
+            buffer = new OpenStringBuilder();
         }
 
         /// <summary>
@@ -777,7 +821,7 @@ namespace ICU4N.Text
             this.mode = GetModeInstance(mode);
             this.options = (int)unicodeVersion;
             norm2 = this.mode.GetNormalizer2(this.options);
-            buffer = new StringBuilder();
+            buffer = new OpenStringBuilder();
         }
 
         /// <summary>
@@ -814,7 +858,7 @@ namespace ICU4N.Text
             this.mode = GetModeInstance(mode);
             this.options = (int)unicodeVersion;
             norm2 = this.mode.GetNormalizer2(this.options);
-            buffer = new StringBuilder();
+            buffer = new OpenStringBuilder();
         }
 
         /// <summary>
@@ -835,7 +879,7 @@ namespace ICU4N.Text
             copy.mode = mode;
             copy.options = options;
             copy.norm2 = norm2;
-            copy.buffer = new StringBuilder(buffer.ToString());
+            copy.buffer = new OpenStringBuilder(buffer.AsSpan());
             copy.bufferPos = bufferPos;
             copy.currentIndex = currentIndex;
             copy.nextIndex = nextIndex;
@@ -871,6 +915,21 @@ namespace ICU4N.Text
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static string Compose(string str, bool compat)
         {
+            return Compose(str.AsSpan(), compat, NormalizerUnicodeVersion.Default);
+        }
+
+        /// <summary>
+        /// Compose a string.
+        /// The string will be composed to according to the specified mode.
+        /// </summary>
+        /// <param name="str">The string to compose.</param>
+        /// <param name="compat">If true the string will be composed according to
+        /// <see cref="NormalizerMode.NFKC"/> rules and if false will be composed according to
+        /// <see cref="NormalizerMode.NFC"/> rules.</param>
+        /// <returns>The composed string.</returns>
+        [Obsolete("ICU 56 Use Normalizer2 instead.")]
+        public static string Compose(scoped ReadOnlySpan<char> str, bool compat)
+        {
             return Compose(str, compat, NormalizerUnicodeVersion.Default);
         }
 
@@ -892,6 +951,27 @@ namespace ICU4N.Text
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static string Compose(string str, bool compat, NormalizerUnicodeVersion unicodeVersion)
         {
+            return GetComposeNormalizer2(compat, (int)unicodeVersion).Normalize(str.AsSpan());
+        }
+
+        /// <summary>
+        /// Compose a string.
+        /// The string will be composed to according to the specified mode.
+        /// </summary>
+        /// <param name="str">The string to compose.</param>
+        /// <param name="compat">If true the string will be composed according to
+        /// <see cref="NormalizerMode.NFKC"/> rules and if false will be composed according to
+        /// <see cref="NormalizerMode.NFC"/> rules.
+        /// </param>
+        /// <param name="unicodeVersion">The Unicode version to use.
+        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
+        /// If you want the default behavior corresponding to one of the
+        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
+        /// </param>
+        /// <returns>The composed string.</returns>
+        [Obsolete("ICU 56 Use Normalizer2 instead.")]
+        public static string Compose(scoped ReadOnlySpan<char> str, bool compat, NormalizerUnicodeVersion unicodeVersion)
+        {
             return GetComposeNormalizer2(compat, (int)unicodeVersion).Normalize(str);
         }
 
@@ -899,10 +979,12 @@ namespace ICU4N.Text
         /// Compose a string.
         /// The string will be composed to according to the specified mode.
         /// </summary>
-        /// <param name="source">The char array to compose.</param>
-        /// <param name="target">A char buffer to receive the normalized text.</param>
-        /// <param name="compat">If true the char array will be composed according to
-        /// <see cref="NormalizerMode.NFKC"/> rules and if false will be composed according to
+        /// <param name="source">The string to compose.</param>
+        /// <param name="destination">A span to receive the normalized text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are usable in destination;
+        /// otherwise, this is the length of buffer that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="compat">If <c>true</c> the string will be composed according to
+        /// <see cref="NormalizerMode.NFKC"/> rules and if <c>false</c> will be composed according to
         /// <see cref="NormalizerMode.NFC"/> rules.
         /// </param>
         /// <param name="unicodeVersion">The Unicode version to use.
@@ -910,46 +992,11 @@ namespace ICU4N.Text
         /// If you want the default behavior corresponding to one of the
         /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
         /// </param>
-        /// <returns>The total buffer size needed;if greater than length of
-        /// result, the output was truncated.</returns>
-        /// <exception cref="IndexOutOfRangeException">If target.Length is less than the required length.</exception>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static int Compose(char[] source, char[] target, bool compat, NormalizerUnicodeVersion unicodeVersion)
+        public static bool TryCompose(scoped ReadOnlySpan<char> source, Span<char> destination, out int charsLength, bool compat, NormalizerUnicodeVersion unicodeVersion)
         {
-            return Compose(source, 0, source.Length, target, 0, target.Length, compat, unicodeVersion);
-        }
-
-        /// <summary>
-        /// Compose a string.
-        /// The string will be composed to according to the specified mode.
-        /// </summary>
-        /// <param name="src">The char array to compose.</param>
-        /// <param name="srcStart">Start index of the source.</param>
-        /// <param name="srcLimit">Limit index of the source.</param>
-        /// <param name="dest">The char buffer to fill in.</param>
-        /// <param name="destStart">Start index of the destination buffer.</param>
-        /// <param name="destLimit">End index of the destination buffer.</param>
-        /// <param name="compat">If true the char array will be composed according to
-        /// <see cref="NormalizerMode.NFKC"/> rules and if false will be composed according to
-        /// <see cref="NormalizerMode.NFC"/> rules.
-        /// </param>
-        /// <param name="unicodeVersion">The Unicode version to use.
-        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
-        /// If you want the default behavior corresponding to one of the
-        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
-        /// </param>
-        /// <returns>The total buffer size needed;if greater than length of
-        /// result, the output was truncated.</returns>
-        /// <exception cref="IndexOutOfRangeException">If target.Length is less than the required length.</exception>
-        [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static int Compose(char[] src, int srcStart, int srcLimit,
-                              char[] dest, int destStart, int destLimit,
-                              bool compat, NormalizerUnicodeVersion unicodeVersion)
-        {
-            CharBuffer srcBuffer = CharBuffer.Wrap(src, srcStart, srcLimit - srcStart);
-            CharsAppendable app = new CharsAppendable(dest, destStart, destLimit);
-            GetComposeNormalizer2(compat, (int)unicodeVersion).Normalize(srcBuffer, app);
-            return app.Length;
+            return GetComposeNormalizer2(compat, (int)unicodeVersion).TryNormalize(source, destination, out charsLength);
         }
 
         /// <summary>
@@ -964,6 +1011,38 @@ namespace ICU4N.Text
         /// <returns>The decomposed string.</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static string Decompose(string str, bool compat)
+        {
+            return Decompose(str.AsSpan(), compat, NormalizerUnicodeVersion.Default);
+        }
+
+        /// <summary>
+        /// Decompose a string.
+        /// The string will be decomposed to according to the specified mode.
+        /// </summary>
+        /// <param name="str">The string to decompose.</param>
+        /// <param name="compat">If true the string will be decomposed according to <see cref="NormalizerMode.NFKD"/>
+        /// rules and if false will be decomposed according to <see cref="NormalizerMode.NFD"/>
+        /// rules.
+        /// </param>
+        /// <param name="destination">The buffer to write the decomposed string to.</param>
+        [Obsolete("ICU 56 Use Normalizer2 instead.")]
+        internal static void Decompose(scoped ReadOnlySpan<char> str, bool compat, ref ValueStringBuilder destination) // ICU4N: Added to support StringSearch
+        {
+            GetDecomposeNormalizer2(compat, (int)NormalizerUnicodeVersion.Default).Normalize(str, ref destination);
+        }
+
+        /// <summary>
+        /// Decompose a string.
+        /// The string will be decomposed to according to the specified mode.
+        /// </summary>
+        /// <param name="str">The string to decompose.</param>
+        /// <param name="compat">If true the string will be decomposed according to <see cref="NormalizerMode.NFKD"/>
+        /// rules and if false will be decomposed according to <see cref="NormalizerMode.NFD"/>
+        /// rules.
+        /// </param>
+        /// <returns>The decomposed string.</returns>
+        [Obsolete("ICU 56 Use Normalizer2 instead.")]
+        public static string Decompose(scoped ReadOnlySpan<char> str, bool compat)
         {
             return Decompose(str, compat, NormalizerUnicodeVersion.Default);
         }
@@ -986,6 +1065,27 @@ namespace ICU4N.Text
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static string Decompose(string str, bool compat, NormalizerUnicodeVersion unicodeVersion)
         {
+            return GetDecomposeNormalizer2(compat, (int)unicodeVersion).Normalize(str.AsSpan());
+        }
+
+        /// <summary>
+        /// Decompose a string.
+        /// The string will be decomposed to according to the specified mode.
+        /// </summary>
+        /// <param name="str">The string to decompose.</param>
+        /// <param name="compat">If true the string will be decomposed according to <see cref="NormalizerMode.NFKD"/>
+        /// rules and if false will be decomposed according to <see cref="NormalizerMode.NFD"/>
+        /// rules.
+        /// </param>
+        /// <param name="unicodeVersion">The Unicode version to use.
+        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
+        /// If you want the default behavior corresponding to one of the
+        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
+        /// </param>
+        /// <returns>The decomposed string.</returns>
+        [Obsolete("ICU 56 Use Normalizer2 instead.")]
+        public static string Decompose(scoped ReadOnlySpan<char> str, bool compat, NormalizerUnicodeVersion unicodeVersion)
+        {
             return GetDecomposeNormalizer2(compat, (int)unicodeVersion).Normalize(str);
         }
 
@@ -993,10 +1093,14 @@ namespace ICU4N.Text
         /// Decompose a string.
         /// The string will be decomposed to according to the specified mode.
         /// </summary>
-        /// <param name="source">The char array to decompose.</param>
-        /// <param name="target">A char buffer to receive the normalized text.</param>
-        /// <param name="compat">If true the char array will be decomposed according to <see cref="NormalizerMode.NFKD"/>
-        /// rules and if false will be decomposed according to
+        /// <param name="source">The string to decompose.</param>
+        /// <param name="destination">A span to receive the normalized text.</param>
+        /// When this method returns <c>true</c>, contains the number of characters that are usable in destination;
+        /// otherwise, this is the length of buffer that will need to be allocated to succeed in another attempt.
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are usable in destination;
+        /// otherwise, this is the length of buffer that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="compat">If <c>true</c> the string will be decomposed according to <see cref="NormalizerMode.NFKD"/>
+        /// rules and if <c>false</c> will be decomposed according to
         /// <see cref="NormalizerMode.NFD"/> rules.
         /// </param>
         /// <param name="unicodeVersion">The Unicode version to use.
@@ -1004,48 +1108,20 @@ namespace ICU4N.Text
         /// If you want the default behavior corresponding to one of the
         /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
         /// </param>
-        /// <returns>The total buffer size needed;if greater than length of
-        /// result,the output was truncated.</returns>
-        /// <exception cref="IndexOutOfRangeException">If the target capacity is less than
-        /// the required length.</exception>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static int Decompose(char[] source, char[] target, bool compat, NormalizerUnicodeVersion unicodeVersion)
+        public static bool TryDecompose(scoped ReadOnlySpan<char> source, Span<char> destination, out int charsLength, bool compat, NormalizerUnicodeVersion unicodeVersion)
         {
-            return Decompose(source, 0, source.Length, target, 0, target.Length, compat, unicodeVersion);
-        }
-
-        /// <summary>
-        /// Decompose a string.
-        /// The string will be decomposed to according to the specified mode.
-        /// </summary>
-        /// <param name="src">The char array to compose.</param>
-        /// <param name="srcStart">Start index of the source.</param>
-        /// <param name="srcLimit">Limit index of the source.</param>
-        /// <param name="dest">The char buffer to fill in.</param>
-        /// <param name="destStart">Start index of the destination buffer.</param>
-        /// <param name="destLimit">End index of the destination buffer.</param>
-        /// <param name="compat">If true the char array will be decomposed according to <see cref="NormalizerMode.NFKD"/>
-        /// rules and if false will be decomposed according to
-        /// <see cref="NormalizerMode.NFD"/> rules.
-        /// </param>
-        /// <param name="unicodeVersion">The Unicode version to use.
-        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
-        /// If you want the default behavior corresponding to one of the
-        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
-        /// </param>
-        /// <returns>The total buffer size needed;if greater than length of
-        /// result,the output was truncated.</returns>
-        /// <exception cref="IndexOutOfRangeException">If the target capacity is less than
-        /// the required length.</exception>
-        [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static int Decompose(char[] src, int srcStart, int srcLimit,
-                                char[] dest, int destStart, int destLimit,
-                                bool compat, NormalizerUnicodeVersion unicodeVersion)
-        {
-            CharBuffer srcBuffer = CharBuffer.Wrap(src, srcStart, srcLimit - srcStart);
-            CharsAppendable app = new CharsAppendable(dest, destStart, destLimit);
-            GetDecomposeNormalizer2(compat, (int)unicodeVersion).Normalize(srcBuffer, app);
-            return app.Length;
+            var sb = new ValueStringBuilder(destination);
+            try
+            {
+                GetDecomposeNormalizer2(compat, (int)unicodeVersion).Normalize(source, ref sb);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
         }
 
         /// <summary>
@@ -1063,6 +1139,44 @@ namespace ICU4N.Text
         public static string Normalize(string str, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
         {
             return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).Normalize(str);
+        }
+
+        /// <summary>
+        /// Normalizes a <see cref="string"/> using the given normalization operation.
+        /// </summary>
+        /// <param name="str">The input string to be normalized.</param>
+        /// <param name="mode">The normalization mode.</param>
+        /// <param name="unicodeVersion">The Unicode version to use.
+        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
+        /// If you want the default behavior corresponding to one of the
+        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
+        /// </param>
+        /// <returns>The normalized string.</returns>
+        [Obsolete("ICU 56 Use Normalizer2 instead.")]
+        public static string Normalize(scoped ReadOnlySpan<char> str, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
+        {
+            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).Normalize(str);
+        }
+
+        /// <summary>
+        /// Normalizes a <see cref="string"/> using the given normalization operation.
+        /// </summary>
+        /// <param name="str">The input string to be normalized.</param>
+        /// <param name="mode">The normalization mode.</param>
+        /// <param name="unicodeVersion">The Unicode version to use.
+        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
+        /// If you want the default behavior corresponding to one of the
+        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
+        /// </param>
+        /// <param name="destination">The <see cref="ValueStringBuilder"/> in which to append the result.</param>
+        /// <returns>The normalized string.</returns>
+        [Obsolete("ICU 56 Use Normalizer2 instead.")]
+        // ICU4N overload to support StringPrep
+        internal static void Normalize(scoped ReadOnlySpan<char> str, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion, ref ValueStringBuilder destination)
+        {
+#pragma warning disable 612, 618
+            GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).Normalize(str, ref destination);
+#pragma warning restore 612, 618
         }
 
         /// <summary>
@@ -1087,25 +1201,16 @@ namespace ICU4N.Text
         /// The string will be normalized according to the specified normalization
         /// mode and options.
         /// </summary>
-        /// <param name="source">The char array to normalize.</param>
-        /// <param name="target">A char buffer to receive the normalized text.</param>
+        /// <param name="src">The string to normalize.</param>
         /// <param name="mode">The normalization mode; one of <see cref="NormalizerMode.None"/>,
         /// <see cref="NormalizerMode.NFD"/>, <see cref="NormalizerMode.NFC"/>, <see cref="NormalizerMode.NFKC"/>,
         /// <see cref="NormalizerMode.NFKD"/>, <see cref="NormalizerMode.Default"/>.
         /// </param>
-        /// <param name="unicodeVersion">The Unicode version to use.
-        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
-        /// If you want the default behavior corresponding to one of the
-        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
-        /// </param>
-        /// <returns>The total buffer size needed;if greater than length of
-        /// than the required length.</returns>
-        /// <exception cref="IndexOutOfRangeException">If the target capacity is less than
-        /// the required length.</exception>
+        /// <returns>The normalized string.</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static int Normalize(char[] source, char[] target, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
+        public static string Normalize(scoped ReadOnlySpan<char> src, NormalizerMode mode)
         {
-            return Normalize(source, 0, source.Length, target, 0, target.Length, mode, unicodeVersion);
+            return Normalize(src, mode, NormalizerUnicodeVersion.Default);
         }
 
         /// <summary>
@@ -1113,12 +1218,10 @@ namespace ICU4N.Text
         /// The string will be normalized according to the specified normalization
         /// mode and options.
         /// </summary>
-        /// <param name="src">The char array to compose.</param>
-        /// <param name="srcStart">Start index of the source.</param>
-        /// <param name="srcLimit">Limit index of the source.</param>
-        /// <param name="dest">The char buffer to fill in.</param>
-        /// <param name="destStart">Start index of the destination buffer.</param>
-        /// <param name="destLimit">End index of the destination buffer.</param>
+        /// <param name="source">The string to normalize.</param>
+        /// <param name="target">A char buffer to receive the normalized text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are usable in destination;
+        /// otherwise, this is the length of buffer that will need to be allocated to succeed in another attempt.</param>
         /// <param name="mode">The normalization mode; one of <see cref="NormalizerMode.None"/>,
         /// <see cref="NormalizerMode.NFD"/>, <see cref="NormalizerMode.NFC"/>, <see cref="NormalizerMode.NFKC"/>,
         /// <see cref="NormalizerMode.NFKD"/>, <see cref="NormalizerMode.Default"/>.
@@ -1128,19 +1231,11 @@ namespace ICU4N.Text
         /// If you want the default behavior corresponding to one of the
         /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
         /// </param>
-        /// <returns>The total buffer size needed;if greater than length of
-        /// less than the required length.</returns>
-        /// <exception cref="IndexOutOfRangeException">If the target capacity is less than
-        /// the required length.</exception>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static int Normalize(char[] src, int srcStart, int srcLimit,
-                                char[] dest, int destStart, int destLimit,
-                                NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
+        public static bool TryNormalize(scoped ReadOnlySpan<char> source, Span<char> target, out int charsLength, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
         {
-            CharBuffer srcBuffer = CharBuffer.Wrap(src, srcStart, srcLimit - srcStart);
-            CharsAppendable app = new CharsAppendable(dest, destStart, destLimit);
-            GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).Normalize(srcBuffer, app);
-            return app.Length;
+            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).TryNormalize(source, target, out charsLength);
         }
 
         /// <summary>
@@ -1159,14 +1254,14 @@ namespace ICU4N.Text
         {
             if (mode == NormalizerMode.NFD && unicodeVersion == 0)
             {
-                string decomposition = Normalizer2.GetNFCInstance().GetDecomposition(char32);
+                string decomposition = Normalizer2.NFCInstance.GetDecomposition(char32);
                 if (decomposition == null)
                 {
                     decomposition = UTF16.ValueOf(char32);
                 }
                 return decomposition;
             }
-            return Normalize(UTF16.ValueOf(char32), mode, unicodeVersion);
+            return Normalize(UTF16.ValueOf(char32, stackalloc char[2]), mode, unicodeVersion);
         }
 
         /// <summary>
@@ -1191,6 +1286,20 @@ namespace ICU4N.Text
         /// (<see cref="QuickCheckResult.Yes"/>, <see cref="QuickCheckResult.No"/> or <see cref="QuickCheckResult.Maybe"/>)</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static QuickCheckResult QuickCheck(string source, NormalizerMode mode)
+        {
+            return QuickCheck(source.AsSpan(), mode, 0);
+        }
+
+        /// <summary>
+        /// Convenience method.
+        /// </summary>
+        /// <param name="source">String for determining if it is in a normalized format.</param>
+        /// <param name="mode">Normalization format (<see cref="NormalizerMode.NFC"/>,<see cref="NormalizerMode.NFD"/>,
+        /// <see cref="NormalizerMode.NFKC"/>,<see cref="NormalizerMode.NFKD"/>).</param>
+        /// <returns>Return code to specify if the text is normalized or not
+        /// (<see cref="QuickCheckResult.Yes"/>, <see cref="QuickCheckResult.No"/> or <see cref="QuickCheckResult.Maybe"/>)</returns>
+        [Obsolete("ICU 56 Use Normalizer2 instead.")]
+        public static QuickCheckResult QuickCheck(scoped ReadOnlySpan<char> source, NormalizerMode mode)
         {
             return QuickCheck(source, mode, 0);
         }
@@ -1219,27 +1328,7 @@ namespace ICU4N.Text
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static QuickCheckResult QuickCheck(string source, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
         {
-            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).QuickCheck(source);
-        }
-
-        /// <summary>
-        /// Convenience method.
-        /// </summary>
-        /// <param name="source">Array of characters for determining if it is in a
-        /// normalized format.</param>
-        /// <param name="mode">Normalization format (<see cref="NormalizerMode.NFC"/>,<see cref="NormalizerMode.NFD"/>,
-        /// <see cref="NormalizerMode.NFKC"/>,<see cref="NormalizerMode.NFKD"/>).</param>
-        /// <param name="unicodeVersion">The Unicode version to use.
-        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
-        /// If you want the default behavior corresponding to one of the
-        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
-        /// </param>
-        /// <returns>Return code to specify if the text is normalized or not
-        /// (<see cref="QuickCheckResult.Yes"/>, <see cref="QuickCheckResult.No"/> or <see cref="QuickCheckResult.Maybe"/>)</returns>
-        [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static QuickCheckResult QuickCheck(char[] source, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
-        {
-            return QuickCheck(source, 0, source.Length, mode, unicodeVersion);
+            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).QuickCheck(source.AsSpan());
         }
 
         /// <summary>
@@ -1254,8 +1343,6 @@ namespace ICU4N.Text
         /// the results.
         /// </summary>
         /// <param name="source">String for determining if it is in a normalized format.</param>
-        /// <param name="start">The start index of the source.</param>
-        /// <param name="limit">The limit index of the source it is equal to the length.</param>
         /// <param name="mode">Normalization format (<see cref="NormalizerMode.NFC"/>,<see cref="NormalizerMode.NFD"/>,
         /// <see cref="NormalizerMode.NFKC"/>,<see cref="NormalizerMode.NFKD"/>).</param>
         /// <param name="unicodeVersion">The Unicode version to use.
@@ -1266,41 +1353,9 @@ namespace ICU4N.Text
         /// <returns>Return code to specify if the text is normalized or not
         /// (<see cref="QuickCheckResult.Yes"/>, <see cref="QuickCheckResult.No"/> or <see cref="QuickCheckResult.Maybe"/>)</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static QuickCheckResult QuickCheck(char[] source, int start,
-                                              int limit, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
+        public static QuickCheckResult QuickCheck(scoped ReadOnlySpan<char> source, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
         {
-            CharBuffer srcBuffer = CharBuffer.Wrap(source, start, limit - start);
-            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).QuickCheck(srcBuffer);
-        }
-
-        /// <summary>
-        /// Test if a string is in a given normalization form.
-        /// This is semantically equivalent to <c>source.Equals(Normalize(source, mode))</c>.
-        /// Unlike <see cref="QuickCheck(string, NormalizerMode)"/>, this function returns a definitive result,
-        /// never a "maybe".
-        /// For <see cref="NormalizerMode.NFD"/>, <see cref="NormalizerMode.NFKD"/>, and <see cref="NormalizerMode.FCD"/>, both functions work exactly the same.
-        /// For <see cref="NormalizerMode.NFC"/> and <see cref="NormalizerMode.NFKC"/> where quickCheck may return "maybe", this function will
-        /// perform further tests to arrive at a true/false result.
-        /// </summary>
-        /// <param name="src">The input array of characters to be checked to see if
-        /// it is normalized.</param>
-        /// <param name="start">The strart index in the source.</param>
-        /// <param name="limit">The limit index in the source.</param>
-        /// <param name="mode">The normalization mode.</param>
-        /// <param name="unicodeVersion">The Unicode version to use.
-        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
-        /// If you want the default behavior corresponding to one of the
-        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
-        /// </param>
-        /// <returns>Boolean value indicating whether the source string is in the
-        /// "<paramref name="mode"/>" normalization form.</returns>
-        [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static bool IsNormalized(char[] src, int start,
-                                       int limit, NormalizerMode mode,
-                                       NormalizerUnicodeVersion unicodeVersion)
-        {
-            CharBuffer srcBuffer = CharBuffer.Wrap(src, start, limit - start);
-            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).IsNormalized(srcBuffer);
+            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).QuickCheck(source);
         }
 
         /// <summary>
@@ -1321,9 +1376,34 @@ namespace ICU4N.Text
         /// </param>
         /// <returns>Boolean value indicating whether the source string is in the
         /// "<paramref name="mode"/>" normalization form.</returns>
-        /// <seealso cref="IsNormalized(char[], int, int, NormalizerMode, NormalizerUnicodeVersion)"/>
+        /// <seealso cref="IsNormalized(ReadOnlySpan{char}, NormalizerMode, NormalizerUnicodeVersion)"/>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static bool IsNormalized(string str, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
+        {
+            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).IsNormalized(str.AsSpan());
+        }
+
+        /// <summary>
+        /// Test if a string is in a given normalization form.
+        /// This is semantically equivalent to source.Equals(Normalize(source, mode)).
+        /// Unlike <see cref="QuickCheck(string, NormalizerMode)"/>, this function returns a definitive result,
+        /// never a "maybe".
+        /// For <see cref="NormalizerMode.NFD"/>, <see cref="NormalizerMode.NFKD"/>, and <see cref="NormalizerMode.FCD"/>, both functions work exactly the same.
+        /// For <see cref="NormalizerMode.NFC"/> and<see cref="NormalizerMode.NFKC"/> where <see cref="QuickCheck(string, NormalizerMode)"/> may return "maybe", this function will
+        /// perform further tests to arrive at a true/false result.
+        /// </summary>
+        /// <param name="str">The input string to be checked to see if it is normalized.</param>
+        /// <param name="mode">The normalization mode.</param>
+        /// <param name="unicodeVersion">The Unicode version to use.
+        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
+        /// If you want the default behavior corresponding to one of the
+        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
+        /// </param>
+        /// <returns>Boolean value indicating whether the source string is in the
+        /// "<paramref name="mode"/>" normalization form.</returns>
+        /// <seealso cref="IsNormalized(ReadOnlySpan{char}, NormalizerMode, NormalizerUnicodeVersion)"/>
+        [Obsolete("ICU 56 Use Normalizer2 instead.")]
+        public static bool IsNormalized(scoped ReadOnlySpan<char> str, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
         {
             return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).IsNormalized(str);
         }
@@ -1344,233 +1424,7 @@ namespace ICU4N.Text
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static bool IsNormalized(int char32, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
         {
-            return IsNormalized(UTF16.ValueOf(char32), mode, unicodeVersion);
-        }
-
-        /// <summary>
-        /// Compare two strings for canonical equivalence.
-        /// Further options include case-insensitive comparison and
-        /// code point order (as opposed to code unit order).
-        /// </summary>
-        /// <remarks>
-        /// Canonical equivalence between two strings is defined as their normalized
-        /// forms (<see cref="NormalizerMode.NFD"/> or <see cref="NormalizerMode.NFC"/>) being identical.
-        /// This function compares strings incrementally instead of normalizing
-        /// (and optionally case-folding) both strings entirely,
-        /// improving performance significantly.
-        /// <para/>
-        /// Bulk normalization is only necessary if the strings do not fulfill the
-        /// <see cref="NormalizerMode.FCD"/> conditions. Only in this case, and only if the strings are relatively
-        /// long, is memory allocated temporarily.
-        /// For <see cref="NormalizerMode.FCD"/> strings and short non-<see cref="NormalizerMode.FCD"/> strings there is no memory allocation.
-        /// <para/>
-        /// Semantically, this is equivalent to
-        /// <code>strcmp[CodePointOrder](foldCase(NFD(s1)), foldCase(NFD(s2)))</code>
-        /// where code point order and foldCase are all optional.
-        /// </remarks>
-        /// <param name="s1">First source character array.</param>
-        /// <param name="s1Start">start index of source</param>
-        /// <param name="s1Limit">limit of the source</param>
-        /// <param name="s2">Second source character array.</param>
-        /// <param name="s2Start">start index of the source</param>
-        /// <param name="s2Limit">limit of the source</param>
-        /// <returns>&lt;0 or 0 or &gt;0 as usual for string comparisons</returns>
-        /// <seealso cref="Normalize(char[], int, int, char[], int, int, NormalizerMode, NormalizerUnicodeVersion)"/>
-        /// <seealso cref="NormalizerMode.FCD"/>
-        /// <draft>ICU4N 60.1</draft>
-        public static int Compare(char[] s1, int s1Start, int s1Limit,
-                                  char[] s2, int s2Start, int s2Limit) // ICU4N specific overload
-        {
-            return Compare(s1, s1Start, s1Limit,
-                           s2, s2Start, s2Limit,
-                           NormalizerComparison.Default, FoldCase.Default, NormalizerUnicodeVersion.Default);
-        }
-
-        /// <summary>
-        /// Compare two strings for canonical equivalence.
-        /// Further options include case-insensitive comparison and
-        /// code point order (as opposed to code unit order).
-        /// </summary>
-        /// <remarks>
-        /// Canonical equivalence between two strings is defined as their normalized
-        /// forms (<see cref="NormalizerMode.NFD"/> or <see cref="NormalizerMode.NFC"/>) being identical.
-        /// This function compares strings incrementally instead of normalizing
-        /// (and optionally case-folding) both strings entirely,
-        /// improving performance significantly.
-        /// <para/>
-        /// Bulk normalization is only necessary if the strings do not fulfill the
-        /// <see cref="NormalizerMode.FCD"/> conditions. Only in this case, and only if the strings are relatively
-        /// long, is memory allocated temporarily.
-        /// For <see cref="NormalizerMode.FCD"/> strings and short non-<see cref="NormalizerMode.FCD"/> strings there is no memory allocation.
-        /// <para/>
-        /// Semantically, this is equivalent to
-        /// <code>strcmp[CodePointOrder](foldCase(NFD(s1)), foldCase(NFD(s2)))</code>
-        /// where code point order and foldCase are all optional.
-        /// </remarks>
-        /// <param name="s1">First source character array.</param>
-        /// <param name="s1Start">start index of source</param>
-        /// <param name="s1Limit">limit of the source</param>
-        /// <param name="s2">Second source character array.</param>
-        /// <param name="s2Start">start index of the source</param>
-        /// <param name="s2Limit">limit of the source</param>
-        /// <param name="comparison"><see cref="NormalizerComparison"/> flags to control the text comparison.
-        /// <list type="table">
-        ///     <item><term><see cref="NormalizerComparison.InputIsFCD"/></term><description>
-        ///         Set if the caller knows that both <paramref name="s1"/> and <paramref name="s2"/> fulfill the FCD
-        ///         conditions. If not set, the function will quickCheck for FCD
-        ///         and normalize if necessary.
-        ///     </description></item>
-        ///     <item><term><see cref="NormalizerComparison.CodePointOrder"/></term><description>
-        ///         Set to choose code point order instead of code unit order.
-        ///     </description></item>
-        ///     <item><term><see cref="NormalizerComparison.IgnoreCase"/></term><description>
-        ///         Set to compare strings case-insensitively using case folding,
-        ///         instead of case-sensitively.
-        ///         If set, then the following case folding options are used.
-        ///     </description></item>
-        /// </list>
-        /// </param>
-        /// <returns>&lt;0 or 0 or &gt;0 as usual for string comparisons</returns>
-        /// <seealso cref="Normalize(char[], int, int, char[], int, int, NormalizerMode, NormalizerUnicodeVersion)"/>
-        /// <seealso cref="FCD"/>
-        /// <draft>ICU4N 60.1</draft>
-        public static int Compare(char[] s1, int s1Start, int s1Limit,
-                                  char[] s2, int s2Start, int s2Limit,
-                                  NormalizerComparison comparison) // ICU4N specific overload
-        {
-            return Compare(s1, s1Start, s1Limit,
-                           s2, s2Start, s2Limit,
-                           comparison, FoldCase.Default, NormalizerUnicodeVersion.Default);
-        }
-
-        /// <summary>
-        /// Compare two strings for canonical equivalence.
-        /// Further options include case-insensitive comparison and
-        /// code point order (as opposed to code unit order).
-        /// </summary>
-        /// <remarks>
-        /// Canonical equivalence between two strings is defined as their normalized
-        /// forms (<see cref="NormalizerMode.NFD"/> or <see cref="NormalizerMode.NFC"/>) being identical.
-        /// This function compares strings incrementally instead of normalizing
-        /// (and optionally case-folding) both strings entirely,
-        /// improving performance significantly.
-        /// <para/>
-        /// Bulk normalization is only necessary if the strings do not fulfill the
-        /// <see cref="NormalizerMode.FCD"/> conditions. Only in this case, and only if the strings are relatively
-        /// long, is memory allocated temporarily.
-        /// For <see cref="NormalizerMode.FCD"/> strings and short non-<see cref="NormalizerMode.FCD"/> strings there is no memory allocation.
-        /// <para/>
-        /// Semantically, this is equivalent to
-        /// <code>strcmp[CodePointOrder](foldCase(NFD(s1)), foldCase(NFD(s2)))</code>
-        /// where code point order and foldCase are all optional.
-        /// </remarks>
-        /// <param name="s1">First source character array.</param>
-        /// <param name="s1Start">start index of source</param>
-        /// <param name="s1Limit">limit of the source</param>
-        /// <param name="s2">Second source character array.</param>
-        /// <param name="s2Start">start index of the source</param>
-        /// <param name="s2Limit">limit of the source</param>
-        /// <param name="comparison"><see cref="NormalizerComparison"/> flags to control the text comparison.
-        /// <list type="table">
-        ///     <item><term><see cref="NormalizerComparison.InputIsFCD"/></term><description>
-        ///         Set if the caller knows that both <paramref name="s1"/> and <paramref name="s2"/> fulfill the FCD
-        ///         conditions. If not set, the function will quickCheck for FCD
-        ///         and normalize if necessary.
-        ///     </description></item>
-        ///     <item><term><see cref="NormalizerComparison.CodePointOrder"/></term><description>
-        ///         Set to choose code point order instead of code unit order.
-        ///     </description></item>
-        ///     <item><term><see cref="NormalizerComparison.IgnoreCase"/></term><description>
-        ///         Set to compare strings case-insensitively using case folding,
-        ///         instead of case-sensitively.
-        ///         If set, then the following case folding options are used.
-        ///     </description></item>
-        /// </list>
-        /// </param>
-        /// <param name="foldCase"><see cref="FoldCase"/> option, such as 
-        /// <see cref="FoldCase.ExcludeSpecialI"/> or <see cref="FoldCase.Default"/>.</param>
-        /// <returns>&lt;0 or 0 or &gt;0 as usual for string comparisons</returns>
-        /// <seealso cref="Normalize(char[], int, int, char[], int, int, NormalizerMode, NormalizerUnicodeVersion)"/>
-        /// <seealso cref="NormalizerMode.FCD"/>
-        /// <draft>ICU4N 60.1</draft>
-        public static int Compare(char[] s1, int s1Start, int s1Limit,
-                                  char[] s2, int s2Start, int s2Limit,
-                                  NormalizerComparison comparison, FoldCase foldCase) // ICU4N specific overload
-        {
-            return Compare(s1, s1Start, s1Limit,
-                           s2, s2Start, s2Limit,
-                           comparison, foldCase, NormalizerUnicodeVersion.Default);
-        }
-
-        /// <summary>
-        /// Compare two strings for canonical equivalence.
-        /// Further options include case-insensitive comparison and
-        /// code point order (as opposed to code unit order).
-        /// </summary>
-        /// <remarks>
-        /// Canonical equivalence between two strings is defined as their normalized
-        /// forms (<see cref="NormalizerMode.NFD"/> or <see cref="NormalizerMode.NFC"/>) being identical.
-        /// This function compares strings incrementally instead of normalizing
-        /// (and optionally case-folding) both strings entirely,
-        /// improving performance significantly.
-        /// <para/>
-        /// Bulk normalization is only necessary if the strings do not fulfill the
-        /// <see cref="NormalizerMode.FCD"/> conditions. Only in this case, and only if the strings are relatively
-        /// long, is memory allocated temporarily.
-        /// For <see cref="NormalizerMode.FCD"/> strings and short non-<see cref="NormalizerMode.FCD"/> strings there is no memory allocation.
-        /// <para/>
-        /// Semantically, this is equivalent to
-        /// <code>strcmp[CodePointOrder](foldCase(NFD(s1)), foldCase(NFD(s2)))</code>
-        /// where code point order and foldCase are all optional.
-        /// </remarks>
-        /// <param name="s1">First source character array.</param>
-        /// <param name="s1Start">start index of source</param>
-        /// <param name="s1Limit">limit of the source</param>
-        /// <param name="s2">Second source character array.</param>
-        /// <param name="s2Start">start index of the source</param>
-        /// <param name="s2Limit">limit of the source</param>
-        /// <param name="comparison"><see cref="NormalizerComparison"/> flags to control the text comparison.
-        /// <list type="table">
-        ///     <item><term><see cref="NormalizerComparison.InputIsFCD"/></term><description>
-        ///         Set if the caller knows that both <paramref name="s1"/> and <paramref name="s2"/> fulfill the FCD
-        ///         conditions. If not set, the function will quickCheck for FCD
-        ///         and normalize if necessary.
-        ///     </description></item>
-        ///     <item><term><see cref="NormalizerComparison.CodePointOrder"/></term><description>
-        ///         Set to choose code point order instead of code unit order.
-        ///     </description></item>
-        ///     <item><term><see cref="NormalizerComparison.IgnoreCase"/></term><description>
-        ///         Set to compare strings case-insensitively using case folding,
-        ///         instead of case-sensitively.
-        ///         If set, then the following case folding options are used.
-        ///     </description></item>
-        /// </list>
-        /// </param>
-        /// <param name="foldCase"><see cref="FoldCase"/> option, such as 
-        /// <see cref="FoldCase.ExcludeSpecialI"/> or <see cref="FoldCase.Default"/>.</param>
-        /// <param name="unicodeVersion">The Unicode version to use.
-        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
-        /// If you want the default behavior corresponding to one of the
-        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
-        /// </param>
-        /// <returns>&lt;0 or 0 or &gt;0 as usual for string comparisons</returns>
-        /// <seealso cref="Normalize(char[], int, int, char[], int, int, NormalizerMode, NormalizerUnicodeVersion)"/>
-        /// <seealso cref="NormalizerMode.FCD"/>
-        /// <stable>ICU 2.8</stable>
-        public static int Compare(char[] s1, int s1Start, int s1Limit,
-                                  char[] s2, int s2Start, int s2Limit,
-                                  NormalizerComparison comparison, FoldCase foldCase, NormalizerUnicodeVersion unicodeVersion)
-        {
-            if (s1 == null || s1Start < 0 || s1Limit < 0 ||
-                s2 == null || s2Start < 0 || s2Limit < 0 ||
-                s1Limit < s1Start || s2Limit < s2Start
-            )
-            {
-                throw new ArgumentException();
-            }
-            return InternalCompare(CharBuffer.Wrap(s1, s1Start, s1Limit - s1Start),
-                                   CharBuffer.Wrap(s2, s2Start, s2Limit - s2Start),
-                                   (int)comparison | (int)foldCase, (int)unicodeVersion);
+            return IsNormalized(UTF16.ValueOf(char32, stackalloc char[2]), mode, unicodeVersion);
         }
 
         // ---------------------------------
@@ -1760,7 +1614,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public static int Compare(string s1, string s2, NormalizerComparison comparison, FoldCase foldCase, NormalizerUnicodeVersion unicodeVersion)
         {
-            return InternalCompare(s1.AsCharSequence(), s2.AsCharSequence(), (int)comparison | (int)foldCase, (int)unicodeVersion);
+            return InternalCompare(s1.AsSpan(), s2.AsSpan(), (int)comparison | (int)foldCase, (int)unicodeVersion);
         }
 
         // ---------------------------------
@@ -1777,7 +1631,7 @@ namespace ICU4N.Text
         /// <seealso cref="Normalize(string, NormalizerMode, NormalizerUnicodeVersion)"/>
         /// <seealso cref="NormalizerMode.FCD"/>
         /// <draft>ICU4N 60.1</draft>
-        public static int Compare(char[] s1, char[] s2) // ICU4N specific overload
+        public static int Compare(scoped ReadOnlySpan<char> s1, scoped ReadOnlySpan<char> s2) // ICU4N specific overload
         {
             return Compare(s1, s2, NormalizerComparison.Default, FoldCase.Default, NormalizerUnicodeVersion.Default);
         }
@@ -1811,7 +1665,7 @@ namespace ICU4N.Text
         /// <seealso cref="Normalize(string, NormalizerMode, NormalizerUnicodeVersion)"/>
         /// <seealso cref="NormalizerMode.FCD"/>
         /// <draft>ICU4N 60.1</draft>
-        public static int Compare(char[] s1, char[] s2, NormalizerComparison comparison) // ICU4N specific overload
+        public static int Compare(scoped ReadOnlySpan<char> s1, scoped ReadOnlySpan<char> s2, NormalizerComparison comparison) // ICU4N specific overload
         {
             return Compare(s1, s2, comparison, FoldCase.Default, NormalizerUnicodeVersion.Default);
         }
@@ -1847,7 +1701,7 @@ namespace ICU4N.Text
         /// <seealso cref="Normalize(string, NormalizerMode, NormalizerUnicodeVersion)"/>
         /// <seealso cref="NormalizerMode.FCD"/>
         /// <draft>ICU4N 60.1</draft>
-        public static int Compare(char[] s1, char[] s2, NormalizerComparison comparison, FoldCase foldCase) // ICU4N specific overload
+        public static int Compare(scoped ReadOnlySpan<char> s1, scoped ReadOnlySpan<char> s2, NormalizerComparison comparison, FoldCase foldCase) // ICU4N specific overload
         {
             return Compare(s1, s2, comparison, foldCase, NormalizerUnicodeVersion.Default);
         }
@@ -1888,9 +1742,9 @@ namespace ICU4N.Text
         /// <seealso cref="Normalize(string, NormalizerMode, NormalizerUnicodeVersion)"/>
         /// <seealso cref="NormalizerMode.FCD"/>
         /// <stable>ICU 2.8</stable>
-        public static int Compare(char[] s1, char[] s2, NormalizerComparison comparison, FoldCase foldCase, NormalizerUnicodeVersion unicodeVersion)
+        public static int Compare(scoped ReadOnlySpan<char> s1, scoped ReadOnlySpan<char> s2, NormalizerComparison comparison, FoldCase foldCase, NormalizerUnicodeVersion unicodeVersion)
         {
-            return InternalCompare(CharBuffer.Wrap(s1), CharBuffer.Wrap(s2), (int)comparison | (int)foldCase, (int)unicodeVersion);
+            return InternalCompare(s1, s2, (int)comparison | (int)foldCase, (int)unicodeVersion);
         }
 
         // ---------------------------------
@@ -1955,7 +1809,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public static int Compare(int char32a, int char32b, NormalizerComparison comparison, FoldCase foldCase, NormalizerUnicodeVersion unicodeVersion)
         {
-            return InternalCompare(UTF16.ValueOf(char32a).AsCharSequence(), UTF16.ValueOf(char32b).AsCharSequence(), (int)comparison | (int)foldCase | INPUT_IS_FCD, (int)unicodeVersion);
+            return InternalCompare(UTF16.ValueOf(char32a, stackalloc char[2]), UTF16.ValueOf(char32b, stackalloc char[2]), (int)comparison | (int)foldCase | INPUT_IS_FCD, (int)unicodeVersion);
         }
 
         // ---------------------------------
@@ -2020,7 +1874,72 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public static int Compare(int char32a, string str2, NormalizerComparison comparison, FoldCase foldCase, NormalizerUnicodeVersion unicodeVersion)
         {
-            return InternalCompare(UTF16.ValueOf(char32a).AsCharSequence(), str2.AsCharSequence(), (int)comparison | (int)foldCase, (int)unicodeVersion);
+            return InternalCompare(UTF16.ValueOf(char32a, stackalloc char[2]), str2.AsSpan(), (int)comparison | (int)foldCase, (int)unicodeVersion);
+        }
+
+        // ---------------------------------
+
+        /// <summary>
+        /// Convenience method that can have faster implementation
+        /// by not allocating buffers.
+        /// </summary>
+        /// <param name="char32a">The first code point to be checked against the.</param>
+        /// <param name="str2">The second string.</param>
+        /// <draft>ICU4N 60.1</draft>
+        public static int Compare(int char32a, scoped ReadOnlySpan<char> str2) // ICU4N specific overload
+        {
+            return Compare(char32a, str2, NormalizerComparison.Default, FoldCase.Default, NormalizerUnicodeVersion.Default);
+        }
+
+        /// <summary>
+        /// Convenience method that can have faster implementation
+        /// by not allocating buffers.
+        /// </summary>
+        /// <param name="char32a">The first code point to be checked against the.</param>
+        /// <param name="str2">The second string.</param>
+        /// <param name="comparison"><see cref="NormalizerComparison"/> flags to control the text comparison.
+        /// </param>
+        /// <draft>ICU4N 60.1</draft>
+        public static int Compare(int char32a, scoped ReadOnlySpan<char> str2, NormalizerComparison comparison) // ICU4N specific overload
+        {
+            return Compare(char32a, str2, comparison, FoldCase.Default, NormalizerUnicodeVersion.Default);
+        }
+
+        /// <summary>
+        /// Convenience method that can have faster implementation
+        /// by not allocating buffers.
+        /// </summary>
+        /// <param name="char32a">The first code point to be checked against the.</param>
+        /// <param name="str2">The second string.</param>
+        /// <param name="comparison"><see cref="NormalizerComparison"/> flags to control the text comparison.
+        /// </param>
+        /// <param name="foldCase"><see cref="FoldCase"/> option, such as 
+        /// <see cref="FoldCase.ExcludeSpecialI"/> or <see cref="FoldCase.Default"/>.</param>
+        /// <draft>ICU4N 60.1</draft>
+        public static int Compare(int char32a, scoped ReadOnlySpan<char> str2, NormalizerComparison comparison, FoldCase foldCase) // ICU4N specific overload
+        {
+            return Compare(char32a, str2, comparison, foldCase, NormalizerUnicodeVersion.Default);
+        }
+
+        /// <summary>
+        /// Convenience method that can have faster implementation
+        /// by not allocating buffers.
+        /// </summary>
+        /// <param name="char32a">The first code point to be checked against the.</param>
+        /// <param name="str2">The second string.</param>
+        /// <param name="comparison"><see cref="NormalizerComparison"/> flags to control the text comparison.
+        /// </param>
+        /// <param name="foldCase"><see cref="FoldCase"/> option, such as 
+        /// <see cref="FoldCase.ExcludeSpecialI"/> or <see cref="FoldCase.Default"/>.</param>
+        /// <param name="unicodeVersion">The Unicode version to use.
+        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
+        /// If you want the default behavior corresponding to one of the
+        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
+        /// </param>
+        /// <stable>ICU 2.8</stable>
+        public static int Compare(int char32a, scoped ReadOnlySpan<char> str2, NormalizerComparison comparison, FoldCase foldCase, NormalizerUnicodeVersion unicodeVersion)
+        {
+            return InternalCompare(UTF16.ValueOf(char32a, stackalloc char[2]), str2, (int)comparison | (int)foldCase, (int)unicodeVersion);
         }
 
         /* Concatenation of normalized strings --------------------------------- */
@@ -2035,71 +1954,29 @@ namespace ICU4N.Text
         /// then the result will be
         ///
         /// <code>
-        ///     dest=Normalize(left+right, mode)
+        ///     destination=Normalize(left+right, mode)
         /// </code>
         ///
-        /// With the input strings already being normalized,
-        /// this function will use <see cref="Next()"/> and <see cref="Previous()"/>
-        /// to find the adjacent end pieces of the input strings.
-        /// Only the concatenation of these end pieces will be normalized and
-        /// then concatenated with the remaining parts of the input strings.
         /// <para/>
-        /// It is allowed to have dest==left to avoid copying the entire left string.
+        /// It is allowed to have destination==left to avoid copying the entire left string.
         /// </remarks>
-        /// <param name="left">Left source array, may be same as dest.</param>
-        /// <param name="leftStart">Start in the left array.</param>
-        /// <param name="leftLimit">Limit in the left array (==length).</param>
-        /// <param name="right">Right source array.</param>
-        /// <param name="rightStart">Start in the right array.</param>
-        /// <param name="rightLimit">Limit in the right array (==length).</param>
-        /// <param name="dest">The output buffer; can be null if destStart==destLimit==0
-        /// for pure preflighting.</param>
-        /// <param name="destStart">Start in the destination array.</param>
-        /// <param name="destLimit">Limit in the destination array (==length).</param>
+        /// <param name="left">Left source string, may be same as <paramref name="destination"/>.</param>
+        /// <param name="right">Right source string.</param>
+        /// <param name="destination">The output buffer.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are usable in destination;
+        /// otherwise, this is the length of buffer that will need to be allocated to succeed in another attempt.</param>
         /// <param name="mode">The normalization mode.</param>
         /// <param name="unicodeVersion">The Unicode version to use.
         /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
         /// If you want the default behavior corresponding to one of the
         /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
         /// </param>
-        /// <returns>Length of output (number of chars) when successful or <see cref="IndexOutOfRangeException"/>.</returns>
-        /// <exception cref="IndexOutOfRangeException">If target capacity is less than the required length.</exception>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
         /// <see cref="Normalize(string, NormalizerMode, NormalizerUnicodeVersion)"/>
-        /// <see cref="Next()"/>
-        /// <see cref="Previous()"/>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static int Concatenate(char[] left, int leftStart, int leftLimit,
-                                  char[] right, int rightStart, int rightLimit,
-                                  char[] dest, int destStart, int destLimit,
-                                  NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
+        public static bool TryConcat(ReadOnlySpan<char> left, ReadOnlySpan<char> right, Span<char> destination, out int charsLength, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
         {
-            if (dest == null)
-            {
-                throw new ArgumentException();
-            }
-
-            /* check for overlapping right and destination */
-            if (right == dest && rightStart < destLimit && destStart < rightLimit)
-            {
-                throw new ArgumentException("overlapping right and dst ranges");
-            }
-
-            /* allow left==dest */
-            StringBuilder destBuilder = new StringBuilder(leftLimit - leftStart + rightLimit - rightStart + 16);
-            destBuilder.Append(left, leftStart, (leftLimit - leftStart) - leftStart); // ICU4N: Fixed 3rd parameter math
-            CharBuffer rightBuffer = CharBuffer.Wrap(right, rightStart, rightLimit - rightStart);
-            GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).Append(destBuilder, rightBuffer);
-            int destLength = destBuilder.Length;
-            if (destLength <= (destLimit - destStart))
-            {
-                //destBuilder.GetChars(0, destLength, dest, destStart);
-                destBuilder.CopyTo(0, dest, destStart, destLength);
-                return destLength;
-            }
-            else
-            {
-                throw new IndexOutOfRangeException(destLength.ToString());
-            }
+            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).TryConcat(left, right, destination, out charsLength);
         }
 
         /// <summary>
@@ -2116,7 +1993,7 @@ namespace ICU4N.Text
         /// </code>
         /// 
         /// <para/>
-        /// For details see <see cref="Concatenate(char[], int, int, char[], int, int, char[], int, int, NormalizerMode, NormalizerUnicodeVersion)"/>.
+        /// For details see <see cref="TryConcat(ReadOnlySpan{char}, ReadOnlySpan{char}, Span{char}, out int, NormalizerMode, NormalizerUnicodeVersion)"/>.
         /// </remarks>
         /// <param name="left">Left source string.</param>
         /// <param name="right">Right source string.</param>
@@ -2128,15 +2005,27 @@ namespace ICU4N.Text
         /// </param>
         /// <returns>Result.</returns>
         /// <exception cref="IndexOutOfRangeException">If target capacity is less than the required length.</exception>
-        /// <see cref="Concatenate(char[], int, int, char[], int, int, char[], int, int, NormalizerMode, NormalizerUnicodeVersion)"/>
+        /// <see cref="TryConcat(ReadOnlySpan{char}, ReadOnlySpan{char}, Span{char}, out int, NormalizerMode, NormalizerUnicodeVersion)"/>
         /// <see cref="Normalize(string, NormalizerMode, NormalizerUnicodeVersion)"/>
         /// <see cref="Next()"/>
         /// <see cref="Previous()"/>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static string Concatenate(char[] left, char[] right, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
+        public static string Concat(ReadOnlySpan<char> left, ReadOnlySpan<char> right, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
         {
-            StringBuilder dest = new StringBuilder(left.Length + right.Length + 16).Append(left);
-            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).Append(dest, CharBuffer.Wrap(right)).ToString();
+            int length = left.Length + right.Length + 16;
+            ValueStringBuilder dest = length < CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                : new ValueStringBuilder(length);
+            try
+            {
+                dest.Append(left);
+                GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).Append(ref dest, right);
+                return dest.ToString();
+            }
+            finally
+            {
+                dest.Dispose();
+            }
         }
 
         /// <summary>
@@ -2168,16 +2057,15 @@ namespace ICU4N.Text
         /// </param>
         /// <returns>Result.</returns>
         /// <exception cref="IndexOutOfRangeException">If target capacity is less than the required length.</exception>
-        /// <see cref="Concatenate(char[], int, int, char[], int, int, char[], int, int, NormalizerMode, NormalizerUnicodeVersion)"/>
+        /// <see cref="TryConcat(ReadOnlySpan{char}, ReadOnlySpan{char}, Span{char}, out int, NormalizerMode, NormalizerUnicodeVersion)"/>
         /// <see cref="Normalize(string, NormalizerMode, NormalizerUnicodeVersion)"/>
         /// <see cref="Next()"/>
         /// <see cref="Previous()"/>
-        /// <see cref="Concatenate(char[], char[], NormalizerMode, NormalizerUnicodeVersion)"/>
+        /// <see cref="Concat(ReadOnlySpan{Char}, ReadOnlySpan{Char}, NormalizerMode, NormalizerUnicodeVersion)"/>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static string Concatenate(string left, string right, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
+        public static string Concat(string left, string right, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
         {
-            StringBuilder dest = new StringBuilder(left.Length + right.Length + 16).Append(left);
-            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).Append(dest, right).ToString();
+            return Concat(left.AsSpan(), right.AsSpan(), mode, unicodeVersion);
         }
 
         /// <summary>
@@ -2216,35 +2104,42 @@ namespace ICU4N.Text
             Normalizer2 nfkc = NFKCModeImpl.Instance.Normalizer2;
             UCaseProperties csp = UCaseProperties.Instance;
             // first: b = NFKC(Fold(a))
-            StringBuilder folded = new StringBuilder();
-            int folded1Length = csp.ToFullFolding(c, folded, 0);
-            if (folded1Length < 0)
+            ValueStringBuilder folded = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                Normalizer2Impl nfkcImpl = ((Normalizer2WithImpl)nfkc).Impl;
-                if (nfkcImpl.GetCompQuickCheck(nfkcImpl.GetNorm16(c)) != 0)
+                int folded1Length = csp.ToFullFolding(c, ref folded, 0);
+                if (folded1Length < 0)
                 {
-                    return "";  // c does not change at all under CaseFolding+NFKC
+                    Normalizer2Impl nfkcImpl = ((Normalizer2WithImpl)nfkc).Impl;
+                    if (nfkcImpl.GetCompQuickCheck(nfkcImpl.GetNorm16(c)) != 0)
+                    {
+                        return "";  // c does not change at all under CaseFolding+NFKC
+                    }
+                    folded.AppendCodePoint(c);
                 }
-                folded.AppendCodePoint(c);
-            }
-            else
-            {
-                if (folded1Length > UCaseProperties.MaxStringLength)
+                else
                 {
-                    folded.AppendCodePoint(folded1Length);
+                    if (folded1Length > UCaseProperties.MaxStringLength)
+                    {
+                        folded.AppendCodePoint(folded1Length);
+                    }
+                }
+                string kc1 = nfkc.Normalize(folded.AsSpan());
+                // second: c = NFKC(Fold(b))
+                string kc2 = nfkc.Normalize(UChar.FoldCase(kc1, 0));
+                // if (c != b) add the mapping from a to c
+                if (kc1.Equals(kc2))
+                {
+                    return "";
+                }
+                else
+                {
+                    return kc2;
                 }
             }
-            string kc1 = nfkc.Normalize(folded);
-            // second: c = NFKC(Fold(b))
-            string kc2 = nfkc.Normalize(UChar.FoldCase(kc1, 0));
-            // if (c != b) add the mapping from a to c
-            if (kc1.Equals(kc2))
+            finally
             {
-                return "";
-            }
-            else
-            {
-                return kc2;
+                folded.Dispose();
             }
         }
 
@@ -2603,16 +2498,12 @@ namespace ICU4N.Text
         /// <summary>
         /// Gets the underlying text storage.
         /// </summary>
-        /// <param name="fillIn">the char buffer to fill the UTF-16 units.
-        /// The length of the buffer should be equal to the length of the
-        /// underlying text storage.</param>
-        /// <exception cref="IndexOutOfRangeException">If the index passed for the array is invalid.</exception>
-        /// <seealso cref="Length"/>
-        [Obsolete("ICU 56")]
-        public int GetText(char[] fillIn)
-        {
-            return text.GetText(fillIn);
-        }
+        /// <param name="destination">The char buffer to fill the UTF-16 units.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are usable in destination;
+        /// otherwise, this is the length of buffer that will need to be allocated to succeed in another attempt.</param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        public bool TryGetText(Span<char> destination, out int charsLength)
+            => text.TryGetText(destination, out charsLength);
 
         /// <summary>
         /// Gets the length of underlying text storage.
@@ -2636,7 +2527,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="newText">The new string to be normalized.</param>
         [Obsolete("ICU 56")]
-        public void SetText(StringBuffer newText)
+        public void SetText(StringBuffer newText) // ICU4N TODO: API - Factor out
         {
             UCharacterIterator newIter = UCharacterIterator.GetInstance(newText);
             text = newIter ?? throw new InvalidOperationException("Could not create a new UCharacterIterator");
@@ -2649,7 +2540,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="newText">The new string to be normalized.</param>
         [Obsolete("ICU 56")]
-        public void SetText(char[] newText)
+        public void SetText(char[] newText) // ICU4N TODO: API - Factor out
         {
             UCharacterIterator newIter = UCharacterIterator.GetInstance(newText);
             text = newIter ?? throw new InvalidOperationException("Could not create a new UCharacterIterator");
@@ -2663,6 +2554,19 @@ namespace ICU4N.Text
         /// <param name="newText">The new string to be normalized.</param>
         [Obsolete("ICU 56")]
         public void SetText(string newText)
+        {
+            UCharacterIterator newIter = UCharacterIterator.GetInstance(newText);
+            text = newIter ?? throw new InvalidOperationException("Could not create a new UCharacterIterator");
+            Reset();
+        }
+
+        /// <summary>
+        /// Set the input text over which this <see cref="Normalizer"/> will iterate.
+        /// The iteration position is set to the beginning of the input text.
+        /// </summary>
+        /// <param name="newText">The new string to be normalized.</param>
+        [Obsolete("ICU 56")]
+        public void SetText(ReadOnlySpan<char> newText)
         {
             UCharacterIterator newIter = UCharacterIterator.GetInstance(newText);
             text = newIter ?? throw new InvalidOperationException("Could not create a new UCharacterIterator");
@@ -2712,7 +2616,8 @@ namespace ICU4N.Text
             {
                 return false;
             }
-            StringBuilder segment = new StringBuilder().AppendCodePoint(c);
+            using ValueStringBuilder segment = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            segment.AppendCodePoint(c);
             while ((c = text.NextCodePoint()) >= 0)
             {
                 if (norm2.HasBoundaryBefore(c))
@@ -2723,7 +2628,7 @@ namespace ICU4N.Text
                 segment.AppendCodePoint(c);
             }
             nextIndex = text.Index;
-            norm2.Normalize(segment, buffer);
+            norm2.Normalize(segment.AsSpan(), buffer);
             return buffer.Length != 0;
         }
 
@@ -2732,7 +2637,7 @@ namespace ICU4N.Text
             ClearBuffer();
             nextIndex = currentIndex;
             text.Index = currentIndex;
-            StringBuilder segment = new StringBuilder();
+            using ValueStringBuilder segment = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
             int c;
             while ((c = text.PreviousCodePoint()) >= 0)
             {
@@ -2742,7 +2647,7 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    segment.Insert(0, Character.ToChars(c));
+                    segment.InsertCodePoint(0, c); // ICU4N: Optimized insertion of code point without allocating
                 }
                 if (norm2.HasBoundaryBefore(c))
                 {
@@ -2750,7 +2655,7 @@ namespace ICU4N.Text
                 }
             }
             currentIndex = text.Index;
-            norm2.Normalize(segment, buffer);
+            norm2.Normalize(segment.AsSpan(), buffer);
             bufferPos = buffer.Length;
             return buffer.Length != 0;
         }
@@ -2758,7 +2663,7 @@ namespace ICU4N.Text
         /* compare canonically equivalent ------------------------------------------- */
 
         // TODO: Broaden the public compare(string, string, options) API like this. Ticket #7407
-        private static int InternalCompare(ICharSequence s1, ICharSequence s2, int options, int normOptions)
+        private static int InternalCompare(scoped ReadOnlySpan<char> s1, scoped ReadOnlySpan<char> s2, int options, int normOptions)
         {
 //#pragma warning disable 612, 618
 //            int normOptions = options.TripleShift(COMPARE_NORM_OPTIONS_SHIFT);
@@ -2813,16 +2718,47 @@ namespace ICU4N.Text
                  * Therefore, ICU 2.6 removes that optimization.
                  */
 
-                if (spanQCYes1 < s1.Length)
-                {
-                    StringBuilder fcd1 = new StringBuilder(s1.Length + 16).Append(s1, 0, spanQCYes1 - 0); // ICU4N: Checked 3rd parameter math
-                    s1 = n2.NormalizeSecondAndAppend(fcd1, s1.Subsequence(spanQCYes1, s1.Length - spanQCYes1)).AsCharSequence(); // ICU4N: Checked 2nd parameter math
 
-                }
-                if (spanQCYes2 < s2.Length)
+                bool s1Normalize = spanQCYes1 < s1.Length;
+                bool s2Normalize = spanQCYes2 < s2.Length;
+                int s1BufferLength = s1.Length + 16;
+                int s2BufferLength = s2.Length + 16;
+
+                // ICU4N: We need to declare these at the same stack level so they remain in
+                // scope for the duration of the CmpEquivFold call.
+                ValueStringBuilder fcd1 = !s1Normalize ? default :
+                    (s1BufferLength <= CharStackBufferSize
+                        ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                        : new ValueStringBuilder(s1BufferLength));
+                ValueStringBuilder fcd2 = !s2Normalize ? default :
+                    (s2BufferLength <= CharStackBufferSize
+                        ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                        : new ValueStringBuilder(s2BufferLength));
+
+                try
                 {
-                    StringBuilder fcd2 = new StringBuilder(s2.Length + 16).Append(s2, 0, spanQCYes2 - 0); // ICU4N: Checked 3rd parameter math
-                    s2 = n2.NormalizeSecondAndAppend(fcd2, s2.Subsequence(spanQCYes2, s2.Length - spanQCYes2)).AsCharSequence(); // ICU4N: Corrected 2nd parameter math
+                    if (s1Normalize)
+                    {
+                        fcd1.Append(s1.Slice(0, spanQCYes1 - 0)); // ICU4N: Checked 3rd parameter math
+                        n2.NormalizeSecondAndAppend(ref fcd1, s1.Slice(spanQCYes1, s1.Length - spanQCYes1)); // ICU4N: Checked 2nd parameter math
+                                                                                                             //s1String = fcd1.ToString();
+                    }
+                    if (s2Normalize)
+                    {
+                        fcd2.Append(s2.Slice(0, spanQCYes2 - 0)); // ICU4N: Checked 3rd parameter math
+                        n2.NormalizeSecondAndAppend(ref fcd2, s2.Slice(spanQCYes2, s2.Length - spanQCYes2)); // ICU4N: Checked 2nd parameter math
+                                                                                                             //s2String = fcd2.ToString();
+                    }
+
+                    return CmpEquivFold(
+                        s1Normalize ? fcd1.AsSpan() : s1,
+                        s2Normalize ? fcd2.AsSpan() : s2,
+                        options);
+                }
+                finally
+                {
+                    fcd1.Dispose();
+                    fcd2.Dispose();
                 }
             }
 
@@ -2919,17 +2855,48 @@ namespace ICU4N.Text
          * (Comments in unorm_compare() are more up to date than this TODO.)
          */
 
+        // ICU4N: Refactored the "stack" to use ref structs
         /* stack element for previous-level source/decomposition pointers */
-        private sealed class CmpEquivLevel
+        private unsafe ref struct CmpEquivLevel
         {
-            public ICharSequence Cs { get; set; }
+            public CmpEquivLevel()
+            {
+                Cs = default;
+                S = default;
+            }
+
+            public ReadOnlySpan<char> Cs { get; set; }
             public int S { get; set; }
-        };
-        private static CmpEquivLevel[] CreateCmpEquivLevelStack()
+        }
+
+        private unsafe ref struct StackContainer
         {
-            return new CmpEquivLevel[] {
-            new CmpEquivLevel(), new CmpEquivLevel()
-        };
+            private CmpEquivLevel level0;
+            private CmpEquivLevel level1;
+
+            public StackContainer()
+            {
+                level0 = new CmpEquivLevel();
+                level1 = new CmpEquivLevel();
+            }
+
+            public ref CmpEquivLevel this[int index]
+            {
+                get
+                {
+                    switch (index)
+                    {
+                        case 0:
+#pragma warning disable CS9084 // Struct member returns 'this' or other instance members by reference
+                            return ref level0;
+                        case 1:
+                            return ref level1;
+#pragma warning restore CS9084 // Struct member returns 'this' or other instance members by reference
+                        default:
+                            throw new IndexOutOfRangeException(nameof(index));
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -2941,7 +2908,7 @@ namespace ICU4N.Text
         /// <summary>
         /// internal function; package visibility for use by <see cref="UTF16.StringComparer"/>
         /// </summary>
-        internal static int CmpEquivFold(ICharSequence cs1, ICharSequence cs2, int options)
+        internal static int CmpEquivFold(ReadOnlySpan<char> cs1, ReadOnlySpan<char> cs2, int options)
         {
             Normalizer2Impl nfcImpl;
             UCaseProperties csp;
@@ -2953,514 +2920,472 @@ namespace ICU4N.Text
             int length;
 
             /* stacks of previous-level start/current/limit */
-            CmpEquivLevel[] stack1 = null, stack2 = null;
+            StackContainer stack1 = new StackContainer();
+            StackContainer stack2 = new StackContainer();
 
             /* buffers for algorithmic decompositions */
-            string decomp1, decomp2;
+            const int DecompositionCharStackBufferSize = 16; // maximum length of 6, but need to be safe because it will fail if not enough
+            Span<char> decomp1 = stackalloc char[DecompositionCharStackBufferSize];
+            Span<char> decomp2 = stackalloc char[DecompositionCharStackBufferSize];
 
             /* case folding buffers, only use current-level start/limit */
-            StringBuilder fold1, fold2;
-
-            /* track which is the current level per string */
-            int level1, level2;
-
-            /* current code units, and code points for lookups */
-            int c1, c2, cp1, cp2;
-
-            /* no argument error checking because this itself is not an API */
-
-            /*
-             * assume that at least one of the options _COMPARE_EQUIV and U_COMPARE_IGNORE_CASE is set
-             * otherwise this function must behave exactly as uprv_strCompare()
-             * not checking for that here makes testing this function easier
-             */
-
-            /* normalization/properties data loaded? */
-            if ((options & COMPARE_EQUIV) != 0)
+            const int FoldCharStackBufferSize = 8; // maximum length of 3
+            var fold1 = new ValueStringBuilder(stackalloc char[FoldCharStackBufferSize]);
+            var fold2 = new ValueStringBuilder(stackalloc char[FoldCharStackBufferSize]);
+            try
             {
-                nfcImpl = Norm2AllModes.GetNFCInstance().Impl;
-            }
-            else
-            {
-                nfcImpl = null;
-            }
-            if ((options & COMPARE_IGNORE_CASE) != 0)
-            {
-                csp = UCaseProperties.Instance;
-                fold1 = new StringBuilder();
-                fold2 = new StringBuilder();
-            }
-            else
-            {
-                csp = null;
-                fold1 = fold2 = null;
-            }
 
-            /* initialize */
-            s1 = 0;
-            limit1 = cs1.Length;
-            s2 = 0;
-            limit2 = cs2.Length;
+                /* track which is the current level per string */
+                int level1, level2;
 
-            level1 = level2 = 0;
-            c1 = c2 = -1;
+                /* current code units, and code points for lookups */
+                int c1, c2, cp1, cp2;
 
-            /* comparison loop */
-            for (; ; )
-            {
-                /*
-                 * here a code unit value of -1 means "get another code unit"
-                 * below it will mean "this source is finished"
-                 */
-
-                if (c1 < 0)
-                {
-                    /* get next code unit from string 1, post-increment */
-                    for (; ; )
-                    {
-                        if (s1 == limit1)
-                        {
-                            if (level1 == 0)
-                            {
-                                c1 = -1;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            c1 = cs1[s1++];
-                            break;
-                        }
-
-                        /* reached end of level buffer, pop one level */
-                        do
-                        {
-                            --level1;
-                            cs1 = stack1[level1].Cs;
-                        } while (cs1 == null);
-                        s1 = stack1[level1].S;
-                        limit1 = cs1.Length;
-                    }
-                }
-
-                if (c2 < 0)
-                {
-                    /* get next code unit from string 2, post-increment */
-                    for (; ; )
-                    {
-                        if (s2 == limit2)
-                        {
-                            if (level2 == 0)
-                            {
-                                c2 = -1;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            c2 = cs2[s2++];
-                            break;
-                        }
-
-                        /* reached end of level buffer, pop one level */
-                        do
-                        {
-                            --level2;
-                            cs2 = stack2[level2].Cs;
-                        } while (cs2 == null);
-                        s2 = stack2[level2].S;
-                        limit2 = cs2.Length;
-                    }
-                }
+                /* no argument error checking because this itself is not an API */
 
                 /*
-                 * compare c1 and c2
-                 * either variable c1, c2 is -1 only if the corresponding string is finished
+                 * assume that at least one of the options _COMPARE_EQUIV and U_COMPARE_IGNORE_CASE is set
+                 * otherwise this function must behave exactly as uprv_strCompare()
+                 * not checking for that here makes testing this function easier
                  */
-                if (c1 == c2)
+
+                /* normalization/properties data loaded? */
+                if ((options & COMPARE_EQUIV) != 0)
                 {
+                    nfcImpl = Norm2AllModes.NFCInstance.Impl;
+                }
+                else
+                {
+                    nfcImpl = null;
+                }
+                if ((options & COMPARE_IGNORE_CASE) != 0)
+                {
+                    csp = UCaseProperties.Instance;
+                    // ICU4N: fold1, fold2 instantiated on stack above
+                }
+                else
+                {
+                    csp = null;
+                }
+
+                /* initialize */
+                s1 = 0;
+                limit1 = cs1.Length;
+                s2 = 0;
+                limit2 = cs2.Length;
+
+                level1 = level2 = 0;
+                c1 = c2 = -1;
+
+                /* comparison loop */
+                for (; ; )
+                {
+                    /*
+                     * here a code unit value of -1 means "get another code unit"
+                     * below it will mean "this source is finished"
+                     */
+
                     if (c1 < 0)
                     {
-                        return 0;   /* c1==c2==-1 indicating end of strings */
-                    }
-                    c1 = c2 = -1;       /* make us fetch new code units */
-                    continue;
-                }
-                else if (c1 < 0)
-                {
-                    return -1;      /* string 1 ends before string 2 */
-                }
-                else if (c2 < 0)
-                {
-                    return 1;       /* string 2 ends before string 1 */
-                }
-                /* c1!=c2 && c1>=0 && c2>=0 */
-
-                /* get complete code points for c1, c2 for lookups if either is a surrogate */
-                cp1 = c1;
-                if (UTF16.IsSurrogate((char)c1))
-                {
-                    char c;
-
-                    if (UTF16Plus.IsSurrogateLead(c1))
-                    {
-                        if (s1 != limit1 && char.IsLowSurrogate(c = cs1[s1]))
+                        /* get next code unit from string 1, post-increment */
+                        for (; ; )
                         {
-                            /* advance ++s1; only below if cp1 decomposes/case-folds */
-                            cp1 = Character.ToCodePoint((char)c1, c);
+                            if (s1 == limit1)
+                            {
+                                if (level1 == 0)
+                                {
+                                    c1 = -1;
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                c1 = cs1[s1++];
+                                break;
+                            }
+
+                            /* reached end of level buffer, pop one level */
+                            do
+                            {
+                                --level1;
+                                cs1 = stack1[level1].Cs;
+                            } while (cs1 == null);
+                            s1 = stack1[level1].S;
+                            limit1 = cs1.Length;
                         }
                     }
-                    else /* isTrail(c1) */
+
+                    if (c2 < 0)
                     {
-                        if (0 <= (s1 - 2) && char.IsHighSurrogate(c = cs1[s1 - 2]))
+                        /* get next code unit from string 2, post-increment */
+                        for (; ; )
                         {
-                            cp1 = Character.ToCodePoint(c, (char)c1);
+                            if (s2 == limit2)
+                            {
+                                if (level2 == 0)
+                                {
+                                    c2 = -1;
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                c2 = cs2[s2++];
+                                break;
+                            }
+
+                            /* reached end of level buffer, pop one level */
+                            do
+                            {
+                                --level2;
+                                cs2 = stack2[level2].Cs;
+                            } while (cs2 == null);
+                            s2 = stack2[level2].S;
+                            limit2 = cs2.Length;
                         }
                     }
-                }
 
-                cp2 = c2;
-                if (UTF16.IsSurrogate((char)c2))
-                {
-                    char c;
-
-                    if (UTF16Plus.IsSurrogateLead(c2))
+                    /*
+                     * compare c1 and c2
+                     * either variable c1, c2 is -1 only if the corresponding string is finished
+                     */
+                    if (c1 == c2)
                     {
-                        if (s2 != limit2 && char.IsLowSurrogate(c = cs2[s2]))
+                        if (c1 < 0)
                         {
-                            /* advance ++s2; only below if cp2 decomposes/case-folds */
-                            cp2 = Character.ToCodePoint((char)c2, c);
+                            return 0;   /* c1==c2==-1 indicating end of strings */
                         }
+                        c1 = c2 = -1;       /* make us fetch new code units */
+                        continue;
                     }
-                    else /* isTrail(c2) */
+                    else if (c1 < 0)
                     {
-                        if (0 <= (s2 - 2) && char.IsHighSurrogate(c = cs2[s2 - 2]))
-                        {
-                            cp2 = Character.ToCodePoint(c, (char)c2);
-                        }
+                        return -1;      /* string 1 ends before string 2 */
                     }
-                }
+                    else if (c2 < 0)
+                    {
+                        return 1;       /* string 2 ends before string 1 */
+                    }
+                    /* c1!=c2 && c1>=0 && c2>=0 */
 
-                /*
-                 * go down one level for each string
-                 * continue with the main loop as soon as there is a real change
-                 */
-
-                if (level1 == 0 && (options & COMPARE_IGNORE_CASE) != 0 &&
-                    (length = csp.ToFullFolding(cp1, fold1, options)) >= 0
-                )
-                {
-                    /* cp1 case-folds to the code point "length" or to p[length] */
+                    /* get complete code points for c1, c2 for lookups if either is a surrogate */
+                    cp1 = c1;
                     if (UTF16.IsSurrogate((char)c1))
                     {
+                        char c;
+
                         if (UTF16Plus.IsSurrogateLead(c1))
                         {
-                            /* advance beyond source surrogate pair if it case-folds */
-                            ++s1;
+                            if (s1 != limit1 && char.IsLowSurrogate(c = cs1[s1]))
+                            {
+                                /* advance ++s1; only below if cp1 decomposes/case-folds */
+                                cp1 = Character.ToCodePoint((char)c1, c);
+                            }
                         }
                         else /* isTrail(c1) */
                         {
-                            /*
-                             * we got a supplementary code point when hitting its trail surrogate,
-                             * therefore the lead surrogate must have been the same as in the other string;
-                             * compare this decomposition with the lead surrogate in the other string
-                             * remember that this simulates bulk text replacement:
-                             * the decomposition would replace the entire code point
-                             */
-                            --s2;
-                            c2 = cs2[s2 - 1];
+                            if (0 <= (s1 - 2) && char.IsHighSurrogate(c = cs1[s1 - 2]))
+                            {
+                                cp1 = Character.ToCodePoint(c, (char)c1);
+                            }
                         }
                     }
 
-                    /* push current level pointers */
-                    if (stack1 == null)
-                    {
-                        stack1 = CreateCmpEquivLevelStack();
-                    }
-                    stack1[0].Cs = cs1;
-                    stack1[0].S = s1;
-                    ++level1;
-
-                    /* copy the folding result to fold1[] */
-                    /* Java: the buffer was probably not empty, remove the old contents */
-                    if (length <= UCaseProperties.MaxStringLength)
-                    {
-                        fold1.Delete(0, (fold1.Length - length) - 0); // ICU4N: Corrected 2nd parameter of Delete
-                    }
-                    else
-                    {
-                        fold1.Length = 0;
-                        fold1.AppendCodePoint(length);
-                    }
-
-                    /* set next level pointers to case folding */
-                    cs1 = fold1.AsCharSequence();
-                    s1 = 0;
-                    limit1 = fold1.Length;
-
-                    /* get ready to read from decomposition, continue with loop */
-                    c1 = -1;
-                    continue;
-                }
-
-                if (level2 == 0 && (options & COMPARE_IGNORE_CASE) != 0 &&
-                    (length = csp.ToFullFolding(cp2, fold2, options)) >= 0
-                )
-                {
-                    /* cp2 case-folds to the code point "length" or to p[length] */
+                    cp2 = c2;
                     if (UTF16.IsSurrogate((char)c2))
                     {
+                        char c;
+
                         if (UTF16Plus.IsSurrogateLead(c2))
                         {
-                            /* advance beyond source surrogate pair if it case-folds */
-                            ++s2;
+                            if (s2 != limit2 && char.IsLowSurrogate(c = cs2[s2]))
+                            {
+                                /* advance ++s2; only below if cp2 decomposes/case-folds */
+                                cp2 = Character.ToCodePoint((char)c2, c);
+                            }
                         }
                         else /* isTrail(c2) */
                         {
-                            /*
-                             * we got a supplementary code point when hitting its trail surrogate,
-                             * therefore the lead surrogate must have been the same as in the other string;
-                             * compare this decomposition with the lead surrogate in the other string
-                             * remember that this simulates bulk text replacement:
-                             * the decomposition would replace the entire code point
-                             */
-                            --s1;
-                            c1 = cs1[s1 - 1];
+                            if (0 <= (s2 - 2) && char.IsHighSurrogate(c = cs2[s2 - 2]))
+                            {
+                                cp2 = Character.ToCodePoint(c, (char)c2);
+                            }
                         }
                     }
 
-                    /* push current level pointers */
-                    if (stack2 == null)
-                    {
-                        stack2 = CreateCmpEquivLevelStack();
-                    }
-                    stack2[0].Cs = cs2;
-                    stack2[0].S = s2;
-                    ++level2;
+                    /*
+                     * go down one level for each string
+                     * continue with the main loop as soon as there is a real change
+                     */
 
-                    /* copy the folding result to fold2[] */
-                    /* Java: the buffer was probably not empty, remove the old contents */
-                    if (length <= UCaseProperties.MaxStringLength)
+                    if (level1 == 0 && (options & COMPARE_IGNORE_CASE) != 0 &&
+                        (length = csp.ToFullFolding(cp1, ref fold1, options)) >= 0)
                     {
-                        fold2.Delete(0, (fold2.Length - length) - 0); // ICU4N: Corrected 2nd parameter of Delete
-                    }
-                    else
-                    {
-                        fold2.Length = 0;
-                        fold2.AppendCodePoint(length);
-                    }
-
-                    /* set next level pointers to case folding */
-                    cs2 = fold2.AsCharSequence();
-                    s2 = 0;
-                    limit2 = fold2.Length;
-
-                    /* get ready to read from decomposition, continue with loop */
-                    c2 = -1;
-                    continue;
-                }
-
-                if (level1 < 2 && (options & COMPARE_EQUIV) != 0 &&
-                    (decomp1 = nfcImpl.GetDecomposition(cp1)) != null
-                )
-                {
-                    /* cp1 decomposes into p[length] */
-                    if (UTF16.IsSurrogate((char)c1))
-                    {
-                        if (UTF16Plus.IsSurrogateLead(c1))
+                        /* cp1 case-folds to the code point "length" or to p[length] */
+                        if (UTF16.IsSurrogate((char)c1))
                         {
-                            /* advance beyond source surrogate pair if it decomposes */
-                            ++s1;
+                            if (UTF16Plus.IsSurrogateLead(c1))
+                            {
+                                /* advance beyond source surrogate pair if it case-folds */
+                                ++s1;
+                            }
+                            else /* isTrail(c1) */
+                            {
+                                /*
+                                    * we got a supplementary code point when hitting its trail surrogate,
+                                    * therefore the lead surrogate must have been the same as in the other string;
+                                    * compare this decomposition with the lead surrogate in the other string
+                                    * remember that this simulates bulk text replacement:
+                                    * the decomposition would replace the entire code point
+                                    */
+                                --s2;
+                                c2 = cs2[s2 - 1];
+                            }
                         }
-                        else /* isTrail(c1) */
+
+                        /* push current level pointers */
+                        stack1[0].Cs = cs1;
+                        stack1[0].S = s1;
+                        ++level1;
+
+                        /* copy the folding result to fold1[] */
+                        /* Java: the buffer was probably not empty, remove the old contents */
+                        if (length <= UCaseProperties.MaxStringLength)
                         {
-                            /*
-                             * we got a supplementary code point when hitting its trail surrogate,
-                             * therefore the lead surrogate must have been the same as in the other string;
-                             * compare this decomposition with the lead surrogate in the other string
-                             * remember that this simulates bulk text replacement:
-                             * the decomposition would replace the entire code point
-                             */
-                            --s2;
-                            c2 = cs2[s2 - 1];
+                            fold1.Delete(0, (fold1.Length - length) - 0); // ICU4N: Corrected 2nd parameter of Delete
                         }
-                    }
-
-                    /* push current level pointers */
-                    if (stack1 == null)
-                    {
-                        stack1 = CreateCmpEquivLevelStack();
-                    }
-                    stack1[level1].Cs = cs1;
-                    stack1[level1].S = s1;
-                    ++level1;
-
-                    /* set empty intermediate level if skipped */
-                    if (level1 < 2)
-                    {
-                        stack1[level1++].Cs = null;
-                    }
-
-                    /* set next level pointers to decomposition */
-                    cs1 = decomp1.AsCharSequence();
-                    s1 = 0;
-                    limit1 = decomp1.Length;
-
-                    /* get ready to read from decomposition, continue with loop */
-                    c1 = -1;
-                    continue;
-                }
-
-                if (level2 < 2 && (options & COMPARE_EQUIV) != 0 &&
-                    (decomp2 = nfcImpl.GetDecomposition(cp2)) != null
-                )
-                {
-                    /* cp2 decomposes into p[length] */
-                    if (UTF16.IsSurrogate((char)c2))
-                    {
-                        if (UTF16Plus.IsSurrogateLead(c2))
+                        else
                         {
-                            /* advance beyond source surrogate pair if it decomposes */
-                            ++s2;
+                            fold1.Length = 0;
+                            fold1.AppendCodePoint(length);
                         }
-                        else /* isTrail(c2) */
+
+                        /* set next level pointers to case folding */
+                        unsafe
                         {
-                            /*
-                             * we got a supplementary code point when hitting its trail surrogate,
-                             * therefore the lead surrogate must have been the same as in the other string;
-                             * compare this decomposition with the lead surrogate in the other string
-                             * remember that this simulates bulk text replacement:
-                             * the decomposition would replace the entire code point
-                             */
-                            --s1;
-                            c1 = cs1[s1 - 1];
+                            cs1 = new ReadOnlySpan<char>(fold1.GetCharsPointer(), fold1.Length);
                         }
+                        s1 = 0;
+                        limit1 = fold1.Length;
+
+                        /* get ready to read from decomposition, continue with loop */
+                        c1 = -1;
+                        continue;
                     }
 
-                    /* push current level pointers */
-                    if (stack2 == null)
-                    {
-                        stack2 = CreateCmpEquivLevelStack();
-                    }
-                    stack2[level2].Cs = cs2;
-                    stack2[level2].S = s2;
-                    ++level2;
-
-                    /* set empty intermediate level if skipped */
-                    if (level2 < 2)
-                    {
-                        stack2[level2++].Cs = null;
-                    }
-
-                    /* set next level pointers to decomposition */
-                    cs2 = decomp2.AsCharSequence();
-                    s2 = 0;
-                    limit2 = decomp2.Length;
-
-                    /* get ready to read from decomposition, continue with loop */
-                    c2 = -1;
-                    continue;
-                }
-
-                /*
-                 * no decomposition/case folding, max level for both sides:
-                 * return difference result
-                 *
-                 * code point order comparison must not just return cp1-cp2
-                 * because when single surrogates are present then the surrogate pairs
-                 * that formed cp1 and cp2 may be from different string indexes
-                 *
-                 * example: { d800 d800 dc01 } vs. { d800 dc00 }, compare at second code units
-                 * c1=d800 cp1=10001 c2=dc00 cp2=10000
-                 * cp1-cp2>0 but c1-c2<0 and in fact in UTF-32 it is { d800 10001 } < { 10000 }
-                 *
-                 * therefore, use same fix-up as in ustring.c/uprv_strCompare()
-                 * except: uprv_strCompare() fetches c=*s while this functions fetches c=*s++
-                 * so we have slightly different pointer/start/limit comparisons here
-                 */
-
-                if (c1 >= 0xd800 && c2 >= 0xd800 && (options & COMPARE_CODE_POINT_ORDER) != 0)
-                {
-                    /* subtract 0x2800 from BMP code points to make them smaller than supplementary ones */
-                    if (
-                        (c1 <= 0xdbff && s1 != limit1 && char.IsLowSurrogate(cs1[s1])) ||
-                        (char.IsLowSurrogate((char)c1) && 0 != (s1 - 1) && char.IsHighSurrogate(cs1[s1 - 2]))
+                    if (level2 == 0 && (options & COMPARE_IGNORE_CASE) != 0 &&
+                        (length = csp.ToFullFolding(cp2, ref fold2, options)) >= 0
                     )
                     {
-                        /* part of a surrogate pair, leave >=d800 */
-                    }
-                    else
-                    {
-                        /* BMP code point - may be surrogate code point - make <d800 */
-                        c1 -= 0x2800;
+                        /* cp2 case-folds to the code point "length" or to p[length] */
+                        if (UTF16.IsSurrogate((char)c2))
+                        {
+                            if (UTF16Plus.IsSurrogateLead(c2))
+                            {
+                                /* advance beyond source surrogate pair if it case-folds */
+                                ++s2;
+                            }
+                            else /* isTrail(c2) */
+                            {
+                                /*
+                                 * we got a supplementary code point when hitting its trail surrogate,
+                                 * therefore the lead surrogate must have been the same as in the other string;
+                                 * compare this decomposition with the lead surrogate in the other string
+                                 * remember that this simulates bulk text replacement:
+                                 * the decomposition would replace the entire code point
+                                 */
+                                --s1;
+                                c1 = cs1[s1 - 1];
+                            }
+                        }
+
+                        /* push current level pointers */
+                        stack2[0].Cs = cs2;
+                        stack2[0].S = s2;
+                        ++level2;
+
+                        /* copy the folding result to fold2[] */
+                        /* Java: the buffer was probably not empty, remove the old contents */
+                        if (length <= UCaseProperties.MaxStringLength)
+                        {
+                            fold2.Delete(0, (fold2.Length - length) - 0); // ICU4N: Corrected 2nd parameter of Delete
+                        }
+                        else
+                        {
+                            fold2.Length = 0;
+                            fold2.AppendCodePoint(length);
+                        }
+
+                        /* set next level pointers to case folding */
+                        unsafe
+                        {
+                            cs2 = new ReadOnlySpan<char>(fold2.GetCharsPointer(), fold2.Length);
+                        }
+                        s2 = 0;
+                        limit2 = fold2.Length;
+
+                        /* get ready to read from decomposition, continue with loop */
+                        c2 = -1;
+                        continue;
                     }
 
-                    if (
-                        (c2 <= 0xdbff && s2 != limit2 && char.IsLowSurrogate(cs2[s2])) ||
-                        (char.IsLowSurrogate((char)c2) && 0 != (s2 - 1) && char.IsHighSurrogate(cs2[s2 - 2]))
+                    if (level1 < 2 && (options & COMPARE_EQUIV) != 0 &&
+                        nfcImpl.TryGetDecomposition(cp1, decomp1, out int decomp1Length)
                     )
                     {
-                        /* part of a surrogate pair, leave >=d800 */
-                    }
-                    else
-                    {
-                        /* BMP code point - may be surrogate code point - make <d800 */
-                        c2 -= 0x2800;
-                    }
-                }
+                        /* cp1 decomposes into p[length] */
+                        if (UTF16.IsSurrogate((char)c1))
+                        {
+                            if (UTF16Plus.IsSurrogateLead(c1))
+                            {
+                                /* advance beyond source surrogate pair if it decomposes */
+                                ++s1;
+                            }
+                            else /* isTrail(c1) */
+                            {
+                                /*
+                                 * we got a supplementary code point when hitting its trail surrogate,
+                                 * therefore the lead surrogate must have been the same as in the other string;
+                                 * compare this decomposition with the lead surrogate in the other string
+                                 * remember that this simulates bulk text replacement:
+                                 * the decomposition would replace the entire code point
+                                 */
+                                --s2;
+                                c2 = cs2[s2 - 1];
+                            }
+                        }
 
-                return c1 - c2;
+                        /* push current level pointers */
+                        stack1[level1].Cs = cs1;
+                        stack1[level1].S = s1;
+                        ++level1;
+
+                        /* set empty intermediate level if skipped */
+                        if (level1 < 2)
+                        {
+                            stack1[level1++].Cs = null;
+                        }
+
+                        /* set next level pointers to decomposition */
+                        unsafe
+                        {
+                            cs1 = new ReadOnlySpan<char>((char*)Unsafe.AsPointer(ref decomp1[0]), decomp1Length);
+                        }
+                        s1 = 0;
+                        limit1 = decomp1Length;
+
+                        /* get ready to read from decomposition, continue with loop */
+                        c1 = -1;
+                        continue;
+                    }
+
+                    if (level2 < 2 && (options & COMPARE_EQUIV) != 0 &&
+                        nfcImpl.TryGetDecomposition(cp2, decomp2, out int decomp2Length)
+                    )
+                    {
+                        /* cp2 decomposes into p[length] */
+                        if (UTF16.IsSurrogate((char)c2))
+                        {
+                            if (UTF16Plus.IsSurrogateLead(c2))
+                            {
+                                /* advance beyond source surrogate pair if it decomposes */
+                                ++s2;
+                            }
+                            else /* isTrail(c2) */
+                            {
+                                /*
+                                 * we got a supplementary code point when hitting its trail surrogate,
+                                 * therefore the lead surrogate must have been the same as in the other string;
+                                 * compare this decomposition with the lead surrogate in the other string
+                                 * remember that this simulates bulk text replacement:
+                                 * the decomposition would replace the entire code point
+                                 */
+                                --s1;
+                                c1 = cs1[s1 - 1];
+                            }
+                        }
+
+                        /* push current level pointers */
+                        stack2[level2].Cs = cs2;
+                        stack2[level2].S = s2;
+                        ++level2;
+
+                        /* set empty intermediate level if skipped */
+                        if (level2 < 2)
+                        {
+                            stack2[level2++].Cs = null;
+                        }
+
+                        /* set next level pointers to decomposition */
+                        unsafe
+                        {
+                            cs2 = new ReadOnlySpan<char>((char*)Unsafe.AsPointer(ref decomp2[0]), decomp2Length);
+                        }
+                        s2 = 0;
+                        limit2 = decomp2Length;
+
+                        /* get ready to read from decomposition, continue with loop */
+                        c2 = -1;
+                        continue;
+                    }
+
+                    /*
+                     * no decomposition/case folding, max level for both sides:
+                     * return difference result
+                     *
+                     * code point order comparison must not just return cp1-cp2
+                     * because when single surrogates are present then the surrogate pairs
+                     * that formed cp1 and cp2 may be from different string indexes
+                     *
+                     * example: { d800 d800 dc01 } vs. { d800 dc00 }, compare at second code units
+                     * c1=d800 cp1=10001 c2=dc00 cp2=10000
+                     * cp1-cp2>0 but c1-c2<0 and in fact in UTF-32 it is { d800 10001 } < { 10000 }
+                     *
+                     * therefore, use same fix-up as in ustring.c/uprv_strCompare()
+                     * except: uprv_strCompare() fetches c=*s while this functions fetches c=*s++
+                     * so we have slightly different pointer/start/limit comparisons here
+                     */
+
+                    if (c1 >= 0xd800 && c2 >= 0xd800 && (options & COMPARE_CODE_POINT_ORDER) != 0)
+                    {
+                        /* subtract 0x2800 from BMP code points to make them smaller than supplementary ones */
+                        if (
+                            (c1 <= 0xdbff && s1 != limit1 && char.IsLowSurrogate(cs1[s1])) ||
+                            (char.IsLowSurrogate((char)c1) && 0 != (s1 - 1) && char.IsHighSurrogate(cs1[s1 - 2]))
+                        )
+                        {
+                            /* part of a surrogate pair, leave >=d800 */
+                        }
+                        else
+                        {
+                            /* BMP code point - may be surrogate code point - make <d800 */
+                            c1 -= 0x2800;
+                        }
+
+                        if (
+                            (c2 <= 0xdbff && s2 != limit2 && char.IsLowSurrogate(cs2[s2])) ||
+                            (char.IsLowSurrogate((char)c2) && 0 != (s2 - 1) && char.IsHighSurrogate(cs2[s2 - 2]))
+                        )
+                        {
+                            /* part of a surrogate pair, leave >=d800 */
+                        }
+                        else
+                        {
+                            /* BMP code point - may be surrogate code point - make <d800 */
+                            c2 -= 0x2800;
+                        }
+                    }
+
+                    return c1 - c2;
+                }
+            }
+            finally
+            {
+                fold1.Dispose();
+                fold2.Dispose();
             }
         }
 
-        /// <summary>
-        /// An <see cref="IAppendable"/> that writes into a char array with a capacity that may be
-        /// less than array.Length.
-        /// (By contrast, <see cref="CharBuffer"/> will write beyond destLimit all the way up to array.Length.)
-        /// <para/>
-        /// An overflow is only reported at the end, for the old Normalizer API functions that write
-        /// to char arrays.
-        /// </summary>
-        private sealed partial class CharsAppendable : IAppendable
-        {
-            public CharsAppendable(char[] dest, int destStart, int destLimit)
-            {
-                chars = dest;
-                start = offset = destStart;
-                limit = destLimit;
-            }
-            public int Length
-            {
-                get
-                {
-                    int len = offset - start;
-                    if (offset <= limit)
-                    {
-                        return len;
-                    }
-                    else
-                    {
-                        throw new IndexOutOfRangeException(len.ToString());
-                    }
-                }
-            }
-            public IAppendable Append(char c)
-            {
-                if (offset < limit)
-                {
-                    chars[offset] = c;
-                }
-                ++offset;
-                return this;
-            }
-
-            // ICU4N specific - Append(ICharSequence s) moved to NormalizerExtension.tt
-
-            // ICU4N specific - Append(ICharSequence s, int sStart, int sLimit) moved to NormalizerExtension.tt
-
-            private readonly char[] chars;
-            private readonly int start, limit;
-            private int offset;
-        }
+        // ICU4N: Factored out CharsAppendable by making Try... versions of methods instead of throwing when the buffer is full
     }
 }

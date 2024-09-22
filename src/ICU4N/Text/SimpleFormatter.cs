@@ -1,19 +1,11 @@
 ﻿using ICU4N.Impl;
-using J2N.Text;
 using System;
 using System.Text;
 
 namespace ICU4N.Text
 {
-    // ICU4N TODO: Either phase this out or replace the values params with object (similar to string.Format() in .NET).
-    // This basically does the same thing a string.Format(), but with different escape characters, so we can probably do without this.
-
-    // ICU4N TODO: If we do keep this, this and all other formatters should implement IFormatProvider so they can be used directly
-    // with string.Format()
-
-    // ICU4N TODO: API - The format methods should replace ICharSequence with object so we can mix different types
-    // in the same array. Internally, we can just call ToString() on each of the objects (including ICharSequence) to get an array of strings.
-    // Without doing this, we have no way of passing string and StringBuilder in the same array as was done in Java.
+    // ICU4N TODO: API - Add overloads for object[]? This is the way that string.Concat() works, but need to consider the culture
+    // aware implications of converting dates and numbers.
 
     /// <summary>
     /// Formats simple patterns like "{1} was born in {0}".
@@ -49,29 +41,113 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Binary representation of the compiled pattern.
+        /// Index 0: One more than the highest argument number.
+        /// Followed by zero or more arguments or literal-text segments.
+        /// <para/>
+        /// An argument is stored as its number, less than ARG_NUM_LIMIT.
+        /// A literal-text segment is stored as its length (at least 1) offset by ARG_NUM_LIMIT,
+        /// followed by that many chars.
         /// </summary>
         /// <seealso cref="SimpleFormatterImpl"/>
         private readonly string compiledPattern;
+
+        private int? argumentLimit;
 
         private SimpleFormatter(string compiledPattern)
         {
             this.compiledPattern = compiledPattern;
         }
 
-        // ICU4N specific - Compile(ICharSequence pattern) moved to SimpleFormatterExtension.tt
+        /// <summary>
+        /// Creates a formatter from the pattern string.
+        /// </summary>
+        /// <param name="pattern">The pattern string.</param>
+        /// <returns>The new <see cref="SimpleFormatter"/> object.</returns>
+        /// <exception cref="ArgumentException">For bad argument syntax.</exception>
+        /// <stable>ICU 57</stable>
+        public static SimpleFormatter Compile(string pattern)
+        {
+            return CompileMinMaxArguments(pattern, 0, int.MaxValue);
+        }
 
-        // ICU4N specific - CompileMinMaxArguments(ICharSequence pattern, int min, int max) moved to SimpleFormatterExtension.tt
+        /// <summary>
+        /// Creates a formatter from the pattern string.
+        /// </summary>
+        /// <param name="pattern">The pattern string.</param>
+        /// <returns>The new <see cref="SimpleFormatter"/> object.</returns>
+        /// <exception cref="ArgumentException">For bad argument syntax.</exception>
+        /// <stable>ICU 57</stable>
+        public static SimpleFormatter Compile(ReadOnlySpan<char> pattern)
+        {
+            return CompileMinMaxArguments(pattern, 0, int.MaxValue);
+        }
+
+        /// <summary>
+        /// Creates a formatter from the pattern string.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">The pattern string.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <returns>The new <see cref="SimpleFormatter"/> object.</returns>
+        /// <exception cref="ArgumentException">For bad argument syntax and too few or too many arguments.</exception>
+        /// <stable>ICU 57</stable>
+        public static SimpleFormatter CompileMinMaxArguments(string pattern, int min, int max)
+        {
+            if (pattern is null)
+                throw new ArgumentNullException(nameof(pattern));
+
+            return CompileMinMaxArguments(pattern.AsSpan(), min, max);
+        }
+
+        /// <summary>
+        /// Creates a formatter from the pattern string.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">The pattern string.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <returns>The new <see cref="SimpleFormatter"/> object.</returns>
+        /// <exception cref="ArgumentException">For bad argument syntax and too few or too many arguments.</exception>
+        /// <stable>ICU 57</stable>
+        public static SimpleFormatter CompileMinMaxArguments(ReadOnlySpan<char> pattern, int min, int max)
+        {
+            string compiledPattern = SimpleFormatterImpl.CompileToStringMinMaxArguments(pattern, min, max);
+            return new SimpleFormatter(compiledPattern);
+        }
 
         /// <summary>
         /// The max argument number + 1.
         /// </summary>
         /// <stable>ICU 57</stable>
-        public int ArgumentLimit => SimpleFormatterImpl.GetArgumentLimit(compiledPattern);
+        public int ArgumentLimit => argumentLimit.HasValue ? argumentLimit.Value : (argumentLimit = SimpleFormatterImpl.GetArgumentLimit(compiledPattern.AsSpan())).Value;
 
-        // ICU4N specific - Format(params ICharSequence[] values) moved to SimpleFormatterExtension.tt
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="values">The argument values.</param>
+        /// <stable>ICU 57</stable>
+        public string Format(params string[] values)
+        {
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), values);
+        }
 
-        // ICU4N specific - FormatAndAppend(
-        //    StringBuilder appendTo, int[] offsets, params ICharSequence[] values) moved to SimpleFormatterExtension.tt
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="values">The argument values.</param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <draft>ICU 60.1</draft>
+        public bool TryFormat(Span<char> destination, out int charsLength, params string[] values)
+        {
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, values);
+        }
 
         /// <summary>
         /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
@@ -83,16 +159,19 @@ namespace ICU4N.Text
         /// Can be null, or can be shorter or longer than values.
         /// If there is no {i} in the pattern, then offsets[i] is set to -1.
         /// </param>
+        /// <param name="values">
+        /// The argument values.
+        /// An argument value must not be the same object as appendTo.
+        /// values.Length must be at least <see cref="ArgumentLimit"/>.
+        /// Can be null if <see cref="ArgumentLimit"/>==0.
+        /// </param>
         /// <returns><paramref name="appendTo"/></returns>
-        /// <stable>ICU4N 60.1</stable>
-        public StringBuilder FormatAndAppend(
-            StringBuilder appendTo, int[] offsets) // ICU4N specific overload to avoid ambiguity when no params are passed
+        /// <stable>ICU 57</stable>
+        internal StringBuilder FormatAndAppend(
+            StringBuilder appendTo, Span<int> offsets, params string[] values) // ICU4N TODO: API - If we do this, we should probably make this IAppendable instead of StringBuilder
         {
-            return SimpleFormatterImpl.FormatAndAppend(compiledPattern, appendTo, offsets, new ICharSequence[0]);
+            return SimpleFormatterImpl.FormatAndAppend(compiledPattern.AsSpan(), appendTo, offsets, values);
         }
-
-        // ICU4N specific - FormatAndReplace(
-        //    StringBuilder result, int[] offsets, params ICharSequence[] values) moved to SimpleFormatterExtension.tt
 
         /// <summary>
         /// Formats the given values, replacing the contents of the result builder.
@@ -106,12 +185,17 @@ namespace ICU4N.Text
         /// Can be null, or can be shorter or longer than values.
         /// If there is no {i} in the pattern, then offsets[i] is set to -1.
         /// </param>
+        /// <param name="values">
+        /// The argument values.
+        /// An argument value may be the same object as result.
+        /// values.Length must be at least <see cref="ArgumentLimit"/>.
+        /// </param>
         /// <returns><paramref name="result"/></returns>
-        /// <stable>ICU4N 60.1</stable>
-        public StringBuilder FormatAndReplace(
-            StringBuilder result, int[] offsets) // ICU4N specific overload to avoid ambiguity when no params are passed
+        /// <stable>ICU 57</stable>
+        internal StringBuilder FormatAndReplace(
+            StringBuilder result, Span<int> offsets, params string[] values) // ICU4N TODO: API - If we do this, we should probably make this IAppendable instead of StringBuilder
         {
-            return SimpleFormatterImpl.FormatAndReplace(compiledPattern, result, offsets, new ICharSequence[0]);
+            return SimpleFormatterImpl.FormatAndReplace(compiledPattern.AsSpan(), result, offsets, values);
         }
 
         /// <summary>
@@ -120,12 +204,12 @@ namespace ICU4N.Text
         /// <stable>ICU 57</stable>
         public override string ToString()
         {
-            string[] values = new String[ArgumentLimit];
+            string[] values = new string[ArgumentLimit];
             for (int i = 0; i < values.Length; i++)
             {
-                values[i] = "{" + i + '}';
+                values[i] = $"{{{i}}}";
             }
-            return FormatAndAppend(new StringBuilder(), null, values).ToString();
+            return Format(values);
         }
 
         /// <summary>
@@ -135,7 +219,23 @@ namespace ICU4N.Text
         /// <stable>ICU 57</stable>
         public string GetTextWithNoArguments()
         {
-            return SimpleFormatterImpl.GetTextWithNoArguments(compiledPattern);
+            return SimpleFormatterImpl.GetTextWithNoArguments(compiledPattern.AsSpan());
+        }
+
+        /// <summary>
+        /// Returns the pattern text with none of the arguments.
+        /// Like formatting with all-empty string values.
+        /// </summary>
+        /// <param name="destination">When this method returns successfully, contains the pattern text without
+        /// arguments as if they are empty strings.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <draft>ICU 60.1</draft>
+        public bool TryGetTextWithNoArguments(Span<char> destination, out int charsLength)
+        {
+            return SimpleFormatterImpl.TryGetTextWithNoArguments(compiledPattern.AsSpan(), destination, out charsLength);
         }
     }
 }

@@ -727,8 +727,8 @@ namespace ICU4N.Dev.Test.Lang
             String DIR =
                 "L   R   EN  ES  ET  AN  CS  B   S   WS  ON  LRE LRO AL  RLE RLO PDF NSM BN  FSI LRI RLI PDI ";
 
-            Normalizer2 nfc = Normalizer2.GetNFCInstance();
-            Normalizer2 nfkc = Normalizer2.GetNFKCInstance();
+            Normalizer2 nfc = Normalizer2.NFCInstance;
+            Normalizer2 nfkc = Normalizer2.NFKCInstance;
 
             TextReader input = null;
             try
@@ -1105,48 +1105,53 @@ namespace ICU4N.Dev.Test.Lang
                     Errln("getMaxCharNameLength()=" + length + " is too short");
                 }
 
-                int[] c = {0x0061,                //LATIN SMALL LETTER A
-                       0x000284,              //LATIN SMALL LETTER DOTLESS J WITH STROKE AND HOOK
-                       0x003401,              //CJK UNIFIED IDEOGRAPH-3401
-                       0x007fed,              //CJK UNIFIED IDEOGRAPH-7FED
-                       0x00ac00,              //HANGUL SYLLABLE GA
-                       0x00d7a3,              //HANGUL SYLLABLE HIH
-                       0x00d800, 0x00dc00,    //LINEAR B SYLLABLE B008 A
-                       0xff08,                //FULLWIDTH LEFT PARENTHESIS
-                       0x00ffe5,              //FULLWIDTH YEN SIGN
-                       0x00ffff,              //null
-                       0x0023456              //CJK UNIFIED IDEOGRAPH-23456
-                       };
+                int[] c = {
+                    0x0061,                //LATIN SMALL LETTER A
+                    0x000284,              //LATIN SMALL LETTER DOTLESS J WITH STROKE AND HOOK
+                    0x003401,              //CJK UNIFIED IDEOGRAPH-3401
+                    0x007fed,              //CJK UNIFIED IDEOGRAPH-7FED
+                    0x00ac00,              //HANGUL SYLLABLE GA
+                    0x00d7a3,              //HANGUL SYLLABLE HIH
+                    0x00d800, 0x00dc00,    //LINEAR B SYLLABLE B008 A
+                    0xff08,                //FULLWIDTH LEFT PARENTHESIS
+                    0x00ffe5,              //FULLWIDTH YEN SIGN
+                    0x00ffff,              //null
+                    0x0023456              //CJK UNIFIED IDEOGRAPH-23456
+                };
                 String[] name = {
-                             "LATIN SMALL LETTER A",
-                             "LATIN SMALL LETTER DOTLESS J WITH STROKE AND HOOK",
-                             "CJK UNIFIED IDEOGRAPH-3401",
-                             "CJK UNIFIED IDEOGRAPH-7FED",
-                             "HANGUL SYLLABLE GA",
-                             "HANGUL SYLLABLE HIH",
-                             "",
-                             "",
-                             "FULLWIDTH LEFT PARENTHESIS",
-                             "FULLWIDTH YEN SIGN",
-                             "",
-                             "CJK UNIFIED IDEOGRAPH-23456"
-                             };
-                String[] oldname = {"", "", "",
-                            "",
-                            "", "", "", "", "", "",
-                            "", ""};
-                String[] extendedname = {"LATIN SMALL LETTER A",
-                                 "LATIN SMALL LETTER DOTLESS J WITH STROKE AND HOOK",
-                                 "CJK UNIFIED IDEOGRAPH-3401",
-                                 "CJK UNIFIED IDEOGRAPH-7FED",
-                                 "HANGUL SYLLABLE GA",
-                                 "HANGUL SYLLABLE HIH",
-                                 "<lead surrogate-D800>",
-                                 "<trail surrogate-DC00>",
-                                 "FULLWIDTH LEFT PARENTHESIS",
-                                 "FULLWIDTH YEN SIGN",
-                                 "<noncharacter-FFFF>",
-                                 "CJK UNIFIED IDEOGRAPH-23456"};
+                    "LATIN SMALL LETTER A",
+                    "LATIN SMALL LETTER DOTLESS J WITH STROKE AND HOOK",
+                    "CJK UNIFIED IDEOGRAPH-3401",
+                    "CJK UNIFIED IDEOGRAPH-7FED",
+                    "HANGUL SYLLABLE GA",
+                    "HANGUL SYLLABLE HIH",
+                    "",
+                    "",
+                    "FULLWIDTH LEFT PARENTHESIS",
+                    "FULLWIDTH YEN SIGN",
+                    "",
+                    "CJK UNIFIED IDEOGRAPH-23456"
+                };
+                String[] oldname = {
+                    "", "", "",
+                    "",
+                    "", "", "", "", "", "",
+                    "", ""
+                };
+                String[] extendedname = {
+                    "LATIN SMALL LETTER A",
+                    "LATIN SMALL LETTER DOTLESS J WITH STROKE AND HOOK",
+                    "CJK UNIFIED IDEOGRAPH-3401",
+                    "CJK UNIFIED IDEOGRAPH-7FED",
+                    "HANGUL SYLLABLE GA",
+                    "HANGUL SYLLABLE HIH",
+                    "<lead surrogate-D800>",
+                    "<trail surrogate-DC00>",
+                    "FULLWIDTH LEFT PARENTHESIS",
+                    "FULLWIDTH YEN SIGN",
+                    "<noncharacter-FFFF>",
+                    "CJK UNIFIED IDEOGRAPH-23456"
+                };
 
                 int size = c.Length;
                 String str;
@@ -1337,7 +1342,7 @@ namespace ICU4N.Dev.Test.Lang
                 }
                 else
                 {
-                    throw e;
+                    throw; // ICU4N: CA2200 Rethrow to preserve stack information
                 }
             }
 
@@ -2963,9 +2968,9 @@ namespace ICU4N.Dev.Test.Lang
              * In general, the set for the middle such character should be a subset
              * of the set for the first.
              */
-            Normalizer2 norm2 = Normalizer2.GetNFDInstance();
+            Normalizer2 norm2 = Normalizer2.NFDInstance;
             set1 = new UnicodeSet();
-            Norm2AllModes.GetNFCInstance().Impl.
+            Norm2AllModes.NFCInstance.Impl.
                 EnsureCanonIterData().GetCanonStartSet(0x49, set1);
             set2 = new UnicodeSet();
 
@@ -3677,9 +3682,9 @@ namespace ICU4N.Dev.Test.Lang
 
                 try
                 {
-                    UChar.CodePointCount(one_char_text, 0, limitCases[i]);
+                    UChar.CodePointCount(one_char_text.AsSpan(0, limitCases[i]));
                     Errln("UCharacter.codePointCount was suppose to return an exception " +
-                            "but got " + UChar.CodePointCount(one_char_text, 0, limitCases[i]) +
+                            "but got " + UChar.CodePointCount(one_char_text.AsSpan(0, limitCases[i])) +
                             ". The following passed parameters were Text: " + new string(one_char_text) + ", Start: " +
                             0 + ", Limit: " + limitCases[i] + ".");
                 }
@@ -3846,6 +3851,7 @@ namespace ICU4N.Dev.Test.Lang
          *      public static int codePointCount(char[] text, int start, int limit)
          */
         [Test]
+        // ICU4N TODO: API Need to test string overload
         public void TestCodePointCount()
         {
             // The following tests the first if statement to make it true:
@@ -3862,9 +3868,9 @@ namespace ICU4N.Dev.Test.Lang
             {
                 try
                 {
-                    UChar.CodePointCount(reg_text, invalid_startCases[i], 1);
+                    UChar.CodePointCount(reg_text.AsSpan(invalid_startCases[i], 1));
                     Errln("UCharacter.codePointCount was suppose to return an exception " +
-                            "but got " + UChar.CodePointCount(reg_text, invalid_startCases[i], 1) +
+                            "but got " + UChar.CodePointCount(reg_text.AsSpan(invalid_startCases[i], 1)) +
                             ". The following passed parameters were Text: " + new string(reg_text) + ", Start: " +
                             invalid_startCases[i] + ", Limit: " + 1 + ".");
                 }
@@ -3873,49 +3879,50 @@ namespace ICU4N.Dev.Test.Lang
                 }
             }
 
-            // When limit < start
-            for (int i = 0; i < limitCases.Length; i++)
-            {
-                try
-                {
-                    UChar.CodePointCount(reg_text, 100, limitCases[i]);
-                    Errln("UCharacter.codePointCount was suppose to return an exception " +
-                            "but got " + UChar.CodePointCount(reg_text, 100, limitCases[i]) +
-                            ". The following passed parameters were Text: " + new string(reg_text) + ", Start: " +
-                            100 + ", Limit: " + limitCases[i] + ".");
-                }
-                catch (Exception e)
-                {
-                }
-            }
+            // ICU4N TODO: API Need to test string overload using the below code
+            //// When limit < start
+            //for (int i = 0; i < limitCases.Length; i++)
+            //{
+            //    try
+            //    {
+            //        UChar.CodePointCount(reg_text, 100, limitCases[i]);
+            //        Errln("UCharacter.codePointCount was suppose to return an exception " +
+            //                "but got " + UChar.CodePointCount(reg_text, 100, limitCases[i]) +
+            //                ". The following passed parameters were Text: " + new string(reg_text) + ", Start: " +
+            //                100 + ", Limit: " + limitCases[i] + ".");
+            //    }
+            //    catch (Exception e)
+            //    {
+            //    }
+            //}
 
-            // When limit > text.Length
-            for (int i = 0; i < limitCases.Length; i++)
-            {
-                try
-                {
-                    UChar.CodePointCount(empty_text, 0, limitCases[i]);
-                    Errln("UCharacter.codePointCount was suppose to return an exception " +
-                            "but got " + UChar.CodePointCount(empty_text, 0, limitCases[i]) +
-                            ". The following passed parameters were Text: " + new string(empty_text) + ", Start: " +
-                            0 + ", Limit: " + limitCases[i] + ".");
-                }
-                catch (Exception e)
-                {
-                }
+            //// When limit > text.Length
+            //for (int i = 0; i < limitCases.Length; i++)
+            //{
+            //    try
+            //    {
+            //        UChar.CodePointCount(empty_text, 0, limitCases[i]);
+            //        Errln("UCharacter.codePointCount was suppose to return an exception " +
+            //                "but got " + UChar.CodePointCount(empty_text, 0, limitCases[i]) +
+            //                ". The following passed parameters were Text: " + new string(empty_text) + ", Start: " +
+            //                0 + ", Limit: " + limitCases[i] + ".");
+            //    }
+            //    catch (Exception e)
+            //    {
+            //    }
 
-                try
-                {
-                    UChar.CodePointCount(one_char_text, 0, limitCases[i]);
-                    Errln("UCharacter.codePointCount was suppose to return an exception " +
-                            "but got " + UChar.CodePointCount(one_char_text, 0, limitCases[i]) +
-                            ". The following passed parameters were Text: " + new string(one_char_text) + ", Start: " +
-                            0 + ", Limit: " + limitCases[i] + ".");
-                }
-                catch (Exception e)
-                {
-                }
-            }
+            //    try
+            //    {
+            //        UChar.CodePointCount(one_char_text, 0, limitCases[i]);
+            //        Errln("UCharacter.codePointCount was suppose to return an exception " +
+            //                "but got " + UChar.CodePointCount(one_char_text, 0, limitCases[i]) +
+            //                ". The following passed parameters were Text: " + new string(one_char_text) + ", Start: " +
+            //                0 + ", Limit: " + limitCases[i] + ".");
+            //    }
+            //    catch (Exception e)
+            //    {
+            //    }
+            //}
         }
 
         /*

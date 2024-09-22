@@ -1,4 +1,6 @@
-﻿namespace ICU4N.Text
+﻿using System;
+
+namespace ICU4N.Text
 {
     /// <summary>
     /// <see cref="IUnicodeMatcher"/> defines a protocol for objects that can
@@ -72,6 +74,24 @@
         string ToPattern(bool escapeUnprintable);
 
         /// <summary>
+        /// Returns a string representation of this matcher.  If the result of
+        /// calling this function is passed to the appropriate parser, it
+        /// will produce another matcher that is equal to this one.
+        /// </summary>
+        /// <param name="escapeUnprintable">if TRUE then convert unprintable
+        /// character to their hex escape representations, \\uxxxx or
+        /// \\Uxxxxxxxx.  Unprintable characters are those other than
+        /// U+000A, U+0020..U+007E.
+        /// </param>
+        /// <param name="destination">When this method returns successfully, contains the pattern string.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <returns><b>true</b> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <draft>ICU 60.1</draft>
+        bool TryToPattern(bool escapeUnprintable, Span<char> destination, out int charsLength);
+
+        /// <summary>
         /// Returns TRUE if this matcher will match a character c, where c
         /// &amp; 0xFF == v, at offset, in the forward direction (with limit &gt;
         /// offset).  This is used by <c>RuleBasedTransliterator</c> for
@@ -106,7 +126,7 @@
         /// at the start and/or end.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        internal const char Ether = '\uFFFF';
+        internal const char Ether = '\uFFFF'; // ICU4N TODO: API - should this be either rather than ether?
     }
 
     /// <summary>

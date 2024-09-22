@@ -7,7 +7,6 @@ using System.Text;
 
 namespace ICU4N.Globalization
 {
-#if FEATURE_SPAN
     /// <summary>
     /// A collection of rules used by a <see cref="INumberFormatRules"/> to format and
     /// parse numbers. It is the responsibility of a <see cref="NumberFormatRuleSet"/> to select an
@@ -79,6 +78,11 @@ namespace ICU4N.Globalization
         /// Limit of recursion. It's about a 64 bit number formatted in base 2.
         /// </summary>
         private const int RecursionLimit = 64;
+
+        /// <summary>
+        /// Size of the rule string stack buffer.
+        /// </summary>
+        private const int RuleStringStackBufferSize = 128;
 
         //-----------------------------------------------------------------------
         // construction
@@ -462,15 +466,29 @@ namespace ICU4N.Globalization
         /// constructed with, but it will produce the same results.</returns>
         public override string ToString()
         {
-            StringBuilder result = new StringBuilder();
+            var sb = new ValueStringBuilder(stackalloc char[RuleStringStackBufferSize]);
+            try
+            {
+                ToString(ref sb);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
 
+        internal void ToString(ref ValueStringBuilder destination)
+        {
             // the rule set name goes first...
-            result.Append(name).Append(":\n");
+            destination.Append(name);
+            destination.Append(":\n");
 
             // followed by the regular rules...
             foreach (NumberFormatRule rule in rules!)
             {
-                result.Append(rule.ToString()).Append('\n');
+                rule.ToString(ref destination);
+                destination.Append('\n'); // ICU4N TODO: Environment.NewLine...?
             }
 
             // followed by the special rules (if they exist)
@@ -487,18 +505,18 @@ namespace ICU4N.Globalization
                         {
                             if (fractionRule.BaseValue == rule.BaseValue)
                             {
-                                result.Append(fractionRule.ToString()).Append('\n');
+                                fractionRule.ToString(ref destination);
+                                destination.Append('\n');
                             }
                         }
                     }
                     else
                     {
-                        result.Append(rule.ToString()).Append('\n');
+                        rule.ToString(ref destination);
+                        destination.Append('\n');
                     }
                 }
             }
-
-            return result.ToString();
         }
 
         //-----------------------------------------------------------------------
@@ -526,5 +544,4 @@ namespace ICU4N.Globalization
         /// </summary>
         public bool IsParseable => isParseable;
     }
-#endif
 }

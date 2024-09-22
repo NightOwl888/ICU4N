@@ -10,7 +10,6 @@ using System.Text;
 
 namespace ICU4N.Globalization
 {
-#if FEATURE_SPAN
     /// <summary>
     /// A class representing a single rule in a <see cref="INumberFormatRules"/>. A rule
     /// inserts its text into the result string and then passes control to its
@@ -908,32 +907,50 @@ namespace ICU4N.Globalization
         /// <returns>A textual description of the rule.</returns>
         public override string ToString()
         {
-            StringBuilder result = new StringBuilder();
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                ToString(ref sb);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
 
+        internal void ToString(ref ValueStringBuilder destination)
+        {
             // start with the rule descriptor.  Special-case the special rules
             if (baseValue == NegativeNumberRule)
             {
-                result.Append("-x: ");
+                destination.Append("-x: ");
             }
             else if (baseValue == ImproperFractionRule)
             {
-                result.Append('x').Append(decimalPoint.Length == 0 ? "." : decimalPoint).Append("x: ");
+                destination.Append('x');
+                destination.Append(decimalPoint.Length == 0 ? "." : decimalPoint);
+                destination.Append("x: ");
             }
             else if (baseValue == ProperFractionRule)
             {
-                result.Append('0').Append(decimalPoint.Length == 0 ? "." : decimalPoint).Append("x: ");
+                destination.Append('0');
+                destination.Append(decimalPoint.Length == 0 ? "." : decimalPoint);
+                destination.Append("x: ");
             }
             else if (baseValue == MasterRule)
             {
-                result.Append('x').Append(decimalPoint.Length == 0 ? "." : decimalPoint).Append("0: ");
+                destination.Append('x');
+                destination.Append(decimalPoint.Length == 0 ? "." : decimalPoint);
+                destination.Append("0: ");
             }
             else if (baseValue == InfinityRule)
             {
-                result.Append("Inf: ");
+                destination.Append("Inf: ");
             }
             else if (baseValue == NaNRule)
             {
-                result.Append("NaN: ");
+                destination.Append("NaN: ");
             }
             else
             {
@@ -943,15 +960,16 @@ namespace ICU4N.Globalization
                 // if isn't the same as the actual exponent, write an appropriate
                 // number of > signs.  Finally, terminate the whole thing with
                 // a colon.
-                result.Append(baseValue.ToString(CultureInfo.InvariantCulture));
+                destination.Append(baseValue, provider: CultureInfo.InvariantCulture);
                 if (radix != 10)
                 {
-                    result.Append('/').Append(radix);
+                    destination.Append('/');
+                    destination.Append(radix, provider: CultureInfo.InvariantCulture);
                 }
                 int numCarets = GetExpectedExponent() - exponent;
                 for (int i = 0; i < numCarets; i++)
-                    result.Append('>');
-                result.Append(": ");
+                    destination.Append('>');
+                destination.Append(": ");
             }
 
             // if the rule text begins with a space, write an apostrophe
@@ -959,26 +977,43 @@ namespace ICU4N.Globalization
             // apostrophe is used to make the whitespace significant)
             if (ruleText!.StartsWith(" ", StringComparison.Ordinal) && (sub1 is null || sub1.Pos != 0))
             {
-                result.Append('\'');
+                destination.Append('\'');
             }
 
             // now, write the rule's rule text, inserting appropriate
             // substitution tokens in the appropriate places
-            StringBuilder ruleTextCopy = new StringBuilder(ruleText);
-            if (sub2 != null)
+            var sub1String = new ValueStringBuilder(stackalloc char[NumberFormatSubstitution.CharStackBufferSize]);
+            var sub2String = new ValueStringBuilder(stackalloc char[NumberFormatSubstitution.CharStackBufferSize]);
+            try
             {
-                ruleTextCopy.Insert(sub2.Pos, sub2.ToString());
+                sub1?.ToString(ref sub1String);
+                sub2?.ToString(ref sub2String);
+
+                int newRuleTextLength = ruleText.Length + sub1String.Length + sub2String.Length;
+                using var ruleTextCopy = newRuleTextLength <= CharStackBufferSize
+                    ? new ValueStringBuilder(stackalloc char[newRuleTextLength])
+                    : new ValueStringBuilder(newRuleTextLength);
+
+                ruleTextCopy.Append(ruleText.AsSpan());
+                if (sub2 != null)
+                {
+                    ruleTextCopy.Insert(sub2.Pos, sub2String.AsSpan());
+                }
+                if (sub1 != null)
+                {
+                    ruleTextCopy.Insert(sub1.Pos, sub1String.AsSpan());
+                }
+                destination.Append(ruleTextCopy.AsSpan());
             }
-            if (sub1 != null)
+            finally
             {
-                ruleTextCopy.Insert(sub1.Pos, sub1.ToString());
+                sub1String.Dispose();
+                sub2String.Dispose();
             }
-            result.Append(ruleTextCopy);
 
             // and finally, top the whole thing off with a semicolon and
             // return the result
-            result.Append(';');
-            return result.ToString();
+            destination.Append(';');
         }
 
         //-----------------------------------------------------------------------
@@ -1001,5 +1036,4 @@ namespace ICU4N.Globalization
         /// </summary>
         public long Divisor => Power(radix, exponent);
     }
-#endif
 }

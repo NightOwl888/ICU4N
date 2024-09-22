@@ -1,11 +1,10 @@
-﻿using ICU4N.Support.Text;
+﻿using ICU4N.Text;
 using J2N.Numerics;
 using System;
 using System.Diagnostics;
 
 namespace ICU4N.Globalization
 {
-#if FEATURE_SPAN
     internal sealed partial class NumberFormatRuleSet
     {
         /// <summary>
@@ -385,5 +384,4 @@ namespace ICU4N.Globalization
             return x / gcd * y;
         }
     }
-#endif
 }

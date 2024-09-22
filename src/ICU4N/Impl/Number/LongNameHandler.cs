@@ -12,6 +12,8 @@ namespace ICU4N.Numerics
 {
     internal class LongNameHandler : IMicroPropsGenerator
     {
+        internal const int CharStackBufferSize = 32;
+
         //////////////////////////
         /// BEGIN DATA LOADING ///
         //////////////////////////
@@ -31,12 +33,12 @@ namespace ICU4N.Numerics
                 IResourceTable pluralsTable = value.GetTable();
                 for (int i = 0; pluralsTable.GetKeyAndValue(i, key, value); ++i)
                 {
-                    if (key.ContentEquals("dnam") || key.ContentEquals("per"))
+                    if (key.SequenceEqual("dnam") || key.SequenceEqual("per"))
                     {
                         continue;
                     }
                     //StandardPlural plural = StandardPlural.fromString(key);
-                    StandardPluralUtil.TryFromString(key, out StandardPlural plural); // ICU4N TODO: Throw here?
+                    StandardPluralUtil.TryGetValue(key, out StandardPlural plural); // ICU4N TODO: Throw here?
                     if (output.ContainsKey(plural))
                     {
                         continue;
@@ -79,7 +81,7 @@ namespace ICU4N.Numerics
             {
                 String pluralKeyword = e.Key;
                 //StandardPlural plural = StandardPlural.fromString(e.Key);
-                StandardPluralUtil.TryFromString(e.Key, out StandardPlural plural);
+                StandardPluralUtil.TryGetValue(e.Key, out StandardPlural plural); // ICU4N TODO: Throw here?
                 String longName = currency.GetName(locale, Currency.PluralLongName, pluralKeyword, out bool _);
                 String simpleFormat = e.Value;
                 // Example pattern from data: "{0} {1}"
@@ -134,27 +136,34 @@ namespace ICU4N.Numerics
         private static void SimpleFormatsToModifiers(IDictionary<StandardPlural, string> simpleFormats, NumberFormatField field,
                 IDictionary<StandardPlural, SimpleModifier> output)
         {
-            StringBuilder sb = new StringBuilder();
-            foreach (StandardPlural plural in StandardPluralUtil.Values)
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                //string simpleFormat = simpleFormats.get(plural);
-                //if (!simpleFormats.TryGetValue(plural, out string simpleFormat) || simpleFormat == null)
-                //{
-                //    simpleFormat = simpleFormats.get(StandardPlural.OTHER);
-                //}
-                //if (simpleFormat == null)
-                //{
-                //    // There should always be data in the "other" plural variant.
-                //    throw new ICUException("Could not find data in 'other' plural variant with field " + field);
-                //}
-                if ((!simpleFormats.TryGetValue(plural, out string simpleFormat) || simpleFormat == null) && !simpleFormats.TryGetValue(StandardPlural.Other, out simpleFormat))
+                foreach (StandardPlural plural in StandardPluralUtil.Values)
                 {
-                    // There should always be data in the "other" plural variant.
-                    throw new ICUException("Could not find data in 'other' plural variant with field " + field);
+                    //string simpleFormat = simpleFormats.get(plural);
+                    //if (!simpleFormats.TryGetValue(plural, out string simpleFormat) || simpleFormat == null)
+                    //{
+                    //    simpleFormat = simpleFormats.get(StandardPlural.OTHER);
+                    //}
+                    //if (simpleFormat == null)
+                    //{
+                    //    // There should always be data in the "other" plural variant.
+                    //    throw new ICUException("Could not find data in 'other' plural variant with field " + field);
+                    //}
+                    if ((!simpleFormats.TryGetValue(plural, out string simpleFormat) || simpleFormat == null) && !simpleFormats.TryGetValue(StandardPlural.Other, out simpleFormat))
+                    {
+                        // There should always be data in the "other" plural variant.
+                        throw new ICUException("Could not find data in 'other' plural variant with field " + field);
+                    }
+                    SimpleFormatterImpl.CompileToStringMinMaxArguments(simpleFormat.AsSpan(), ref sb, 1, 1);
+                    string compiled = sb.AsSpan().ToString();
+                    output[plural] = new SimpleModifier(compiled, null, false);
                 }
-
-                string compiled = SimpleFormatterImpl.CompileToStringMinMaxArguments(simpleFormat, sb, 1, 1);
-                output[plural] = new SimpleModifier(compiled, null, false);
+            }
+            finally
+            {
+                sb.Dispose();
             }
         }
 

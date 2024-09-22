@@ -1,4 +1,5 @@
-﻿using J2N.Text;
+﻿using ICU4N.Text;
+using J2N.Text;
 using System;
 using System.Text;
 
@@ -6,9 +7,8 @@ namespace ICU4N.Impl.Locale
 {
     public sealed class BaseLocale
     {
-        private static readonly bool JDKIMPL = false;
-
-        public const string Separator = "_";
+        private const int CharStackBufferSize = 32;
+        public const char Separator = '_';
 
         private static readonly Cache CACHE = new Cache();
         public static readonly BaseLocale Root = BaseLocale.GetInstance("", "", "", "");
@@ -36,36 +36,32 @@ namespace ICU4N.Impl.Locale
             }
             if (variant != null)
             {
-                if (JDKIMPL)
-                {
-                    // preserve upper/lower cases
-                    _variant = variant.Intern();
-                }
-                else
-                {
-                    _variant = AsciiUtil.ToUpper(variant).Intern();
-                }
+#if JDKIMPL
+                // preserve upper/lower cases
+                _variant = variant.Intern();
+#else
+                _variant = AsciiUtil.ToUpper(variant).Intern();
+#endif
             }
         }
 
         public static BaseLocale GetInstance(string language, string script, string region, string variant)
         {
-            if (JDKIMPL)
+#if JDKIMPL
+            // JDK uses deprecated ISO639.1 language codes for he, yi and id
+            if (AsciiUtil.CaseIgnoreMatch(language, "he"))
             {
-                // JDK uses deprecated ISO639.1 language codes for he, yi and id
-                if (AsciiUtil.CaseIgnoreMatch(language, "he"))
-                {
-                    language = "iw";
-                }
-                else if (AsciiUtil.CaseIgnoreMatch(language, "yi"))
-                {
-                    language = "ji";
-                }
-                else if (AsciiUtil.CaseIgnoreMatch(language, "id"))
-                {
-                    language = "in";
-                }
+                language = "iw";
             }
+            else if (AsciiUtil.CaseIgnoreMatch(language, "yi"))
+            {
+                language = "ji";
+            }
+            else if (AsciiUtil.CaseIgnoreMatch(language, "id"))
+            {
+                language = "in";
+            }
+#endif
             Key key = new Key(language, script, region, variant);
             BaseLocale baseLocale = CACHE.Get(key);
             return baseLocale;
@@ -99,7 +95,7 @@ namespace ICU4N.Impl.Locale
 
         public override string ToString()
         {
-            StringBuilder buf = new StringBuilder();
+            using ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
             if (_language.Length > 0)
             {
                 buf.Append("language=");
@@ -202,21 +198,21 @@ namespace ICU4N.Impl.Locale
 
             public override bool Equals(object obj)
             {
-                if (JDKIMPL)
-                {
-                    return (this == obj) ||
-                            (obj is Key key1)
-                            && AsciiUtil.CaseIgnoreMatch(key1._lang, this._lang)
-                            && AsciiUtil.CaseIgnoreMatch(key1._scrt, this._scrt)
-                            && AsciiUtil.CaseIgnoreMatch(key1._regn, this._regn)
-                            && key1._vart.Equals(_vart); // variant is case sensitive in JDK!
-                }
+#if JDKIMPL
+                return (this == obj) ||
+                        (obj is Key key1)
+                        && AsciiUtil.CaseIgnoreMatch(key1._lang, this._lang)
+                        && AsciiUtil.CaseIgnoreMatch(key1._scrt, this._scrt)
+                        && AsciiUtil.CaseIgnoreMatch(key1._regn, this._regn)
+                        && key1._vart.Equals(_vart); // variant is case sensitive in JDK!
+#else
                 return (this == obj) ||
                         (obj is Key key)
                         && AsciiUtil.CaseIgnoreMatch(key._lang, this._lang)
                         && AsciiUtil.CaseIgnoreMatch(key._scrt, this._scrt)
                         && AsciiUtil.CaseIgnoreMatch(key._regn, this._regn)
                         && AsciiUtil.CaseIgnoreMatch(key._vart, this._vart);
+#endif
             }
 
             public virtual int CompareTo(Key other)
@@ -230,14 +226,11 @@ namespace ICU4N.Impl.Locale
                         res = AsciiUtil.CaseIgnoreCompare(this._regn, other._regn);
                         if (res == 0)
                         {
-                            if (JDKIMPL)
-                            {
-                                res = this._vart.CompareToOrdinal(other._vart);
-                            }
-                            else
-                            {
-                                res = AsciiUtil.CaseIgnoreCompare(this._vart, other._vart);
-                            }
+#if JDKIMPL
+                            res = this._vart.CompareToOrdinal(other._vart);
+#else
+                            res = AsciiUtil.CaseIgnoreCompare(this._vart, other._vart);
+#endif
                         }
                     }
                 }
@@ -264,14 +257,11 @@ namespace ICU4N.Impl.Locale
                     }
                     for (int i = 0; i < _vart.Length; i++)
                     {
-                        if (JDKIMPL)
-                        {
-                            h = 31 * h + _vart[i];
-                        }
-                        else
-                        {
-                            h = 31 * h + AsciiUtil.ToLower(_vart[i]);
-                        }
+#if JDKIMPL
+                        h = 31 * h + _vart[i];
+#else
+                        h = 31 * h + AsciiUtil.ToLower(_vart[i]);
+#endif
                     }
                     _hash = h;
                 }
@@ -283,16 +273,12 @@ namespace ICU4N.Impl.Locale
                 string lang = AsciiUtil.ToLower(key._lang).Intern();
                 string scrt = AsciiUtil.ToTitle(key._scrt).Intern();
                 string regn = AsciiUtil.ToUpper(key._regn).Intern();
-                string vart;
-                if (JDKIMPL)
-                {
-                    // preserve upper/lower cases
-                    vart = key._vart.Intern();
-                }
-                else
-                {
-                    vart = AsciiUtil.ToUpper(key._vart).Intern();
-                }
+#if JDKIMPL
+                // preserve upper/lower cases
+                string vart = key._vart.Intern();
+#else
+                string vart = AsciiUtil.ToUpper(key._vart).Intern();
+#endif
                 return new Key(lang, scrt, regn, vart);
             }
         }

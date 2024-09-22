@@ -13,9 +13,9 @@
     // Load common settings from the XML file using relative path
     string settingsPath = System.IO.Path.GetFullPath(System.IO.Path.Combine(Host.ResolvePath(string.Empty), @"../../../src/CodeGenerationSettings.xml"));
     XDocument document = XDocument.Load(settingsPath);
-    string[] charSequences = document.XPathSelectElements(@"//codeGen/charSequences/charSequence").Select(x => x.Value).ToArray();
+    XElement[] charSequenceElements = document.XPathSelectElements(@"//codeGen/charSequences/charSequence").ToArray();
     string charSequenceAccessibility = document.XPathSelectElement(@"//codeGen/charSequenceAccessibility").Value;
-    string[] appendables = document.XPathSelectElements(@"//codeGen/appendables/appendable").Select(x => x.Value).ToArray();
+    string[] appendables = document.XPathSelectElements(@"//codeGen/appendables/appendable").Where(x => x.Value != "ValueStringBuilder").Select(x => x.Value).ToArray();
     string appendableAccessibility = document.XPathSelectElement(@"//codeGen/appendableAccessibility").Value;
 
     XElement[] numericTypeElements = document.XPathSelectElements(@"//codeGen/numericTypes/numericType").ToArray();
@@ -53,7 +53,6 @@ using System.Numerics;
 
 namespace ICU4N
 {
-#if FEATURE_SPAN
     public static partial class FormatNumberRuleBased
     {
 <# for (int i = 0; i < numericTypes.Length; i++) {
@@ -198,7 +197,6 @@ namespace ICU4N
         }
 <#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
-#if FEATURE_SPAN
 
 <# for (int i = 0; i < numericTypes.Length; i++) {
     string name = numericTypes[i];
@@ -346,8 +344,6 @@ namespace ICU4N
             return IcuNumber.TryFormat<#=methodType#>RuleBased(<#=value#>, destination, out charsWritten, presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
         }<#=!string.IsNullOrEmpty(feature) ? Environment.NewLine + "#endif ": ""#>
 <# } #>
-#endif
 
     }
-#endif
 }

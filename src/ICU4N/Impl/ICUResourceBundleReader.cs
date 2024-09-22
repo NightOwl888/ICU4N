@@ -18,6 +18,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using ICU4N.Text;
 
 namespace ICU4N.Impl
 {
@@ -28,6 +29,8 @@ namespace ICU4N.Impl
     /// </summary>
     public sealed class ICUResourceBundleReader
     {
+        private const int CharStackBufferSize = 32;
+
         /// <summary>
         /// File format version that this class understands.
         /// "ResB"
@@ -503,14 +506,21 @@ namespace ICU4N.Impl
 
         private static string MakeKeyStringFromBytes(byte[] keyBytes, int keyOffset)
         {
-            StringBuilder sb = new StringBuilder();
-            byte b;
-            while ((b = keyBytes[keyOffset]) != 0)
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                ++keyOffset;
-                sb.Append((char)b);
+                byte b;
+                while ((b = keyBytes[keyOffset]) != 0)
+                {
+                    ++keyOffset;
+                    sb.Append((char)b);
+                }
+                return sb.ToString();
             }
-            return sb.ToString();
+            finally
+            {
+                sb.Dispose();
+            }
         }
         private string GetKey16String(int keyOffset)
         {
@@ -538,25 +548,25 @@ namespace ICU4N.Impl
         {
             if (keyOffset < localKeyLimit)
             {
-                key.SetBytes(keyBytes, keyOffset);
+                key.SetValue(keyBytes, keyOffset);
             }
             else
             {
-                key.SetBytes(poolBundleReader.keyBytes, keyOffset - localKeyLimit);
+                key.SetValue(poolBundleReader.keyBytes, keyOffset - localKeyLimit);
             }
         }
         private void SetKeyFromKey32(int keyOffset, ResourceKey key)
         {
             if (keyOffset >= 0)
             {
-                key.SetBytes(keyBytes, keyOffset);
+                key.SetValue(keyBytes, keyOffset);
             }
             else
             {
-                key.SetBytes(poolBundleReader.keyBytes, keyOffset & 0x7fffffff);
+                key.SetValue(poolBundleReader.keyBytes, keyOffset & 0x7fffffff);
             }
         }
-        private int CompareKeys(string key, char keyOffset)  // ICU4N specific: Changed key from ICharSequence to string
+        private int CompareKeys(ReadOnlySpan<char> key, char keyOffset)
         {
             if (keyOffset < localKeyLimit)
             {
@@ -567,7 +577,7 @@ namespace ICU4N.Impl
                 return ICUBinary.CompareKeys(key, poolBundleReader.keyBytes, keyOffset - localKeyLimit);
             }
         }
-        private int CompareKeys32(string key, int keyOffset) // ICU4N specific: Changed key from ICharSequence to string
+        private int CompareKeys32(ReadOnlySpan<char> key, int keyOffset)
         {
             if (keyOffset >= 0)
             {
@@ -603,14 +613,21 @@ namespace ICU4N.Impl
                 {
                     return emptyString;  // Should not occur, but is not forbidden.
                 }
-                StringBuilder sb = new StringBuilder();
-                sb.Append((char)first);
-                char c;
-                while ((c = b16BitUnits[++offset]) != 0)
+                ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                try
                 {
-                    sb.Append(c);
+                    sb.Append((char)first);
+                    char c;
+                    while ((c = b16BitUnits[++offset]) != 0)
+                    {
+                        sb.Append(c);
+                    }
+                    s = sb.ToString();
                 }
-                s = sb.ToString();
+                finally
+                {
+                    sb.Dispose();
+                }
             }
             else
             {
@@ -641,12 +658,19 @@ namespace ICU4N.Impl
         {
             if (length <= 16)
             {
-                StringBuilder sb = new StringBuilder(length);
-                for (int i = 0; i < length; offset += 2, ++i)
+                ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[length]);
+                try
                 {
-                    sb.Append(bytes.GetChar(offset));
+                    for (int i = 0; i < length; offset += 2, ++i)
+                    {
+                        sb.Append(bytes.GetChar(offset));
+                    }
+                    return sb.ToString();
                 }
-                return sb.ToString();
+                finally
+                {
+                    sb.Dispose();
+                }
             }
             else
             {
@@ -1227,7 +1251,7 @@ namespace ICU4N.Impl
                             reader.GetKey32String(key32Offsets[index]);
             }
             private const int URESDATA_ITEM_NOT_FOUND = -1;
-            internal int FindTableItem(ICUResourceBundleReader reader, string key) // ICU4N specific: Changed key from ICharSequence to string
+            internal int FindTableItem(ICUResourceBundleReader reader, ReadOnlySpan<char> key)
             {
                 int mid, start, limit;
                 int result;
@@ -1265,7 +1289,7 @@ namespace ICU4N.Impl
 
             internal override int GetResource(ICUResourceBundleReader reader, string resKey)
             {
-                return GetContainerResource(reader, FindTableItem(reader, resKey));
+                return GetContainerResource(reader, FindTableItem(reader, resKey.AsSpan()));
             }
 
             public virtual bool GetKeyAndValue(int i, ResourceKey key, ResourceValue value)

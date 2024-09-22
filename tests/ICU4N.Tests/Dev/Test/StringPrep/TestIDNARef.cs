@@ -12,7 +12,7 @@ namespace ICU4N.Dev.Test.StringPrep
     /// <author>ram</author>
     public class TestIDNARef : TestFmwk
     {
-        private StringPrepParseException unassignedException = new StringPrepParseException("", StringPrepErrorType.UnassignedError);
+        private StringPrepFormatException unassignedException = new StringPrepFormatException("", StringPrepErrorType.UnassignedError);
 
         [Test]
         public void TestToUnicode()
@@ -148,7 +148,7 @@ namespace ICU4N.Dev.Test.StringPrep
                     Errln("convertToUnicode did not get the expected exception. The operation succeeded!");
                 }
             }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 if (expectedException == null || !ex.Equals(expectedException))
                 {
@@ -169,7 +169,7 @@ namespace ICU4N.Dev.Test.StringPrep
                     Errln("convertToUnicode did not get the expected exception. The operation succeeded!");
                 }
             }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 if (expectedException == null || !ex.Equals(expectedException))
                 {
@@ -190,7 +190,7 @@ namespace ICU4N.Dev.Test.StringPrep
                     Errln("Did not get the expected exception. The operation succeeded!");
                 }
             }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 if (expectedException == null || !ex.Equals(expectedException))
                 {
@@ -224,7 +224,7 @@ namespace ICU4N.Dev.Test.StringPrep
                     Errln("convertToUnicode did not get the expected exception. The operation succeeded!");
                 }
             }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 if (expectedException == null || !expectedException.Equals(ex))
                 {
@@ -244,7 +244,7 @@ namespace ICU4N.Dev.Test.StringPrep
                     Errln("convertToUnicode did not get the expected exception. The operation succeeded!");
                 }
             }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 if (expectedException == null || !expectedException.Equals(ex))
                 {
@@ -265,7 +265,7 @@ namespace ICU4N.Dev.Test.StringPrep
                     Errln("Did not get the expected exception. The operation succeeded!");
                 }
             }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 if (expectedException == null || !expectedException.Equals(ex))
                 {
@@ -298,7 +298,7 @@ namespace ICU4N.Dev.Test.StringPrep
                     Errln("convertToASCII did not get the expected exception. The operation succeeded!");
                 }
             }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 if (expectedException == null || !expectedException.Equals(ex))
                 {
@@ -319,7 +319,7 @@ namespace ICU4N.Dev.Test.StringPrep
                     Errln("convertToASCII did not get the expected exception. The operation succeeded!");
                 }
             }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 if (expectedException == null || !expectedException.Equals(ex))
                 {
@@ -340,7 +340,7 @@ namespace ICU4N.Dev.Test.StringPrep
                     Errln("convertToASCII did not get the expected exception. The operation succeeded!");
                 }
             }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 if (expectedException == null || !expectedException.Equals(ex))
                 {
@@ -373,7 +373,7 @@ namespace ICU4N.Dev.Test.StringPrep
                     Errln("convertToIDNAReferenceASCII did not get the expected exception. The operation succeeded!");
                 }
             }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 if (expectedException == null || !ex.Equals(expectedException))
                 {
@@ -393,7 +393,7 @@ namespace ICU4N.Dev.Test.StringPrep
                     Errln("convertToIDNAReferenceSCII did not get the expected exception. The operation succeeded!");
                 }
             }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 if (expectedException == null || !ex.Equals(expectedException))
                 {
@@ -415,7 +415,7 @@ namespace ICU4N.Dev.Test.StringPrep
                     Errln("convertIDNToASCII did not get the expected exception. The operation succeeded!");
                 }
             }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 if (expectedException == null || !ex.Equals(expectedException))
                 {
@@ -479,7 +479,7 @@ namespace ICU4N.Dev.Test.StringPrep
                             Errln("Did not get the expected exception. The operation succeeded!");
                         }
                     }
-                    catch (StringPrepParseException ex)
+                    catch (StringPrepFormatException ex)
                     {
                         if (testCase.expected == null || !ex.Equals(testCase.expected))
                         {
@@ -501,7 +501,7 @@ namespace ICU4N.Dev.Test.StringPrep
                             Errln("Did not get the expected exception. The operation succeeded!");
                         }
                     }
-                    catch (StringPrepParseException ex)
+                    catch (StringPrepFormatException ex)
                     {
                         if (testCase.expected == null || !ex.Equals(testCase.expected))
                         {

@@ -67,10 +67,10 @@ namespace ICU4N.Dev.Test.StringPrep
 
         private static byte[] Prepare(byte[] src, StringPrep strprep)
         {
+            // ICU4N: Factored out UCharacterIterator
             String s = Encoding.UTF8.GetString(src);
-            UCharacterIterator iter = UCharacterIterator.GetInstance(s);
-            StringBuffer @out = strprep.Prepare(iter, StringPrepOptions.Default);
-            return Encoding.UTF8.GetBytes(@out.ToString());
+            string @out = strprep.Prepare(s, StringPrepOptions.Default);
+            return Encoding.UTF8.GetBytes(@out);
         }
 
         public static byte[] CSPrepare(byte[] src, bool isCaseSensitive)
@@ -105,7 +105,7 @@ namespace ICU4N.Dev.Test.StringPrep
 
 
         /* binary search the sorted array */
-        private static int FindStringIndex(String[] sortedArr, String target)
+        private static int FindStringIndex(String[] sortedArr, ReadOnlySpan<char> target)
         {
 
             int left, middle, right, rc;
@@ -133,37 +133,43 @@ namespace ICU4N.Dev.Test.StringPrep
             }
             return -1;
         }
+
         private const char AT_SIGN = '@';
 
         public static byte[] MixedPrepare(byte[] src)
         {
-            String s = Encoding.UTF8.GetString(src); ;
+            string s = Encoding.UTF8.GetString(src);
             int index = s.IndexOf(AT_SIGN);
-            StringBuffer @out = new StringBuffer();
-
-            if (index > -1)
+            ValueStringBuilder @out = new ValueStringBuilder(stackalloc char[32]);
+            try
             {
-                /* special prefixes must not be followed by suffixes! */
-                String prefixString = s.Substring(0, index); // ICU4N: Checked 2nd parameter
-                int i = FindStringIndex(special_prefixes, prefixString);
-                String suffixString = s.Substring(index + 1, s.Length - (index + 1)); // ICU4N: Corrected 2nd parameter
-                if (i > -1 && !suffixString.Equals(""))
+                // ICU4N: Factored out UCharacterIterator
+                if (index > -1)
                 {
-                    throw new StringPrepParseException("Suffix following a special index", StringPrepErrorType.InvalidCharFound);
-                }
-                UCharacterIterator prefix = UCharacterIterator.GetInstance(prefixString);
-                UCharacterIterator suffix = UCharacterIterator.GetInstance(suffixString);
-                @out.Append(prep.nfsmxp.Prepare(prefix, StringPrepOptions.Default));
-                @out.Append(AT_SIGN); // add the delimiter
-                @out.Append(prep.nfsmxs.Prepare(suffix, StringPrepOptions.Default));
-            }
-            else
-            {
-                UCharacterIterator iter = UCharacterIterator.GetInstance(s);
-                @out.Append(prep.nfsmxp.Prepare(iter, StringPrepOptions.Default));
+                    /* special prefixes must not be followed by suffixes! */
+                    ReadOnlySpan<char> prefix = s.AsSpan(0, index); // ICU4N: Checked 2nd parameter
+                    int i = FindStringIndex(special_prefixes, prefix);
+                    ReadOnlySpan<char> suffix = s.AsSpan(index + 1, s.Length - (index + 1)); // ICU4N: Corrected 2nd parameter
 
+                    if (i > -1 && !suffix.IsEmpty)
+                    {
+                        throw new StringPrepFormatException("Suffix following a special index", StringPrepErrorType.InvalidCharFound);
+                    }
+                    @out.Append(prep.nfsmxp.Prepare(prefix, StringPrepOptions.Default));
+                    @out.Append(AT_SIGN); // add the delimiter
+                    @out.Append(prep.nfsmxs.Prepare(suffix, StringPrepOptions.Default));
+                }
+                else
+                {
+                    @out.Append(prep.nfsmxp.Prepare(s, StringPrepOptions.Default));
+
+                }
+                return Encoding.UTF8.GetBytes(@out.ToString());
             }
-            return Encoding.UTF8.GetBytes(@out.ToString());
+            finally
+            {
+                @out.Dispose();
+            }
         }
     }
 }

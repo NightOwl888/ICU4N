@@ -10,7 +10,7 @@ namespace ICU4N.Dev.Test.StringPrep
     /// <author>ram</author>
     public class TestIDNA : TestFmwk
     {
-        private StringPrepParseException unassignedException = new StringPrepParseException("", StringPrepErrorType.UnassignedError);
+        private StringPrepFormatException unassignedException = new StringPrepFormatException("", StringPrepErrorType.UnassignedError);
 
         [Test]
         public void TestToUnicode()
@@ -76,13 +76,14 @@ namespace ICU4N.Dev.Test.StringPrep
 
         private void DoTestToUnicode(String src, String expected, IDNA2003Options options, Object expectedException)
         {
-            StringBuffer inBuf = new StringBuffer(src);
-            UCharacterIterator inIter = UCharacterIterator.GetInstance(src);
+            // ICU4N: Factored out UCharacterIterator and StringBuffer overloads. In .NET, it is better
+            // to return string than StringBuilder, since there is no way to get the string
+            // out of a StringBuilder without an allocation. Instead, we added an overload
+            // that outputs to a Span<char>.
             try
             {
-
-                StringBuffer @out = IDNA.ConvertToUnicode(src, options);
-                if (expected != null && @out != null && !@out.ToString().Equals(expected))
+                string @out = IDNA.ConvertToUnicode(src, options);
+                if (expected != null && @out != null && !@out.Equals(expected))
                 {
                     Errln("convertToUnicode did not return expected result with options : " + options +
                           " Expected: " + Prettify(expected) + " Got: " + Prettify(@out));
@@ -92,28 +93,7 @@ namespace ICU4N.Dev.Test.StringPrep
                     Errln("convertToUnicode did not get the expected exception. The operation succeeded!");
                 }
             }
-            catch (StringPrepParseException ex)
-            {
-                if (expectedException == null || !ex.Equals(expectedException))
-                {
-                    Errln("convertToUnicode did not get the expected exception for source: " + Prettify(src) + " Got:  " + ex.ToString());
-                }
-            }
-            try
-            {
-
-                StringBuffer @out = IDNA.ConvertToUnicode(inBuf, options);
-                if (expected != null && @out != null && !@out.ToString().Equals(expected))
-                {
-                    Errln("convertToUnicode did not return expected result with options : " + options +
-                          " Expected: " + Prettify(expected) + " Got: " + @out);
-                }
-                if (expectedException != null && !unassignedException.Equals(expectedException))
-                {
-                    Errln("convertToUnicode did not get the expected exception. The operation succeeded!");
-                }
-            }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 if (expectedException == null || !ex.Equals(expectedException))
                 {
@@ -121,228 +101,196 @@ namespace ICU4N.Dev.Test.StringPrep
                 }
             }
 
-            try
             {
-                StringBuffer @out = IDNA.ConvertToUnicode(inIter, options);
-                if (expected != null && @out != null && !@out.ToString().Equals(expected))
+                Span<char> outBuf = stackalloc char[src.Length + 32];
+                int outBufLength = 0;
+                StringPrepErrorType errorType = (StringPrepErrorType)(-1);
+                bool success = IDNA.TryConvertToUnicode(src.AsSpan(), outBuf, out outBufLength, options, out errorType);
+                if (success)
                 {
-                    Errln("convertToUnicode did not return expected result with options : " + options +
-                          " Expected: " + Prettify(expected) + " Got: " + Prettify(@out));
+                    string @out = outBuf.Slice(0, outBufLength).ToString();
+                    if (expected != null && @out != null && !@out.ToString().Equals(expected))
+                    {
+                        Errln("TryConvertToUnicode did not return expected result with options : " + options +
+                              " Expected: " + Prettify(expected) + " Got: " + @out);
+                    }
+                    if (expectedException != null && !unassignedException.Equals(expectedException))
+                    {
+                        Errln("TryConvertToUnicode did not get the expected exception. The operation succeeded!");
+                    }
                 }
-                if (expectedException != null && !unassignedException.Equals(expectedException))
+                else
                 {
-                    Errln("Did not get the expected exception. The operation succeeded!");
-                }
-            }
-            catch (StringPrepParseException ex)
-            {
-                if (expectedException == null || !ex.Equals(expectedException))
-                {
-                    Errln("Did not get the expected exception for source: " + Prettify(src) + " Got:  " + ex.ToString());
+                    if (expectedException == null || ((StringPrepFormatException)expectedException).Error != errorType)
+                    {
+                        Errln("TryConvertToUnicode did not get the expected exception for source: " + src + " Got:  " + errorType.ToString());
+                    }
                 }
             }
         }
 
         private void DoTestIDNToUnicode(String src, String expected, IDNA2003Options options, Object expectedException)
         {
-            StringBuffer inBuf = new StringBuffer(src);
-            UCharacterIterator inIter = UCharacterIterator.GetInstance(src);
+            // ICU4N: Factored out UCharacterIterator and StringBuffer overloads. In .NET, it is better
+            // to return string than StringBuilder, since there is no way to get the string
+            // out of a StringBuilder without an allocation. Instead, we added an overload
+            // that outputs to a Span<char>.
+
             try
             {
-
-                StringBuffer @out = IDNA.ConvertIDNToUnicode(src, options);
-                if (expected != null && @out != null && !@out.ToString().Equals(expected))
+                string @out = IDNA.ConvertIDNToUnicode(src, options);
+                if (expected != null && @out != null && !@out.Equals(expected))
                 {
-                    Errln("convertToUnicode did not return expected result with options : " + options +
+                    Errln("ConvertIDNToUnicode did not return expected result with options : " + options +
                           " Expected: " + Prettify(expected) + " Got: " + Prettify(@out));
                 }
                 if (expectedException != null && !unassignedException.Equals(expectedException))
                 {
-                    Errln("convertToUnicode did not get the expected exception. The operation succeeded!");
+                    Errln("ConvertIDNToUnicode did not get the expected exception. The operation succeeded!");
                 }
             }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 if (expectedException == null || !expectedException.Equals(ex))
                 {
-                    Errln("convertToUnicode did not get the expected exception for source: " + src + " Got:  " + ex.ToString());
-                }
-            }
-            try
-            {
-                StringBuffer @out = IDNA.ConvertIDNToUnicode(inBuf, options);
-                if (expected != null && @out != null && !@out.ToString().Equals(expected))
-                {
-                    Errln("convertToUnicode did not return expected result with options : " + options +
-                          " Expected: " + Prettify(expected) + " Got: " + @out);
-                }
-                if (expectedException != null && !unassignedException.Equals(expectedException))
-                {
-                    Errln("convertToUnicode did not get the expected exception. The operation succeeded!");
-                }
-            }
-            catch (StringPrepParseException ex)
-            {
-                if (expectedException == null || !expectedException.Equals(ex))
-                {
-                    Errln("convertToUnicode did not get the expected exception for source: " + src + " Got:  " + ex.ToString());
+                    Errln("ConvertIDNToUnicode did not get the expected exception for source: " + src + " Got:  " + ex.ToString());
                 }
             }
 
-            try
             {
-                StringBuffer @out = IDNA.ConvertIDNToUnicode(inIter, options);
-                if (expected != null && @out != null && !@out.ToString().Equals(expected))
+                Span<char> outBuf = stackalloc char[src.Length + 32];
+                int outBufLength = 0;
+                StringPrepErrorType errorType = (StringPrepErrorType)(-1);
+                bool success = IDNA.TryConvertIDNToUnicode(src.AsSpan(), outBuf, out outBufLength, options, out errorType);
+                if (success)
                 {
-                    Errln("convertToUnicode did not return expected result with options : " + options +
-                          " Expected: " + Prettify(expected) + " Got: " + Prettify(@out));
+                    string @out = outBuf.Slice(0, outBufLength).ToString();
+                    if (expected != null && @out != null && !@out.Equals(expected))
+                    {
+                        Errln("TryConvertIDNToUnicode did not return expected result with options : " + options +
+                              " Expected: " + Prettify(expected) + " Got: " + @out);
+                    }
+                    if (expectedException != null && !unassignedException.Equals(expectedException))
+                    {
+                        Errln("TryConvertIDNToUnicode did not get the expected exception. The operation succeeded!");
+                    }
                 }
-                if (expectedException != null && !unassignedException.Equals(expectedException))
+                else
                 {
-                    Errln("Did not get the expected exception. The operation succeeded!");
-                }
-            }
-            catch (StringPrepParseException ex)
-            {
-                if (expectedException == null || !expectedException.Equals(ex))
-                {
-                    Errln("Did not get the expected exception for source: " + src + " Got:  " + ex.ToString());
+                    if (expectedException == null || ((StringPrepFormatException)expectedException).Error != errorType)
+                    {
+                        Errln("TryConvertIDNToUnicode did not get the expected exception for source: " + src + " Got:  " + errorType.ToString());
+                    }
                 }
             }
         }
+
+        // NOTE: Passing null for expectedException is for a "real" test. The postive case is skipped during
+        // the TestErrorCases test. Also, that test is passing in full domain names instead of labels,
+        // so we don't expect the expected variable to match the result in those cases.
         private void DoTestToASCII(String src, String expected, IDNA2003Options options, Object expectedException)
         {
-            StringBuffer inBuf = new StringBuffer(src);
-            UCharacterIterator inIter = UCharacterIterator.GetInstance(src);
+            // ICU4N: Factored out UCharacterIterator and StringBuffer overloads. In .NET, it is better
+            // to return string than StringBuilder, since there is no way to get the string
+            // out of a StringBuilder without an allocation. Instead, we added an overload
+            // that outputs to a Span<char>.
             try
             {
-
-                StringBuffer @out = IDNA.ConvertToASCII(src, options);
-                if (!unassignedException.Equals(expectedException) && expected != null && @out != null && expected != null && @out != null && !@out.ToString().Equals(expected.ToLowerInvariant()))
+                string @out = IDNA.ConvertToASCII(src, options);
+                if (!unassignedException.Equals(expectedException) && expected != null && @out != null && !@out.Equals(expected.ToLowerInvariant()))
                 {
-                    Errln("convertToASCII did not return expected result with options : " + options +
+                    Errln("ConvertToASCII did not return expected result with options : " + options +
                           " Expected: " + expected + " Got: " + @out);
                 }
                 if (expectedException != null && !unassignedException.Equals(expectedException))
                 {
-                    Errln("convertToASCII did not get the expected exception. The operation succeeded!");
+                    Errln("ConvertToASCII did not get the expected exception. The operation succeeded!");
                 }
             }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 if (expectedException == null || !expectedException.Equals(ex))
                 {
-                    Errln("convertToASCII did not get the expected exception for source: " + src + "\n Got:  " + ex.ToString() + "\n Expected: " + ex.ToString());
+                    Errln("ConvertToASCII did not get the expected exception for source: " + src + "\n Got:  " + ex.ToString() + "\n Expected: " + ex.ToString());
                 }
             }
-
-            try
             {
-                StringBuffer @out = IDNA.ConvertToASCII(inBuf, options);
-                if (!unassignedException.Equals(expectedException) && expected != null && @out != null && expected != null && @out != null && !@out.ToString().Equals(expected.ToLowerInvariant()))
+                Span<char> outBuf = stackalloc char[src.Length + 32];
+                StringPrepErrorType errorType = (StringPrepErrorType)(-1);
+                bool success = IDNA.TryConvertToASCII(src.AsSpan(), outBuf, out int outBufLength, options, out errorType);
+                if (success)
                 {
-                    Errln("convertToASCII did not return expected result with options : " + options +
-                          " Expected: " + expected + " Got: " + @out);
+                    string @out = outBuf.Slice(0, outBufLength).ToString();
+                    if (!unassignedException.Equals(expectedException) && expected != null && @out != null && !@out.Equals(expected.ToLowerInvariant()))
+                    {
+                        Errln("TryConvertToASCII did not return expected result with options : " + options +
+                              " Expected: " + Prettify(expected) + " Got: " + @out);
+                    }
+                    if (expectedException != null && !unassignedException.Equals(expectedException))
+                    {
+                        Errln("TryConvertToASCII did not get the expected exception. The operation succeeded!");
+                    }
                 }
-                if (expectedException != null && !unassignedException.Equals(expectedException))
+                else
                 {
-                    Errln("convertToASCII did not get the expected exception. The operation succeeded!");
-                }
-            }
-            catch (StringPrepParseException ex)
-            {
-                if (expectedException == null || !expectedException.Equals(ex))
-                {
-                    Errln("convertToASCII did not get the expected exception for source: " + src + " Got:  " + ex.ToString());
-                }
-            }
-
-            try
-            {
-                StringBuffer @out = IDNA.ConvertToASCII(inIter, options);
-                if (!unassignedException.Equals(expectedException) && expected != null && @out != null && expected != null && @out != null && !@out.ToString().Equals(expected.ToLowerInvariant()))
-                {
-                    Errln("convertToASCII did not return expected result with options : " + options +
-                          " Expected: " + expected + " Got: " + @out);
-                }
-                if (expectedException != null && !unassignedException.Equals(expectedException))
-                {
-                    Errln("convertToASCII did not get the expected exception. The operation succeeded!");
-                }
-            }
-            catch (StringPrepParseException ex)
-            {
-                if (expectedException == null || !expectedException.Equals(ex))
-                {
-                    Errln("convertToASCII did not get the expected exception for source: " + src + " Got:  " + ex.ToString());
+                    if (expectedException == null || ((StringPrepFormatException)expectedException).Error != errorType)
+                    {
+                        Errln("TryConvertToASCII did not get the expected exception for source: " + src + " Got:  " + errorType.ToString());
+                    }
                 }
             }
         }
         private void DoTestIDNToASCII(String src, String expected, IDNA2003Options options, Object expectedException)
         {
-            StringBuffer inBuf = new StringBuffer(src);
-            UCharacterIterator inIter = UCharacterIterator.GetInstance(src);
+            // ICU4N: Factored out UCharacterIterator and StringBuffer overloads. In .NET, it is better
+            // to return string than StringBuilder, since there is no way to get the string
+            // out of a StringBuilder without an allocation. Instead, we added an overload
+            // that outputs to a Span<char>.
             try
             {
-
-                StringBuffer @out = IDNA.ConvertIDNToASCII(src, options);
-                if (expected != null && @out != null && !@out.ToString().Equals(expected))
+                string @out = IDNA.ConvertIDNToASCII(src, options);
+                if (expected != null && @out != null && !@out.Equals(expected))
                 {
-                    Errln("convertToIDNASCII did not return expected result with options : " + options +
+                    Errln("ConvertIDNToASCII did not return expected result with options : " + options +
                           " Expected: " + expected + " Got: " + @out);
                 }
                 if (expectedException != null && !unassignedException.Equals(expectedException))
                 {
-                    Errln("convertToIDNASCII did not get the expected exception. The operation succeeded!");
+                    Errln("ConvertIDNToASCII did not get the expected exception. The operation succeeded!");
                 }
             }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 if (expectedException == null || !ex.Equals(expectedException))
                 {
-                    Errln("convertToIDNASCII did not get the expected exception for source: " + src + " Got:  " + ex.ToString());
+                    Errln("ConvertIDNToASCII did not get the expected exception for source: " + src + " Got:  " + ex.ToString());
                 }
             }
-            try
             {
-                StringBuffer @out = IDNA.ConvertIDNToASCII(inBuf, options);
-                if (expected != null && @out != null && !@out.ToString().Equals(expected))
-                {
-                    Errln("convertToIDNASCII did not return expected result with options : " + options +
-                          " Expected: " + expected + " Got: " + @out);
-                }
-                if (expectedException != null && !unassignedException.Equals(expectedException))
-                {
-                    Errln("convertToIDNASCII did not get the expected exception. The operation succeeded!");
-                }
-            }
-            catch (StringPrepParseException ex)
-            {
-                if (expectedException == null || !ex.Equals(expectedException))
-                {
-                    Errln("convertToIDNASCII did not get the expected exception for source: " + src + " Got:  " + ex.ToString());
-                }
-            }
+                Span<char> outBuf = stackalloc char[src.Length + 32];
+                int outBufLength = 0;
+                StringPrepErrorType errorType = (StringPrepErrorType)(-1);
+                bool success = IDNA.TryConvertIDNToASCII(src.AsSpan(), outBuf, out outBufLength, options, out errorType);
 
-            try
-            {
-                StringBuffer @out = IDNA.ConvertIDNToASCII(inIter, options);
-                if (expected != null && @out != null && !@out.ToString().Equals(expected))
+                if (success)
                 {
-                    Errln("convertIDNToASCII did not return expected result with options : " + options +
-                          " Expected: " + expected + " Got: " + @out);
+                    string @out = outBuf.Slice(0, outBufLength).ToString();
+                    if (expected != null && @out != null && !@out.ToString().Equals(expected))
+                    {
+                        Errln("TryConvertIDNToASCII did not return expected result with options : " + options +
+                              " Expected: " + Prettify(expected) + " Got: " + @out);
+                    }
+                    if (expectedException != null && !unassignedException.Equals(expectedException))
+                    {
+                        Errln("TryConvertIDNToASCII did not get the expected exception. The operation succeeded!");
+                    }
                 }
-
-                if (expectedException != null && !unassignedException.Equals(expectedException))
+                else
                 {
-                    Errln("convertIDNToASCII did not get the expected exception. The operation succeeded!");
-                }
-            }
-            catch (StringPrepParseException ex)
-            {
-                if (expectedException == null || !ex.Equals(expectedException))
-                {
-                    Errln("convertIDNToASCII did not get the expected exception for source: " + src + " Got:  " + ex.ToString());
+                    if (expectedException == null || ((StringPrepFormatException)expectedException).Error != errorType)
+                    {
+                        Errln("TryConvertIDNToASCII did not get the expected exception for source: " + src + " Got:  " + errorType.ToString());
+                    }
                 }
             }
         }
@@ -367,14 +315,14 @@ namespace ICU4N.Dev.Test.StringPrep
         public void TestNamePrepConformance()
         {
             Text.StringPrep namePrep = Text.StringPrep.GetInstance(StringPrepProfile.Rfc3491NamePrep);
+            Span<char> outputBuf = stackalloc char[256];
             for (int i = 0; i < TestData.conformanceTestCases.Length; i++)
             {
                 TestData.ConformanceTestCase testCase = TestData.conformanceTestCases[i];
-                UCharacterIterator iter = UCharacterIterator.GetInstance(testCase.input);
                 try
                 {
-                    StringBuffer output = namePrep.Prepare(iter, StringPrepOptions.Default);
-                    if (testCase.output != null && output != null && !testCase.output.Equals(output.ToString()))
+                    string output = namePrep.Prepare(testCase.input, StringPrepOptions.Default);
+                    if (testCase.output != null && output != null && !testCase.output.Equals(output))
                     {
                         Errln("Did not get the expected output. Expected: " + Prettify(testCase.output) +
                               " Got: " + Prettify(output));
@@ -384,7 +332,7 @@ namespace ICU4N.Dev.Test.StringPrep
                         Errln("Did not get the expected exception. The operation succeeded!");
                     }
                 }
-                catch (StringPrepParseException ex)
+                catch (StringPrepFormatException ex)
                 {
                     if (testCase.expected == null || !ex.Equals(testCase.expected))
                     {
@@ -394,9 +342,8 @@ namespace ICU4N.Dev.Test.StringPrep
 
                 try
                 {
-                    iter.SetToStart();
-                    StringBuffer output = namePrep.Prepare(iter, StringPrepOptions.AllowUnassigned);
-                    if (testCase.output != null && output != null && !testCase.output.Equals(output.ToString()))
+                    string output = namePrep.Prepare(testCase.input, StringPrepOptions.AllowUnassigned);
+                    if (testCase.output != null && output != null && !testCase.output.Equals(output))
                     {
                         Errln("Did not get the expected output. Expected: " + Prettify(testCase.output) +
                               " Got: " + Prettify(output));
@@ -406,16 +353,65 @@ namespace ICU4N.Dev.Test.StringPrep
                         Errln("Did not get the expected exception. The operation succeeded!");
                     }
                 }
-                catch (StringPrepParseException ex)
+                catch (StringPrepFormatException ex)
                 {
                     if (testCase.expected == null || !ex.Equals(testCase.expected))
                     {
                         Errln("Did not get the expected exception for source: " + testCase.input + " Got:  " + ex.ToString());
+                    }
+                }
+
+                {
+                    bool success = namePrep.TryPrepare(testCase.input.AsSpan(), outputBuf, out int charsLength, StringPrepOptions.Default, out StringPrepErrorType errorType);
+                    if (success)
+                    {
+                        string output = outputBuf.Slice(0, charsLength).ToString();
+                        if (testCase.output != null && output != null && !testCase.output.Equals(output))
+                        {
+                            Errln("Did not get the expected output. Expected: " + Prettify(testCase.output) +
+                                  " Got: " + Prettify(output));
+                        }
+                        if (testCase.expected != null && !unassignedException.Equals(testCase.expected))
+                        {
+                            Errln("Did not get the expected exception. The operation succeeded!");
+                        }
+                    }
+                    else
+                    {
+                        if (testCase.expected == null || errorType != ((StringPrepFormatException)testCase.expected).Error)
+                        {
+                            Errln("Did not get the expected exception for source: " + testCase.input + " Got:  " + errorType.ToString());
+                        }
+                    }
+                }
+
+                {
+                    bool success = namePrep.TryPrepare(testCase.input.AsSpan(), outputBuf, out int charsLength, StringPrepOptions.AllowUnassigned, out StringPrepErrorType errorType);
+                    if (success)
+                    {
+                        string output = outputBuf.Slice(0, charsLength).ToString();
+                        if (testCase.output != null && output != null && !testCase.output.Equals(output))
+                        {
+                            Errln("Did not get the expected output. Expected: " + Prettify(testCase.output) +
+                                  " Got: " + Prettify(output));
+                        }
+                        if (testCase.expected != null && !unassignedException.Equals(testCase.expected))
+                        {
+                            Errln("Did not get the expected exception. The operation succeeded!");
+                        }
+                    }
+                    else
+                    {
+                        if (testCase.expected == null || errorType != ((StringPrepFormatException)testCase.expected).Error)
+                        {
+                            Errln("Did not get the expected exception for source: " + testCase.input + " Got:  " + errorType.ToString());
+                        }
                     }
                 }
             }
 
         }
+
         [Test]
         public void TestErrorCases()
         {
@@ -438,7 +434,6 @@ namespace ICU4N.Dev.Test.StringPrep
                     // Test IDNToASCII
                     DoTestIDNToASCII(new String(errCase.unicode), errCase.ascii, IDNA2003Options.Default, errCase.expected);
                     DoTestIDNToASCII(new String(errCase.unicode), errCase.ascii, IDNA2003Options.AllowUnassigned, errCase.expected);
-
                 }
                 else
                 {
@@ -471,18 +466,27 @@ namespace ICU4N.Dev.Test.StringPrep
                     Errln("Did not get the expected result for s1: " + Prettify(s1) +
                           " s2: " + Prettify(s2));
                 }
-                retVal = IDNA.Compare(new StringBuffer(s1), new StringBuffer(s2), IDNA2003Options.Default);
+                retVal = IDNA.Compare(s1.AsSpan(), s2.AsSpan(), IDNA2003Options.Default);
                 if (isEqual == true && retVal != 0)
                 {
                     Errln("Did not get the expected result for s1: " + Prettify(s1) +
-                         " s2: " + Prettify(s2));
+                          " s2: " + Prettify(s2));
                 }
-                retVal = IDNA.Compare(UCharacterIterator.GetInstance(s1), UCharacterIterator.GetInstance(s2), IDNA2003Options.Default);
-                if (isEqual == true && retVal != 0)
-                {
-                    Errln("Did not get the expected result for s1: " + Prettify(s1) +
-                         " s2: " + Prettify(s2));
-                }
+
+                // ICU4N: Factored out StringBuffer and UCharacterIterator overloads
+
+                //retVal = IDNA.Compare(new StringBuffer(s1), new StringBuffer(s2), IDNA2003Options.Default);
+                //if (isEqual == true && retVal != 0)
+                //{
+                //    Errln("Did not get the expected result for s1: " + Prettify(s1) +
+                //         " s2: " + Prettify(s2));
+                //}
+                //retVal = IDNA.Compare(UCharacterIterator.GetInstance(s1), UCharacterIterator.GetInstance(s2), IDNA2003Options.Default);
+                //if (isEqual == true && retVal != 0)
+                //{
+                //    Errln("Did not get the expected result for s1: " + Prettify(s1) +
+                //         " s2: " + Prettify(s2));
+                //}
             }
             catch (Exception e)
             {
@@ -498,18 +502,26 @@ namespace ICU4N.Dev.Test.StringPrep
                     Errln("Did not get the expected result for s1: " + Prettify(s1) +
                           " s2: " + Prettify(s2));
                 }
-                retVal = IDNA.Compare(new StringBuffer(s1), new StringBuffer(s2), IDNA2003Options.AllowUnassigned);
+                retVal = IDNA.Compare(s1.AsSpan(), s2.AsSpan(), IDNA2003Options.AllowUnassigned);
                 if (isEqual == true && retVal != 0)
                 {
                     Errln("Did not get the expected result for s1: " + Prettify(s1) +
-                         " s2: " + Prettify(s2));
+                          " s2: " + Prettify(s2));
                 }
-                retVal = IDNA.Compare(UCharacterIterator.GetInstance(s1), UCharacterIterator.GetInstance(s2), IDNA2003Options.AllowUnassigned);
-                if (isEqual == true && retVal != 0)
-                {
-                    Errln("Did not get the expected result for s1: " + Prettify(s1) +
-                         " s2: " + Prettify(s2));
-                }
+                // ICU4N: Factored out StringBuffer and UCharacterIterator overloads
+
+                //retVal = IDNA.Compare(new StringBuffer(s1), new StringBuffer(s2), IDNA2003Options.AllowUnassigned);
+                //if (isEqual == true && retVal != 0)
+                //{
+                //    Errln("Did not get the expected result for s1: " + Prettify(s1) +
+                //         " s2: " + Prettify(s2));
+                //}
+                //retVal = IDNA.Compare(UCharacterIterator.GetInstance(s1), UCharacterIterator.GetInstance(s2), IDNA2003Options.AllowUnassigned);
+                //if (isEqual == true && retVal != 0)
+                //{
+                //    Errln("Did not get the expected result for s1: " + Prettify(s1) +
+                //         " s2: " + Prettify(s2));
+                //}
             }
             catch (Exception e)
             {
@@ -580,8 +592,8 @@ namespace ICU4N.Dev.Test.StringPrep
         //  func(func(func(src))) == func(src)
         private void DoTestChainingToASCII(String source)
         {
-            StringBuffer expected;
-            StringBuffer chained;
+            string expected;
+            string chained;
 
             // test convertIDNToASCII
             expected = IDNA.ConvertIDNToASCII(source, IDNA2003Options.Default);
@@ -590,7 +602,7 @@ namespace ICU4N.Dev.Test.StringPrep
             {
                 chained = IDNA.ConvertIDNToASCII(chained, IDNA2003Options.Default);
             }
-            if (!expected.ToString().Equals(chained.ToString()))
+            if (!expected.Equals(chained))
             {
                 Errln("Chaining test failed for convertIDNToASCII");
             }
@@ -601,7 +613,7 @@ namespace ICU4N.Dev.Test.StringPrep
             {
                 chained = IDNA.ConvertToASCII(chained, IDNA2003Options.Default);
             }
-            if (!expected.ToString().Equals(chained.ToString()))
+            if (!expected.Equals(chained))
             {
                 Errln("Chaining test failed for convertToASCII");
             }
@@ -611,8 +623,8 @@ namespace ICU4N.Dev.Test.StringPrep
         //  func(func(func(src))) == func(src)
         private void DoTestChainingToUnicode(String source)
         {
-            StringBuffer expected;
-            StringBuffer chained;
+            string expected;
+            string chained;
 
             // test convertIDNToUnicode
             expected = IDNA.ConvertIDNToUnicode(source, IDNA2003Options.Default);
@@ -621,7 +633,7 @@ namespace ICU4N.Dev.Test.StringPrep
             {
                 chained = IDNA.ConvertIDNToUnicode(chained, IDNA2003Options.Default);
             }
-            if (!expected.ToString().Equals(chained.ToString()))
+            if (!expected.Equals(chained))
             {
                 Errln("Chaining test failed for convertIDNToUnicode");
             }
@@ -632,11 +644,12 @@ namespace ICU4N.Dev.Test.StringPrep
             {
                 chained = IDNA.ConvertToUnicode(chained, IDNA2003Options.Default);
             }
-            if (!expected.ToString().Equals(chained.ToString()))
+            if (!expected.Equals(chained))
             {
                 Errln("Chaining test failed for convertToUnicode");
             }
         }
+
         [Test]
         public void TestChaining()
         {
@@ -812,18 +825,22 @@ namespace ICU4N.Dev.Test.StringPrep
             {
                 exp = toASCII ? IDNAReference.ConvertToASCII(src, options) : IDNAReference.ConvertToUnicode(src, options);
             }
-            catch (StringPrepParseException e)
+            catch (StringPrepFormatException e)
             {
                 expStatus = (int)e.Error;
             }
 
-            StringBuffer got = null;
+            string got = null;
             int gotStatus = -1;
             try
             {
-                got = toASCII ? IDNA.ConvertToASCII(src, options) : IDNA.ConvertToUnicode(src, options);
+                // ICU4N: Factored out StringBuffer overloads. In .NET, it is better
+                // to return string than StringBuilder, since there is no way to get the string
+                // out of a StringBuilder without an allocation. Instead, we added an overload
+                // that outputs to a Span<char>.
+                got = toASCII ? IDNA.ConvertToASCII(src.ToString(), options) : IDNA.ConvertToUnicode(src.ToString(), options);
             }
-            catch (StringPrepParseException e)
+            catch (StringPrepFormatException e)
             {
                 gotStatus = (int)e.Error;
             }
@@ -896,12 +913,12 @@ namespace ICU4N.Dev.Test.StringPrep
                         String unicode = IDNA.ConvertToUnicode(ascii, IDNA2003Options.Default).ToString();
                         Logln("result " + unicode);
                     }
-                    catch (StringPrepParseException ex)
+                    catch (StringPrepFormatException ex)
                     {
                         Errln("Unexpected exception for convertToUnicode: " + ex.ToString());
                     }
                 }
-                catch (StringPrepParseException ex)
+                catch (StringPrepFormatException ex)
                 {
                     Errln("Unexpected exception for convertToASCII: " + ex.ToString());
                 }
@@ -925,7 +942,7 @@ namespace ICU4N.Dev.Test.StringPrep
                         Errln("Did not get the expected string for convertToASCII. Expected: " + @in[i] + " Got: " + ascii);
                     }
                 }
-                catch (StringPrepParseException ex)
+                catch (StringPrepFormatException ex)
                 {
                     Errln("Unexpected exception: " + ex.ToString());
                 }
@@ -945,7 +962,7 @@ namespace ICU4N.Dev.Test.StringPrep
                     Errln("Did not get the expected result. Expected: " + Prettify(src) + " Got: " + uni);
                 }
             }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 Logln("Unexpected exception: " + ex.ToString());
             }
@@ -957,7 +974,7 @@ namespace ICU4N.Dev.Test.StringPrep
                     Errln("Did not get the expected exception");
                 }
             }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 Logln("Got the expected exception: " + ex.ToString());
             }
@@ -972,7 +989,7 @@ namespace ICU4N.Dev.Test.StringPrep
                 IDNA.ConvertIDNToUnicode(INVALID_DOMAIN_NAME, IDNA2003Options.UseSTD3Rules);
 
             }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 Errln("Unexpected exception: " + ex.ToString());
             }
@@ -986,7 +1003,7 @@ namespace ICU4N.Dev.Test.StringPrep
             {
                 IDNA.ConvertIDNToUnicode(domain, IDNA2003Options.Default);
             }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 Logln("Got the expected exception. " + ex.ToString());
             }
@@ -998,7 +1015,7 @@ namespace ICU4N.Dev.Test.StringPrep
             {
                 IDNA.ConvertIDNToUnicode(domain, IDNA2003Options.UseSTD3Rules);
             }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 Logln("Got the expected exception. " + ex.ToString());
             }
@@ -1026,7 +1043,7 @@ namespace ICU4N.Dev.Test.StringPrep
             {
                 IDNA.ConvertIDNToUnicode("xn--m\u1234ller", IDNA2003Options.UseSTD3Rules);
             }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 Errln("ToUnicode operation failed! " + ex.ToString());
             }
@@ -1059,7 +1076,7 @@ namespace ICU4N.Dev.Test.StringPrep
                 IDNA.ConvertToASCII(ul, IDNA2003Options.Default);
                 Errln("IDNA.convertToUnicode did not fail!");
             }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 if (ex.Error != StringPrepErrorType.LabelTooLongError)
                 {
@@ -1074,7 +1091,7 @@ namespace ICU4N.Dev.Test.StringPrep
             {
                 IDNA.ConvertToASCII(ul1, IDNA2003Options.Default);
             }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 Errln("IDNA.convertToASCII failed with error: " + ex.ToString());
             }
@@ -1082,7 +1099,7 @@ namespace ICU4N.Dev.Test.StringPrep
             {
                 IDNA.ConvertToUnicode(ul1, IDNA2003Options.Default);
             }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 Errln("IDNA.convertToASCII failed with error: " + ex.ToString());
             }
@@ -1090,7 +1107,7 @@ namespace ICU4N.Dev.Test.StringPrep
             {
                 IDNA.ConvertToUnicode(ul, IDNA2003Options.Default);
             }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 Errln("IDNA.convertToASCII failed with error: " + ex.ToString());
             }
@@ -1101,7 +1118,7 @@ namespace ICU4N.Dev.Test.StringPrep
                 IDNA.ConvertIDNToASCII(idn, IDNA2003Options.Default);
                 Errln("IDNA.convertToUnicode did not fail!");
             }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 if (ex.Error != StringPrepErrorType.DomainNameTooLongError)
                 {
@@ -1117,7 +1134,7 @@ namespace ICU4N.Dev.Test.StringPrep
                 IDNA.ConvertIDNToUnicode(idn, IDNA2003Options.Default);
                 Errln("IDNA.convertToUnicode did not fail!");
             }
-            catch (StringPrepParseException ex)
+            catch (StringPrepFormatException ex)
             {
                 if (ex.Error != StringPrepErrorType.DomainNameTooLongError)
                 {
@@ -1145,6 +1162,19 @@ namespace ICU4N.Dev.Test.StringPrep
             {
                 Errln("IDNA.ConvertToASCII(String,int) was not suppose to return an exception.");
             }
+            Span<char> result = stackalloc char[10];
+            bool success = IDNA.TryConvertToASCII("dummy".AsSpan(), result, out int resultLength, 0, out _);
+            if (success)
+            {
+                if (!result.Slice(0, resultLength).ToString().Equals("dummy"))
+                {
+                    Errln("IDNA.TryConvertToASCII(ReadOnlySpan<char>, Span<char>, out int, IDNA2003Options, out StringPrepErrorType) was suppose to " + "return the same string passed.");
+                }
+            }
+            else
+            {
+                Errln("IDNA.TryConvertToASCII was not suppose to return an error.");
+            }
         }
 
         /*
@@ -1157,20 +1187,37 @@ namespace ICU4N.Dev.Test.StringPrep
         {
             try
             {
-                UCharacterIterator uci = UCharacterIterator.GetInstance("dummy");
-                if (!IDNA.ConvertIDNToASCII(uci, 0).ToString().Equals("dummy"))
+                //UCharacterIterator uci = UCharacterIterator.GetInstance("dummy");
+                //if (!IDNA.ConvertIDNToASCII(uci, 0).ToString().Equals("dummy"))
+                //{
+                //    Errln("IDNA.convertIDNToASCII(UCharacterIterator, int) was suppose to "
+                //            + "return the same string passed.");
+                //}
+                if (!IDNA.ConvertIDNToASCII("dummy", 0).Equals("dummy"))
                 {
-                    Errln("IDNA.convertIDNToASCII(UCharacterIterator, int) was suppose to "
-                            + "return the same string passed.");
+                    Errln("IDNA.ConvertIDNToASCII(string, IDNA2003Options) was suppose to " + "return the same string passed.");
                 }
-                if (!IDNA.ConvertIDNToASCII(new StringBuffer("dummy"), 0).ToString().Equals("dummy"))
+                if (!IDNA.ConvertIDNToASCII("dummy".AsSpan(), 0).Equals("dummy"))
                 {
-                    Errln("IDNA.convertIDNToASCII(StringBuffer, int) was suppose to " + "return the same string passed.");
+                    Errln("IDNA.ConvertIDNToASCII(string, IDNA2003Options) was suppose to " + "return the same string passed.");
                 }
             }
             catch (Exception e)
             {
-                Errln("IDNA.convertIDNToASCII was not suppose to return an exception.");
+                Errln("IDNA.ConvertIDNToASCII was not suppose to return an exception.");
+            }
+            Span<char> result = stackalloc char[10];
+            bool success = IDNA.TryConvertIDNToASCII("dummy".AsSpan(), result, out int resultLength, 0, out _);
+            if (success)
+            {
+                if (!result.Slice(0, resultLength).ToString().Equals("dummy"))
+                {
+                    Errln("IDNA.TryConvertIDNToASCII(ReadOnlySpan<char>, Span<char>, out int, IDNA2003Options, out StringPrepErrorType) was suppose to " + "return the same string passed.");
+                }
+            }
+            else
+            {
+                Errln("IDNA.TryConvertIDNToASCII was not suppose to return an error.");
             }
         }
 
@@ -1183,18 +1230,35 @@ namespace ICU4N.Dev.Test.StringPrep
         {
             try
             {
-                if (!IDNA.ConvertToUnicode("dummy", 0).ToString().Equals("dummy"))
+                if (!IDNA.ConvertToUnicode("dummy", 0).Equals("dummy"))
                 {
-                    Errln("IDNA.ConvertToUnicode(String, int) was suppose to " + "return the same string passed.");
+                    Errln("IDNA.ConvertToUnicode(String, IDNA2003Options) was suppose to " + "return the same string passed.");
                 }
-                if (!IDNA.ConvertToUnicode(new StringBuffer("dummy"), 0).ToString().Equals("dummy"))
+                //if (!IDNA.ConvertToUnicode(new StringBuffer("dummy"), 0).ToString().Equals("dummy"))
+                //{
+                //    Errln("IDNA.ConvertToUnicode(StringBuffer, int) was suppose to " + "return the same string passed.");
+                //}
+                if (!IDNA.ConvertToUnicode("dummy".AsSpan(), 0).Equals("dummy"))
                 {
-                    Errln("IDNA.ConvertToUnicode(StringBuffer, int) was suppose to " + "return the same string passed.");
+                    Errln("IDNA.ConvertToUnicode(ReadOnlySpan<chr>, IDNA2003Options) was suppose to " + "return the same string passed.");
                 }
             }
             catch (Exception e)
             {
-                Errln("IDNA.convertToUnicode was not suppose to return an exception.");
+                Errln("IDNA.ConvertToUnicode was not suppose to return an exception.");
+            }
+            Span<char> result = stackalloc char[10];
+            bool success = IDNA.TryConvertToUnicode("dummy".AsSpan(), result, out int resultLength, 0, out _);
+            if (success)
+            {
+                if (!result.Slice(0, resultLength).ToString().Equals("dummy"))
+                {
+                    Errln("IDNA.TryConvertToUnicode(ReadOnlySpan<char>, Span<char>, out int, IDNA2003Options, out StringPrepErrorType) was suppose to " + "return the same string passed.");
+                }
+            }
+            else
+            {
+                Errln("IDNA.TryConvertToUnicode was not suppose to return an error.");
             }
         }
 
@@ -1204,20 +1268,35 @@ namespace ICU4N.Dev.Test.StringPrep
         {
             try
             {
-                UCharacterIterator uci = UCharacterIterator.GetInstance("dummy");
-                if (!IDNA.ConvertIDNToUnicode(uci, 0).ToString().Equals("dummy"))
+                // ICU4N: Factored out UCharacterIterator and StringBuffer overloads. In .NET, it is better
+                // to return string than StringBuilder, since there is no way to get the string
+                // out of a StringBuilder without an allocation. Instead, we added an overload
+                // that outputs to a Span<char>.
+                if (!IDNA.ConvertIDNToUnicode("dummy", 0).Equals("dummy"))
                 {
-                    Errln("IDNA.ConvertIDNToUnicode(UCharacterIterator, int) was suppose to "
-                            + "return the same string passed.");
+                    Errln("IDNA.ConvertIDNToUnicode(string, IDNA2003Options) was suppose to " + "return the same string passed.");
                 }
-                if (!IDNA.ConvertIDNToUnicode(new StringBuffer("dummy"), 0).ToString().Equals("dummy"))
+                if (!IDNA.ConvertIDNToUnicode("dummy".AsSpan(), 0).Equals("dummy"))
                 {
-                    Errln("IDNA.ConvertIDNToUnicode(StringBuffer, int) was suppose to " + "return the same string passed.");
+                    Errln("IDNA.ConvertIDNToUnicode(ReadOnlySpan<char>, IDNA2003Options) was suppose to " + "return the same string passed.");
                 }
             }
             catch (Exception e)
             {
                 Errln("IDNA.convertIDNToUnicode was not suppose to return an exception.");
+            }
+            Span<char> result = stackalloc char[10];
+            bool success = IDNA.TryConvertIDNToUnicode("dummy".AsSpan(), result, out int resultLength, 0, out _);
+            if (success)
+            {
+                if (!result.Slice(0, resultLength).ToString().Equals("dummy"))
+                {
+                    Errln("IDNA.TryConvertIDNToUnicode(ReadOnlySpan<char>, Span<char>, out int, IDNA2003Options, out StringPrepErrorType) was suppose to " + "return the same string passed.");
+                }
+            }
+            else
+            {
+                Errln("IDNA.TryConvertIDNToUnicode was not suppose to return an error.");
             }
         }
 
@@ -1265,85 +1344,229 @@ namespace ICU4N.Dev.Test.StringPrep
                 Errln("IDNA.Compare('dummy','dummy') was not suppose to return an exception.");
             }
 
-            // Testing the method public static int compare(StringBuffer s1, StringBuffer s2, int options)
-            try
-            {
-                IDNA.Compare((StringBuffer)null, (StringBuffer)null, 0);
-                Errln("IDNA.Compare((StringBuffer)null,(StringBuffer)null) was suppose to return an exception.");
-            }
-            catch (Exception e)
-            {
-            }
+            // Testing the method public static int Compare(ReadOnlySpan<char> s1, ReadOnlySpan<char> s2, IDNA2003Options options)
 
             try
             {
-                IDNA.Compare((StringBuffer)null, new StringBuffer("dummy"), 0);
-                Errln("IDNA.Compare((StringBuffer)null,'dummy') was suppose to return an exception.");
-            }
-            catch (Exception e)
-            {
-            }
-
-            try
-            {
-                IDNA.Compare(new StringBuffer("dummy"), (StringBuffer)null, 0);
-                Errln("IDNA.Compare('dummy',(StringBuffer)null) was suppose to return an exception.");
-            }
-            catch (Exception e)
-            {
-            }
-
-            try
-            {
-                if (IDNA.Compare(new StringBuffer("dummy"), new StringBuffer("dummy"), 0) != 0)
+                if (IDNA.Compare("dummy".AsSpan(), "dummy".AsSpan(), 0) != 0)
                 {
-                    Errln("IDNA.Compare(new StringBuffer('dummy'),new StringBuffer('dummy')) was suppose to return a 0.");
+                    Errln("IDNA.Compare('dummy','dummy') was suppose to return a 0.");
                 }
             }
             catch (Exception e)
             {
-                Errln("IDNA.Compare(new StringBuffer('dummy'),new StringBuffer('dummy')) was not suppose to return an exception.");
+                Errln("IDNA.Compare('dummy','dummy') was not suppose to return an exception.");
             }
 
-            // Testing the method public static int compare(UCharacterIterator s1, UCharacterIterator s2, int options)
-            UCharacterIterator uci = UCharacterIterator.GetInstance("dummy");
-            try
+            // ICU4N: Factored out StringBuffer and UCharacterIterator overloads
+
+            //// Testing the method public static int compare(StringBuffer s1, StringBuffer s2, int options)
+            //try
+            //{
+            //    IDNA.Compare((StringBuffer)null, (StringBuffer)null, 0);
+            //    Errln("IDNA.Compare((StringBuffer)null,(StringBuffer)null) was suppose to return an exception.");
+            //}
+            //catch (Exception e)
+            //{
+            //}
+
+            //try
+            //{
+            //    IDNA.Compare((StringBuffer)null, new StringBuffer("dummy"), 0);
+            //    Errln("IDNA.Compare((StringBuffer)null,'dummy') was suppose to return an exception.");
+            //}
+            //catch (Exception e)
+            //{
+            //}
+
+            //try
+            //{
+            //    IDNA.Compare(new StringBuffer("dummy"), (StringBuffer)null, 0);
+            //    Errln("IDNA.Compare('dummy',(StringBuffer)null) was suppose to return an exception.");
+            //}
+            //catch (Exception e)
+            //{
+            //}
+
+            //try
+            //{
+            //    if (IDNA.Compare(new StringBuffer("dummy"), new StringBuffer("dummy"), 0) != 0)
+            //    {
+            //        Errln("IDNA.Compare(new StringBuffer('dummy'),new StringBuffer('dummy')) was suppose to return a 0.");
+            //    }
+            //}
+            //catch (Exception e)
+            //{
+            //    Errln("IDNA.Compare(new StringBuffer('dummy'),new StringBuffer('dummy')) was not suppose to return an exception.");
+            //}
+
+            //// Testing the method public static int compare(UCharacterIterator s1, UCharacterIterator s2, int options)
+            //UCharacterIterator uci = UCharacterIterator.GetInstance("dummy");
+            //try
+            //{
+            //    IDNA.Compare((UCharacterIterator)null, (UCharacterIterator)null, 0);
+            //    Errln("IDNA.Compare((UCharacterIterator)null,(UCharacterIterator)null) was suppose to return an exception.");
+            //}
+            //catch (Exception e)
+            //{
+            //}
+
+            //try
+            //{
+            //    IDNA.Compare((UCharacterIterator)null, uci, 0);
+            //    Errln("IDNA.Compare((UCharacterIterator)null,UCharacterIterator) was suppose to return an exception.");
+            //}
+            //catch (Exception e)
+            //{
+            //}
+
+            //try
+            //{
+            //    IDNA.Compare(uci, (UCharacterIterator)null, 0);
+            //    Errln("IDNA.Compare(UCharacterIterator,(UCharacterIterator)null) was suppose to return an exception.");
+            //}
+            //catch (Exception e)
+            //{
+            //}
+
+            //try
+            //{
+            //    if (IDNA.Compare(uci, uci, 0) != 0)
+            //    {
+            //        Errln("IDNA.Compare(UCharacterIterator('dummy'),UCharacterIterator('dummy')) was suppose to return a 0.");
+            //    }
+            //}
+            //catch (Exception e)
+            //{
+            //    Errln("IDNA.Compare(UCharacterIterator('dummy'),UCharacterIterator('dummy')) was not suppose to return an exception.");
+            //}
+        }
+
+        [Test] // ICU4N specific
+        public void TestTryConvertToASCII_BufferOverflow()
+        {
+            Span<char> longBuffer = stackalloc char[256];
+            Span<char> shortBuffer = stackalloc char[4];
+
+            for (int i = 0; i < TestData.asciiIn.Length; i++)
             {
-                IDNA.Compare((UCharacterIterator)null, (UCharacterIterator)null, 0);
-                Errln("IDNA.Compare((UCharacterIterator)null,(UCharacterIterator)null) was suppose to return an exception.");
-            }
-            catch (Exception e)
-            {
+                DoTest(TestData.unicodeIn[i], longBuffer, shortBuffer);
             }
 
-            try
+            static void DoTest(ReadOnlySpan<char> src, Span<char> longBuffer, Span<char> shortBuffer)
             {
-                IDNA.Compare((UCharacterIterator)null, uci, 0);
-                Errln("IDNA.Compare((UCharacterIterator)null,UCharacterIterator) was suppose to return an exception.");
-            }
-            catch (Exception e)
-            {
-            }
-
-            try
-            {
-                IDNA.Compare(uci, (UCharacterIterator)null, 0);
-                Errln("IDNA.Compare(UCharacterIterator,(UCharacterIterator)null) was suppose to return an exception.");
-            }
-            catch (Exception e)
-            {
-            }
-
-            try
-            {
-                if (IDNA.Compare(uci, uci, 0) != 0)
+                bool success = IDNA.TryConvertToASCII(src, longBuffer, out int longBufferLength, IDNA2003Options.Default, out _);
+                if (!success)
                 {
-                    Errln("IDNA.Compare(UCharacterIterator('dummy'),UCharacterIterator('dummy')) was suppose to return a 0.");
+                    Errln("IDNA.TryConvertToASCII was not suppose to return an exception when there is a long enough buffer.");
+                }
+                success = IDNA.TryConvertToASCII(src, shortBuffer, out int shortBufferLength, IDNA2003Options.Default, out StringPrepErrorType errorType);
+                if (success || errorType != StringPrepErrorType.BufferOverflowError)
+                {
+                    Errln($"IDNA.TryConvertToASCII was suppose to return a {StringPrepErrorType.BufferOverflowError} when the buffer is too short.");
+                }
+                if (shortBufferLength < longBufferLength)
+                {
+                    Errln($"IDNA.TryConvertToASCII was suppose to return a buffer size large enough to fit the text.");
                 }
             }
-            catch (Exception e)
+        }
+
+        [Test] // ICU4N specific
+        public void TestTryConvertToUnicode_BufferOverflow()
+        {
+            Span<char> longBuffer = stackalloc char[256];
+            Span<char> shortBuffer = stackalloc char[4];
+
+            for (int i = 0; i < TestData.asciiIn.Length; i++)
             {
-                Errln("IDNA.Compare(UCharacterIterator('dummy'),UCharacterIterator('dummy')) was not suppose to return an exception.");
+                DoTest(TestData.asciiIn[i], longBuffer, shortBuffer);
+            }
+
+            static void DoTest(string src, Span<char> longBuffer, Span<char> shortBuffer)
+            {
+                bool success = IDNA.TryConvertToUnicode(src.AsSpan(), longBuffer, out int longBufferLength, IDNA2003Options.Default, out _);
+                if (!success)
+                {
+                    Errln("IDNA.TryConvertToUnicode was not suppose to return an exception when there is a long enough buffer.");
+                }
+                success = IDNA.TryConvertToUnicode(src.AsSpan(), shortBuffer, out int shortBufferLength, IDNA2003Options.Default, out StringPrepErrorType errorType);
+                if (success || errorType != StringPrepErrorType.BufferOverflowError)
+                {
+                    Errln($"IDNA.TryConvertToUnicode was suppose to return a {StringPrepErrorType.BufferOverflowError} when the buffer is too short.");
+                }
+                if (shortBufferLength < longBufferLength)
+                {
+                    Errln($"IDNA.TryConvertToUnicode was suppose to return a buffer size large enough to fit the text.");
+                }
+            }
+        }
+
+        [Test] // ICU4N specific
+        public void TestTryConvertIDNToASCII_BufferOverflow()
+        {
+            Span<char> longBuffer = stackalloc char[256];
+            Span<char> shortBuffer = stackalloc char[4];
+
+            for (int i = 0; i < TestData.domainNames.Length; i++)
+            {
+                DoTest(TestData.domainNames[i], longBuffer, shortBuffer);
+            }
+            for (int i = 0; i < TestData.domainNames1Uni.Length; i++)
+            {
+                DoTest(TestData.domainNames1Uni[i], longBuffer, shortBuffer);
+            }
+
+            static void DoTest(string src, Span<char> longBuffer, Span<char> shortBuffer)
+            {
+                bool success = IDNA.TryConvertIDNToASCII(src.AsSpan(), longBuffer, out int longBufferLength, IDNA2003Options.Default, out _);
+                if (!success)
+                {
+                    Errln("IDNA.TryConvertIDNToASCII was not suppose to return an exception when there is a long enough buffer.");
+                }
+                success = IDNA.TryConvertIDNToASCII(src.AsSpan(), shortBuffer, out int shortBufferLength, IDNA2003Options.Default, out StringPrepErrorType errorType);
+                if (success || errorType != StringPrepErrorType.BufferOverflowError)
+                {
+                    Errln($"IDNA.TryConvertIDNToASCII was suppose to return a {StringPrepErrorType.BufferOverflowError} when the buffer is too short.");
+                }
+                if (shortBufferLength < longBufferLength)
+                {
+                    Errln($"IDNA.TryConvertIDNToASCII was suppose to return a buffer size large enough to fit the text.");
+                }
+            }
+        }
+
+        [Test] // ICU4N specific
+        public void TestTryConvertIDNToUnicode_BufferOverflow()
+        {
+            Span<char> longBuffer = stackalloc char[256];
+            Span<char> shortBuffer = stackalloc char[4];
+
+            for (int i = 0; i < TestData.domainNames.Length; i++)
+            {
+                DoTest(TestData.domainNames[i], longBuffer, shortBuffer);
+            }
+            for (int i = 0; i < TestData.domainNamesToASCIIOut.Length; i++)
+            {
+                DoTest(TestData.domainNamesToASCIIOut[i], longBuffer, shortBuffer);
+            }
+
+            static void DoTest(string src, Span<char> longBuffer, Span<char> shortBuffer)
+            {
+                bool success = IDNA.TryConvertIDNToUnicode(src.AsSpan(), longBuffer, out int longBufferLength, IDNA2003Options.Default, out _);
+                if (!success)
+                {
+                    Errln("IDNA.TryConvertIDNToUnicode was not suppose to return an exception when there is a long enough buffer.");
+                }
+                success = IDNA.TryConvertIDNToUnicode(src.AsSpan(), shortBuffer, out int shortBufferLength, IDNA2003Options.Default, out StringPrepErrorType errorType);
+                if (success || errorType != StringPrepErrorType.BufferOverflowError)
+                {
+                    Errln($"IDNA.TryConvertIDNToUnicode was suppose to return a {StringPrepErrorType.BufferOverflowError} when the buffer is too short.");
+                }
+                if (shortBufferLength < longBufferLength)
+                {
+                    Errln($"IDNA.TryConvertIDNToUnicode was suppose to return a buffer size large enough to fit the text.");
+                }
             }
         }
     }

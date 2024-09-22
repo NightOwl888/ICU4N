@@ -1,29 +1,28 @@
 ﻿using ICU4N.Support.Text;
-using J2N.Text;
+using ICU4N.Text;
 using System;
+#nullable enable
 
 namespace ICU4N.Impl
 {
     /// <summary>
-    /// Implement the <see cref="CharacterIterator"/> abstract class on a <see cref="ICharSequence"/>.
+    /// Implement the <see cref="CharacterIterator"/> abstract class on a <see cref="ReadOnlyMemory{Char}"/>.
     /// Intended for internal use by ICU only.
     /// </summary>
-    internal class CharSequenceCharacterIterator : CharacterIterator
+    internal class ReadOnlyMemoryCharacterIterator : CharacterIterator // ICU4N TODO: API - convert to an enumerator..? and move to J2N
     {
         private int index;
-        private ICharSequence seq;
+        private readonly ReadOnlyMemory<char> seq;
+        private readonly object? seqReference; // ICU4N: Keeps the string or char[] behind seq alive for the lifetime of this class
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="text">The <see cref="ICharSequence"/> to iterate over.</param>
-        public CharSequenceCharacterIterator(ICharSequence text)
+        /// <param name="text">The <see cref="ReadOnlyMemory{Char}"/> to iterate over.</param>
+        public ReadOnlyMemoryCharacterIterator(ReadOnlyMemory<char> text)
         {
-            if (text == null)
-            {
-                throw new ArgumentNullException(nameof(text));
-            }
             seq = text;
+            text.TryGetReference(ref seqReference);
             index = 0;
         }
 
@@ -61,7 +60,7 @@ namespace ICU4N.Impl
                 {
                     return Done;
                 }
-                return seq[index];
+                return seq.Span[index];
             }
         }
 
@@ -142,9 +141,34 @@ namespace ICU4N.Impl
 #endif
         public override object Clone()
         {
-            CharSequenceCharacterIterator copy = new CharSequenceCharacterIterator(seq);
+            ReadOnlyMemoryCharacterIterator copy = new ReadOnlyMemoryCharacterIterator(seq);
             copy.SetIndex(index);
             return copy;
+        }
+
+        // ICU4N specific: Added Equality checking
+        /// <summary>
+        /// Compares the specified object with this <see cref="ReadOnlyMemoryCharacterIterator"/>
+        /// and indicates if they are equal. In order to be equal, <paramref name="obj"/>
+        /// must be an instance of <see cref="ReadOnlyMemoryCharacterIterator"/> that iterates over
+        /// the same sequence of characters with the same index.
+        /// </summary>
+        /// <param name="obj">The object to compare with this object.</param>
+        /// <returns><c>true</c> if the specified object is equal to this <see cref="ReadOnlyMemoryCharacterIterator"/>; <c>false</c> otherwise.</returns>
+        /// <seealso cref="GetHashCode()"/>
+        public override bool Equals(object? obj)
+        {
+            if (obj is ReadOnlyMemoryCharacterIterator it)
+            {
+                return seq.Span.Equals(it.seq.Span, StringComparison.Ordinal) && index == it.index;
+            }
+            // ICU4N TODO: We need all iterator types to be able to compare equal if they have the same string, bounds, and position.
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return StringHelper.GetHashCode(seq.Span) ^ index;
         }
     }
 }

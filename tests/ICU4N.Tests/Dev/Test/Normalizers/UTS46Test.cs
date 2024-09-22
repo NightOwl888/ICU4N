@@ -1,4 +1,5 @@
-﻿using ICU4N.Impl;
+﻿using ICU4N;
+using ICU4N.Impl;
 using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
 using ICU4N.Text;
@@ -33,42 +34,88 @@ namespace ICU4N.Dev.Test.Normalizers
         [Test]
         public void TestAPI()
         {
-            StringBuilder result = new StringBuilder();
-            IDNAInfo info = new IDNAInfo();
-            String input = "www.eXample.cOm";
-            String expected = "www.example.com";
-            trans.NameToASCII(input, result, info);
-            if (info.HasErrors || !UTF16Plus.Equal(result, expected))
-            {
-                Errln(String.Format(StringFormatter.CurrentCulture, "T.nameToASCII(www.example.com) info.errors={0} result matches={1}",
-                                    info.Errors, UTF16Plus.Equal(result, expected)));
-            }
-            input = "xn--bcher.de-65a";
-            expected = "xn--bcher\uFFFDde-65a";
-            nontrans.LabelToASCII(input, result, info);
-            if (!info.Errors.SetEquals(new HashSet<IDNAError> { IDNAError.LabelHasDot, IDNAError.InvalidAceLabel }) ||
-                !UTF16Plus.Equal(result, expected)
-            )
-            {
-                Errln(String.Format(StringFormatter.CurrentCulture, "N.labelToASCII(label-with-dot) failed with errors {0}",
-                                    info.Errors));
-            }
-            // Java API tests that are not parallel to C++ tests
-            // because the C++ specifics (error codes etc.) do not apply here.
-            String resultString = trans.NameToUnicode("fA\u00DF.de", result, info).ToString();
-            if (info.HasErrors || !resultString.Equals("fass.de"))
-            {
-                Errln(String.Format(StringFormatter.CurrentCulture, "T.nameToUnicode(fA\u00DF.de) info.errors={0} result matches={1}",
-                                    info.Errors, resultString.Equals("fass.de")));
-            }
+            ValueStringBuilder result = new ValueStringBuilder(stackalloc char[32]);
             try
             {
-                nontrans.LabelToUnicode(result, result, info);
-                Errln("N.labelToUnicode(result, result) did not throw an Exception");
+                Span<char> resultSpan = stackalloc char[32];
+
+                String input = "www.eXample.cOm";
+                String expected = "www.example.com";
+
+                if (!trans.TryNameToASCII(input, ref result, out IDNAInfo info) || info.HasErrors || !UTF16Plus.Equal(result.AsSpan(), expected.AsSpan()))
+                {
+                    Errln(String.Format(StringFormatter.CurrentCulture, "T.TryNameToASCII(www.example.com) info.errors={0} result matches={1}",
+                                        info.Errors, UTF16Plus.Equal(result.AsSpan(), expected.AsSpan())));
+                }
+
+                if (!trans.TryNameToASCII(input, resultSpan, out int charsLength, out info) || info.HasErrors || !UTF16Plus.Equal(resultSpan.Slice(0, charsLength), expected.AsSpan()))
+                {
+                    Errln(String.Format(StringFormatter.CurrentCulture, "T.TryNameToASCII(www.example.com) info.errors={0} result matches={1}",
+                                        info.Errors, UTF16Plus.Equal(result.AsSpan(), expected.AsSpan())));
+                }
+
+
+                input = "xn--bcher.de-65a";
+                expected = "xn--bcher\uFFFDde-65a";
+
+                result.Length = 0;
+                nontrans.TryLabelToASCII(input, ref result, out info);
+                //if (!info.Errors.SetEquals(new HashSet<IDNAError> { IDNAError.LabelHasDot, IDNAError.InvalidAceLabel }) ||
+                if (!sameErrors(info.Errors, IDNAErrors.LabelHasDot | IDNAErrors.InvalidAceLabel) ||
+                    !UTF16Plus.Equal(result.AsSpan(), expected.AsSpan()))
+                {
+                    Errln(String.Format(StringFormatter.CurrentCulture, "N.LabelToASCII(label-with-dot) failed with errors {0}",
+                                        info.Errors));
+                }
+
+                nontrans.TryLabelToASCII(input, resultSpan, out charsLength, out info);
+                if (!sameErrors(info.Errors, IDNAErrors.LabelHasDot | IDNAErrors.InvalidAceLabel) ||
+                    !UTF16Plus.Equal(resultSpan.Slice(0, charsLength), expected.AsSpan()))
+                {
+                    Errln(String.Format(StringFormatter.CurrentCulture, "N.TryLabelToASCII(label-with-dot) failed with errors {0}",
+                                        info.Errors));
+                }
+
+                // .NET API tests that are not parallel to C++ tests
+                // because the C++ specifics (error codes etc.) do not apply here.
+                result.Length = 0;
+                bool success = trans.TryNameToUnicode("fA\u00DF.de", ref result, out info);
+                string resultString = result.ToString();
+                if (!success || info.HasErrors || !resultString.Equals("fass.de"))
+                {
+                    Errln(String.Format(StringFormatter.CurrentCulture, "T.NameToUnicode(fA\u00DF.de) info.errors={0} result matches={1}",
+                                        info.Errors, resultString.Equals("fass.de")));
+                }
+
+                if (!trans.TryNameToUnicode("fA\u00DF.de", resultSpan, out charsLength, out info) || info.HasErrors || !UTF16Plus.Equal(resultSpan.Slice(0, charsLength), "fass.de"))
+                {
+                    Errln(String.Format(StringFormatter.CurrentCulture, "T.TryNameToUnicode(fA\u00DF.de) info.errors={0} result matches={1}",
+                                        info.Errors, resultString.Equals("fass.de")));
+                }
+
+                try
+                {
+                    nontrans.TryLabelToUnicode(resultSpan, resultSpan, out _, out _);
+                    Errln("N.labelToUnicode(result, result) did not throw an Exception");
+                }
+                catch (Exception e)
+                {
+                    // as expected (should be an ArgumentException, or an ICU version of it)
+                }
+
+                try
+                {
+                    nontrans.TryLabelToUnicode(result.AsSpan(), ref result, out _);
+                    Errln("N.labelToUnicode(result, result) did not throw an Exception");
+                }
+                catch (Exception e)
+                {
+                    // as expected (should be an ArgumentException, or an ICU version of it)
+                }
             }
-            catch (Exception e)
+            finally
             {
-                // as expected (should be an IllegalArgumentException, or an ICU version of it)
+                result.Dispose();
             }
         }
 
@@ -77,68 +124,99 @@ namespace ICU4N.Dev.Test.Normalizers
         {
             IDNA not3 = IDNA.GetUTS46Instance(UTS46Options.CheckBiDi);
             String input = "\u0000A_2+2=4\n.e\u00DFen.net";
-            StringBuilder result = new StringBuilder();
-            IDNAInfo info = new IDNAInfo();
-            if (!not3.NameToUnicode(input, result, info).ToString().Equals("\u0000a_2+2=4\n.essen.net") ||
-                info.HasErrors
-            )
+            Span<char> resultSpan = stackalloc char[64];
+            ValueStringBuilder result = new ValueStringBuilder(stackalloc char[64]);
+            try
             {
-                Errln(String.Format(StringFormatter.CurrentCulture, "notSTD3.nameToUnicode(non-LDH ASCII) unexpected errors {0} string {1}",
-                                    info.Errors, Prettify(result.ToString())));
+                not3.TryNameToUnicode(input, ref result, out IDNAInfo info);
+                if (!UTF16Plus.Equal(result.AsSpan(), "\u0000a_2+2=4\n.essen.net") ||
+                    info.HasErrors
+                )
+                {
+                    Errln(String.Format(StringFormatter.CurrentCulture, "notSTD3.TryNameToUnicode(non-LDH ASCII) unexpected errors {0} string {1}",
+                                        info.Errors, Prettify(result.AsSpan())));
+                }
+                not3.TryNameToUnicode(input, resultSpan, out int charsLength, out info);
+                if (!UTF16Plus.Equal(resultSpan.Slice(0, charsLength), "\u0000a_2+2=4\n.essen.net") ||
+                    info.HasErrors
+                )
+                {
+                    Errln(String.Format(StringFormatter.CurrentCulture, "notSTD3.TryNameToUnicode(non-LDH ASCII) unexpected errors {0} string {1}",
+                                        info.Errors, Prettify(resultSpan.Slice(0, charsLength))));
+                }
+
+
+                // A space (BiDi class WS) is not allowed in a BiDi domain name.
+                input = "a z.xn--4db.edu";
+                result.Length = 0;
+                not3.TryNameToASCII(input, ref result, out info);
+                if (!UTF16Plus.Equal(result.AsSpan(), input.AsSpan()) || !sameErrors(info.Errors, IDNAErrors.BiDi))
+                {
+                    Errln("notSTD3.TryNameToASCII(ASCII-with-space.alef.edu) failed");
+                }
+                not3.TryNameToASCII(input, resultSpan, out charsLength, out info);
+                if (!UTF16Plus.Equal(resultSpan.Slice(0, charsLength), input.AsSpan()) || !sameErrors(info.Errors, IDNAErrors.BiDi))
+                {
+                    Errln("notSTD3.TryNameToASCII(ASCII-with-space.alef.edu) failed");
+                }
+
+                // Characters that are canonically equivalent to sequences with non-LDH ASCII.
+                input = "a\u2260b\u226Ec\u226Fd";
+                result.Length = 0;
+                not3.TryNameToUnicode(input, ref result, out info);
+                if (!UTF16Plus.Equal(result.AsSpan(), input.AsSpan()) || info.HasErrors)
+                {
+                    Errln(String.Format(StringFormatter.CurrentCulture, "notSTD3.TryNameToUnicode(equiv to non-LDH ASCII) unexpected errors {0} string {1}",
+                                        info.Errors, Prettify(result.AsSpan())));
+                }
+                if (!not3.TryNameToUnicode(input, resultSpan, out charsLength, out info) || !UTF16Plus.Equal(resultSpan.Slice(0, charsLength), input.AsSpan()) || info.HasErrors)
+                {
+                    Errln(String.Format(StringFormatter.CurrentCulture, "notSTD3.TryNameToUnicode(equiv to non-LDH ASCII) unexpected errors {0} string {1}",
+                                        info.Errors, Prettify(resultSpan.Slice(0, charsLength))));
+                }
             }
-            // A space (BiDi class WS) is not allowed in a BiDi domain name.
-            input = "a z.xn--4db.edu";
-            not3.NameToASCII(input, result, info);
-            if (!UTF16Plus.Equal(result, input) || !info.Errors.SetEquals(new HashSet<IDNAError> { IDNAError.BiDi }))
+            finally
             {
-                Errln("notSTD3.nameToASCII(ASCII-with-space.alef.edu) failed");
-            }
-            // Characters that are canonically equivalent to sequences with non-LDH ASCII.
-            input = "a\u2260b\u226Ec\u226Fd";
-            not3.NameToUnicode(input, result, info);
-            if (!UTF16Plus.Equal(result, input) || info.HasErrors)
-            {
-                Errln(String.Format(StringFormatter.CurrentCulture, "notSTD3.nameToUnicode(equiv to non-LDH ASCII) unexpected errors {0} string {1}",
-                                    info.Errors, Prettify(result.ToString())));
+                result.Dispose();
             }
         }
 
-        private static readonly IDictionary<string, IDNAError> errorNamesToErrors = new SortedDictionary<string, IDNAError>(StringComparer.Ordinal)
+        private static readonly IDictionary<string, IDNAErrors> errorNamesToErrors = new SortedDictionary<string, IDNAErrors>(StringComparer.Ordinal)
             {
-                { "UIDNA_ERROR_EMPTY_LABEL", IDNAError.EmptyLabel },
-                { "UIDNA_ERROR_LABEL_TOO_LONG", IDNAError.LabelTooLong },
-                { "UIDNA_ERROR_DOMAIN_NAME_TOO_LONG", IDNAError.DomainNameTooLong },
-                { "UIDNA_ERROR_LEADING_HYPHEN", IDNAError.LeadingHyphen },
-                { "UIDNA_ERROR_TRAILING_HYPHEN", IDNAError.TrailingHyphen },
-                { "UIDNA_ERROR_HYPHEN_3_4", IDNAError.Hyphen_3_4 },
-                { "UIDNA_ERROR_LEADING_COMBINING_MARK", IDNAError.LeadingCombiningMark },
-                { "UIDNA_ERROR_DISALLOWED", IDNAError.Disallowed },
-                { "UIDNA_ERROR_PUNYCODE", IDNAError.Punycode },
-                { "UIDNA_ERROR_LABEL_HAS_DOT", IDNAError.LabelHasDot },
-                { "UIDNA_ERROR_INVALID_ACE_LABEL", IDNAError.InvalidAceLabel },
-                { "UIDNA_ERROR_BIDI", IDNAError.BiDi },
-                { "UIDNA_ERROR_CONTEXTJ", IDNAError.ContextJ },
-                { "UIDNA_ERROR_CONTEXTO_PUNCTUATION", IDNAError.ContextOPunctuation },
-                { "UIDNA_ERROR_CONTEXTO_DIGITS", IDNAError.ContextODigits },
+                { "UIDNA_ERROR_EMPTY_LABEL", IDNAErrors.EmptyLabel },
+                { "UIDNA_ERROR_LABEL_TOO_LONG", IDNAErrors.LabelTooLong },
+                { "UIDNA_ERROR_DOMAIN_NAME_TOO_LONG", IDNAErrors.DomainNameTooLong },
+                { "UIDNA_ERROR_LEADING_HYPHEN", IDNAErrors.LeadingHyphen },
+                { "UIDNA_ERROR_TRAILING_HYPHEN", IDNAErrors.TrailingHyphen },
+                { "UIDNA_ERROR_HYPHEN_3_4", IDNAErrors.Hyphen_3_4 },
+                { "UIDNA_ERROR_LEADING_COMBINING_MARK", IDNAErrors.LeadingCombiningMark },
+                { "UIDNA_ERROR_DISALLOWED", IDNAErrors.Disallowed },
+                { "UIDNA_ERROR_PUNYCODE", IDNAErrors.Punycode },
+                { "UIDNA_ERROR_LABEL_HAS_DOT", IDNAErrors.LabelHasDot },
+                { "UIDNA_ERROR_INVALID_ACE_LABEL", IDNAErrors.InvalidAceLabel },
+                { "UIDNA_ERROR_BIDI", IDNAErrors.BiDi },
+                { "UIDNA_ERROR_CONTEXTJ", IDNAErrors.ContextJ },
+                { "UIDNA_ERROR_CONTEXTO_PUNCTUATION", IDNAErrors.ContextOPunctuation },
+                { "UIDNA_ERROR_CONTEXTO_DIGITS", IDNAErrors.ContextODigits },
             };
 
         private sealed class TestCase
         {
             internal TestCase()
             {
-                errors = new HashSet<IDNAError>();
+                errors = IDNAErrors.None;
             }
             internal void Set(string[] data)
             {
                 s = data[0];
                 o = data[1];
                 u = data[2];
-                errors.Clear();
+                errors = IDNAErrors.None;
                 if (data[3].Length != 0)
                 {
                     foreach (string e in Regex.Split(data[3], "\\|"))
                     {
-                        errors.Add(errorNamesToErrors.Get(e));
+                        errors |= errorNamesToErrors.Get(e);
                     }
                 }
             }
@@ -146,7 +224,7 @@ namespace ICU4N.Dev.Test.Normalizers
             internal string s, o;
             // Expected Unicode result string.
             internal string u;
-            internal ISet<IDNAError> errors;
+            internal IDNAErrors errors;
         };
 
         private static readonly string[][] testCases ={
@@ -480,311 +558,690 @@ namespace ICU4N.Dev.Test.Normalizers
         [Test]
         public void TestSomeCases()
         {
-            StringBuilder aT = new StringBuilder(), uT = new StringBuilder();
-            StringBuilder aN = new StringBuilder(), uN = new StringBuilder();
-            IDNAInfo aTInfo = new IDNAInfo(), uTInfo = new IDNAInfo();
-            IDNAInfo aNInfo = new IDNAInfo(), uNInfo = new IDNAInfo();
+            const int StackBufferSize = 512;
 
-            StringBuilder aTuN = new StringBuilder(), uTaN = new StringBuilder();
-            StringBuilder aNuN = new StringBuilder(), uNaN = new StringBuilder();
-            IDNAInfo aTuNInfo = new IDNAInfo(), uTaNInfo = new IDNAInfo();
-            IDNAInfo aNuNInfo = new IDNAInfo(), uNaNInfo = new IDNAInfo();
+            Span<char> aTBuf = stackalloc char[StackBufferSize], uTBuf = stackalloc char[StackBufferSize];
+            Span<char> aNBuf = stackalloc char[StackBufferSize], uNBuf = stackalloc char[StackBufferSize];
+            ReadOnlySpan<char> aT, uT;
+            ReadOnlySpan<char> aN, uN;
+            IDNAInfo aTInfo, uTInfo;
+            IDNAInfo aNInfo, uNInfo;
 
-            StringBuilder aTL = new StringBuilder(), uTL = new StringBuilder();
-            StringBuilder aNL = new StringBuilder(), uNL = new StringBuilder();
-            IDNAInfo aTLInfo = new IDNAInfo(), uTLInfo = new IDNAInfo();
-            IDNAInfo aNLInfo = new IDNAInfo(), uNLInfo = new IDNAInfo();
+            Span<char> aTuNBuf = stackalloc char[StackBufferSize], uTaNBuf = stackalloc char[StackBufferSize];
+            Span<char> aNuNBuf = stackalloc char[StackBufferSize], uNaNBuf = stackalloc char[StackBufferSize];
+            ReadOnlySpan<char> aTuN, uTaN;
+            ReadOnlySpan<char> aNuN, uNaN;
+            IDNAInfo aTuNInfo, uTaNInfo;
+            IDNAInfo aNuNInfo, uNaNInfo;
 
-            ISet<IDNAError> uniErrors = new HashSet<IDNAError>();
+            Span<char> aTLBuf = stackalloc char[StackBufferSize], uTLBuf = stackalloc char[StackBufferSize];
+            Span<char> aNLBuf = stackalloc char[StackBufferSize], uNLBuf = stackalloc char[StackBufferSize];
+            ReadOnlySpan<char> aTL, uTL;
+            ReadOnlySpan<char> aNL, uNL;
+            IDNAInfo aTLInfo, uTLInfo;
+            IDNAInfo aNLInfo, uNLInfo;
 
-            TestCase testCase = new TestCase();
-            int i;
-            for (i = 0; i < testCases.Length; ++i)
+            IDNAErrors uniErrors;
+            int charsLength;
+
+            try
             {
-                testCase.Set(testCases[i]);
-                String input = testCase.s;
-                String expected = testCase.u;
-                // ToASCII/ToUnicode, transitional/nontransitional
-                try
+                TestCase testCase = new TestCase();
+                int i;
+                for (i = 0; i < testCases.Length; ++i)
                 {
-                    trans.NameToASCII(input, aT, aTInfo);
-                    trans.NameToUnicode(input, uT, uTInfo);
-                    nontrans.NameToASCII(input, aN, aNInfo);
-                    nontrans.NameToUnicode(input, uN, uNInfo);
-                }
-                catch (Exception e)
-                {
-                    Errln(String.Format("first-level processing [{0}/{1}] {2} - {3}",
-                                        i, testCase.o, testCase.s, e));
-                    continue;
-                }
-                // ToUnicode does not set length-overflow errors.
-                uniErrors.Clear();
-                uniErrors.UnionWith(testCase.errors);
-                uniErrors.ExceptWith(lengthOverflowErrors);
-                char mode = testCase.o[0];
-                if (mode == 'B' || mode == 'N')
-                {
-                    if (!sameErrors(uNInfo, uniErrors))
+                    testCase.Set(testCases[i]);
+                    String input = testCase.s;
+                    String expected = testCase.u;
+                    // ToASCII/ToUnicode, transitional/nontransitional
+                    try
                     {
-                        Errln(String.Format(StringFormatter.CurrentCulture, "N.nameToUnicode([{0}] {1}) unexpected errors {2}",
-                                            i, testCase.s, uNInfo.Errors));
+                        unsafe // We know this is safe, but we need to provide the IDNAInfo outside of this block
+                        {
+#pragma warning disable CS9080 // Use of variable in this context may expose referenced variables outside of thier declaration scope
+                            trans.TryNameToASCII(input, aTBuf, out charsLength, out aTInfo);
+                            aT = aTBuf.Slice(0, charsLength);
+                            trans.TryNameToUnicode(input, uTBuf, out charsLength, out uTInfo);
+                            uT = uTBuf.Slice(0, charsLength);
+                            nontrans.TryNameToASCII(input, aNBuf, out charsLength, out aNInfo);
+                            aN = aNBuf.Slice(0, charsLength);
+                            nontrans.TryNameToUnicode(input, uNBuf, out charsLength, out uNInfo);
+                            uN = uNBuf.Slice(0, charsLength);
+#pragma warning restore CS9080 // Use of variable in this context may expose referenced variables outside of thier declaration scope
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Errln(String.Format("first-level processing [{0}/{1}] {2} - {3}",
+                                            i, testCase.o, testCase.s, e));
                         continue;
                     }
-                    if (!UTF16Plus.Equal(uN, expected))
+                    // ToUnicode does not set length-overflow errors.
+                    uniErrors = testCase.errors & ~lengthOverflowErrors;
+                    char mode = testCase.o[0];
+                    if (mode == 'B' || mode == 'N')
                     {
-                        Errln(String.Format("N.nameToUnicode([{0}] {1}) unexpected string {2}",
-                                            i, testCase.s, Prettify(uN.ToString())));
+                        if (!sameErrors(uNInfo, uniErrors))
+                        {
+                            Errln(String.Format(StringFormatter.CurrentCulture, "N.nameToUnicode([{0}] {1}) unexpected errors {2}",
+                                                i, testCase.s, uNInfo.Errors));
+                            continue;
+                        }
+                        if (!UTF16Plus.Equal(uN, expected))
+                        {
+                            Errln(String.Format("N.nameToUnicode([{0}] {1}) unexpected string {2}",
+                                                i, testCase.s, Prettify(uN)));
+                            continue;
+                        }
+                        if (!sameErrors(aNInfo, testCase.errors))
+                        {
+                            Errln(String.Format("N.nameToASCII([{0}] {1}) unexpected errors {2}",
+                                                i, testCase.s, aNInfo.Errors));
+                            continue;
+                        }
+                    }
+                    if (mode == 'B' || mode == 'T')
+                    {
+                        if (!sameErrors(uTInfo, uniErrors))
+                        {
+                            Errln(String.Format("T.nameToUnicode([{0}] {1}) unexpected errors {2}",
+                                                i, testCase.s, uTInfo.Errors));
+                            continue;
+                        }
+                        if (!UTF16Plus.Equal(uT, expected))
+                        {
+                            Errln(String.Format("T.nameToUnicode([{0}] {1}) unexpected string {2}",
+                                                i, testCase.s, Prettify(uT)));
+                            continue;
+                        }
+                        if (!sameErrors(aTInfo, testCase.errors))
+                        {
+                            Errln(String.Format("T.nameToASCII([{0}] {1}) unexpected errors {2}",
+                                                i, testCase.s, aTInfo.Errors));
+                            continue;
+                        }
+                    }
+                    // ToASCII is all-ASCII if no severe errors
+                    if (!hasCertainErrors(aNInfo, severeErrors) && !IsASCII(aN))
+                    {
+                        Errln(String.Format("N.nameToASCII([{0}] {1}) (errors {2}) result is not ASCII {3}",
+                                            i, testCase.s, aNInfo.Errors, Prettify(aN)));
                         continue;
                     }
-                    if (!sameErrors(aNInfo, testCase.errors))
+                    if (!hasCertainErrors(aTInfo, severeErrors) && !IsASCII(aT))
                     {
-                        Errln(String.Format("N.nameToASCII([{0}] {1}) unexpected errors {2}",
-                                            i, testCase.s, aNInfo.Errors));
+                        Errln(String.Format("T.nameToASCII([{0}] {1}) (errors {2}) result is not ASCII {3}",
+                                            i, testCase.s, aTInfo.Errors, Prettify(aT)));
                         continue;
                     }
-                }
-                if (mode == 'B' || mode == 'T')
-                {
-                    if (!sameErrors(uTInfo, uniErrors))
+                    if (IsVerbose())
                     {
-                        Errln(String.Format("T.nameToUnicode([{0}] {1}) unexpected errors {2}",
-                                            i, testCase.s, uTInfo.Errors));
+                        char m = mode == 'B' ? mode : 'N';
+                        Logln(String.Format("{0}.nameToASCII([{1}] {2}) (errors {3}) result string: {4}",
+                                            m, i, testCase.s, aNInfo.Errors, Prettify(aN)));
+                        if (mode != 'B')
+                        {
+                            Logln(String.Format("T.nameToASCII([{0}] {1}) (errors {2}) result string: {3}",
+                                                i, testCase.s, aTInfo.Errors, Prettify(aT)));
+                        }
+                    }
+                    // second-level processing
+                    try
+                    {
+                        unsafe // We know this is safe, but we need to provide the IDNAInfo outside of this block
+                        {
+#pragma warning disable CS9080 // Use of variable in this context may expose referenced variables outside of thier declaration scope
+                            nontrans.TryNameToUnicode(aT, aTuNBuf, out charsLength, out aTuNInfo);
+                            aTuN = aTuNBuf.Slice(0, charsLength);
+                            nontrans.TryNameToASCII(uT, uTaNBuf, out charsLength, out uTaNInfo);
+                            uTaN = uTaNBuf.Slice(0, charsLength);
+                            nontrans.TryNameToUnicode(aN, aNuNBuf, out charsLength, out aNuNInfo);
+                            aNuN = aNuNBuf.Slice(0, charsLength);
+                            nontrans.TryNameToASCII(uN, uNaNBuf, out charsLength, out uNaNInfo);
+                            uNaN = uNaNBuf.Slice(0, charsLength);
+#pragma warning restore CS9080 // Use of variable in this context may expose referenced variables outside of thier declaration scope
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Errln(String.Format("second-level processing [{0}/{1}] {2} - {3}",
+                                            i, testCase.o, testCase.s, e));
                         continue;
                     }
-                    if (!UTF16Plus.Equal(uT, expected))
+                    if (!UTF16Plus.Equal(aN, uNaN))
                     {
-                        Errln(String.Format("T.nameToUnicode([{0}] {1}) unexpected string {2}",
-                                            i, testCase.s, Prettify(uT.ToString())));
+                        Errln(String.Format(StringFormatter.CurrentCulture, "N.nameToASCII([{0}] {1})!=N.nameToUnicode().N.nameToASCII() " +
+                                            "(errors {2}) {3} vs. {4}",
+                                            i, testCase.s, aNInfo.Errors,
+                                            Prettify(aN), Prettify(uNaN)));
                         continue;
                     }
-                    if (!sameErrors(aTInfo, testCase.errors))
+                    if (!UTF16Plus.Equal(aT, uTaN))
                     {
-                        Errln(String.Format("T.nameToASCII([{0}] {1}) unexpected errors {2}",
-                                            i, testCase.s, aTInfo.Errors));
+                        Errln(String.Format(StringFormatter.CurrentCulture, "T.nameToASCII([{0}] {1})!=T.nameToUnicode().N.nameToASCII() " +
+                                            "(errors {2}) {3} vs. {4}",
+                                            i, testCase.s, aNInfo.Errors,
+                                            Prettify(aT), Prettify(uTaN)));
                         continue;
                     }
-                }
-                // ToASCII is all-ASCII if no severe errors
-                if (!hasCertainErrors(aNInfo, severeErrors) && !IsASCII(aN))
-                {
-                    Errln(String.Format("N.nameToASCII([{0}] {1}) (errors {2}) result is not ASCII {3}",
-                                        i, testCase.s, aNInfo.Errors, Prettify(aN.ToString())));
-                    continue;
-                }
-                if (!hasCertainErrors(aTInfo, severeErrors) && !IsASCII(aT))
-                {
-                    Errln(String.Format("T.nameToASCII([{0}] {1}) (errors {2}) result is not ASCII {3}",
-                                        i, testCase.s, aTInfo.Errors, Prettify(aT.ToString())));
-                    continue;
-                }
-                if (IsVerbose())
-                {
-                    char m = mode == 'B' ? mode : 'N';
-                    Logln(String.Format("{0}.nameToASCII([{1}] {2}) (errors {3}) result string: {4}",
-                                        m, i, testCase.s, aNInfo.Errors, Prettify(aN.ToString())));
-                    if (mode != 'B')
+                    if (!UTF16Plus.Equal(uN, aNuN))
                     {
-                        Logln(String.Format("T.nameToASCII([{0}] {1}) (errors {2}) result string: {3}",
-                                            i, testCase.s, aTInfo.Errors, Prettify(aT.ToString())));
-                    }
-                }
-                // second-level processing
-                try
-                {
-                    nontrans.NameToUnicode(aT, aTuN, aTuNInfo);
-                    nontrans.NameToASCII(uT, uTaN, uTaNInfo);
-                    nontrans.NameToUnicode(aN, aNuN, aNuNInfo);
-                    nontrans.NameToASCII(uN, uNaN, uNaNInfo);
-                }
-                catch (Exception e)
-                {
-                    Errln(String.Format("second-level processing [{0}/{1}] {2} - {3}",
-                                        i, testCase.o, testCase.s, e));
-                    continue;
-                }
-                if (!UTF16Plus.Equal(aN, uNaN))
-                {
-                    Errln(String.Format(StringFormatter.CurrentCulture, "N.nameToASCII([{0}] {1})!=N.nameToUnicode().N.nameToASCII() " +
-                                        "(errors {2}) {3} vs. {4}",
-                                        i, testCase.s, aNInfo.Errors,
-                                        Prettify(aN.ToString()), Prettify(uNaN.ToString())));
-                    continue;
-                }
-                if (!UTF16Plus.Equal(aT, uTaN))
-                {
-                    Errln(String.Format(StringFormatter.CurrentCulture, "T.nameToASCII([{0}] {1})!=T.nameToUnicode().N.nameToASCII() " +
-                                        "(errors {2}) {3} vs. {4}",
-                                        i, testCase.s, aNInfo.Errors,
-                                        Prettify(aT.ToString()), Prettify(uTaN.ToString())));
-                    continue;
-                }
-                if (!UTF16Plus.Equal(uN, aNuN))
-                {
-                    Errln(String.Format(StringFormatter.CurrentCulture, "N.nameToUnicode([{0}] {1})!=N.nameToASCII().N.nameToUnicode() " +
-                                        "(errors {2}) {3} vs. {4}",
-                                        i, testCase.s, uNInfo.Errors, Prettify(uN.ToString()), Prettify(aNuN.ToString())));
-                    continue;
-                }
-                if (!UTF16Plus.Equal(uT, aTuN))
-                {
-                    Errln(String.Format(StringFormatter.CurrentCulture, "T.nameToUnicode([{0}] {1})!=T.nameToASCII().N.nameToUnicode() " +
-                                        "(errors {2}) {3} vs. {4}",
-                                        i, testCase.s, uNInfo.Errors,
-                                        Prettify(uT.ToString()), Prettify(aTuN.ToString())));
-                    continue;
-                }
-                // labelToUnicode
-                try
-                {
-                    trans.LabelToASCII(input, aTL, aTLInfo);
-                    trans.LabelToUnicode(input, uTL, uTLInfo);
-                    nontrans.LabelToASCII(input, aNL, aNLInfo);
-                    nontrans.LabelToUnicode(input, uNL, uNLInfo);
-                }
-                catch (Exception e)
-                {
-                    Errln(String.Format("labelToXYZ processing [{0}/{1}] {2} - {3}",
-                                        i, testCase.o, testCase.s, e));
-                    continue;
-                }
-                if (aN.IndexOf(".", StringComparison.Ordinal) < 0)
-                {
-                    if (!UTF16Plus.Equal(aN, aNL) || !sameErrors(aNInfo, aNLInfo))
-                    {
-                        Errln(String.Format(StringFormatter.CurrentCulture, "N.nameToASCII([{0}] {1})!=N.labelToASCII() " +
-                                            "(errors {2} vs {3}) {4} vs. {5}",
-                                            i, testCase.s, aNInfo.Errors, aNLInfo.Errors,
-                                            Prettify(aN.ToString()), Prettify(aNL.ToString())));
+                        Errln(String.Format(StringFormatter.CurrentCulture, "N.nameToUnicode([{0}] {1})!=N.nameToASCII().N.nameToUnicode() " +
+                                            "(errors {2}) {3} vs. {4}",
+                                            i, testCase.s, uNInfo.Errors, Prettify(uN), Prettify(aNuN)));
                         continue;
                     }
+                    if (!UTF16Plus.Equal(uT, aTuN))
+                    {
+                        Errln(String.Format(StringFormatter.CurrentCulture, "T.nameToUnicode([{0}] {1})!=T.nameToASCII().N.nameToUnicode() " +
+                                            "(errors {2}) {3} vs. {4}",
+                                            i, testCase.s, uNInfo.Errors,
+                                            Prettify(uT), Prettify(aTuN)));
+                        continue;
+                    }
+                    // labelToUnicode
+                    try
+                    {
+                        unsafe // We know this is safe, but we need to provide the IDNAInfo outside of this block
+                        {
+#pragma warning disable CS9080 // Use of variable in this context may expose referenced variables outside of thier declaration scope
+                            trans.TryLabelToASCII(input, aTLBuf, out charsLength, out aTLInfo);
+                            aTL = aTLBuf.Slice(0, charsLength);
+                            trans.TryLabelToUnicode(input, uTLBuf, out charsLength, out uTLInfo);
+                            uTL = uTLBuf.Slice(0, charsLength);
+                            nontrans.TryLabelToASCII(input, aNLBuf, out charsLength, out aNLInfo);
+                            aNL = aNLBuf.Slice(0, charsLength);
+                            nontrans.TryLabelToUnicode(input, uNLBuf, out charsLength, out uNLInfo);
+                            uNL = uNLBuf.Slice(0, charsLength);
+#pragma warning restore CS9080 // Use of variable in this context may expose referenced variables outside of thier declaration scope
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Errln(String.Format("labelToXYZ processing [{0}/{1}] {2} - {3}",
+                                            i, testCase.o, testCase.s, e));
+                        continue;
+                    }
+                    if (aN.IndexOf(".", StringComparison.Ordinal) < 0)
+                    {
+                        if (!UTF16Plus.Equal(aN, aNL) || !sameErrors(aNInfo, aNLInfo))
+                        {
+                            Errln(String.Format(StringFormatter.CurrentCulture, "N.nameToASCII([{0}] {1})!=N.labelToASCII() " +
+                                                "(errors {2} vs {3}) {4} vs. {5}",
+                                                i, testCase.s, aNInfo.Errors, aNLInfo.Errors,
+                                                Prettify(aN), Prettify(aNL)));
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        if (!hasError(aNLInfo, IDNAErrors.LabelHasDot))
+                        {
+                            Errln(String.Format(StringFormatter.CurrentCulture, "N.labelToASCII([{0}] {1}) errors {2} missing UIDNA_ERROR_LABEL_HAS_DOT",
+                                                i, testCase.s, aNLInfo.Errors));
+                            continue;
+                        }
+                    }
+                    if (aT.IndexOf(".", StringComparison.Ordinal) < 0)
+                    {
+                        if (!UTF16Plus.Equal(aT, aTL) || !sameErrors(aTInfo, aTLInfo))
+                        {
+                            Errln(String.Format(StringFormatter.CurrentCulture, "T.nameToASCII([{0}] {1})!=T.labelToASCII() " +
+                                                "(errors {2} vs {3}) {4} vs. {5}",
+                                                i, testCase.s, aTInfo.Errors, aTLInfo.Errors,
+                                                Prettify(aT), Prettify(aTL)));
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        if (!hasError(aTLInfo, IDNAErrors.LabelHasDot))
+                        {
+                            Errln(String.Format(StringFormatter.CurrentCulture, "T.labelToASCII([{0}] {1}) errors {2} missing UIDNA_ERROR_LABEL_HAS_DOT",
+                                                i, testCase.s, aTLInfo.Errors));
+                            continue;
+                        }
+                    }
+                    if (uN.IndexOf(".", StringComparison.Ordinal) < 0)
+                    {
+                        if (!UTF16Plus.Equal(uN, uNL) || !sameErrors(uNInfo, uNLInfo))
+                        {
+                            Errln(String.Format(StringFormatter.CurrentCulture, "N.nameToUnicode([{0}] {1})!=N.labelToUnicode() " +
+                                                "(errors {2} vs {3}) {4} vs. {5}",
+                                                i, testCase.s, uNInfo.Errors, uNLInfo.Errors,
+                                                Prettify(uN), Prettify(uNL)));
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        if (!hasError(uNLInfo, IDNAErrors.LabelHasDot))
+                        {
+                            Errln(String.Format(StringFormatter.CurrentCulture, "N.labelToUnicode([{0}] {1}) errors {2} missing UIDNA_ERROR_LABEL_HAS_DOT",
+                                                i, testCase.s, uNLInfo.Errors));
+                            continue;
+                        }
+                    }
+                    if (uT.IndexOf(".", StringComparison.Ordinal) < 0)
+                    {
+                        if (!UTF16Plus.Equal(uT, uTL) || !sameErrors(uTInfo, uTLInfo))
+                        {
+                            Errln(String.Format(StringFormatter.CurrentCulture, "T.nameToUnicode([{0}] {1})!=T.labelToUnicode() " +
+                                                "(errors {2} vs {3}) {4} vs. {5}",
+                                                i, testCase.s, uTInfo.Errors, uTLInfo.Errors,
+                                                Prettify(uT), Prettify(uTL)));
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        if (!hasError(uTLInfo, IDNAErrors.LabelHasDot))
+                        {
+                            Errln(String.Format(StringFormatter.CurrentCulture, "T.labelToUnicode([{0}] {1}) errors {2} missing UIDNA_ERROR_LABEL_HAS_DOT",
+                                                i, testCase.s, uTLInfo.Errors));
+                            continue;
+                        }
+                    }
+                    // Differences between transitional and nontransitional processing
+                    if (mode == 'B')
+                    {
+                        if (aNInfo.IsTransitionalDifferent ||
+                            aTInfo.IsTransitionalDifferent ||
+                            uNInfo.IsTransitionalDifferent ||
+                            uTInfo.IsTransitionalDifferent ||
+                            aNLInfo.IsTransitionalDifferent ||
+                            aTLInfo.IsTransitionalDifferent ||
+                            uNLInfo.IsTransitionalDifferent ||
+                            uTLInfo.IsTransitionalDifferent
+                        )
+                        {
+                            Errln(String.Format("B.process([{0}] {1}) isTransitionalDifferent()", i, testCase.s));
+                            continue;
+                        }
+                        if (!UTF16Plus.Equal(aN, aT) || !UTF16Plus.Equal(uN, uT) ||
+                            !UTF16Plus.Equal(aNL, aTL) || !UTF16Plus.Equal(uNL, uTL) ||
+                            !sameErrors(aNInfo, aTInfo) || !sameErrors(uNInfo, uTInfo) ||
+                            !sameErrors(aNLInfo, aTLInfo) || !sameErrors(uNLInfo, uTLInfo)
+                        )
+                        {
+                            Errln(String.Format("N.process([{0}] {1}) vs. T.process() different errors or result strings",
+                                                i, testCase.s));
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        if (!aNInfo.IsTransitionalDifferent ||
+                            !aTInfo.IsTransitionalDifferent ||
+                            !uNInfo.IsTransitionalDifferent ||
+                            !uTInfo.IsTransitionalDifferent ||
+                            !aNLInfo.IsTransitionalDifferent ||
+                            !aTLInfo.IsTransitionalDifferent ||
+                            !uNLInfo.IsTransitionalDifferent ||
+                            !uTLInfo.IsTransitionalDifferent
+                        )
+                        {
+                            Errln(String.Format("{0}.process([{1}] {2}) !isTransitionalDifferent()",
+                                                testCase.o, i, testCase.s));
+                            continue;
+                        }
+                        if (UTF16Plus.Equal(aN, aT) || UTF16Plus.Equal(uN, uT) ||
+                            UTF16Plus.Equal(aNL, aTL) || UTF16Plus.Equal(uNL, uTL)
+                        )
+                        {
+                            Errln(String.Format("N.process([{0}] {1}) vs. T.process() same result strings",
+                                                i, testCase.s));
+                            continue;
+                        }
+                    }
                 }
-                else
+            }
+            finally
+            {
+                //aT.Dispose(); uT.Dispose();
+                //aN.Dispose(); uN.Dispose();
+                //aTuN.Dispose(); uTaN.Dispose();
+                //aNuN.Dispose(); uNaN.Dispose();
+                //aTL.Dispose(); uTL.Dispose();
+                //aNL.Dispose(); uNL.Dispose();
+            }
+        }
+
+        [Test]
+        public void TestSomeCases2()
+        {
+            const int StackBufferSize = 32;
+
+            ValueStringBuilder aT = new ValueStringBuilder(stackalloc char[StackBufferSize]), uT = new ValueStringBuilder(stackalloc char[StackBufferSize]);
+            ValueStringBuilder aN = new ValueStringBuilder(stackalloc char[StackBufferSize]), uN = new ValueStringBuilder(stackalloc char[StackBufferSize]);
+            IDNAInfo aTInfo, uTInfo;
+            IDNAInfo aNInfo, uNInfo;
+
+            ValueStringBuilder aTuN = new ValueStringBuilder(stackalloc char[StackBufferSize]), uTaN = new ValueStringBuilder(stackalloc char[StackBufferSize]);
+            ValueStringBuilder aNuN = new ValueStringBuilder(stackalloc char[StackBufferSize]), uNaN = new ValueStringBuilder(stackalloc char[StackBufferSize]);
+            IDNAInfo aTuNInfo, uTaNInfo;
+            IDNAInfo aNuNInfo, uNaNInfo;
+
+            ValueStringBuilder aTL = new ValueStringBuilder(stackalloc char[StackBufferSize]), uTL = new ValueStringBuilder(stackalloc char[StackBufferSize]);
+            ValueStringBuilder aNL = new ValueStringBuilder(stackalloc char[StackBufferSize]), uNL = new ValueStringBuilder(stackalloc char[StackBufferSize]);
+            IDNAInfo aTLInfo, uTLInfo;
+            IDNAInfo aNLInfo, uNLInfo;
+
+            IDNAErrors uniErrors;
+
+            try
+            {
+                TestCase testCase = new TestCase();
+                int i;
+                for (i = 0; i < testCases.Length; ++i)
                 {
-                    if (!hasError(aNLInfo, IDNAError.LabelHasDot))
+                    testCase.Set(testCases[i]);
+                    String input = testCase.s;
+                    String expected = testCase.u;
+                    // ToASCII/ToUnicode, transitional/nontransitional
+                    try
                     {
-                        Errln(String.Format(StringFormatter.CurrentCulture, "N.labelToASCII([{0}] {1}) errors {2} missing UIDNA_ERROR_LABEL_HAS_DOT",
-                                            i, testCase.s, aNLInfo.Errors));
+                        unsafe // We know this is safe, but we need to provide the IDNAInfo outside of this block
+                        {
+#pragma warning disable CS9080, CS9091 // Use of variable in this context may expose referenced variables outside of thier declaration scope
+                            trans.TryNameToASCII(input, ref aT, out aTInfo);
+                            trans.TryNameToUnicode(input, ref uT, out uTInfo);
+                            nontrans.TryNameToASCII(input, ref aN, out aNInfo);
+                            nontrans.TryNameToUnicode(input, ref uN, out uNInfo);
+#pragma warning restore CS9080, CS9091 // Use of variable in this context may expose referenced variables outside of thier declaration scope
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Errln(String.Format("first-level processing [{0}/{1}] {2} - {3}",
+                                            i, testCase.o, testCase.s, e));
                         continue;
+                    }
+                    // ToUnicode does not set length-overflow errors.
+                    uniErrors = testCase.errors & ~lengthOverflowErrors;
+                    char mode = testCase.o[0];
+                    if (mode == 'B' || mode == 'N')
+                    {
+                        if (!sameErrors(uNInfo, uniErrors))
+                        {
+                            Errln(String.Format(StringFormatter.CurrentCulture, "N.nameToUnicode([{0}] {1}) unexpected errors {2}",
+                                                i, testCase.s, uNInfo.Errors));
+                            continue;
+                        }
+                        if (!UTF16Plus.Equal(uN.AsSpan(), expected))
+                        {
+                            Errln(String.Format("N.nameToUnicode([{0}] {1}) unexpected string {2}",
+                                                i, testCase.s, Prettify(uN.AsSpan())));
+                            continue;
+                        }
+                        if (!sameErrors(aNInfo, testCase.errors))
+                        {
+                            Errln(String.Format("N.nameToASCII([{0}] {1}) unexpected errors {2}",
+                                                i, testCase.s, aNInfo.Errors));
+                            continue;
+                        }
+                    }
+                    if (mode == 'B' || mode == 'T')
+                    {
+                        if (!sameErrors(uTInfo, uniErrors))
+                        {
+                            Errln(String.Format("T.nameToUnicode([{0}] {1}) unexpected errors {2}",
+                                                i, testCase.s, uTInfo.Errors));
+                            continue;
+                        }
+                        if (!UTF16Plus.Equal(uT.AsSpan(), expected))
+                        {
+                            Errln(String.Format("T.nameToUnicode([{0}] {1}) unexpected string {2}",
+                                                i, testCase.s, Prettify(uT.AsSpan())));
+                            continue;
+                        }
+                        if (!sameErrors(aTInfo, testCase.errors))
+                        {
+                            Errln(String.Format("T.nameToASCII([{0}] {1}) unexpected errors {2}",
+                                                i, testCase.s, aTInfo.Errors));
+                            continue;
+                        }
+                    }
+                    // ToASCII is all-ASCII if no severe errors
+                    if (!hasCertainErrors(aNInfo, severeErrors) && !IsASCII(aN.AsSpan()))
+                    {
+                        Errln(String.Format("N.nameToASCII([{0}] {1}) (errors {2}) result is not ASCII {3}",
+                                            i, testCase.s, aNInfo.Errors, Prettify(aN.AsSpan())));
+                        continue;
+                    }
+                    if (!hasCertainErrors(aTInfo, severeErrors) && !IsASCII(aT.AsSpan()))
+                    {
+                        Errln(String.Format("T.nameToASCII([{0}] {1}) (errors {2}) result is not ASCII {3}",
+                                            i, testCase.s, aTInfo.Errors, Prettify(aT.AsSpan())));
+                        continue;
+                    }
+                    if (IsVerbose())
+                    {
+                        char m = mode == 'B' ? mode : 'N';
+                        Logln(String.Format("{0}.nameToASCII([{1}] {2}) (errors {3}) result string: {4}",
+                                            m, i, testCase.s, aNInfo.Errors, Prettify(aN.AsSpan())));
+                        if (mode != 'B')
+                        {
+                            Logln(String.Format("T.nameToASCII([{0}] {1}) (errors {2}) result string: {3}",
+                                                i, testCase.s, aTInfo.Errors, Prettify(aT.AsSpan())));
+                        }
+                    }
+                    // second-level processing
+                    try
+                    {
+                        unsafe // We know this is safe, but we need to provide the IDNAInfo outside of this block
+                        {
+#pragma warning disable CS9080, CS9091 // Use of variable in this context may expose referenced variables outside of thier declaration scope
+                            nontrans.TryNameToUnicode(aT.AsSpan(), ref aTuN, out aTuNInfo);
+                            nontrans.TryNameToASCII(uT.AsSpan(), ref uTaN, out uTaNInfo);
+                            nontrans.TryNameToUnicode(aN.AsSpan(), ref aNuN, out aNuNInfo);
+                            nontrans.TryNameToASCII(uN.AsSpan(), ref uNaN, out uNaNInfo);
+#pragma warning restore CS9080, CS9091 // Use of variable in this context may expose referenced variables outside of thier declaration scope
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Errln(String.Format("second-level processing [{0}/{1}] {2} - {3}",
+                                            i, testCase.o, testCase.s, e));
+                        continue;
+                    }
+                    if (!UTF16Plus.Equal(aN.AsSpan(), uNaN.AsSpan()))
+                    {
+                        Errln(String.Format(StringFormatter.CurrentCulture, "N.nameToASCII([{0}] {1})!=N.nameToUnicode().N.nameToASCII() " +
+                                            "(errors {2}) {3} vs. {4}",
+                                            i, testCase.s, aNInfo.Errors,
+                                            Prettify(aN.AsSpan()), Prettify(uNaN.AsSpan())));
+                        continue;
+                    }
+                    if (!UTF16Plus.Equal(aT.AsSpan(), uTaN.AsSpan()))
+                    {
+                        Errln(String.Format(StringFormatter.CurrentCulture, "T.nameToASCII([{0}] {1})!=T.nameToUnicode().N.nameToASCII() " +
+                                            "(errors {2}) {3} vs. {4}",
+                                            i, testCase.s, aNInfo.Errors,
+                                            Prettify(aT.AsSpan()), Prettify(uTaN.AsSpan())));
+                        continue;
+                    }
+                    if (!UTF16Plus.Equal(uN.AsSpan(), aNuN.AsSpan()))
+                    {
+                        Errln(String.Format(StringFormatter.CurrentCulture, "N.nameToUnicode([{0}] {1})!=N.nameToASCII().N.nameToUnicode() " +
+                                            "(errors {2}) {3} vs. {4}",
+                                            i, testCase.s, uNInfo.Errors, Prettify(uN.AsSpan()), Prettify(aNuN.AsSpan())));
+                        continue;
+                    }
+                    if (!UTF16Plus.Equal(uT.AsSpan(), aTuN.AsSpan()))
+                    {
+                        Errln(String.Format(StringFormatter.CurrentCulture, "T.nameToUnicode([{0}] {1})!=T.nameToASCII().N.nameToUnicode() " +
+                                            "(errors {2}) {3} vs. {4}",
+                                            i, testCase.s, uNInfo.Errors,
+                                            Prettify(uT.AsSpan()), Prettify(aTuN.AsSpan())));
+                        continue;
+                    }
+                    // labelToUnicode
+                    try
+                    {
+                        unsafe // We know this is safe, but we need to provide the IDNAInfo outside of this block
+                        {
+#pragma warning disable CS9080, CS9091 // Use of variable in this context may expose referenced variables outside of thier declaration scope
+                            trans.TryLabelToASCII(input, ref aTL, out aTLInfo);
+                            trans.TryLabelToUnicode(input, ref uTL, out uTLInfo);
+                            nontrans.TryLabelToASCII(input, ref aNL, out aNLInfo);
+                            nontrans.TryLabelToUnicode(input, ref uNL, out uNLInfo);
+#pragma warning restore CS9080, CS9091 // Use of variable in this context may expose referenced variables outside of thier declaration scope
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Errln(String.Format("labelToXYZ processing [{0}/{1}] {2} - {3}",
+                                            i, testCase.o, testCase.s, e));
+                        continue;
+                    }
+                    if (aN.IndexOf(".", StringComparison.Ordinal) < 0)
+                    {
+                        if (!UTF16Plus.Equal(aN.AsSpan(), aNL.AsSpan()) || !sameErrors(aNInfo, aNLInfo))
+                        {
+                            Errln(String.Format(StringFormatter.CurrentCulture, "N.nameToASCII([{0}] {1})!=N.labelToASCII() " +
+                                                "(errors {2} vs {3}) {4} vs. {5}",
+                                                i, testCase.s, aNInfo.Errors, aNLInfo.Errors,
+                                                Prettify(aN.AsSpan()), Prettify(aNL.AsSpan())));
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        if (!hasError(aNLInfo, IDNAErrors.LabelHasDot))
+                        {
+                            Errln(String.Format(StringFormatter.CurrentCulture, "N.labelToASCII([{0}] {1}) errors {2} missing UIDNA_ERROR_LABEL_HAS_DOT",
+                                                i, testCase.s, aNLInfo.Errors));
+                            continue;
+                        }
+                    }
+                    if (aT.IndexOf(".", StringComparison.Ordinal) < 0)
+                    {
+                        if (!UTF16Plus.Equal(aT.AsSpan(), aTL.AsSpan()) || !sameErrors(aTInfo, aTLInfo))
+                        {
+                            Errln(String.Format(StringFormatter.CurrentCulture, "T.nameToASCII([{0}] {1})!=T.labelToASCII() " +
+                                                "(errors {2} vs {3}) {4} vs. {5}",
+                                                i, testCase.s, aTInfo.Errors, aTLInfo.Errors,
+                                                Prettify(aT.AsSpan()), Prettify(aTL.AsSpan())));
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        if (!hasError(aTLInfo, IDNAErrors.LabelHasDot))
+                        {
+                            Errln(String.Format(StringFormatter.CurrentCulture, "T.labelToASCII([{0}] {1}) errors {2} missing UIDNA_ERROR_LABEL_HAS_DOT",
+                                                i, testCase.s, aTLInfo.Errors));
+                            continue;
+                        }
+                    }
+                    if (uN.IndexOf(".", StringComparison.Ordinal) < 0)
+                    {
+                        if (!UTF16Plus.Equal(uN.AsSpan(), uNL.AsSpan()) || !sameErrors(uNInfo, uNLInfo))
+                        {
+                            Errln(String.Format(StringFormatter.CurrentCulture, "N.nameToUnicode([{0}] {1})!=N.labelToUnicode() " +
+                                                "(errors {2} vs {3}) {4} vs. {5}",
+                                                i, testCase.s, uNInfo.Errors, uNLInfo.Errors,
+                                                Prettify(uN.AsSpan()), Prettify(uNL.AsSpan())));
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        if (!hasError(uNLInfo, IDNAErrors.LabelHasDot))
+                        {
+                            Errln(String.Format(StringFormatter.CurrentCulture, "N.labelToUnicode([{0}] {1}) errors {2} missing UIDNA_ERROR_LABEL_HAS_DOT",
+                                                i, testCase.s, uNLInfo.Errors));
+                            continue;
+                        }
+                    }
+                    if (uT.IndexOf(".", StringComparison.Ordinal) < 0)
+                    {
+                        if (!UTF16Plus.Equal(uT.AsSpan(), uTL.AsSpan()) || !sameErrors(uTInfo, uTLInfo))
+                        {
+                            Errln(String.Format(StringFormatter.CurrentCulture, "T.nameToUnicode([{0}] {1})!=T.labelToUnicode() " +
+                                                "(errors {2} vs {3}) {4} vs. {5}",
+                                                i, testCase.s, uTInfo.Errors, uTLInfo.Errors,
+                                                Prettify(uT.AsSpan()), Prettify(uTL.AsSpan())));
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        if (!hasError(uTLInfo, IDNAErrors.LabelHasDot))
+                        {
+                            Errln(String.Format(StringFormatter.CurrentCulture, "T.labelToUnicode([{0}] {1}) errors {2} missing UIDNA_ERROR_LABEL_HAS_DOT",
+                                                i, testCase.s, uTLInfo.Errors));
+                            continue;
+                        }
+                    }
+                    // Differences between transitional and nontransitional processing
+                    if (mode == 'B')
+                    {
+                        if (aNInfo.IsTransitionalDifferent ||
+                            aTInfo.IsTransitionalDifferent ||
+                            uNInfo.IsTransitionalDifferent ||
+                            uTInfo.IsTransitionalDifferent ||
+                            aNLInfo.IsTransitionalDifferent ||
+                            aTLInfo.IsTransitionalDifferent ||
+                            uNLInfo.IsTransitionalDifferent ||
+                            uTLInfo.IsTransitionalDifferent
+                        )
+                        {
+                            Errln(String.Format("B.process([{0}] {1}) isTransitionalDifferent()", i, testCase.s));
+                            continue;
+                        }
+                        if (!UTF16Plus.Equal(aN.AsSpan(), aT.AsSpan()) || !UTF16Plus.Equal(uN.AsSpan(), uT.AsSpan()) ||
+                            !UTF16Plus.Equal(aNL.AsSpan(), aTL.AsSpan()) || !UTF16Plus.Equal(uNL.AsSpan(), uTL.AsSpan()) ||
+                            !sameErrors(aNInfo, aTInfo) || !sameErrors(uNInfo, uTInfo) ||
+                            !sameErrors(aNLInfo, aTLInfo) || !sameErrors(uNLInfo, uTLInfo)
+                        )
+                        {
+                            Errln(String.Format("N.process([{0}] {1}) vs. T.process() different errors or result strings",
+                                                i, testCase.s));
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        if (!aNInfo.IsTransitionalDifferent ||
+                            !aTInfo.IsTransitionalDifferent ||
+                            !uNInfo.IsTransitionalDifferent ||
+                            !uTInfo.IsTransitionalDifferent ||
+                            !aNLInfo.IsTransitionalDifferent ||
+                            !aTLInfo.IsTransitionalDifferent ||
+                            !uNLInfo.IsTransitionalDifferent ||
+                            !uTLInfo.IsTransitionalDifferent
+                        )
+                        {
+                            Errln(String.Format("{0}.process([{1}] {2}) !isTransitionalDifferent()",
+                                                testCase.o, i, testCase.s));
+                            continue;
+                        }
+                        if (UTF16Plus.Equal(aN.AsSpan(), aT.AsSpan()) || UTF16Plus.Equal(uN.AsSpan(), uT.AsSpan()) ||
+                            UTF16Plus.Equal(aNL.AsSpan(), aTL.AsSpan()) || UTF16Plus.Equal(uNL.AsSpan(), uTL.AsSpan())
+                        )
+                        {
+                            Errln(String.Format("N.process([{0}] {1}) vs. T.process() same result strings",
+                                                i, testCase.s));
+                            continue;
+                        }
                     }
                 }
-                if (aT.IndexOf(".", StringComparison.Ordinal) < 0)
-                {
-                    if (!UTF16Plus.Equal(aT, aTL) || !sameErrors(aTInfo, aTLInfo))
-                    {
-                        Errln(String.Format(StringFormatter.CurrentCulture, "T.nameToASCII([{0}] {1})!=T.labelToASCII() " +
-                                            "(errors {2} vs {3}) {4} vs. {5}",
-                                            i, testCase.s, aTInfo.Errors, aTLInfo.Errors,
-                                            Prettify(aT.ToString()), Prettify(aTL.ToString())));
-                        continue;
-                    }
-                }
-                else
-                {
-                    if (!hasError(aTLInfo, IDNAError.LabelHasDot))
-                    {
-                        Errln(String.Format(StringFormatter.CurrentCulture, "T.labelToASCII([{0}] {1}) errors {2} missing UIDNA_ERROR_LABEL_HAS_DOT",
-                                            i, testCase.s, aTLInfo.Errors));
-                        continue;
-                    }
-                }
-                if (uN.IndexOf(".", StringComparison.Ordinal) < 0)
-                {
-                    if (!UTF16Plus.Equal(uN, uNL) || !sameErrors(uNInfo, uNLInfo))
-                    {
-                        Errln(String.Format(StringFormatter.CurrentCulture, "N.nameToUnicode([{0}] {1})!=N.labelToUnicode() " +
-                                            "(errors {2} vs {3}) {4} vs. {5}",
-                                            i, testCase.s, uNInfo.Errors, uNLInfo.Errors,
-                                            Prettify(uN.ToString()), Prettify(uNL.ToString())));
-                        continue;
-                    }
-                }
-                else
-                {
-                    if (!hasError(uNLInfo, IDNAError.LabelHasDot))
-                    {
-                        Errln(String.Format(StringFormatter.CurrentCulture, "N.labelToUnicode([{0}] {1}) errors {2} missing UIDNA_ERROR_LABEL_HAS_DOT",
-                                            i, testCase.s, uNLInfo.Errors));
-                        continue;
-                    }
-                }
-                if (uT.IndexOf(".", StringComparison.Ordinal) < 0)
-                {
-                    if (!UTF16Plus.Equal(uT, uTL) || !sameErrors(uTInfo, uTLInfo))
-                    {
-                        Errln(String.Format(StringFormatter.CurrentCulture, "T.nameToUnicode([{0}] {1})!=T.labelToUnicode() " +
-                                            "(errors {2} vs {3}) {4} vs. {5}",
-                                            i, testCase.s, uTInfo.Errors, uTLInfo.Errors,
-                                            Prettify(uT.ToString()), Prettify(uTL.ToString())));
-                        continue;
-                    }
-                }
-                else
-                {
-                    if (!hasError(uTLInfo, IDNAError.LabelHasDot))
-                    {
-                        Errln(String.Format(StringFormatter.CurrentCulture, "T.labelToUnicode([{0}] {1}) errors {2} missing UIDNA_ERROR_LABEL_HAS_DOT",
-                                            i, testCase.s, uTLInfo.Errors));
-                        continue;
-                    }
-                }
-                // Differences between transitional and nontransitional processing
-                if (mode == 'B')
-                {
-                    if (aNInfo.IsTransitionalDifferent ||
-                        aTInfo.IsTransitionalDifferent ||
-                        uNInfo.IsTransitionalDifferent ||
-                        uTInfo.IsTransitionalDifferent ||
-                        aNLInfo.IsTransitionalDifferent ||
-                        aTLInfo.IsTransitionalDifferent ||
-                        uNLInfo.IsTransitionalDifferent ||
-                        uTLInfo.IsTransitionalDifferent
-                    )
-                    {
-                        Errln(String.Format("B.process([{0}] {1}) isTransitionalDifferent()", i, testCase.s));
-                        continue;
-                    }
-                    if (!UTF16Plus.Equal(aN, aT) || !UTF16Plus.Equal(uN, uT) ||
-                        !UTF16Plus.Equal(aNL, aTL) || !UTF16Plus.Equal(uNL, uTL) ||
-                        !sameErrors(aNInfo, aTInfo) || !sameErrors(uNInfo, uTInfo) ||
-                        !sameErrors(aNLInfo, aTLInfo) || !sameErrors(uNLInfo, uTLInfo)
-                    )
-                    {
-                        Errln(String.Format("N.process([{0}] {1}) vs. T.process() different errors or result strings",
-                                            i, testCase.s));
-                        continue;
-                    }
-                }
-                else
-                {
-                    if (!aNInfo.IsTransitionalDifferent ||
-                        !aTInfo.IsTransitionalDifferent ||
-                        !uNInfo.IsTransitionalDifferent ||
-                        !uTInfo.IsTransitionalDifferent ||
-                        !aNLInfo.IsTransitionalDifferent ||
-                        !aTLInfo.IsTransitionalDifferent ||
-                        !uNLInfo.IsTransitionalDifferent ||
-                        !uTLInfo.IsTransitionalDifferent
-                    )
-                    {
-                        Errln(String.Format("{0}.process([{1}] {2}) !isTransitionalDifferent()",
-                                            testCase.o, i, testCase.s));
-                        continue;
-                    }
-                    if (UTF16Plus.Equal(aN, aT) || UTF16Plus.Equal(uN, uT) ||
-                        UTF16Plus.Equal(aNL, aTL) || UTF16Plus.Equal(uNL, uTL)
-                    )
-                    {
-                        Errln(String.Format("N.process([{0}] {1}) vs. T.process() same result strings",
-                                            i, testCase.s));
-                        continue;
-                    }
-                }
+            }
+            finally
+            {
+                aT.Dispose(); uT.Dispose();
+                aN.Dispose(); uN.Dispose();
+                aTuN.Dispose(); uTaN.Dispose();
+                aNuN.Dispose(); uNaN.Dispose();
+                aTL.Dispose(); uTL.Dispose();
+                aNL.Dispose(); uNL.Dispose();
             }
         }
 
         private void CheckIdnaTestResult(String line, String type,
-                String expected, StringBuilder result, IDNAInfo info)
+                String expected, ReadOnlySpan<char> result, IDNAInfo info)
         {
             // An error in toUnicode or toASCII is indicated by a value in square brackets,
             // such as "[B5 B6]".
@@ -799,7 +1256,7 @@ namespace ICU4N.Dev.Test.Normalizers
             {
                 Errln(String.Format("{0}  expected != actual\n    {1}", type, line));
                 Errln("    " + expected);
-                Errln("    " + result);
+                Errln("    " + result.ToString());
             }
         }
 
@@ -808,6 +1265,14 @@ namespace ICU4N.Dev.Test.Normalizers
         {
             TextReader idnaTestFile = TestUtil.GetDataReader("unicode.IdnaTest.txt", "UTF-8");
             Regex semi = new Regex(";", RegexOptions.Compiled);
+            ValueStringBuilder
+                uN = new ValueStringBuilder(stackalloc char[32]),
+                aN = new ValueStringBuilder(stackalloc char[32]),
+                aT = new ValueStringBuilder(stackalloc char[32]);
+            Span<char>
+                uNSpan = stackalloc char[256],
+                aNSpan = stackalloc char[256],
+                aTSpan = stackalloc char[256];
             try
             {
                 string line;
@@ -858,97 +1323,179 @@ namespace ICU4N.Dev.Test.Normalizers
                     // Ignored as long as we do not implement and test vanilla IDNA2008.
 
                     // ToASCII/ToUnicode, transitional/nontransitional
-                    StringBuilder uN, aN, aT;
-                    IDNAInfo uNInfo, aNInfo, aTInfo;
-                    nontrans.NameToUnicode(source16, uN = new StringBuilder(), uNInfo = new IDNAInfo());
-                    CheckIdnaTestResult(line, "toUnicodeNontrans", unicode16, uN, uNInfo);
+                    //StringBuilder uN, aN, aT;
+                    //IDNAInfo uNInfo, aNInfo, aTInfo;
+                    uN.Length = 0;
+                    aN.Length = 0;
+                    aT.Length = 0;
+
+                    nontrans.TryNameToUnicode(source16, ref uN, out IDNAInfo uNInfo);
+                    CheckIdnaTestResult(line, "toUnicodeNontrans", unicode16, uN.AsSpan(), uNInfo);
                     if (typeChar == 'T' || typeChar == 'B')
                     {
-                        trans.NameToASCII(source16, aT = new StringBuilder(), aTInfo = new IDNAInfo());
-                        CheckIdnaTestResult(line, "toASCIITrans", ascii16, aT, aTInfo);
+                        trans.TryNameToASCII(source16, ref aT, out IDNAInfo aTInfo);
+                        CheckIdnaTestResult(line, "toASCIITrans", ascii16, aT.AsSpan(), aTInfo);
                     }
                     if (typeChar == 'N' || typeChar == 'B')
                     {
-                        nontrans.NameToASCII(source16, aN = new StringBuilder(), aNInfo = new IDNAInfo());
-                        CheckIdnaTestResult(line, "toASCIINontrans", ascii16, aN, aNInfo);
+                        nontrans.TryNameToASCII(source16, ref aN, out IDNAInfo aNInfo);
+                        CheckIdnaTestResult(line, "toASCIINontrans", ascii16, aN.AsSpan(), aNInfo);
+                    }
+
+                    nontrans.TryNameToUnicode(source16, uNSpan, out int charsLength, out uNInfo);
+                    CheckIdnaTestResult(line, "toUnicodeNontrans", unicode16, uNSpan.Slice(0, charsLength), uNInfo);
+                    if (typeChar == 'T' || typeChar == 'B')
+                    {
+                        trans.TryNameToASCII(source16, aTSpan, out charsLength, out IDNAInfo aTInfo);
+                        CheckIdnaTestResult(line, "toASCIITrans", ascii16, aTSpan.Slice(0, charsLength), aTInfo);
+                    }
+                    if (typeChar == 'N' || typeChar == 'B')
+                    {
+                        nontrans.TryNameToASCII(source16, aNSpan, out charsLength, out IDNAInfo aNInfo);
+                        CheckIdnaTestResult(line, "toASCIINontrans", ascii16, aNSpan.Slice(0, charsLength), aNInfo);
                     }
                 }
             }
             finally
             {
+                uN.Dispose();
+                aT.Dispose();
+                aN.Dispose();
                 idnaTestFile.Dispose();
+            }
+        }
+
+        [Test] // ICU4N specific
+        public void TestBufferOverflow()
+        {
+            Span<char> longBuffer = stackalloc char[512];
+            Span<char> shortBuffer = stackalloc char[4];
+
+            TestCase testCase = new TestCase();
+            for (int i = 0; i < testCases.Length; ++i)
+            {
+                testCase.Set(testCases[i]);
+                string input = testCase.s;
+
+                // Exclude any tests with strings that will fit the short buffer.
+                // Since these methods may remove chars, we add 5 just to be sure.
+                if (input.Length <= shortBuffer.Length + 5)
+                    continue;
+
+                // TryLabelToASCII
+                {
+                    trans.TryLabelToASCII(input, longBuffer, out int longBufferLength, out IDNAInfo info);
+                    if ((info.errors & IDNAErrors.BufferOverflow) != 0)
+                    {
+                        Errln($"IDNA.TryLabelToASCII was not suppose to return a {IDNAErrors.BufferOverflow} when there is a long enough buffer.");
+                    }
+                    bool success = trans.TryLabelToASCII(input, shortBuffer, out int shortBufferLength, out info);
+                    if (success || (info.errors & IDNAErrors.BufferOverflow) == 0) 
+                    {
+                        Errln($"IDNA.TryLabelToASCII was suppose to return a {IDNAErrors.BufferOverflow} when the buffer is too short.");
+                    }
+                    if (shortBufferLength < longBufferLength)
+                    {
+                        Errln($"IDNA.TryLabelToASCII was suppose to return a buffer size large enough to fit the text.");
+                    }
+                }
+
+                // TryLabelToUnicode
+                {
+                    trans.TryLabelToUnicode(input, longBuffer, out int longBufferLength, out IDNAInfo info);
+                    if ((info.errors & IDNAErrors.BufferOverflow) != 0)
+                    {
+                        Errln($"IDNA.TryLabelToUnicode was not suppose to return a {IDNAErrors.BufferOverflow} when there is a long enough buffer.");
+                    }
+                    bool success = trans.TryLabelToUnicode(input, shortBuffer, out int shortBufferLength, out info);
+                    if (success || (info.errors & IDNAErrors.BufferOverflow) == 0)
+                    {
+                        Errln($"IDNA.TryLabelToUnicode was suppose to return a {IDNAErrors.BufferOverflow} when the buffer is too short.");
+                    }
+                    if (shortBufferLength < longBufferLength)
+                    {
+                        Errln($"IDNA.TryLabelToUnicode was suppose to return a buffer size large enough to fit the text.");
+                    }
+                }
+
+                // TryNameToASCII
+                {
+                    trans.TryNameToASCII(input, longBuffer, out int longBufferLength, out IDNAInfo info);
+                    if ((info.errors & IDNAErrors.BufferOverflow) != 0)
+                    {
+                        Errln($"IDNA.TryNameToASCII was not suppose to return a {IDNAErrors.BufferOverflow} when there is a long enough buffer.");
+                    }
+                    bool success = trans.TryNameToASCII(input, shortBuffer, out int shortBufferLength, out info);
+                    if (success || (info.errors & IDNAErrors.BufferOverflow) == 0)
+                    {
+                        Errln($"IDNA.TryNameToASCII was suppose to return a {IDNAErrors.BufferOverflow} when the buffer is too short.");
+                    }
+                    if (shortBufferLength < longBufferLength)
+                    {
+                        Errln($"IDNA.TryNameToASCII was suppose to return a buffer size large enough to fit the text.");
+                    }
+                }
+
+                // TryNameToUnicode
+                {
+                    trans.TryNameToUnicode(input, longBuffer, out int longBufferLength, out IDNAInfo info);
+                    if ((info.errors & IDNAErrors.BufferOverflow) != 0)
+                    {
+                        Errln($"IDNA.TryNameToUnicode was not suppose to return a {IDNAErrors.BufferOverflow} when there is a long enough buffer.");
+                    }
+                    bool success = trans.TryNameToUnicode(input, shortBuffer, out int shortBufferLength, out info);
+                    if (success || (info.errors & IDNAErrors.BufferOverflow) == 0)
+                    {
+                        Errln($"IDNA.TryNameToUnicode was suppose to return a {IDNAErrors.BufferOverflow} when the buffer is too short.");
+                    }
+                    if (shortBufferLength < longBufferLength)
+                    {
+                        Errln($"IDNA.TryNameToUnicode was suppose to return a buffer size large enough to fit the text.");
+                    }
+                }
             }
         }
 
         private readonly IDNA trans, nontrans;
 
-        private static readonly ISet<IDNAError> severeErrors = new HashSet<IDNAError>
-        {
-            IDNAError.LeadingCombiningMark,
-            IDNAError.Disallowed,
-            IDNAError.Punycode,
-            IDNAError.LabelHasDot,
-            IDNAError.InvalidAceLabel
-        };
-        private static readonly ISet<IDNAError> lengthOverflowErrors = new HashSet<IDNAError>
-        {
-            IDNAError.LabelTooLong,
-            IDNAError.DomainNameTooLong
-        };
+        private const IDNAErrors severeErrors =
+            IDNAErrors.LeadingCombiningMark
+            | IDNAErrors.Disallowed
+            | IDNAErrors.Punycode
+            | IDNAErrors.LabelHasDot
+            | IDNAErrors.InvalidAceLabel;
 
-        private bool hasError(IDNAInfo info, IDNAError error)
+        private const IDNAErrors lengthOverflowErrors =
+            IDNAErrors.LabelTooLong
+            | IDNAErrors.DomainNameTooLong;
+
+        private bool hasError(IDNAInfo info, IDNAErrors error)
         {
-            return info.Errors.Contains(error);
+            return (info.Errors & error) != 0;
         }
         // assumes that certainErrors is not empty
-        private bool hasCertainErrors(ISet<IDNAError> errors, ISet<IDNAError> certainErrors)
+        private bool hasCertainErrors(IDNAErrors errors, IDNAErrors certainErrors)
         {
-            return errors.Count > 0 && errors.Overlaps(certainErrors);
+            return errors != IDNAErrors.None && (errors & certainErrors) != 0; //errors.Overlaps(certainErrors);
         }
-        private bool hasCertainErrors(IDNAInfo info, ISet<IDNAError> certainErrors)
+        private bool hasCertainErrors(IDNAInfo info, IDNAErrors certainErrors)
         {
             return hasCertainErrors(info.Errors, certainErrors);
         }
-        private bool sameErrors(ISet<IDNAError> a, ISet<IDNAError> b)
+        private bool sameErrors(IDNAErrors a, IDNAErrors b)
         {
-            return a.SetEquals(b);
+            return a == b;
         }
         private bool sameErrors(IDNAInfo a, IDNAInfo b)
         {
             return sameErrors(a.Errors, b.Errors);
         }
-        private bool sameErrors(IDNAInfo a, ISet<IDNAError> b)
+        private bool sameErrors(IDNAInfo a, IDNAErrors b)
         {
             return sameErrors(a.Errors, b);
         }
 
-        private static bool IsASCII(string str)
-        {
-            int length = str.Length;
-            for (int i = 0; i < length; ++i)
-            {
-                if (str[i] >= 0x80)
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        private static bool IsASCII(StringBuilder str)
-        {
-            int length = str.Length;
-            for (int i = 0; i < length; ++i)
-            {
-                if (str[i] >= 0x80)
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        private static bool IsASCII(ICharSequence str)
+        private static bool IsASCII(ReadOnlySpan<char> str)
         {
             int length = str.Length;
             for (int i = 0; i < length; ++i)

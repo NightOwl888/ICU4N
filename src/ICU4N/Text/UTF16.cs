@@ -4,6 +4,8 @@ using J2N;
 using J2N.Text;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace ICU4N.Text
@@ -184,6 +186,11 @@ namespace ICU4N.Text
         /// </summary>
         private const int SurrogateBits = 0xD800;
 
+        /// <summary>
+        /// Buffer size for stack operations.
+        /// </summary>
+        private const int CharStackBufferSize = 32;
+
         // constructor --------------------------------------------------------
 
         // ICU4N: Class made static rather than having private constructor
@@ -192,7 +199,7 @@ namespace ICU4N.Text
         // /CLOVER:ON
         // public method ------------------------------------------------------
 
-        // ICU4N specific - These methods were combined into one and moved to UTF16Extension.tt
+        // ICU4N specific - These methods were combined into one
         // - CharAt(string source, int offset16)
         // - _charAt(string source, int offset16, char single)
         // - CharAt(char[] source, int offset16)
@@ -200,8 +207,6 @@ namespace ICU4N.Text
         // - CharAt(ICharSequence source, int offset16)
         // - _charAt(ICharSequence source, int offset16, char single)
         // - CharAt(StringBuilder source, int offset16)
-
-#if FEATURE_SPAN
 
         /// <summary>
         /// Extract a single UTF-32 value from a string. Used when iterating forwards or backwards (with
@@ -220,14 +225,34 @@ namespace ICU4N.Text
         /// <exception cref="IndexOutOfRangeException">Thrown if <paramref name="offset16"/> is out of bounds.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="source"/> is <c>null</c>.</exception>
         /// <stable>ICU 2.1</stable>
-        public static int CharAt(ReadOnlySpan<char> source, int offset16) // ICU4N TODO: Move to UTF16Extension.tt
+        public static int CharAt(string source, int offset16) // ICU4N TODO: API - Rename CodePointAt()
         {
-            //if (source == null)
-            //    throw new ArgumentNullException(nameof(source));
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
 
+            return CharAt(source.AsSpan(), offset16);
+        }
+
+        /// <summary>
+        /// Extract a single UTF-32 value from a string. Used when iterating forwards or backwards (with
+        /// <see cref="UTF16.GetCharCount(int)"/>, as well as random access. If a validity check is
+        /// required, use <see cref="UChar.IsLegal(int)"/>
+        /// on the return value. If the char retrieved is part of a surrogate pair, its supplementary
+        /// character will be returned. If a complete supplementary character is not found the incomplete
+        /// character will be returned.
+        /// </summary>
+        /// <param name="source">Array of UTF-16 chars</param>
+        /// <param name="offset16">UTF-16 offset to the start of the character.</param>
+        /// <returns>
+        /// UTF-32 value for the UTF-32 value that contains the char at <paramref name="offset16"/>. The boundaries
+        /// of that codepoint are the same as in <c>Bounds32()</c>.
+        /// </returns>
+        /// <exception cref="IndexOutOfRangeException">Thrown if <paramref name="offset16"/> is out of bounds.</exception>
+        /// <stable>ICU 2.1</stable>
+        public static int CharAt(ReadOnlySpan<char> source, int offset16) // ICU4N TODO: API - Rename CodePointAt()
+        {
             if (offset16 < 0 || offset16 >= source.Length)
                 throw new IndexOutOfRangeException(nameof(offset16));
-
 
             char single = source[offset16];
             if (!IsSurrogate(single))
@@ -265,67 +290,7 @@ namespace ICU4N.Text
             return single; // return unmatched surrogate
         }
 
-#endif
-
-        /// <summary>
-        /// Extract a single UTF-32 value from a substring. Used when iterating forwards or backwards
-        /// (with <see cref="UTF16.GetCharCount(int)"/>, as well as random access. If a validity check is
-        /// required, use <see cref="UChar.IsLegal(int)"/>
-        /// on the return value. If the char retrieved is part of a surrogate pair, its supplementary
-        /// character will be returned. If a complete supplementary character is not found the incomplete
-        /// character will be returned.
-        /// </summary>
-        /// <param name="source">Array of UTF-16 chars.</param>
-        /// <param name="start">Offset to substring in the source array for analyzing.</param>
-        /// <param name="limit">Offset to substring in the source array for analyzing.</param>
-        /// <param name="offset16">UTF-16 offset relative to start.</param>
-        /// <returns>UTF-32 value for the UTF-32 value that contains the char at offset16. The boundaries
-        /// of that codepoint are the same as in <see cref="Bounds(char[], int, int, int)"/>.</returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown if offset16 is not within the range of start and limit.</exception>
-        /// <stable>ICU 2.1</stable>
-        public static int CharAt(char[] source, int start, int limit, int offset16)
-        {
-            offset16 += start;
-            if (offset16 < start || offset16 >= limit)
-            {
-                throw new IndexOutOfRangeException(nameof(offset16));
-            }
-
-            char single = source[offset16];
-            if (!IsSurrogate(single))
-            {
-                return single;
-            }
-
-            // Convert the UTF-16 surrogate pair if necessary.
-            // For simplicity in usage, and because the frequency of pairs is
-            // low, look both directions.
-            if (single <= LeadSurrogateMaxValue)
-            {
-                offset16++;
-                if (offset16 >= limit)
-                {
-                    return single;
-                }
-                char trail = source[offset16];
-                if (IsTrailSurrogate(trail))
-                {
-                    return Character.ToCodePoint(single, trail);
-                }
-            }
-            else
-            { // IsTrailSurrogate(single), so
-                if (offset16 == start)
-                {
-                    return single;
-                }
-                offset16--;
-                char lead = source[offset16];
-                if (IsLeadSurrogate(lead))
-                    return Character.ToCodePoint(lead, single);
-            }
-            return single; // return unmatched surrogate
-        }
+        // ICU4N: Factored out CharAt(char[] source, int start, int limit, int offset16) because we have ReadOnlySpan<char> that can be sliced
 
         /// <summary>
         /// Extract a single UTF-32 value from a string. Used when iterating forwards or backwards (with
@@ -338,10 +303,10 @@ namespace ICU4N.Text
         /// <param name="source">UTF-16 chars string buffer.</param>
         /// <param name="offset16">UTF-16 offset to the start of the character.</param>
         /// <returns>UTF-32 value for the UTF-32 value that contains the char at offset16. The boundaries
-        /// of that codepoint are the same as in <see cref="Bounds(char[], int, int, int)"/>.</returns>
+        /// of that codepoint are the same as in <see cref="Bounds(ReadOnlySpan{char}, int)"/>.</returns>
         /// <exception cref="IndexOutOfRangeException">Thrown if offset16 is not within the range of start and limit.</exception>
         /// <stable>ICU 2.1</stable>
-        public static int CharAt(IReplaceable source, int offset16)
+        public static int CharAt(IReplaceable source, int offset16) // ICU4N TODO: API - Rename CodePointAt()
         {
             if (offset16 < 0 || offset16 >= source.Length)
             {
@@ -422,7 +387,37 @@ namespace ICU4N.Text
         /// </returns>
         /// <exception cref="IndexOutOfRangeException">If <paramref name="offset16"/> is out of bounds.</exception>
         /// <stable>ICU 2.1</stable>
-        public static int Bounds(string source, int offset16)
+        public static int Bounds(string source, int offset16) // ICU4N TODO: API - Return an enum instead of int, since there are specific values to test for
+        {
+            if (source is null)
+                throw new ArgumentNullException(nameof(source));
+
+            return Bounds(source.AsSpan(), offset16);
+        }
+
+        /// <summary>
+        /// Returns the type of the boundaries around the char at <paramref name="offset16"/>. Used for random access.
+        /// </summary>
+        /// <param name="source">Text to analyze.</param>
+        /// <param name="offset16">UTF-16 offset.</param>
+        /// <returns>
+        /// <list type="bullet">
+        ///     <item><description><see cref="SingleCharBoundary"/> : a single char; the bounds are [offset16, offset16+1]</description></item>
+        ///     <item><description>
+        ///         <see cref="LeadSurrogateBoundary"/> : a surrogate pair starting at offset16; the bounds
+        ///         are [offset16, offset16 + 2]
+        ///     </description></item>
+        ///     <item><description>
+        ///         <see cref="TrailSurrogateBoundary"/> : a surrogate pair starting at offset16 - 1; the
+        ///         bounds are [offset16 - 1, offset16 + 1]
+        ///     </description></item>
+        /// </list>
+        /// For bit-twiddlers, the return values for these are chosen so that the boundaries
+        /// can be gotten by: [offset16 - (value &gt;&gt; 2), offset16 + (value &amp; 3)].
+        /// </returns>
+        /// <exception cref="IndexOutOfRangeException">If <paramref name="offset16"/> is out of bounds.</exception>
+        /// <stable>ICU 2.1</stable>
+        public static int Bounds(ReadOnlySpan<char> source, int offset16)
         {
             char ch = source[offset16];
             if (IsSurrogate(ch))
@@ -469,7 +464,7 @@ namespace ICU4N.Text
         /// </returns>
         /// <exception cref="IndexOutOfRangeException">If <paramref name="offset16"/> is out of bounds.</exception>
         /// <stable>ICU 2.1</stable>
-        public static int Bounds(StringBuilder source, int offset16)
+        public static int Bounds(StringBuilder source, int offset16) // ICU4N TODO: API - Factor out (StringBuilder is too slow)
         {
             char ch = source[offset16];
             if (IsSurrogate(ch))
@@ -494,61 +489,7 @@ namespace ICU4N.Text
             return SingleCharBoundary;
         }
 
-        /// <summary>
-        /// Returns the type of the boundaries around the char at <paramref name="offset16"/>. Used for random access. Note
-        /// that the boundaries are determined with respect to the subarray, hence the char array
-        /// {0xD800, 0xDC00} has the result <see cref="SingleCharBoundary"/> for start = offset16 = 0 and limit = 1.
-        /// </summary>
-        /// <param name="source">Char array to analyze.</param>
-        /// <param name="start">Offset to substring in the source array for analyzing.</param>
-        /// <param name="limit">Offset to substring in the source array for analyzing.</param>
-        /// <param name="offset16">UTF16 offset relative to start.</param>
-        /// <returns>
-        /// <list type="bullet">
-        ///     <item><description><see cref="SingleCharBoundary"/> : a single char; the bounds are [offset16, offset16+1]</description></item>
-        ///     <item><description>
-        ///         <see cref="LeadSurrogateBoundary"/> : a surrogate pair starting at offset16; the bounds
-        ///         are [offset16, offset16 + 2]
-        ///     </description></item>
-        ///     <item><description>
-        ///         <see cref="TrailSurrogateBoundary"/> : a surrogate pair starting at offset16 - 1; the
-        ///         bounds are [offset16 - 1, offset16 + 1]
-        ///     </description></item>
-        /// </list>
-        /// For bit-twiddlers, the return values for these are chosen so that the boundaries
-        /// can be gotten by: [offset16 - (value &gt;&gt; 2), offset16 + (value &amp; 3)].
-        /// </returns>
-        /// <exception cref="IndexOutOfRangeException">If <paramref name="offset16"/> is out of bounds.</exception>
-        /// <stable>ICU 2.1</stable>
-        public static int Bounds(char[] source, int start, int limit, int offset16)
-        {
-            offset16 += start;
-            if (offset16 < start || offset16 >= limit)
-            {
-                throw new IndexOutOfRangeException(nameof(offset16));
-            }
-            char ch = source[offset16];
-            if (IsSurrogate(ch))
-            {
-                if (IsLeadSurrogate(ch))
-                {
-                    ++offset16;
-                    if (offset16 < limit && IsTrailSurrogate(source[offset16]))
-                    {
-                        return LeadSurrogateBoundary;
-                    }
-                }
-                else
-                { // IsTrailSurrogate(ch), so
-                    --offset16;
-                    if (offset16 >= start && IsLeadSurrogate(source[offset16]))
-                    {
-                        return TrailSurrogateBoundary;
-                    }
-                }
-            }
-            return SingleCharBoundary;
-        }
+        // ICU4N: Factored out Bounds(char[] source, int start, int limit, int offset16) because we have ReadOnlySpan<char> that can be sliced
 
         /// <summary>
         /// Determines whether the code value is a surrogate.
@@ -556,6 +497,7 @@ namespace ICU4N.Text
         /// <param name="char16">The input character.</param>
         /// <returns>true if the input character is a surrogate.</returns>
         /// <stable>ICU 2.1</stable>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsSurrogate(char char16)
         {
             return (char16 & SurrogateBitmask) == SurrogateBits;
@@ -567,6 +509,7 @@ namespace ICU4N.Text
         /// <param name="char16">The input character.</param>
         /// <returns>true if the input character is a trail surrogate.</returns>
         /// <stable>ICU 2.1</stable>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsTrailSurrogate(char char16)
         {
             return (char16 & TrailSurrogateBitmask) == TrailSurrogateBits;
@@ -578,6 +521,7 @@ namespace ICU4N.Text
         /// <param name="char16">The input character.</param>
         /// <returns>true if the input character is a lead surrogate.</returns>
         /// <stable>ICU 2.1</stable>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsLeadSurrogate(char char16)
         {
             return (char16 & LeadSurrogateBitmask) == LeadSurrogateBits;
@@ -591,6 +535,7 @@ namespace ICU4N.Text
         /// <returns>Lead surrogate if the <c>GetCharCount(ch)</c> is 2;
         /// and 0 otherwise (note: 0 is not a valid lead surrogate).</returns>
         /// 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static char GetLeadSurrogate(int char32)
         {
             if (char32 >= SupplementaryMinValue)
@@ -608,6 +553,7 @@ namespace ICU4N.Text
         /// <returns>The trail surrogate if the <c>GetCharCount(ch)</c> is 2;
         /// otherwise the character itself.</returns>
         /// <stable>ICU 2.1</stable>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static char GetTrailSurrogate(int char32)
         {
             if (char32 >= SupplementaryMinValue)
@@ -615,6 +561,48 @@ namespace ICU4N.Text
                 return (char)(TrailSurrogateMinValue + (char32 & TrailSurrogateMask));
             }
             return (char)char32;
+        }
+
+        /// <summary>
+        /// Writes a one or two char string to <paramref name="destination"/>
+        /// containing the UTF-32 value in UTF16 format. If a validity check is required, use
+        /// <see cref="UChar.IsLegal(int)"/> on <paramref name="char32"/> before calling.
+        /// <para/>
+        /// Note that this method can be used to write directly to the stack so we can avoid allocations
+        /// associated with the other overloads in .NET.
+        /// </summary>
+        /// <param name="char32">The input character.</param>
+        /// <param name="destination">Upon return, will contain the value of <paramref name="char32"/> in UTF16 format.</param>
+        /// <param name="destinationIndex">The index in <paramref name="destination"/> to start writing characters.</param>
+        /// <returns>The length of the characters that were written to <paramref name="destination"/> (either 1 or 2).</returns>
+        /// <exception cref="ArgumentException">Thrown if <paramref name="char32"/> is a invalid codepoint.</exception>
+        /// <draft>ICU 60.1</draft>
+        public static int ValueOf(int char32, Span<char> destination, int destinationIndex) // ICU4N TODO: API - This method name is Java-like. In J2N, these were named ToChars().
+        {
+            if (char32 < CodePointMinValue || char32 > CodePointMaxValue)
+            {
+                throw new ArgumentException("Illegal codepoint");
+            }
+            if (destinationIndex < 0 || destinationIndex >= destination.Length)
+                throw new ArgumentOutOfRangeException(nameof(destinationIndex));
+
+            if (char32 < SupplementaryMinValue)
+            {
+                destination[destinationIndex] = (char)char32;
+                return 1;
+            }
+
+            return ValueOfSupplementary(char32, destination, destinationIndex);
+
+            static int ValueOfSupplementary(int char32, Span<char> destination, int destinationIndex)
+            {
+                if (destinationIndex == destination.Length - 1)
+                    throw new ArgumentOutOfRangeException(nameof(destinationIndex));
+
+                destination[destinationIndex] = GetLeadSurrogate(char32);
+                destination[destinationIndex + 1] = GetTrailSurrogate(char32);
+                return 2;
+            }
         }
 
         /// <summary>
@@ -636,6 +624,27 @@ namespace ICU4N.Text
         }
 
         /// <summary>
+        /// Convenience method corresponding to <c>char + ""</c>. Returns a one or two char span
+        /// containing the UTF-32 value in UTF16 format. If a validity check is required, use
+        /// <see cref="UChar.IsLegal(int)"/> on <paramref name="char32"/> before calling.
+        /// </summary>
+        /// <param name="char32">The input character.</param>
+        /// <param name="buffer">The memory location to store the chars. Typically, it should be <c>stackalloc char[2]</c>
+        /// since it will never be longer than 2 chars. We need this to be passed to keep it on the stack.</param>
+        /// <returns>A <see cref="ReadOnlySpan{Char}"/> containing the chars of <paramref name="char32"/> in UTF16 format.
+        /// Use <see cref="ReadOnlySpan{Char}.Length"/> to determine the number of characters returned.</returns>
+        /// <exception cref="ArgumentException">Thrown if <paramref name="char32"/> is a invalid codepoint.</exception>
+        /// <draft>ICU 60.1</draft>
+        public static ReadOnlySpan<char> ValueOf(int char32, Span<char> buffer) // ICU4N TODO: API - Rename these overloads ToChars() to match J2N.Character. This name probably was chosen because it aligned with Java and the methods to convert codepoints didn't exist yet when these methods were created.
+        {
+            if (char32 < CodePointMinValue || char32 > CodePointMaxValue)
+            {
+                throw new ArgumentException("Illegal codepoint");
+            }
+            return ToSpan(char32, buffer);
+        }
+
+        /// <summary>
         /// Convenience method corresponding to <c>(codepoint at <paramref name="offset16"/>) + ""</c>. Returns a one or
         /// two char string containing the UTF-32 value in UTF16 format. If <paramref name="offset16"/> indexes a surrogate
         /// character, the whole supplementary codepoint will be returned. If a validity check is
@@ -647,71 +656,47 @@ namespace ICU4N.Text
         /// <param name="offset16">The UTF16 index to the codepoint in source.</param>
         /// <returns>String value of the codepoint at <paramref name="offset16"/> in UTF16 format.</returns>
         /// <stable>ICU 2.1</stable>
-        public static string ValueOf(string source, int offset16)
+        public static ReadOnlySpan<char> ValueOf(string source, int offset16)
         {
             switch (Bounds(source, offset16))
             {
                 case LeadSurrogateBoundary:
-                    return source.Substring(offset16, 2); // ICU4N: offset16 + 2 - offset16 = 2
+                    return source.AsSpan(offset16, 2); // ICU4N: offset16 + 2 - offset16 = 2
                 case TrailSurrogateBoundary:
-                    return source.Substring(offset16 - 1, 2); // ICU4N: (offset16 + 1) - (offset16 - 1) = 2
+                    return source.AsSpan(offset16 - 1, 2); // ICU4N: (offset16 + 1) - (offset16 - 1) = 2
                 default:
-                    return source.Substring(offset16, 1); // ICU4N: offset16 + 1 - offset16 = 1
+                    return source.AsSpan(offset16, 1); // ICU4N: offset16 + 1 - offset16 = 1
             }
         }
 
         /// <summary>
-        /// Convenience method corresponding to <c>(codepoint at <paramref name="offset16"/>) + ""</c>. Returns a
-        /// one or two char string containing the UTF-32 value in UTF16 format. If <paramref name="offset16"/> indexes a
-        /// surrogate character, the whole supplementary codepoint will be returned. If a validity check
-        /// is required, use <see cref="UChar.IsLegal(int)"/> on the codepoint at 
+        /// Convenience method corresponding to <c>(codepoint at <paramref name="offset16"/>) + ""</c>. Returns a one or
+        /// two char string containing the UTF-32 value in UTF16 format. If <paramref name="offset16"/> indexes a surrogate
+        /// character, the whole supplementary codepoint will be returned. If a validity check is
+        /// required, use <see cref="UChar.IsLegal(int)"/> on the codepoint at 
         /// <paramref name="offset16"/> before calling. The result returned will be a newly created string
         /// obtained by calling <c><paramref name="source"/>.Substring(..)</c> with the appropriate index and length.
         /// </summary>
-        /// <param name="source">The input string builder.</param>
+        /// <param name="source">The input string.</param>
         /// <param name="offset16">The UTF16 index to the codepoint in source.</param>
         /// <returns>String value of the codepoint at <paramref name="offset16"/> in UTF16 format.</returns>
         /// <stable>ICU 2.1</stable>
-        public static string ValueOf(StringBuilder source, int offset16)
+        public static ReadOnlySpan<char> ValueOf(ReadOnlySpan<char> source, int offset16)
         {
             switch (Bounds(source, offset16))
             {
                 case LeadSurrogateBoundary:
-                    return source.ToString(offset16, 2); // offset16 + 2 - offset16 = 2
+                    return source.Slice(offset16, 2); // ICU4N: offset16 + 2 - offset16 = 2
                 case TrailSurrogateBoundary:
-                    return source.ToString(offset16 - 1, 2); // (offset16 + 1) - (offset16 - 1) = 2
+                    return source.Slice(offset16 - 1, 2); // ICU4N: (offset16 + 1) - (offset16 - 1) = 2
                 default:
-                    return source.ToString(offset16, 1); // offset16 + 1 - offset16 = 1
+                    return source.Slice(offset16, 1); // ICU4N: offset16 + 1 - offset16 = 1
             }
         }
 
-        /// <summary>
-        /// Convenience method. Returns a one or two char string containing the UTF-32 value in UTF16
-        /// format. If <paramref name="offset16"/> indexes a surrogate character, the whole supplementary codepoint will be
-        /// returned, except when either the leading or trailing surrogate character lies out of the
-        /// specified subarray. In the latter case, only the surrogate character within bounds will be
-        /// returned. If a validity check is required, use <see cref="UChar.IsLegal(int)"/>
-        /// on the codepoint at <paramref name="offset16"/> before calling. The result returned will 
-        /// be a newly created string containing the relevant characters.
-        /// </summary>
-        /// <param name="source">The input char array.</param>
-        /// <param name="start">Start index of the subarray.</param>
-        /// <param name="limit">End index of the subarray.</param>
-        /// <param name="offset16">The UTF16 index to the codepoint in source relative to start.</param>
-        /// <returns>String value of the codepoint at <paramref name="offset16"/> in UTF16 format.</returns>
-        /// <stable>ICU 2.1</stable>
-        public static string ValueOf(char[] source, int start, int limit, int offset16)
-        {
-            switch (Bounds(source, start, limit, offset16))
-            {
-                case LeadSurrogateBoundary:
-                    return new string(source, start + offset16, 2);
-                case TrailSurrogateBoundary:
-                    return new string(source, start + offset16 - 1, 2);
-                default:
-                    return new string(source, start + offset16, 1);
-            }
-        }
+        // ICU4N: Factored out ValueOf(StringBuilder source, int offset16) because StringBuilder is not performant enough to be used this way in .NET
+
+        // ICU4N: Factored out ValueOf(char[] source, int start, int limit, int offset16) because we have ReadOnlySpan<char> that can be sliced
 
         /// <summary>
         /// Returns the UTF-16 offset that corresponds to a UTF-32 offset. Used for random access. See
@@ -724,41 +709,22 @@ namespace ICU4N.Text
         /// <stable>ICU 2.1</stable>
         public static int FindOffsetFromCodePoint(string source, int offset32)
         {
-            char ch;
-            int size = source.Length, result = 0, count = offset32;
-            if (offset32 < 0 || offset32 > size)
-            {
-                throw new IndexOutOfRangeException(nameof(offset32));
-            }
-            while (result < size && count > 0)
-            {
-                ch = source[result];
-                if (IsLeadSurrogate(ch) && ((result + 1) < size)
-                        && IsTrailSurrogate(source[result + 1]))
-                {
-                    result++;
-                }
+            if (source is null)
+                throw new ArgumentNullException(nameof(source));
 
-                count--;
-                result++;
-            }
-            if (count != 0)
-            {
-                throw new IndexOutOfRangeException(nameof(offset32));
-            }
-            return result;
+            return FindOffsetFromCodePoint(source.AsSpan(), offset32);
         }
 
         /// <summary>
         /// Returns the UTF-16 offset that corresponds to a UTF-32 offset. Used for random access. See
         /// the <see cref="UTF16"/> class description for notes on roundtripping.
         /// </summary>
-        /// <param name="source">The UTF-16 string buffer.</param>
+        /// <param name="source">The UTF-16 string.</param>
         /// <param name="offset32">UTF-32 offset.</param>
         /// <returns>UTF-16 offset.</returns>
         /// <exception cref="IndexOutOfRangeException">If <paramref name="offset32"/> is out of bounds.</exception>
         /// <stable>ICU 2.1</stable>
-        public static int FindOffsetFromCodePoint(StringBuilder source, int offset32)
+        public static int FindOffsetFromCodePoint(ReadOnlySpan<char> source, int offset32)
         {
             char ch;
             int size = source.Length, result = 0, count = offset32;
@@ -785,43 +751,9 @@ namespace ICU4N.Text
             return result;
         }
 
-        /// <summary>
-        /// Returns the UTF-16 offset that corresponds to a UTF-32 offset. Used for random access. See
-        /// the <see cref="UTF16"/> class description for notes on roundtripping.
-        /// </summary>
-        /// <param name="source">The UTF-16 char array whose substring is to be analyzed.</param>
-        /// <param name="start">Offset of the substring to be analyzed.</param>
-        /// <param name="limit">Offset of the substring to be analyzed.</param>
-        /// <param name="offset32">UTF-32 offset relative to <paramref name="start"/>.</param>
-        /// <returns>UTF-16 offset relative to <paramref name="start"/>.</returns>
-        /// <exception cref="IndexOutOfRangeException">If <paramref name="offset32"/> is out of bounds.</exception>
-        /// <stable>ICU 2.1</stable>
-        public static int FindOffsetFromCodePoint(char[] source, int start, int limit, int offset32)
-        {
-            char ch;
-            int result = start, count = offset32;
-            if (offset32 > limit - start)
-            {
-                throw new IndexOutOfRangeException(nameof(offset32));
-            }
-            while (result < limit && count > 0)
-            {
-                ch = source[result];
-                if (IsLeadSurrogate(ch) && ((result + 1) < limit)
-                        && IsTrailSurrogate(source[result + 1]))
-                {
-                    result++;
-                }
+        // ICU4N: Factored out FindOffsetFromCodePoint(StringBuilder source, int offset32) because StringBuilder is not performant enough to be used this way in .NET
 
-                count--;
-                result++;
-            }
-            if (count != 0)
-            {
-                throw new IndexOutOfRangeException(nameof(offset32));
-            }
-            return result - start;
-        }
+        // ICU4N: Factored out FindOffsetFromCodePoint(char[] source, int start, int limit, int offset32) because we have ReadOnlySpan<char> that can be sliced
 
         /// <summary>
         /// Returns the UTF-32 offset corresponding to the first UTF-32 boundary at or after the given
@@ -843,55 +775,23 @@ namespace ICU4N.Text
         /// <stable>ICU 2.1</stable>
         public static int FindCodePointOffset(string source, int offset16)
         {
-            if (offset16 < 0 || offset16 > source.Length)
-            {
-                throw new IndexOutOfRangeException(nameof(offset16));
-            }
+            if (source is null)
+                throw new ArgumentNullException(nameof(source));
 
-            int result = 0;
-            char ch;
-            bool hadLeadSurrogate = false;
-
-            for (int i = 0; i < offset16; ++i)
-            {
-                ch = source[i];
-                if (hadLeadSurrogate && IsTrailSurrogate(ch))
-                {
-                    hadLeadSurrogate = false; // count valid trail as zero
-                }
-                else
-                {
-                    hadLeadSurrogate = IsLeadSurrogate(ch);
-                    ++result; // count others as 1
-                }
-            }
-
-            if (offset16 == source.Length)
-            {
-                return result;
-            }
-
-            // end of source being the less significant surrogate character
-            // shift result back to the start of the supplementary character
-            if (hadLeadSurrogate && (IsTrailSurrogate(source[offset16])))
-            {
-                result--;
-            }
-
-            return result;
+            return FindCodePointOffset(source.AsSpan(), offset16);
         }
 
         /// <summary>
-        /// Returns the UTF-32 offset corresponding to the first UTF-32 boundary at the given UTF-16
-        /// offset. Used for random access. See the <see cref="UTF16"/> class description for notes on
-        /// roundtripping.
+        /// Returns the UTF-32 offset corresponding to the first UTF-32 boundary at or after the given
+        /// UTF-16 offset. Used for random access. See the <see cref="UTF16"/> class description for
+        /// notes on roundtripping.
         /// <para/>
         /// <i>Note: If the UTF-16 offset is into the middle of a surrogate pair, then the UTF-32 offset
         /// of the <strong>lead</strong> of the pair is returned. </i>
         /// <para/>
         /// To find the UTF-32 length of a string, use:
         /// <code>
-        /// len32 = UTF16.CountCodePoint(source);
+        /// len32 = UTF16.CountCodePoint(source, source.Length);
         /// </code>
         /// </summary>
         /// <param name="source">Text to analyze.</param>
@@ -899,11 +799,11 @@ namespace ICU4N.Text
         /// <returns>UTF-32 offset.</returns>
         /// <exception cref="IndexOutOfRangeException">If <paramref name="offset16"/> is out of bounds.</exception>
         /// <stable>ICU 2.1</stable>
-        public static int FindCodePointOffset(StringBuilder source, int offset16)
+        public static int FindCodePointOffset(ReadOnlySpan<char> source, int offset16)
         {
             if (offset16 < 0 || offset16 > source.Length)
             {
-                throw new IndexOutOfRangeException(nameof(offset16));
+                throw new IndexOutOfRangeException(nameof(offset16)); // ICU4N TODO: API - fix exception type
             }
 
             int result = 0;
@@ -939,67 +839,9 @@ namespace ICU4N.Text
             return result;
         }
 
-        /// <summary>
-        /// Returns the UTF-32 offset corresponding to the first UTF-32 boundary at the given UTF-16
-        /// offset. Used for random access. See the <see cref="UTF16"/> class description for notes on
-        /// roundtripping.
-        /// <para/>
-        /// <i>Note: If the UTF-16 offset is into the middle of a surrogate pair, then the UTF-32 offset
-        /// of the <strong>lead</strong> of the pair is returned. </i>
-        /// <para/>
-        /// To find the UTF-32 length of a substring, use:
-        /// <code>
-        /// len32 = UTF16.CountCodePoint(source, start, limit);
-        /// </code>
-        /// </summary>
-        /// <param name="source">Text to analyze.</param>
-        /// <param name="start">Offset of the substring.</param>
-        /// <param name="limit">Offset of the substring.</param>
-        /// <param name="offset16">UTF-16 relative to <paramref name="start"/>.</param>
-        /// <returns>UTF-32 offset relative to <paramref name="start"/>.</returns>
-        /// <exception cref="IndexOutOfRangeException">If <paramref name="offset16"/> is not within 
-        /// the range of <paramref name="start"/> and <paramref name="limit"/>.</exception>
-        /// <stable>ICU 2.1</stable>
-        public static int FindCodePointOffset(char[] source, int start, int limit, int offset16)
-        {
-            offset16 += start;
-            if (offset16 > limit)
-            {
-                throw new IndexOutOfRangeException(nameof(offset16));
-            }
+        // ICU4N: Factored out FindCodePointOffset(StringBuilder source, int offset16) because StringBuilder is not performant enough to be used this way in .NET
 
-            int result = 0;
-            char ch;
-            bool hadLeadSurrogate = false;
-
-            for (int i = start; i < offset16; ++i)
-            {
-                ch = source[i];
-                if (hadLeadSurrogate && IsTrailSurrogate(ch))
-                {
-                    hadLeadSurrogate = false; // count valid trail as zero
-                }
-                else
-                {
-                    hadLeadSurrogate = IsLeadSurrogate(ch);
-                    ++result; // count others as 1
-                }
-            }
-
-            if (offset16 == limit)
-            {
-                return result;
-            }
-
-            // end of source being the less significant surrogate character
-            // shift result back to the start of the supplementary character
-            if (hadLeadSurrogate && (IsTrailSurrogate(source[offset16])))
-            {
-                result--;
-            }
-
-            return result;
-        }
+        // ICU4N: Factored out FindCodePointOffset(char[] source, int start, int limit, int offset16) because we have ReadOnlySpan<char> that can be sliced
 
         /// <summary>
         /// Append a single UTF-32 value to the end of a <see cref="StringBuilder"/>. If a validity check is required,
@@ -1011,7 +853,7 @@ namespace ICU4N.Text
         /// <exception cref="ArgumentException">Thrown when <paramref name="char32"/> does not 
         /// lie within the range of the Unicode codepoints.</exception>
         /// <stable>ICU 2.1</stable>
-        public static StringBuilder Append(StringBuilder target, int char32)
+        public static StringBuilder Append(StringBuilder target, int char32) // ICU4N TODO: API - Factor out (this is identical to AppendCodePoint())
         {
             // Check for irregular values
             if (char32 < CodePointMinValue || char32 > CodePointMaxValue)
@@ -1041,7 +883,7 @@ namespace ICU4N.Text
         /// <returns>The updated <see cref="StringBuilder"/>.</returns>
         /// <exception cref="ArgumentException">If cp is not a valid code point.</exception>
         /// <stable>ICU 3.0</stable>
-        public static StringBuilder AppendCodePoint(StringBuilder target, int cp)
+        public static StringBuilder AppendCodePoint(StringBuilder target, int cp) // ICU4N TODO: API - we probably don't need this
         {
             return Append(target, cp);
         }
@@ -1056,7 +898,7 @@ namespace ICU4N.Text
         /// <exception cref="ArgumentException">Thrown if there is not enough space for the append, or when 
         /// <paramref name="char32"/> does not lie within the range of the Unicode codepoints.</exception>
         /// <stable>ICU 2.1</stable>
-        public static int Append(char[] target, int limit, int char32)
+        public static int Append(char[] target, int limit, int char32) // ICU4N TODO: API - Factor out (we have ValueStringBuilder/OpenStringBuilder for this)
         {
             // Check for irregular values
             if (char32 < CodePointMinValue || char32 > CodePointMaxValue)
@@ -1092,37 +934,23 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Number of codepoints in a UTF16 string buffer.
+        /// Number of codepoints in a UTF16 string.
         /// </summary>
-        /// <param name="source">UTF16 string buffer.</param>
+        /// <param name="source">UTF16 string.</param>
         /// <returns>Number of codepoint in string.</returns>
         /// <stable>ICU 2.1</stable>
-        public static int CountCodePoint(StringBuilder source)
+        public static int CountCodePoint(ReadOnlySpan<char> source)
         {
-            if (source == null || source.Length == 0)
+            if (source.Length == 0)
             {
                 return 0;
             }
             return FindCodePointOffset(source, source.Length);
         }
 
-        /// <summary>
-        /// Number of codepoints in a UTF16 char array substring.
-        /// </summary>
-        /// <param name="source">UTF16 char array.</param>
-        /// <param name="start">Offset of the substring.</param>
-        /// <param name="limit">Offset of the substring.</param>
-        /// <returns>Number of codepoint in the substring.</returns>
-        /// <exception cref="IndexOutOfRangeException">If start and limit are not valid.</exception>
-        /// <stable>ICU 2.1</stable>
-        public static int CountCodePoint(char[] source, int start, int limit)
-        {
-            if (source == null || source.Length == 0)
-            {
-                return 0;
-            }
-            return FindCodePointOffset(source, start, limit, limit - start);
-        }
+        // ICU4N: Factored out CountCodePoint(StringBuilder source) because StringBuilder is not performant enough to be used this way in .NET
+
+        // ICU4N: Factored out CountCodePoint(char[] source, int start, int limit) because we have ReadOnlySpan<char> that can be sliced
 
         /// <summary>
         /// Set a code point into a UTF16 position. Adjusts target according if we are replacing a
@@ -1132,7 +960,7 @@ namespace ICU4N.Text
         /// <param name="offset16">UTF16 position to insert into.</param>
         /// <param name="char32">Code point.</param>
         /// <stable>ICU 2.1</stable>
-        public static void SetCharAt(StringBuilder target, int offset16, int char32)
+        public static void SetCharAt(StringBuilder target, int offset16, int char32) // ICU4N TODO: API - Naming is Java-like, need a better name. But should we factor this out? It is not used internally and StringBuilder performs poorly at operations like this.
         {
             int count = 1;
             char single = target[offset16];
@@ -1157,7 +985,8 @@ namespace ICU4N.Text
                     }
                 }
             }
-            target.Replace(offset16, count, ValueOf(char32)); // ICU4N: Corrected 2nd parameter
+            Span<char> codePointBuffer = stackalloc char[2];
+            target.Replace(offset16, count, ValueOf(char32, codePointBuffer)); // ICU4N: Corrected 2nd parameter
         }
 
         /// <summary>
@@ -1172,7 +1001,7 @@ namespace ICU4N.Text
         /// <returns>New number of chars in target that represents a string.</returns>
         /// <exception cref="IndexOutOfRangeException">If <paramref name="offset16"/> is out of range.</exception>
         /// <stable>ICU 2.1</stable>
-        public static int SetCharAt(char[] target, int limit, int offset16, int char32)
+        public static int SetCharAt(char[] target, int limit, int offset16, int char32) // ICU4N TODO: API - Make Span<char>, eliminate limit, and/or factor out
         {
             if (offset16 >= limit)
             {
@@ -1202,7 +1031,7 @@ namespace ICU4N.Text
                 }
             }
 
-            string str = ValueOf(char32);
+            ReadOnlySpan<char> str = ValueOf(char32, stackalloc char[2]);
             int result = limit;
             int strlength = str.Length;
             target[offset16] = str[0];
@@ -1252,71 +1081,22 @@ namespace ICU4N.Text
         /// <stable>ICU 2.1</stable>
         public static int MoveCodePointOffset(string source, int offset16, int shift32)
         {
-            int result = offset16;
-            int size = source.Length;
-            int count;
-            char ch;
-            if (offset16 < 0 || offset16 > size)
-            {
-                throw new IndexOutOfRangeException(nameof(offset16));
-            }
-            if (shift32 > 0)
-            {
-                if (shift32 + offset16 > size)
-                {
-                    throw new IndexOutOfRangeException(nameof(offset16));
-                }
-                count = shift32;
-                while (result < size && count > 0)
-                {
-                    ch = source[result];
-                    if (IsLeadSurrogate(ch) && ((result + 1) < size)
-                            && IsTrailSurrogate(source[result + 1]))
-                    {
-                        result++;
-                    }
-                    count--;
-                    result++;
-                }
-            }
-            else
-            {
-                if (offset16 + shift32 < 0)
-                {
-                    throw new IndexOutOfRangeException(nameof(offset16));
-                }
-                for (count = -shift32; count > 0; count--)
-                {
-                    result--;
-                    if (result < 0)
-                    {
-                        break;
-                    }
-                    ch = source[result];
-                    if (IsTrailSurrogate(ch) && result > 0
-                            && IsLeadSurrogate(source[result - 1]))
-                    {
-                        result--;
-                    }
-                }
-            }
-            if (count != 0)
-            {
-                throw new IndexOutOfRangeException(nameof(shift32));
-            }
-            return result;
+            if (source is null)
+                throw new ArgumentNullException(nameof(source));
+
+            return MoveCodePointOffset(source.AsSpan(), offset16, shift32);
         }
 
         /// <summary>
         /// Shifts <paramref name="offset16"/> by the argument number of codepoints.
         /// </summary>
-        /// <param name="source">Source string buffer.</param>
+        /// <param name="source">Source string.</param>
         /// <param name="offset16">UTF16 position to shift.</param>
         /// <param name="shift32">Number of codepoints to shift.</param>
         /// <returns>New shifted <paramref name="offset16"/>.</returns>
         /// <exception cref="IndexOutOfRangeException">If the new <paramref name="offset16"/> is out of bounds.</exception>
         /// <stable>ICU 2.1</stable>
-        public static int MoveCodePointOffset(StringBuilder source, int offset16, int shift32)
+        public static int MoveCodePointOffset(ReadOnlySpan<char> source, int offset16, int shift32) // ICU4N TODO: API - Is this equivalent to OffsetByCodePoints?
         {
             int result = offset16;
             int size = source.Length;
@@ -1373,83 +1153,9 @@ namespace ICU4N.Text
             return result;
         }
 
-        /// <summary>
-        /// Shifts <paramref name="offset16"/> by the argument number of codepoints within a subarray.
-        /// </summary>
-        /// <param name="source">Char array.</param>
-        /// <param name="start">Position of the subarray to be performed on.</param>
-        /// <param name="limit">Position of the subarray to be performed on.</param>
-        /// <param name="offset16">UTF16 position to shift relative to <paramref name="start"/>.</param>
-        /// <param name="shift32">Number of codepoints to shift.</param>
-        /// <returns>New shifted <paramref name="offset16"/> relative to start.</returns>
-        /// <exception cref="IndexOutOfRangeException">If the new <paramref name="offset16"/> is out of bounds with respect to the subarray or the
-        /// subarray bounds are out of range.</exception>
-        /// <stable>ICU 2.1</stable>
-        public static int MoveCodePointOffset(char[] source, int start, int limit, int offset16,
-                int shift32)
-        {
-            int size = source.Length;
-            int count;
-            char ch;
-            int result = offset16 + start;
-            if (start < 0 || limit < start)
-            {
-                throw new IndexOutOfRangeException(nameof(start));
-            }
-            if (limit > size)
-            {
-                throw new IndexOutOfRangeException(nameof(limit));
-            }
-            if (offset16 < 0 || result > limit)
-            {
-                throw new IndexOutOfRangeException(nameof(offset16));
-            }
-            if (shift32 > 0)
-            {
-                if (shift32 + result > size)
-                {
-                    throw new IndexOutOfRangeException(nameof(result));
-                }
-                count = shift32;
-                while (result < limit && count > 0)
-                {
-                    ch = source[result];
-                    if (IsLeadSurrogate(ch) && (result + 1 < limit)
-                            && IsTrailSurrogate(source[result + 1]))
-                    {
-                        result++;
-                    }
-                    count--;
-                    result++;
-                }
-            }
-            else
-            {
-                if (result + shift32 < start)
-                {
-                    throw new IndexOutOfRangeException(nameof(result));
-                }
-                for (count = -shift32; count > 0; count--)
-                {
-                    result--;
-                    if (result < start)
-                    {
-                        break;
-                    }
-                    ch = source[result];
-                    if (IsTrailSurrogate(ch) && result > start && IsLeadSurrogate(source[result - 1]))
-                    {
-                        result--;
-                    }
-                }
-            }
-            if (count != 0)
-            {
-                throw new IndexOutOfRangeException(nameof(shift32));
-            }
-            result -= start;
-            return result;
-        }
+        // ICU4N: Factored out MoveCodePointOffset(StringBuilder source, int offset16, int shift32) because StringBuilder is not performant enough to be used this way in .NET
+
+        // ICU4N: Factored out MoveCodePointOffset(char[] source, int start, int limit, int offset16, int shift32) because we have ReadOnlySpan<char> that can be sliced
 
         /// <summary>
         /// Inserts <paramref name="char32"/> codepoint into target at the argument offset16. If the offset16 is in the
@@ -1472,7 +1178,8 @@ namespace ICU4N.Text
         /// <stable>ICU 2.1</stable>
         public static StringBuilder Insert(StringBuilder target, int offset16, int char32)
         {
-            string str = ValueOf(char32);
+            Span<char> codePointBuffer = stackalloc char[2];
+            ReadOnlySpan<char> str = ValueOf(char32, codePointBuffer);
             if (offset16 != target.Length && Bounds(target, offset16) == TrailSurrogateBoundary)
             {
                 offset16++;
@@ -1500,10 +1207,11 @@ namespace ICU4N.Text
         /// <returns>New limit size.</returns>
         /// <exception cref="IndexOutOfRangeException">Thrown if <paramref name="offset16"/> is invalid.</exception>
         /// <stable>ICU 2.1</stable>
-        public static int Insert(char[] target, int limit, int offset16, int char32)
+        public static int Insert(char[] target, int limit, int offset16, int char32) // ICU4N TODO: API - Factor out or make Span<char> without limit
         {
-            string str = ValueOf(char32);
-            if (offset16 != limit && Bounds(target, 0, limit, offset16) == TrailSurrogateBoundary)
+            Span<char> codePointBuffer = stackalloc char[2];
+            ReadOnlySpan<char> str = ValueOf(char32, codePointBuffer);
+            if (offset16 != limit && Bounds(target.AsSpan(0, limit), offset16) == TrailSurrogateBoundary)
             {
                 offset16++;
             }
@@ -1557,10 +1265,10 @@ namespace ICU4N.Text
         /// <returns>A new limit size.</returns>
         /// <exception cref="IndexOutOfRangeException">Thrown if <paramref name="offset16"/> is invalid.</exception>
         /// <stable>ICU 2.1</stable>
-        public static int Delete(char[] target, int limit, int offset16)
+        public static int Delete(char[] target, int limit, int offset16) // ICU4N TODO: API - Factor out or make Span<char> without limit
         {
             int count = 1;
-            switch (Bounds(target, 0, limit, offset16))
+            switch (Bounds(target.AsSpan(0, limit), offset16))
             {
                 case LeadSurrogateBoundary:
                     count++;
@@ -1627,8 +1335,8 @@ namespace ICU4N.Text
                 return result;
             }
             // supplementary
-            string char32str = ToString(char32);
-            return source.IndexOf(char32str, StringComparison.Ordinal);
+            ReadOnlySpan<char> char32str = ToSpan(char32, stackalloc char[2]);
+            return source.AsSpan().IndexOf(char32str, StringComparison.Ordinal);
         }
 
         /// <summary>
@@ -1770,8 +1478,8 @@ namespace ICU4N.Text
                 return result;
             }
             // supplementary
-            string char32str = ToString(char32);
-            return source.IndexOf(char32str, startIndex, StringComparison.Ordinal);
+            ReadOnlySpan<char> char32str = ToSpan(char32, stackalloc char[2]);
+            return source.AsSpan().IndexOf(char32str, startIndex, StringComparison.Ordinal);
         }
 
         /// <summary>
@@ -1915,8 +1623,8 @@ namespace ICU4N.Text
                 return result;
             }
             // supplementary
-            string char32str = ToString(char32);
-            return source.LastIndexOf(char32str, StringComparison.Ordinal);
+            ReadOnlySpan<char> char32str = ToSpan(char32, stackalloc char[2]);
+            return source.AsSpan().LastIndexOf(char32str, StringComparison.Ordinal);
         }
 
         /// <summary>
@@ -2295,26 +2003,36 @@ namespace ICU4N.Text
             {
                 return source;
             }
-            string newChar32Str = ToString(newChar32);
+            ReadOnlySpan<char> newChar32Str = ValueOf(newChar32, stackalloc char[2]);
             int oldChar32Size = 1;
             int newChar32Size = newChar32Str.Length;
-            StringBuilder result = new StringBuilder(source);
-            int resultIndex = index;
-
-            if (oldChar32 >= SupplementaryMinValue)
+            ValueStringBuilder result = source.Length <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                : new ValueStringBuilder(source.Length);
+            try
             {
-                oldChar32Size = 2;
-            }
+                result.Append(source);
+                int resultIndex = index;
 
-            while (index != -1)
-            {
-                //int endResultIndex = resultIndex + oldChar32Size;
-                result.Replace(resultIndex, oldChar32Size, newChar32Str); // ICU4N: Corrected 2nd parameter
-                int lastEndIndex = index + oldChar32Size;
-                index = IndexOf(source, oldChar32, lastEndIndex);
-                resultIndex += newChar32Size + index - lastEndIndex;
+                if (oldChar32 >= SupplementaryMinValue)
+                {
+                    oldChar32Size = 2;
+                }
+
+                while (index != -1)
+                {
+                    //int endResultIndex = resultIndex + oldChar32Size;
+                    result.Replace(resultIndex, oldChar32Size, newChar32Str); // ICU4N: Corrected 2nd parameter
+                    int lastEndIndex = index + oldChar32Size;
+                    index = IndexOf(source, oldChar32, lastEndIndex);
+                    resultIndex += newChar32Size + index - lastEndIndex;
+                }
+                return result.ToString();
             }
-            return result.ToString();
+            finally
+            {
+                result.Dispose();
+            }
         }
 
         /// <summary>
@@ -2355,18 +2073,28 @@ namespace ICU4N.Text
             }
             int oldStrSize = oldStr.Length;
             int newStrSize = newStr.Length;
-            StringBuilder result = new StringBuilder(source);
-            int resultIndex = index;
-
-            while (index != -1)
+            ValueStringBuilder result = source.Length <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                : new ValueStringBuilder(source.Length);
+            try
             {
-                //int endResultIndex = resultIndex + oldStrSize;
-                result.Replace(resultIndex, oldStrSize, newStr); // ICU4N: Corrected 2nd parameter
-                int lastEndIndex = index + oldStrSize;
-                index = IndexOf(source, oldStr, lastEndIndex);
-                resultIndex += newStrSize + index - lastEndIndex;
+                result.Append(source);
+                int resultIndex = index;
+
+                while (index != -1)
+                {
+                    //int endResultIndex = resultIndex + oldStrSize;
+                    result.Replace(resultIndex, oldStrSize, newStr); // ICU4N: Corrected 2nd parameter
+                    int lastEndIndex = index + oldStrSize;
+                    index = IndexOf(source, oldStr, lastEndIndex);
+                    resultIndex += newStrSize + index - lastEndIndex;
+                }
+                return result.ToString();
             }
-            return result.ToString();
+            finally
+            {
+                result.Dispose();
+            }
         }
 
         /// <summary>
@@ -2423,155 +2151,31 @@ namespace ICU4N.Text
             {
                 return true;
             }
-            if (source == null)
-            {
-                return false;
-            }
-            int length = source.Length;
-
-            // length >= 0 known
-            // source contains at least (length + 1) / 2 code points: <= 2
-            // chars per cp
-            if (((length + 1) >> 1) > number)
-            {
-                return true;
-            }
-
-            // check if source does not even contain enough chars
-            int maxsupplementary = length - number;
-            if (maxsupplementary <= 0)
+            if (source is null)
             {
                 return false;
             }
 
-            // there are maxsupplementary = length - number more chars than
-            // asked-for code points
-
-            // count code points until they exceed and also check that there are
-            // no more than maxsupplementary supplementary code points (char pairs)
-            int start = 0;
-            while (true)
-            {
-                if (length == 0)
-                {
-                    return false;
-                }
-                if (number == 0)
-                {
-                    return true;
-                }
-                if (IsLeadSurrogate(source[start++]) && start != length
-                        && IsTrailSurrogate(source[start]))
-                {
-                    start++;
-                    if (--maxsupplementary <= 0)
-                    {
-                        // too many pairs - too few code points
-                        return false;
-                    }
-                }
-                --number;
-            }
+            return HasMoreCodePointsThan(source.AsSpan(), number);
         }
 
         /// <summary>
-        /// Check if the sub-range of char array, from argument <paramref name="start"/> to <paramref name="limit"/>, contains more Unicode
-        /// code points than a certain <paramref name="number"/>. This is more efficient than counting all code points in
-        /// the entire char array range and comparing that number with a threshold. This function may not
-        /// need to scan the char array at all if <paramref name="start"/> and <paramref name="limit"/> is within a certain range, and never
-        /// needs to count more than '<paramref name="number"/> + 1' code points. Logically equivalent to
-        /// (UTF16.CountCodePoint(source, start, limit) &gt; <paramref name="number"/>). A Unicode code point may occupy either one
-        /// or two code units.
+        /// Check if the string contains more Unicode code points than a certain <paramref name="number"/>. This is more
+        /// efficient than counting all code points in the entire string and comparing that <paramref name="number"/> with a
+        /// threshold. This function may not need to scan the string at all if the length is within a
+        /// certain range, and never needs to count more than '<paramref name="number"/> + 1' code points. Logically
+        /// equivalent to (UTF16.CountCodePoint(s) &gt; <paramref name="number"/>). A Unicode code point may occupy either one or two
+        /// code units.
         /// </summary>
-        /// <param name="source">Array of UTF-16 chars.</param>
-        /// <param name="start">Offset to substring in the <paramref name="source"/> array for analyzing.</param>
-        /// <param name="limit">Offset to substring in the <paramref name="source"/> array for analyzing.</param>
+        /// <param name="source">The input string.</param>
         /// <param name="number">The number of code points in the string is compared against the '<paramref name="number"/>' parameter.</param>
         /// <returns>Boolean value for whether the string contains more Unicode code points than '<paramref name="number"/>'.</returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown when <paramref name="limit"/> &lt; <paramref name="start"/>.</exception>
         /// <stable>ICU 2.4</stable>
-        public static bool HasMoreCodePointsThan(char[] source, int start, int limit, int number)
-        {
-            int length = limit - start;
-            if (length < 0 || start < 0 || limit < 0)
-            {
-                throw new IndexOutOfRangeException(
-                        "Start and limit indexes should be non-negative and start <= limit");
-            }
-            if (number < 0)
-            {
-                return true;
-            }
-            if (source == null)
-            {
-                return false;
-            }
-
-            // length >= 0 known
-            // source contains at least (length + 1) / 2 code points: <= 2
-            // chars per cp
-            if (((length + 1) >> 1) > number)
-            {
-                return true;
-            }
-
-            // check if source does not even contain enough chars
-            int maxsupplementary = length - number;
-            if (maxsupplementary <= 0)
-            {
-                return false;
-            }
-
-            // there are maxsupplementary = length - number more chars than
-            // asked-for code points
-
-            // count code points until they exceed and also check that there are
-            // no more than maxsupplementary supplementary code points (char pairs)
-            while (true)
-            {
-                if (length == 0)
-                {
-                    return false;
-                }
-                if (number == 0)
-                {
-                    return true;
-                }
-                if (IsLeadSurrogate(source[start++]) && start != limit
-                        && IsTrailSurrogate(source[start]))
-                {
-                    start++;
-                    if (--maxsupplementary <= 0)
-                    {
-                        // too many pairs - too few code points
-                        return false;
-                    }
-                }
-                --number;
-            }
-        }
-
-        /// <summary>
-        /// Check if the string buffer contains more Unicode code points than a certain <paramref name="number"/>. This is
-        /// more efficient than counting all code points in the entire string buffer and comparing that
-        /// number with a threshold. This function may not need to scan the string buffer at all if the
-        /// length is within a certain range, and never needs to count more than '<paramref name="number"/> + 1' code
-        /// points. Logically equivalent to (UTF16.CountCodePoint(s) &gt; <paramref name="number"/>). A Unicode code point may
-        /// occupy either one or two code units.
-        /// </summary>
-        /// <param name="source">The input string buffer.</param>
-        /// <param name="number">The number of code points in the string buffer is compared against the '<paramref name="number"/>' parameter.</param>
-        /// <returns>Boolean value for whether the string buffer contains more Unicode code points than '<paramref name="number"/>'.</returns>
-        /// <stable>ICU 2.4</stable>
-        public static bool HasMoreCodePointsThan(StringBuilder source, int number)
+        public static bool HasMoreCodePointsThan(ReadOnlySpan<char> source, int number)
         {
             if (number < 0)
             {
                 return true;
-            }
-            if (source == null)
-            {
-                return false;
             }
             int length = source.Length;
 
@@ -2619,6 +2223,10 @@ namespace ICU4N.Text
                 --number;
             }
         }
+
+        // ICU4N: Factored out HasMoreCodePointsThan(char[] source, int start, int limit, int number) because we have ReadOnlySpan<char> that can be sliced
+
+        // ICU4N: Factored out HasMoreCodePointsThan(StringBuilder source, int number) because StringBuilder is not performant enough to be used this way in .NET
 
         /// <summary>
         /// Create a string from an array of <paramref name="codePoints"/>.
@@ -2903,7 +2511,7 @@ namespace ICU4N.Text
             /// 1 if <paramref name="s1"/> &gt; <paramref name="s2"/>.</returns>
             private int CompareCaseInsensitive(string s1, string s2)
             {
-                return Normalizer.CmpEquivFold(s1.AsCharSequence(), s2.AsCharSequence(), m_foldCase_ | m_codePointCompare_
+                return Normalizer.CmpEquivFold(s1.AsSpan(), s2.AsSpan(), m_foldCase_ | m_codePointCompare_
                         | Normalizer.COMPARE_IGNORE_CASE);
             }
 
@@ -2990,10 +2598,135 @@ namespace ICU4N.Text
             }
         }
 
-        // ICU4N specific - GetSingleCodePoint(ICharSequence s) moved to UTF16Extension.tt
+        /// <summary>
+        /// Utility for getting a code point from a character sequence that contains exactly one code point.
+        /// </summary>
+        /// <param name="s">to test</param>
+        /// <returns>The code point IF the string is non-null and consists of a single code point. Otherwise returns -1.</returns>
+        /// <stable>ICU 54</stable>
+        public static int GetSingleCodePoint(string s)
+        {
+            if (s is null || s.Length == 0)
+            {
+                return -1;
+            }
+            else if (s.Length == 1)
+            {
+                return s[0];
+            }
+            else if (s.Length > 2)
+            {
+                return -1;
+            }
 
-        // ICU4N specific - CompareCodePoint(int codePoint, ICharSequence s) moved to UTF16Extension.tt
+            // at this point, len = 2
+            int cp = Character.CodePointAt(s, 0);
+            if (cp > 0xFFFF)
+            { // is surrogate pair
+                return cp;
+            }
+            return -1;
+        }
 
+        /// <summary>
+        /// Utility for getting a code point from a character sequence that contains exactly one code point.
+        /// </summary>
+        /// <param name="s">to test</param>
+        /// <returns>The code point IF the string consists of a single code point. Otherwise returns -1.</returns>
+        /// <stable>ICU 54</stable>
+        public static int GetSingleCodePoint(ReadOnlySpan<char> s)
+        {
+            if (s.Length == 0)
+            {
+                return -1;
+            }
+            else if (s.Length == 1)
+            {
+                return s[0];
+            }
+            else if (s.Length > 2)
+            {
+                return -1;
+            }
+
+            // at this point, len = 2
+            int cp = Character.CodePointAt(s, 0);
+            if (cp > 0xFFFF)
+            { // is surrogate pair
+                return cp;
+            }
+            return -1;
+        }
+
+        /// <summary>
+        /// Utility for comparing a code point to a string without having to create a new string. Returns the same results
+        /// as a code point comparison of UTF16.ValueOf(codePoint) and s.ToString(). More specifically, if
+        /// <code>
+        ///    sc = new StringComparer(true,false,0);
+        ///    fast = UTF16.CompareCodePoint(codePoint, charSequence)
+        ///    slower = sc.Compare(UTF16.ValueOf(codePoint), charSequence == null ? "" : charSequence.ToString())
+        /// </code>
+        /// then
+        /// <code>
+        ///    Math.Sign(fast) == Math.Sign(slower)
+        /// </code>
+        /// </summary>
+        /// <param name="codePoint">CodePoint to test.</param>
+        /// <param name="s">String to test.</param>
+        /// <returns>Equivalent of code point comparator comparing two strings.</returns>
+        /// <stable>ICU 54</stable>
+        public static int CompareCodePoint(int codePoint, string s)
+        {
+            if (s is null)
+            {
+                return 1;
+            }
+            int strLen = s.Length;
+            if (strLen == 0)
+            {
+                return 1;
+            }
+            int second = Character.CodePointAt(s, 0);
+            int diff = codePoint - second;
+            if (diff != 0)
+            {
+                return diff;
+            }
+            return strLen == Character.CharCount(codePoint) ? 0 : -1;
+        }
+
+        /// <summary>
+        /// Utility for comparing a code point to a string without having to create a new string. Returns the same results
+        /// as a code point comparison of UTF16.ValueOf(codePoint) and s.ToString(). More specifically, if
+        /// <code>
+        ///    sc = new StringComparer(true,false,0);
+        ///    fast = UTF16.CompareCodePoint(codePoint, charSequence)
+        ///    slower = sc.Compare(UTF16.ValueOf(codePoint), charSequence == null ? "" : charSequence.ToString())
+        /// </code>
+        /// then
+        /// <code>
+        ///    Math.Sign(fast) == Math.Sign(slower)
+        /// </code>
+        /// </summary>
+        /// <param name="codePoint">CodePoint to test.</param>
+        /// <param name="s">String to test.</param>
+        /// <returns>Equivalent of code point comparator comparing two strings.</returns>
+        /// <stable>ICU 54</stable>
+        public static int CompareCodePoint(int codePoint, ReadOnlySpan<char> s)
+        {
+            int strLen = s.Length;
+            if (strLen == 0)
+            {
+                return 1;
+            }
+            int second = Character.CodePointAt(s, 0);
+            int diff = codePoint - second;
+            if (diff != 0)
+            {
+                return diff;
+            }
+            return strLen == Character.CharCount(codePoint) ? 0 : -1;
+        }
 
         // private data members -------------------------------------------------
 
@@ -3030,18 +2763,179 @@ namespace ICU4N.Text
         {
             if (ch < SupplementaryMinValue)
             {
-                return "" + (char)ch;
+                return char.ToString((char)ch);
             }
 
-            // ICU4N: Both of the below alternatives were tried, but for some
-            // reason this caused perfomance to degrade considerably.
-            //return new string(GetLeadSurrogate(ch), GetTrailSurrogate(ch));
-            //return char.ConvertFromUtf32(ch);
+            Span<char> buffer = stackalloc char[2];
+            buffer[0] = GetLeadSurrogate(ch);
+            buffer[1] = GetTrailSurrogate(ch);
+            return buffer.ToString();
+        }
 
-            StringBuilder result = new StringBuilder();
-            result.Append(GetLeadSurrogate(ch));
-            result.Append(GetTrailSurrogate(ch));
-            return result.ToString();
+        /// <summary>
+        /// Converts argument code point and returns a <see cref="ReadOnlySpan{Char}"/> representing
+        /// the code point's value in UTF16 format.
+        /// <para/>
+        /// This method does not check for the validity of the codepoint, the results are not guaranteed
+        /// if a invalid codepoint is passed as argument.
+        /// <para/>
+        /// The result is a span whose length is 1 for non-supplementary code points, 2 otherwise.
+        /// </summary>
+        /// <param name="ch">Code point.</param>
+        /// <param name="buffer">The memory location to store the chars. Typically, it should be <c>stackalloc char[2]</c>
+        /// since it will never be longer than 2 chars. This must be passed in to allow allocation on the stack
+        /// and to hold a reference to the memory outside of this method.</param>
+        /// <returns>A <see cref="ReadOnlySpan{Char}"/> containing the chars of the code point.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static ReadOnlySpan<char> ToSpan(int ch, Span<char> buffer)
+        {
+            if (ch < SupplementaryMinValue)
+            {
+                buffer[0] = (char)ch;
+                return buffer.Slice(0, 1);
+            }
+
+            buffer[0] = GetLeadSurrogate(ch);
+            buffer[1] = GetTrailSurrogate(ch);
+            return buffer;
+        }
+
+        /// <summary>
+        /// Get a code point from a string at a code point boundary offset,
+        /// and advance the offset to the next code point boundary.
+        /// (Post-incrementing forward iteration.)
+        /// "Safe" macro, handles unpaired surrogates and checks for string boundaries.
+        /// <para/>
+        /// The offset may point to the lead surrogate unit
+        /// for a supplementary code point, in which case the macro will read
+        /// the following trail surrogate as well.
+        /// If the offset points to a trail surrogate or
+        /// to a single, unpaired lead surrogate, then c is set to that unpaired surrogate.
+        /// </summary>
+        /// <param name="s">A pointer to an array of <see cref="char"/>s.</param>
+        /// <param name="i">String offset, must be i&lt;length</param>
+        /// <param name="c">Output code point</param>
+        // ICU4N: port signature from U16_NEXT in utf16.h.
+        internal static void Next(ReadOnlySpan<char> s, ref int i, out int c)
+        {
+            int length = s.Length;
+            Debug.Assert(i >= 0 && i < length);
+            char ch = s[i++];
+            c = ch;
+            if (IsLeadSurrogate(ch))
+            {
+                char ch2;
+                if ((i != length) && IsTrailSurrogate((ch2 = s[i])))
+                {
+                    ++i;
+                    c = Character.ToCodePoint(ch, ch2);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get a code point from a string at a code point boundary offset,
+        /// and advance the offset to the next code point boundary.
+        /// (Post-incrementing forward iteration.)
+        /// "Safe" macro, handles unpaired surrogates and checks for string boundaries.
+        /// <para/>
+        /// The length can be negative for a NUL-terminated string.
+        /// <para/>
+        /// The offset may point to the lead surrogate unit
+        /// for a supplementary code point, in which case the macro will read
+        /// the following trail surrogate as well.
+        /// If the offset points to a trail surrogate or
+        /// to a single, unpaired lead surrogate, then c is set to that unpaired surrogate.
+        /// </summary>
+        /// <param name="s">A pointer to an array of <see cref="char"/>s.</param>
+        /// <param name="i">String offset, must be i&lt;length</param>
+        /// <param name="length">String length</param>
+        /// <param name="c">Output code point</param>
+        // ICU4N: port signature from U16_NEXT in utf16.h.
+        internal unsafe static void Next(char* s, ref int i, int length, out int c)
+        {
+            Debug.Assert(s != null);
+            Debug.Assert(i >= 0 && i < length);
+            char ch = s[i++];
+            c = ch;
+            if (IsLeadSurrogate(ch))
+            {
+                char ch2;
+                if ((i != length) && IsTrailSurrogate((ch2 = s[i])))
+                {
+                    ++i;
+                    c = Character.ToCodePoint(ch, ch2);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Move the string offset from one code point boundary to the previous one
+        /// and get the code point between them.
+        /// (Pre-decrementing backward iteration.)
+        /// "Safe" macro, handles unpaired surrogates and checks for string boundaries.
+        /// <para/>
+        /// The input offset may be the same as the string length.
+        /// If the offset is behind a trail surrogate unit
+        /// for a supplementary code point, then the macro will read
+        /// the preceding lead surrogate as well.
+        /// If the offset is behind a lead surrogate or behind a single, unpaired
+        /// trail surrogate, then c is set to that unpaired surrogate.
+        /// </summary>
+        /// <param name="s">A pointer to an array of <see cref="char"/>s.</param>
+        /// <param name="i">string offset, must be start&lt;i</param>
+        /// <param name="c">Output code point</param>
+        // ICU4N: port signature from U16_PREV in utf16.h.
+        internal static void Previous(ReadOnlySpan<char> s, ref int i, out int c)
+        {
+            Debug.Assert(i > 0);
+            char ch = s[--i];
+            c = ch;
+            if (IsTrailSurrogate(ch))
+            {
+                char ch2;
+                if (i > 0 && IsLeadSurrogate((ch2 = s[i - 1])))
+                {
+                    --i;
+                    c = Character.ToCodePoint(ch2, ch);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Move the string offset from one code point boundary to the previous one
+        /// and get the code point between them.
+        /// (Pre-decrementing backward iteration.)
+        /// "Safe" macro, handles unpaired surrogates and checks for string boundaries.
+        /// <para/>
+        /// The input offset may be the same as the string length.
+        /// If the offset is behind a trail surrogate unit
+        /// for a supplementary code point, then the macro will read
+        /// the preceding lead surrogate as well.
+        /// If the offset is behind a lead surrogate or behind a single, unpaired
+        /// trail surrogate, then c is set to that unpaired surrogate.
+        /// </summary>
+        /// <param name="s">A pointer to an array of <see cref="char"/>s.</param>
+        /// <param name="start">Starting string offset (usually 0)</param>
+        /// <param name="i">string offset, must be start&lt;i</param>
+        /// <param name="c">Output code point</param>
+        // ICU4N: port signature from U16_PREV in utf16.h.
+        internal unsafe static void Previous(char* s, int start, ref int i, out int c)
+        {
+            Debug.Assert(s != null);
+            Debug.Assert(i > 0);
+            Debug.Assert(start < i);
+            char ch = s[--i];
+            c = ch;
+            if (IsTrailSurrogate(ch))
+            {
+                char ch2;
+                if (i > start && IsLeadSurrogate((ch2 = s[i - 1])))
+                {
+                    --i;
+                    c = Character.ToCodePoint(ch2, ch);
+                }
+            }
         }
     }
 }

@@ -134,12 +134,24 @@ namespace ICU4N.Dev.Test.Lang
             String sample = UScript.GetSampleString(UScript.Latin);
             if (sample.Length != 1 || UScript.GetScript(sample[0]) != UScript.Latin)
             {
-                Errln("UScript.getSampleString(Latn) failed");
+                Errln("UScript.GetSampleString(Latn) failed");
             }
             sample = UScript.GetSampleString(UScript.InvalidCode);
             if (sample.Length != 0)
             {
-                Errln("UScript.getSampleString(invalid) failed");
+                Errln("UScript.GetSampleString(invalid) failed");
+            }
+
+            Span<char> buffer = stackalloc char[2];
+            ReadOnlySpan<char> sampleSpan = UScript.GetSampleSpan(UScript.Latin, buffer);
+            if (sampleSpan.Length != 1 || UScript.GetScript(sampleSpan[0]) != UScript.Latin)
+            {
+                Errln("UScript.GetSampleSpan(Latn) failed");
+            }
+            sampleSpan = UScript.GetSampleSpan(UScript.InvalidCode, buffer);
+            if (sampleSpan.Length != 0)
+            {
+                Errln("UScript.GetSampleSpan(invalid) failed");
             }
 
             if (UScript.GetUsage(UScript.Latin) != ScriptUsage.Recommended ||
@@ -209,16 +221,19 @@ namespace ICU4N.Dev.Test.Lang
             // So far, sample characters are uppercase.
             // Georgian is special.
             UnicodeSet cased = new UnicodeSet("[[:Lu:]-[:sc=Common:]-[:sc=Geor:]]");
+            Span<char> codePointBuffer = stackalloc char[2];
             for (int sc = 0; sc < UScript.CodeLimit; ++sc)
             {
                 String sn = UScript.GetShortName(sc);
                 ScriptUsage usage = UScript.GetUsage(sc);
                 String sample = UScript.GetSampleString(sc);
+                ReadOnlySpan<char> sampleSpan = UScript.GetSampleSpan(sc, codePointBuffer);
                 UnicodeSet scriptSet = new UnicodeSet();
                 scriptSet.ApplyInt32PropertyValue(UProperty.Script, sc);
                 if (usage == ScriptUsage.NotEncoded)
                 {
                     assertTrue(sn + " not encoded, no sample", sample.Length == 0);  // Java 6: sample.isEmpty()
+                    assertTrue(sn + " not encoded, no sample", sampleSpan.Length == 0);  // Java 6: sample.isEmpty()
                     assertFalse(sn + " not encoded, not RTL", UScript.IsRightToLeft(sc));
                     assertFalse(sn + " not encoded, not LB letters", UScript.BreaksBetweenLetters(sc));
                     assertFalse(sn + " not encoded, not cased", UScript.IsCased(sc));
@@ -227,6 +242,7 @@ namespace ICU4N.Dev.Test.Lang
                 else
                 {
                     assertFalse(sn + " encoded, has a sample character", sample.Length == 0);  // Java 6: sample.isEmpty()
+                    assertFalse(sn + " encoded, has a sample character", sampleSpan.Length == 0);  // Java 6: sample.isEmpty()
                     int firstChar = sample.CodePointAt(0);
                     int charScript = GetCharScript(sc);
                     assertEquals(sn + " script(sample(script))",
@@ -276,9 +292,14 @@ namespace ICU4N.Dev.Test.Lang
             int v, rev;
             for (int i = 0; i < UScript.CodeLimit; i++)
             {
-                if (!UScript.TryGetName(i, out string name) || name.Equals(""))
+                string name = null;
+                if (!UScript.TryGetName(i, out ReadOnlySpan<char> nameSpan) || nameSpan.Equals("", StringComparison.Ordinal))
                 {
                     Errln("FAILED: getName for code : " + i);
+                }
+                else
+                {
+                    name = nameSpan.ToString();
                 }
                 if (name != null)
                 {
@@ -290,9 +311,14 @@ namespace ICU4N.Dev.Test.Lang
                               name + " -> " + rev);
                     }
                 }
-                if (!UScript.TryGetShortName(i, out string shortName) || shortName.Equals(""))
+                string shortName = null;
+                if (!UScript.TryGetShortName(i, out ReadOnlySpan<char> shortNameSpan) || shortNameSpan.Equals("", StringComparison.Ordinal))
                 {
                     Errln("FAILED: getName for code : " + i);
+                }
+                else
+                {
+                    shortName = shortNameSpan.ToString();
                 }
                 if (shortName != null)
                 {
@@ -344,10 +370,10 @@ namespace ICU4N.Dev.Test.Lang
                 if (code == UScript.InvalidCode)
                     Errln("UScript.GetScript for codepoint 0x" + Hex(i) + " failed");
 
-                if (!UScript.TryGetName(code, out string id) || id.IndexOf("INVALID", StringComparison.Ordinal) >= 0)
+                if (!UScript.TryGetName(code, out ReadOnlySpan<char> id) || id.IndexOf("INVALID", StringComparison.Ordinal) >= 0)
                     Errln("UScript.GetScript for codepoint 0x" + Hex(i) + " failed");
 
-                if (!UScript.TryGetShortName(code, out string abbr) || abbr.IndexOf("INV", StringComparison.Ordinal) >= 0)
+                if (!UScript.TryGetShortName(code, out ReadOnlySpan<char> abbr) || abbr.IndexOf("INV", StringComparison.Ordinal) >= 0)
                     Errln("UScript.GetScript for codepoint 0x" + Hex(i) + " failed");
             }
         }

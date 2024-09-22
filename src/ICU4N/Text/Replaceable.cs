@@ -1,4 +1,6 @@
-﻿namespace ICU4N.Text
+﻿using System;
+
+namespace ICU4N.Text
 {
     /// <summary>
     /// <see cref="IReplaceable"/> is an interface representing a
@@ -26,7 +28,7 @@
     /// and <see cref="Char32At(int)"/>.
     /// <para/>
     /// For an implementation to support metadata, typical behavior of
-    /// <see cref="Replace(int, int, char[], int, int)"/> is the following:
+    /// <see cref="Replace(int, int, ReadOnlySpan{char})"/> is the following:
     /// <list type="bullet">
     ///     <item><description>
     ///         Set the metadata of the new text to the metadata of the first
@@ -85,7 +87,7 @@
         /// <param name="index">An integer between 0 and <see cref="Length"/>-1 inclusive.</param>
         /// <returns>32-bit code point of text at given offset.</returns>
         /// <stable>ICU 2.0</stable>
-        int Char32At(int index);
+        int Char32At(int index); // ICU4N TODO: API - Rename CodePointAt()
 
         /// <summary>
         /// Copies characters from this object into the destination
@@ -110,10 +112,29 @@
         void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count);
 
         /// <summary>
+        /// Copies characters from this object into the destination
+        /// character array.  The first character to be copied is at index
+        /// <paramref name="sourceIndex"/>; the last character to be copied is at
+        /// index <paramref name="count"/>-<paramref name="sourceIndex"/>.
+        /// The characters are copied into <paramref name="destination"/>,
+        /// which may be a slice of a larger <see cref="Span{Char}"/>.
+        /// </summary>
+        /// <remarks>
+        /// NOTE: This is roughly equivalent to GetChars(int srcStart, int srcLimit, char dst[], int dstStart)
+        /// in ICU4J with one important difference - the final parameter is the total
+        /// count of characters to be copied (srcLimit - srcStart).
+        /// </remarks>
+        /// <param name="sourceIndex">The index of the first character in this instance to copy.</param>
+        /// <param name="destination">An array of Unicode characters to which characters in this instance are copied.</param>
+        /// <param name="count">The number of characters in this instance to copy to <paramref name="destination"/>.</param>
+        /// <stable>ICU 2.0</stable>
+        void CopyTo(int sourceIndex, Span<char> destination, int count); // ICU4N TODO: API - mark draft??
+
+        /// <summary>
         /// Replaces a substring of this object with the given text.
         /// <para/>
-        /// Implementations must ensure that if the text between start and
-        /// limit is equal to the replacement text, that replace has no
+        /// Implementations must ensure that if the text input
+        /// is equal to the replacement text, that replace has no
         /// effect. That is, any metadata
         /// should be unaffected. In addition, implementers are encouraged to
         /// check for initial and trailing identical characters, and make a
@@ -132,8 +153,8 @@
         /// <summary>
         /// Replaces a substring of this object with the given text.
         /// <para/>
-        /// Implementations must ensure that if the text between start and
-        /// limit is equal to the replacement text, that replace has no
+        /// Implementations must ensure that if the text input
+        /// is equal to the replacement text, that replace has no
         /// effect. That is, any metadata
         /// should be unaffected. In addition, implementers are encouraged to
         /// check for initial and trailing identical characters, and make a
@@ -142,22 +163,25 @@
         /// <para/>
         /// NOTE: The 2nd parameter differs from ICU4J in that it is a count rather than an exclusive
         /// end index. To translate from Java, use <c>limit - start</c> to resolve <paramref name="count"/>.
+        /// <para/>
+        /// This overload can be used in place of the Replace(int, int, char[], int, int) overload in ICU4J
+        /// by slicing into the passed in text (i.e. <c>text.Slice(0, 3)</c>).
         /// </summary>
         /// <param name="startIndex">The beginning index, inclusive; <c>0 &lt;= <paramref name="startIndex"/></c>.</param>
-        /// <param name="count">The number of characters to replace; <c>0 &lt;= <paramref name="count"/></c>.</param>
-        /// <param name="chars">The text to replace characters beginning at <paramref name="startIndex"/>.</param>
-        /// <param name="charsStart">The beginning index into <paramref name="chars"/>, inclusive; <c>0 &lt;= <paramref name="startIndex"/> &lt;= <paramref name="count"/></c>.</param>
-        /// <param name="charsLen">The number of characters of <paramref name="chars"/>.</param>
+        /// <param name="count">The ending index, exclusive; <c>0 &lt;= <paramref name="count"/></c>.</param>
+        /// <param name="text">The text to replace characters beginning at <paramref name="startIndex"/>.</param>
         /// <stable>ICU 2.0</stable>
-        void Replace(int startIndex, int count, char[] chars,
-                     int charsStart, int charsLen);
-        // Note: We use length rather than limit to conform to StringBuffer
-        // and System.arraycopy.
+        void Replace(int startIndex, int count, ReadOnlySpan<char> text);
 
         /// <summary>
         /// Copies a substring of this object, retaining metadata.
         /// This method is used to duplicate or reorder substrings.
         /// The destination index must not overlap the source range.
+        /// <para/>
+        /// NOTE: This method has .NET semantics. That is, the 2nd parameter
+        /// is a length rather than an exclusive end index (or limit).
+        /// To translate from Java, use <c>limit - start</c> to resolve
+        /// <paramref name="length"/>.
         /// </summary>
         /// <remarks>
         /// If <see cref="HasMetaData"/> returns false, implementations

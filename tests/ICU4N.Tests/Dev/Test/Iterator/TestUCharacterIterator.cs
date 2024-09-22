@@ -44,14 +44,13 @@ namespace ICU4N.Dev.Test.Iterator
             char[] buf = new char[1];
             for (; ; )
             {
-                try
+                if (iterator.TryGetText(buf, out int charsLength))
                 {
-                    iterator.GetText(buf);
                     break;
                 }
-                catch (IndexOutOfRangeException e)
+                else
                 {
-                    buf = new char[iterator.Length];
+                    buf = new char[charsLength];
                 }
             }
             if (result.CompareToOrdinal(new string(buf, 0, iterator.Length)) != 0)

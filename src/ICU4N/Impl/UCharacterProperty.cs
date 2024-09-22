@@ -290,7 +290,7 @@ namespace ICU4N.Impl
                 new AnonymousBinaryProperty(this, UPropertySource.NFC, contains: (c) =>
                     {// UCHAR_FULL_COMPOSITION_EXCLUSION
                         // By definition, Full_Composition_Exclusion is the same as NFC_QC=No.
-                        Normalizer2Impl impl = Norm2AllModes.GetNFCInstance().Impl;
+                        Normalizer2Impl impl = Norm2AllModes.NFCInstance.Impl;
                         return impl.IsCompNo(impl.GetNorm16(c));
                     }),
                 new BinaryProperty(this,1, (1<<GRAPHEME_BASE_PROPERTY_)),
@@ -329,7 +329,7 @@ namespace ICU4N.Impl
                 new NormInertBinaryProperty(this,UPropertySource.NFKC, UProperty.NFKC_Inert),
                 new AnonymousBinaryProperty(this, UPropertySource.NFCCanonicalIterator, contains: (c) =>
                     {  // UCHAR_SEGMENT_STARTER
-                        return Norm2AllModes.GetNFCInstance().Impl.
+                        return Norm2AllModes.NFCInstance.Impl.
                             EnsureCanonIterData().IsCanonSegmentStarter(c);
                     }),
                 new BinaryProperty(this, 1, (1<<PATTERN_SYNTAX)),
@@ -384,7 +384,7 @@ namespace ICU4N.Impl
                 new CaseBinaryProperty(this, UProperty.Changes_When_Titlecased),
                 new AnonymousBinaryProperty(this, UPropertySource.CaseAndNormalizer, contains: (c) =>
                     {  // UCHAR_CHANGES_WHEN_CASEFOLDED
-                        string nfd = Norm2AllModes.GetNFCInstance().Impl.GetDecomposition(c);
+                        string nfd = Norm2AllModes.NFCInstance.Impl.GetDecomposition(c);
                         if (nfd != null)
                         {
                             /* c has a decomposition */
@@ -403,9 +403,16 @@ namespace ICU4N.Impl
                         {
                             /* single code point */
                             UCaseProperties csp = UCaseProperties.Instance;
-                            UCaseProperties.DummyStringBuilder.Length = 0;
-                            return csp.ToFullFolding(c, UCaseProperties.DummyStringBuilder,
+                            ValueStringBuilder dummyStringBuilder = new ValueStringBuilder(stackalloc char[8]);
+                            try
+                            {
+                                return csp.ToFullFolding(c, ref dummyStringBuilder,
                                                         UChar.FoldCaseDefault) >= 0;
+                            }
+                            finally
+                            {
+                                dummyStringBuilder.Dispose();
+                            }
                         }
                         else
                         {
@@ -416,13 +423,19 @@ namespace ICU4N.Impl
                 new CaseBinaryProperty(this, UProperty.Changes_When_Casemapped),
                 new AnonymousBinaryProperty(this, UPropertySource.NFKCCaseFold, contains: (c) =>
                     {  // UCHAR_CHANGES_WHEN_NFKC_CASEFOLDED
-                        Normalizer2Impl kcf = Norm2AllModes.GetNFKC_CFInstance().Impl;
-                        string src = UTF16.ValueOf(c);
-                        StringBuilder dest = new StringBuilder();
-                        // Small destCapacity for NFKC_CF(c).
-                        ReorderingBuffer buffer = new ReorderingBuffer(kcf, dest, 5);
-                        kcf.Compose(src, 0, src.Length, false, true, buffer);
-                        return !UTF16Plus.Equal(dest, src);
+                        Normalizer2Impl kcf = Norm2AllModes.NFKC_CFInstance.Impl;
+                        Span<char> src = stackalloc char[2];
+                        int charCount = Character.ToChars(c, src, 0);
+                        ReorderingBuffer buffer = new ReorderingBuffer(kcf, stackalloc char[5]); // Small destCapacity for NFKC_CF(c).
+                        try
+                        {
+                            kcf.Compose(src.Slice(0, charCount), false, true, ref buffer); // ICU4N: Checked 3rd parameter
+                            return !UTF16Plus.Equal(buffer.AsSpan(), src.Slice(0, charCount));
+                        }
+                        finally
+                        {
+                            buffer.Dispose(); // ICU4N: Should remain on the stack, so this doesn't really matter
+                        }
                     }),
                 new BinaryProperty(this, 2, 1<<PROPS_2_EMOJI),
                 new BinaryProperty(this, 2, 1<<PROPS_2_EMOJI_PRESENTATION),
@@ -446,7 +459,7 @@ namespace ICU4N.Impl
                 new IntProperty(this, 0, BLOCK_MASK_, BLOCK_SHIFT_),
                 new CombiningClassIntProperty(this, UPropertySource.NFC, getValue: (c) =>
                     { // CANONICAL_COMBINING_CLASS
-                        return Normalizer2.GetNFDInstance().GetCombiningClass(c);
+                        return Normalizer2.NFDInstance.GetCombiningClass(c);
                     }),
                 new IntProperty(this, 2, DECOMPOSITION_TYPE_MASK_, 0),
                 new IntProperty(this, 0, EAST_ASIAN_MASK_, EAST_ASIAN_SHIFT_),
@@ -505,11 +518,11 @@ namespace ICU4N.Impl
                 new NormQuickCheckIntProperty(this, UPropertySource.NFKC, UProperty.NFKC_Quick_Check, 2),
                 new CombiningClassIntProperty(this, UPropertySource.NFC, getValue: (c) =>
                     {  // LEAD_CANONICAL_COMBINING_CLASS
-                        return Norm2AllModes.GetNFCInstance().Impl.GetFCD16(c) >> 8;
+                        return Norm2AllModes.NFCInstance.Impl.GetFCD16(c) >> 8;
                     }),
                 new CombiningClassIntProperty(this, UPropertySource.NFC, getValue: (c) =>
                     {  // TRAIL_CANONICAL_COMBINING_CLASS
-                        return Norm2AllModes.GetNFCInstance().Impl.GetFCD16(c) & 0xff;
+                        return Norm2AllModes.NFCInstance.Impl.GetFCD16(c) & 0xff;
                     }),
                 new IntProperty(this, 2, GCB_MASK, GCB_SHIFT),  // GRAPHEME_CLUSTER_BREAK
                 new IntProperty(this, 2, SB_MASK, SB_SHIFT),  // SENTENCE_BREAK

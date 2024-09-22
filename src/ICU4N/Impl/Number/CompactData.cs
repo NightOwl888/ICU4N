@@ -1,5 +1,6 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Impl;
+using ICU4N.Text;
 using ICU4N.Util;
 using System;
 using System.Collections.Generic;
@@ -91,8 +92,8 @@ namespace ICU4N.Numerics
                 foreach (var pluralEntry in magnitudeEntry.Value)
                 {
                     //StandardPlural plural = StandardPlural.FromString(pluralEntry.Key.ToString());
-                    StandardPluralUtil.TryFromString(pluralEntry.Key.ToString(), out StandardPlural plural); // ICU4N TODO: Throw here?
-                    string patternString = pluralEntry.Value.ToString();
+                    StandardPluralUtil.TryGetValue(pluralEntry.Key, out StandardPlural plural); // ICU4N TODO: Throw here?
+                    string patternString = pluralEntry.Value;
                     patterns[GetIndex(magnitude, plural)] = patternString;
                     int numZeros = CountZeros(patternString);
                     if (numZeros > 0)
@@ -158,6 +159,7 @@ namespace ICU4N.Numerics
 
         private sealed class CompactDataSink : ResourceSink
         {
+            private const int CharStackBufferSize = 32;
 
             internal CompactData data;
 
@@ -187,7 +189,7 @@ namespace ICU4N.Numerics
                         // Skip this magnitude/plural if we already have it from a child locale.
                         // Note: This also skips USE_FALLBACK entries.
                         //StandardPlural plural = StandardPluralUtil.FromString(key.ToString());
-                        StandardPluralUtil.TryFromString(key.ToString(), out StandardPlural plural); // ICU4N TODO: Throw here?
+                        StandardPluralUtil.TryGetValue(key, out StandardPlural plural); // ICU4N TODO: Throw here?
                         if (data.patterns[GetIndex(magnitude, plural)] != null)
                         {
                             continue;

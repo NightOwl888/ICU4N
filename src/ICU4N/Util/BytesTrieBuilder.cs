@@ -1,6 +1,7 @@
 ﻿using J2N.IO;
 using J2N.Text;
 using System;
+using System.Buffers;
 using System.Diagnostics;
 
 namespace ICU4N.Util
@@ -14,6 +15,8 @@ namespace ICU4N.Util
     /// <author>Markus W. Scherer</author>
     public sealed class BytesTrieBuilder : StringTrieBuilder
     {
+        private const int CharStackBufferSize = 32;
+
         /// <summary>
         /// Constructs an empty builder.
         /// </summary>
@@ -23,24 +26,6 @@ namespace ICU4N.Util
             : base()
 #pragma warning restore 612, 618
         { }
-
-        // Used in Add() to wrap the bytes into a ICharSequence for StringTrieBuilder.AddImpl().
-        private sealed class BytesAsCharSequence : ICharSequence
-        {
-            public BytesAsCharSequence(byte[] sequence, int length)
-            {
-                s = sequence;
-                len = length;
-            }
-            public char this[int i] => (char)(s[i] & 0xff);
-            public int Length => len;
-            public ICharSequence Subsequence(int startIndex, int length) { return null; }
-
-            bool ICharSequence.HasValue => true;
-
-            private byte[] s;
-            private int len;
-        }
 
         /// <summary>
         /// Adds a (byte sequence, value) pair.
@@ -53,11 +38,26 @@ namespace ICU4N.Util
         /// <param name="value">The value associated with this byte sequence.</param>
         /// <returns>This.</returns>
         /// <stable>ICU 4.8</stable>
-        public BytesTrieBuilder Add(byte[] sequence, int length, int value)
+        public BytesTrieBuilder Add(byte[] sequence, int length, int value) // ICU4N TODO: API - add guard clauses for length and null
         {
+            bool usePool = length <= CharStackBufferSize;
+            char[] arrayToReturnToPool = usePool ? ArrayPool<char>.Shared.Rent(length) : null;
+            Span<char> chars = usePool ? arrayToReturnToPool.AsSpan(0, length) : stackalloc char[length];
+            try
+            {
+                for (int i = 0; i < length; i++)
+                {
+                    chars[i] = (char)(sequence[i] & 0xff);
+                }
+
 #pragma warning disable 612, 618
-            AddImpl(new BytesAsCharSequence(sequence, length), value);
+                AddImpl(chars, value);
 #pragma warning restore 612, 618
+            }
+            finally
+            {
+                ArrayPool<char>.Shared.ReturnIfNotNull(arrayToReturnToPool);
+            }
             return this;
         }
 

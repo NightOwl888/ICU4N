@@ -172,7 +172,7 @@ namespace ICU4N.Dev.Test.StringPrep
             int poLen = processOut.Length;
             if (poLen == 0)
             {
-                throw new StringPrepParseException("Found zero length lable after NamePrep.", StringPrepErrorType.ZeroLengthLabel);
+                throw new StringPrepFormatException("Found zero length lable after NamePrep.", StringPrepErrorType.ZeroLengthLabel);
             }
             StringBuffer dest = new StringBuffer();
 
@@ -208,20 +208,20 @@ namespace ICU4N.Dev.Test.StringPrep
                     /* populate the parseError struct */
                     if (srcIsLDH == false)
                     {
-                        throw new StringPrepParseException("The input does not conform to the STD 3 ASCII rules",
+                        throw new StringPrepFormatException("The input does not conform to the STD 3 ASCII rules",
                                                  StringPrepErrorType.STD3ASCIIRulesError,
                                                  processOut.ToString(),
                                                 (failPos > 0) ? (failPos - 1) : failPos);
                     }
                     else if (processOut[0] == HYPHEN)
                     {
-                        throw new StringPrepParseException("The input does not conform to the STD 3 ASCII rules",
+                        throw new StringPrepFormatException("The input does not conform to the STD 3 ASCII rules",
                                                   StringPrepErrorType.STD3ASCIIRulesError, processOut.ToString(), 0);
 
                     }
                     else
                     {
-                        throw new StringPrepParseException("The input does not conform to the STD 3 ASCII rules",
+                        throw new StringPrepFormatException("The input does not conform to the STD 3 ASCII rules",
                                                  StringPrepErrorType.STD3ASCIIRulesError,
                                                  processOut.ToString(),
                                                  (poLen > 0) ? poLen - 1 : poLen);
@@ -252,13 +252,13 @@ namespace ICU4N.Dev.Test.StringPrep
                 }
                 else
                 {
-                    throw new StringPrepParseException("The input does not start with the ACE Prefix.",
+                    throw new StringPrepFormatException("The input does not start with the ACE Prefix.",
                                        StringPrepErrorType.AcePrefixError, processOut.ToString(), 0);
                 }
             }
             if (dest.Length > MAX_LABEL_LENGTH)
             {
-                throw new StringPrepParseException("The labels in the input are too long. Length > 64.",
+                throw new StringPrepFormatException("The labels in the input are too long. Length > 64.",
                                         StringPrepErrorType.LabelTooLongError, dest.ToString(), 0);
             }
             return dest;
@@ -344,7 +344,7 @@ namespace ICU4N.Dev.Test.StringPrep
                     {
                         processOut = transform.Prepare(iter, (StringPrepOptions)options);
                     }
-                    catch (StringPrepParseException e)
+                    catch (StringPrepFormatException e)
                     {
                         break;
                     }
@@ -368,7 +368,7 @@ namespace ICU4N.Dev.Test.StringPrep
                     {
                         decodeOut = PunycodeReference.Decode(new StringBuffer(temp), null);
                     }
-                    catch (StringPrepParseException e)
+                    catch (StringPrepFormatException e)
                     {
                         break;
                     }
@@ -410,7 +410,7 @@ namespace ICU4N.Dev.Test.StringPrep
                 String label = new String(srcArr, oldSepIndex, sepIndex - oldSepIndex);
                 if (label.Length == 0 && sepIndex != srcArr.Length)
                 {
-                    throw new StringPrepParseException("Found zero length lable after NamePrep.", StringPrepErrorType.ZeroLengthLabel);
+                    throw new StringPrepFormatException("Found zero length lable after NamePrep.", StringPrepErrorType.ZeroLengthLabel);
                 }
                 UCharacterIterator iter = UCharacterIterator.GetInstance(label);
                 result.Append(ConvertToUnicode(iter, options));

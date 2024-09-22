@@ -86,23 +86,22 @@ namespace ICU4N.Impl
             iterator.SetIndex(iterator.EndIndex);
         }
 
-        /// <seealso cref="UCharacterIterator.GetText(char[])"/>
-        public override int GetText(char[] fillIn, int offset)
+        /// <seealso cref="UCharacterIterator.TryGetText(Span{char}, out int)"/>
+        public override bool TryGetText(Span<char> destination, out int charsLength)
         {
-            int length = iterator.EndIndex - iterator.BeginIndex;
-            int currentIndex = iterator.Index;
-            if (offset < 0 || offset + length > fillIn.Length)
-            {
-                throw new IndexOutOfRangeException(length.ToString());
-            }
+            charsLength = iterator.EndIndex - iterator.BeginIndex;
+            if (destination.Length < charsLength)
+                return false;
 
+            int currentIndex = iterator.Index;
+            int offset = 0;
             for (char ch = iterator.First(); ch != CharacterIterator.Done; ch = iterator.Next())
             {
-                fillIn[offset++] = ch;
+                destination[offset++] = ch;
             }
             iterator.SetIndex(currentIndex);
 
-            return length;
+            return true;
         }
 
         /// <summary>

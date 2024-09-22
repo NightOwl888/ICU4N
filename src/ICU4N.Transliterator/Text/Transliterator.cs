@@ -420,6 +420,8 @@ namespace ICU4N.Text
     /// <stable>ICU 2.0</stable>
     public abstract class Transliterator : IStringTransform
     {
+        internal const int CharStackBufferSize = 64;
+
         /// <summary>
         /// Direction constant indicating the forward direction in a transliterator,
         /// e.g., the forward rules of a RuleBasedTransliterator.  An "A-B"
@@ -543,7 +545,7 @@ namespace ICU4N.Text
         /// <em>new-limit</em> is the return value. If the input offsets are out of bounds,
         /// the returned value is -1 and the input string remains unchanged.</returns>
         /// <stable>ICU 2.0</stable>
-        public int Transliterate(IReplaceable text, int start, int limit)
+        public int Transliterate(IReplaceable text, int start, int limit) // ICU4N TODO: API - Change limit to length
         {
             if (start < 0 ||
                 limit < start ||
@@ -575,7 +577,20 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public string Transliterate(string text)
         {
-            ReplaceableString result = new ReplaceableString(text);
+            using PooledReplaceableString result = new PooledReplaceableString(text);
+            Transliterate(result);
+            return result.ToString();
+        }
+
+        /// <summary>
+        /// Transliterate an entire string and returns the result. Convenience method.
+        /// </summary>
+        /// <param name="text">The string to be transliterated.</param>
+        /// <returns>The transliterated text.</returns>
+        /// <draft>ICU 60.1</draft>
+        public string Transliterate(ReadOnlySpan<char> text) // ICU4N TODO: Tests
+        {
+            using PooledReplaceableString result = new PooledReplaceableString(text);
             Transliterate(result);
             return result.ToString();
         }
@@ -630,10 +645,63 @@ namespace ICU4N.Text
         public void Transliterate(IReplaceable text, TransliterationPosition index,
                                         string insertion)
         {
+            Transliterate(text, index, insertion.AsSpan());
+        }
+
+        /// <summary>
+        /// Transliterates the portion of the text buffer that can be
+        /// transliterated unambiguosly after new text has been inserted,
+        /// typically as a result of a keyboard event.  The new text in
+        /// <paramref name="insertion"/> will be inserted into <paramref name="text"/>
+        /// at <c>text.ContextLimit</c>, advancing
+        /// <c>index.ContextLimit</c> by <c>insertion.Length</c>.
+        /// Then the transliterator will try to transliterate characters of
+        /// <paramref name="text"/> between <c>index.Start</c> and
+        /// <c>index.ContextLimit</c>.  Characters before
+        /// <c>index.Start</c> will not be changed.
+        /// <para/>
+        /// Upon return, values in <paramref name="index"/> will be updated.
+        /// <c>index.ContextStart</c> will be advanced to the first
+        /// character that future calls to this method will read.
+        /// <c>index.Start</c> and <c>index.ContextLimit</c> will
+        /// be adjusted to delimit the range of text that future calls to
+        /// this method may change.
+        /// <para/>
+        /// Typical usage of this method begins with an initial call
+        /// with <c>index.ContextStart</c> and <c>index.ContextLimit</c>
+        /// set to indicate the portion of <paramref name="text"/> to be
+        /// transliterated, and <c>index.Start == index.ContextStart</c>.
+        /// Thereafter, <paramref name="index"/> can be used without
+        /// modification in future calls, provided that all changes to
+        /// <paramref name="text"/> are made via this method.
+        /// <para/>
+        /// This method assumes that future calls may be made that will
+        /// insert new text into the buffer.  As a result, it only performs
+        /// unambiguous transliterations.  After the last call to this
+        /// method, there may be untransliterated text that is waiting for
+        /// more input to resolve an ambiguity.  In order to perform these
+        /// pending transliterations, clients should call <see cref="FinishTransliteration(IReplaceable, TransliterationPosition)"/>
+        /// after the last call to this
+        /// method has been made.
+        /// </summary>
+        /// <param name="text">The buffer holding transliterated and untransliterated text.</param>
+        /// <param name="index">The start and limit of the text, the position
+        /// of the cursor, and the start and limit of transliteration.</param>
+        /// <param name="insertion">Text to be inserted and possibly
+        /// transliterated into the translation buffer at
+        /// <c>index.ContextLimit</c>.  If <c>null</c> then no text
+        /// is inserted.</param>
+        /// <seealso cref="HandleTransliterate(IReplaceable, TransliterationPosition, bool)"/>
+        /// <exception cref="ArgumentException">If <paramref name="index"/>
+        /// is invalid.</exception>
+        /// <stable>ICU 2.0</stable>
+        public void Transliterate(IReplaceable text, TransliterationPosition index,
+                                    ReadOnlySpan<char> insertion)
+        {
             index.Validate(text.Length);
 
             //        int originalStart = index.contextStart;
-            if (insertion != null)
+            if (!insertion.IsEmpty)
             {
                 text.Replace(index.Limit, index.Limit - index.Limit, insertion); // ICU4N: Corrected 2nd parameter
                 index.Limit += insertion.Length;
@@ -664,7 +732,7 @@ namespace ICU4N.Text
         /// Transliterates the portion of the text buffer that can be
         /// transliterated unambiguosly after a new character has been
         /// inserted, typically as a result of a keyboard event.  This is a
-        /// convenience method; see <see cref="Transliterate(IReplaceable, TransliterationPosition, string)"/> for details.
+        /// convenience method; see <see cref="Transliterate(IReplaceable, TransliterationPosition, ReadOnlySpan{Char})"/> for details.
         /// </summary>
         /// <param name="text">The buffer holding transliterated and
         /// untransliterated text.</param>
@@ -673,29 +741,30 @@ namespace ICU4N.Text
         /// <param name="insertion">Text to be inserted and possibly
         /// transliterated into the translation buffer at
         /// <c>index.ContextLimit</c>.</param>
-        /// <seealso cref="Transliterate(IReplaceable, TransliterationPosition, string)"/>
+        /// <seealso cref="Transliterate(IReplaceable, TransliterationPosition, ReadOnlySpan{Char})"/>
         /// <stable>ICU 2.0</stable>
         public void Transliterate(IReplaceable text, TransliterationPosition index,
                                         int insertion)
         {
-            Transliterate(text, index, UTF16.ValueOf(insertion));
+            Span<char> codePointBuffer = stackalloc char[2];
+            Transliterate(text, index, UTF16.ValueOf(insertion, codePointBuffer));
         }
 
         /// <summary>
         /// Transliterates the portion of the text buffer that can be
         /// transliterated unambiguosly.  This is a convenience method; see
-        /// <see cref="Transliterate(IReplaceable, TransliterationPosition, string)"/>
+        /// <see cref="Transliterate(IReplaceable, TransliterationPosition, ReadOnlySpan{Char})"/>
         /// for details.
         /// </summary>
         /// <param name="text">The buffer holding transliterated and
         /// untransliterated text.</param>
         /// <param name="index">The start and limit of the text, the position
         /// of the cursor, and the start and limit of transliteration.</param>
-        /// <seealso cref="Transliterate(IReplaceable, TransliterationPosition, string)"/>
+        /// <seealso cref="Transliterate(IReplaceable, TransliterationPosition, ReadOnlySpan{Char})"/>
         /// <stable>ICU 2.0</stable>
         public void Transliterate(IReplaceable text, TransliterationPosition index)
         {
-            Transliterate(text, index, null);
+            Transliterate(text, index, ReadOnlySpan<char>.Empty);
         }
 
         /// <summary>
@@ -1474,13 +1543,12 @@ namespace ICU4N.Text
         /// invalid.</returns>
         internal static Transliterator GetBasicInstance(string id, string canonID)
         {
-            StringBuffer s = new StringBuffer();
-            Transliterator t = registry.Get(id, s);
+            Transliterator t = registry.Get(id, out string s);
             if (s.Length != 0)
             {
                 // assert(t==0);
                 // Instantiate an alias
-                t = GetInstance(s.ToString(), Forward);
+                t = GetInstance(s, Forward);
             }
             if (t != null && canonID != null)
             {
@@ -1524,8 +1592,8 @@ namespace ICU4N.Text
                 // direction.
                 if (parser.CompoundFilter != null)
                 {
-                    t = GetInstance(parser.CompoundFilter.ToPattern(false) + ";"
-                            + parser.IdBlockVector[0]);
+                    t = GetInstance(string.Concat(parser.CompoundFilter.ToPattern(false), ";",
+                            parser.IdBlockVector[0]));
                 }
                 else
                 {
@@ -1584,7 +1652,29 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public virtual string ToRules(bool escapeUnprintable)
         {
-            return BaseToRules(escapeUnprintable);
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                ToRules(escapeUnprintable, ref sb);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Appends a rule string for this transliterator to <paramref name="destination"/>.
+        /// </summary>
+        /// <param name="escapeUnprintable">If true, then unprintable characters
+        /// will be converted to escape form backslash-'u' or
+        /// backslash-'U'.</param>
+        /// <param name="destination">A <see cref="ValueStringBuilder"/> to append the rules string to.</param>
+        /// <stable>ICU 2.0</stable>
+        internal virtual void ToRules(bool escapeUnprintable, ref ValueStringBuilder destination)
+        {
+            BaseToRules(escapeUnprintable, ref destination);
         }
 
         /// <summary>
@@ -1599,27 +1689,53 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         protected internal string BaseToRules(bool escapeUnprintable)
         {
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                BaseToRules(escapeUnprintable, ref sb);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Returns a rule string for this transliterator.  This is
+        /// a non-overrideable base class implementation that subclasses
+        /// may call.  It simply munges the ID into the correct format,
+        /// that is, "foo" =&gt; "::foo".
+        /// </summary>
+        /// <param name="escapeUnprintable">If true, then unprintable characters
+        /// will be converted to escape form backslash-'u' or
+        /// backslash-'U'.</param>
+        /// <param name="destination">A <see cref="ValueStringBuilder"/> to append the rules string to.</param>
+        /// <stable>ICU 2.0</stable>
+        internal virtual void BaseToRules(bool escapeUnprintable, ref ValueStringBuilder destination)
+        {
             // The base class implementation of toRules munges the ID into
             // the correct format.  That is: foo => ::foo
             // KEEP in sync with rbt_pars
             if (escapeUnprintable)
             {
-                StringBuffer rulesSource = new StringBuffer();
+                destination.Append("::"); // ICU4N: Don't assume the input is cleared, we append instead of insert so we don't mess up the order
                 string id = ID;
                 for (int i = 0; i < id.Length;)
                 {
                     int c = UTF16.CharAt(id, i);
-                    if (!Utility.EscapeUnprintable(rulesSource, c))
+                    if (!Utility.EscapeUnprintable(ref destination, c))
                     {
-                        UTF16.Append(rulesSource, c);
+                        destination.AppendCodePoint(c);
                     }
                     i += UTF16.GetCharCount(c);
                 }
-                rulesSource.Insert(0, "::");
-                rulesSource.Append(ID_DELIM);
-                return rulesSource.ToString();
+                destination.Append(ID_DELIM);
+                return;
             }
-            return "::" + ID + ID_DELIM;
+            destination.Append("::");
+            destination.Append(ID);
+            destination.Append(ID_DELIM);
         }
 
         /// <summary>

@@ -247,8 +247,29 @@ namespace ICU4N.Util
         /// </param>
         /// <returns>An instance of <see cref="VersionInfo"/> with the argument version.</returns>
         /// <exception cref="ArgumentException">When the argument version is not in the right format.</exception>
+        /// <exception cref="ArgumentNullException">When <paramref name="version"/> is <c>null</c>.</exception>
         /// <stable>ICU 2.6</stable>
         public static VersionInfo GetInstance(string version)
+        {
+            if (version is null)
+                throw new ArgumentNullException(nameof(version));
+
+            return GetInstance(version.AsSpan());
+        }
+
+        /// <summary>
+        /// Returns an instance of <see cref="VersionInfo"/> with the argument version.
+        /// or "major.minor.milli" or "major.minor" or "major",
+        /// where major, minor, milli, micro are non-negative numbers
+        /// &lt;= 255. If the trailing version numbers are
+        /// not specified they are taken as 0s. E.g. Version "3.1" is
+        /// equivalent to "3.1.0.0".</summary>
+        /// <param name="version">Version string in the format of "major.minor.milli.micro"
+        /// </param>
+        /// <returns>An instance of <see cref="VersionInfo"/> with the argument version.</returns>
+        /// <exception cref="ArgumentException">When the argument version is not in the right format.</exception>
+        /// <stable>ICU 2.6</stable>
+        public static VersionInfo GetInstance(ReadOnlySpan<char> version)
         {
             int length = version.Length;
             int[] array = { 0, 0, 0, 0 };
@@ -276,8 +297,7 @@ namespace ICU4N.Util
             }
             if (index != length)
             {
-                throw new ArgumentException(
-                                                   "Invalid version number: String '" + version + "' exceeds version format");
+                throw new ArgumentException("Invalid version number: String '" + version.ToString() + "' exceeds version format");
             }
             for (int i = 0; i < 4; i++)
             {

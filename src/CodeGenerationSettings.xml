@@ -2,15 +2,17 @@
 <codeGen>
   <charSequences>
     <charSequence>string</charSequence>
-    <charSequence>StringBuilder</charSequence>
-    <charSequence>char[]</charSequence>
-    <charSequence>ICharSequence</charSequence>
+    <!--<charSequence>StringBuilder</charSequence>-->
+    <!--<charSequence>char[]</charSequence>-->
+    <!--<charSequence>ICharSequence</charSequence>-->
+    <charSequence>ReadOnlySpan&lt;char&gt;</charSequence>
   </charSequences>
   <!-- Accessibility of ICharSequence interface -->
   <charSequenceAccessibility>public</charSequenceAccessibility>
   <appendables>
-    <appendable>StringBuilder</appendable>
-    <appendable>IAppendable</appendable>
+    <appendable accessibility="public">StringBuilder</appendable>
+    <appendable accessibility="public">IAppendable</appendable>
+    <appendable accessibility="internal" modifier="ref ">ValueStringBuilder</appendable>
   </appendables>
   <!-- Accessibility of IAppendable interface -->
   <appendableAccessibility>public</appendableAccessibility>

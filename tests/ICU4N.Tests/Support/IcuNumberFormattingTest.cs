@@ -11,7 +11,6 @@ namespace ICU4N
     {
         private const int CharStackBufferSize = 64;
 
-#if FEATURE_SPAN
         [Test]
         public void TestTryFormatInt64_AgainstRbnfDecimalFormat_SpellOut()
         {
@@ -161,7 +160,5 @@ namespace ICU4N
 
             assertEquals(assertMessage, expected, actual);
         }
-
-#endif
     }
 }

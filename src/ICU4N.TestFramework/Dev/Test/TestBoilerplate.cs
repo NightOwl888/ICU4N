@@ -177,18 +177,24 @@ namespace ICU4N.Dev.Test
 
         public static bool VerifySetsIdentical(AbstractTestLog here, ISet<T> values1, ISet<T> values2)
         {
-            if (SetEqualityComparer<T>.Aggressive.Equals(values1, values2)) return true;
-            ISet<T> temp;
-            TestFmwk.Errln("Values differ:");
-            TestFmwk.Errln("UnicodeMap - HashMap");
-            temp = new JCG.SortedSet<T>(values1, JCG.Comparer<T>.Default);
-            temp.ExceptWith(values2);
-            TestFmwk.Errln(Show(temp));
-            TestFmwk.Errln("HashMap - UnicodeMap");
-            temp = new JCG.SortedSet<T>(values2, JCG.Comparer<T>.Default);
-            temp.ExceptWith(values1);
-            TestFmwk.Errln(Show(temp));
-            return false;
+            if (values1 is JCG.SortedSet<T> s1 && s1.Equals(values2)) return true;
+            else if (values1 is JCG.HashSet<T> h1 && h1.Equals(values2)) return true;
+            else if (values1 is JCG.LinkedHashSet<T> l1 && l1.Equals(values2)) return true;
+            else if (SetEqualityComparer<T>.Aggressive.Equals(values1, values2)) return true;
+            else
+            {
+                ISet<T> temp;
+                TestFmwk.Errln("Values differ:");
+                TestFmwk.Errln("UnicodeMap - HashMap");
+                temp = new JCG.SortedSet<T>(values1, JCG.Comparer<T>.Default);
+                temp.ExceptWith(values2);
+                TestFmwk.Errln(Show(temp));
+                TestFmwk.Errln("HashMap - UnicodeMap");
+                temp = new JCG.SortedSet<T>(values2, JCG.Comparer<T>.Default);
+                temp.ExceptWith(values1);
+                TestFmwk.Errln(Show(temp));
+                return false;
+            }
         }
 
         public static string Show<TKey, TValue>(IDictionary<TKey, TValue> m)
@@ -222,7 +228,8 @@ namespace ICU4N.Dev.Test
             StringBuilder buffer = new StringBuilder();
             foreach (var item in c)
             {
-                buffer.Append(item + "\r\n");
+                buffer.Append(item);
+                buffer.Append("\r\n");
             }
             return buffer.ToString();
         }

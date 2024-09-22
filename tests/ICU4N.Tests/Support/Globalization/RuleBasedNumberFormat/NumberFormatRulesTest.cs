@@ -13,8 +13,6 @@ namespace ICU4N.Globalization
 {
     internal class NumberFormatRulesTest : TestFmwk
     {
-#if FEATURE_SPAN
-
         //[Test]
         ////[Ignore("This is just to try to work out what to cache")]
         //public void TestRuleSizes_AllCultures()
@@ -242,8 +240,6 @@ namespace ICU4N.Globalization
                     fail($"actual was not a {nameof(ICU4N.Globalization.NumeratorSubstitution)}");
             }
         }
-
-#endif
 
 
 

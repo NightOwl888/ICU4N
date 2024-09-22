@@ -25,9 +25,9 @@ namespace ICU4N.Dev.Test.Format
             foreach (String[] test in tests)
             {
                 UCultureInfo locale = new UCultureInfo(test[0]);
-                StandardPluralUtil.TryFromString(test[1], out StandardPlural start);
-                StandardPluralUtil.TryFromString(test[2], out StandardPlural end);
-                StandardPluralUtil.TryFromString(test[3], out StandardPlural expected);
+                StandardPluralUtil.TryGetValue(test[1], out StandardPlural start);
+                StandardPluralUtil.TryGetValue(test[2], out StandardPlural end);
+                StandardPluralUtil.TryGetValue(test[3], out StandardPlural expected);
                 PluralRanges pluralRanges = PluralRulesFactory.DefaultFactory.GetPluralRanges(locale);
 
                 //StandardPlural start = StandardPlural.FromString(test[1]);

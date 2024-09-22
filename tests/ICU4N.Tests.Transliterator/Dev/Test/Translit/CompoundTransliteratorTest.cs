@@ -29,7 +29,7 @@ namespace ICU4N.Dev.Test.Translit
             catch (ArgumentException ex)
             {
                 Errln("FAIL: Transliterator construction failed" + ex.ToString());
-                throw ex;
+                throw; // ICU4N: CA2200 Rethrow to preserve stack information
             }
 
             string[] IDs ={
@@ -46,30 +46,30 @@ namespace ICU4N.Dev.Test.Translit
                 {
                     Transliterator.GetInstance(IDs[i]);
                 }
-                catch (ArgumentException ex1)
+                catch (ArgumentException)
                 {
                     Errln("FAIL: construction using CompoundTransliterator(String ID) failed for " + IDs[i]);
-                    throw ex1;
+                    throw; // ICU4N: CA2200 Rethrow to preserve stack information
                 }
 
                 try
                 {
                     Transliterator.GetInstance(IDs[i], Transliterator.Forward);
                 }
-                catch (ArgumentException ex2)
+                catch (ArgumentException)
                 {
                     Errln("FAIL: construction using CompoundTransliterator(String ID, int direction=FORWARD) failed for " + IDs[i]);
-                    throw ex2;
+                    throw; // ICU4N: CA2200 Rethrow to preserve stack information
                 }
 
                 try
                 {
                     Transliterator.GetInstance(IDs[i], Transliterator.Reverse);
                 }
-                catch (ArgumentException ex3)
+                catch (ArgumentException)
                 {
                     Errln("FAIL: construction using CompoundTransliterator(String ID, int direction=REVERSE) failed for " + IDs[i]);
-                    throw ex3;
+                    throw; // ICU4N: CA2200 Rethrow to preserve stack information
                 }
 
                 //            try{
@@ -107,10 +107,10 @@ namespace ICU4N.Dev.Test.Translit
                 //ct1=new CompoundTransliterator(ID);
                 ct1 = Transliterator.GetInstance(ID);
             }
-            catch (ArgumentException iae)
+            catch (ArgumentException)
             {
                 Errln("CompoundTransliterator construction failed for ID=" + ID);
-                throw iae;
+                throw; // ICU4N: CA2200 Rethrow to preserve stack information
             }
             //int count=ct1.getCount();
             Transliterator[] elems = ct1.GetElements();
@@ -147,10 +147,10 @@ namespace ICU4N.Dev.Test.Translit
             {
                 ct1 = Transliterator.GetInstance("Any-Hex;Hex-Any");
             }
-            catch (ArgumentException iae)
+            catch (ArgumentException)
             {
                 Errln("FAIL: construction using CompoundTransliterator(String ID) failed for " + "Any-Hex;Hex-Any");
-                throw iae;
+                throw; // ICU4N: CA2200 Rethrow to preserve stack information
             }
 
             String s = "abcabc";
@@ -195,10 +195,10 @@ namespace ICU4N.Dev.Test.Translit
                 {
                     ct2 = Transliterator.GetInstance(Data[i + 0]);
                 }
-                catch (ArgumentException iae2)
+                catch (ArgumentException)
                 {
                     Errln("FAIL: CompoundTransliterator construction failed for " + Data[i + 0]);
-                    throw iae2;
+                    throw; // ICU4N: CA2200 Rethrow to preserve stack information
                 }
                 expect(ct2, Data[i + 1], Data[i + 2]);
             }
@@ -256,35 +256,44 @@ namespace ICU4N.Dev.Test.Translit
             // must be the same after we finalize (see below).
             rsource.Replace(0, rsource.Length - 0, ""); // ICU4N: Corrected 2nd parameter
             TransliterationPosition index = new TransliterationPosition();
-            StringBuffer log = new StringBuffer();
-
-            for (int i = 0; i < source.Length; ++i)
+            ValueStringBuilder log = new ValueStringBuilder(stackalloc char[32]);
+            try
             {
-                if (i != 0)
+
+                for (int i = 0; i < source.Length; ++i)
                 {
-                    log.Append(" + ");
+                    if (i != 0)
+                    {
+                        log.Append(" + ");
+                    }
+                    log.Append(source[i]);
+                    log.Append(" -> ");
+                    t.Transliterate(rsource, index,
+                                    source[i]); // ICU4N: We don't convert to a string here - UTF16.ValueOf() will automatically convert this to a ReadOnlySpan<char> with 1 char
+                                                // Append the string buffer with a vertical bar '|' where
+                                                // the committed index is.
+                    string s = rsource.ToString();
+                    log.Append(s.AsSpan(0, index.Start)); // ICU4N: Checked 2nd parameter
+                    log.Append('|');
+                    log.Append(s.AsSpan(index.Start));
                 }
-                log.Append(source[i]).Append(" -> ");
-                t.Transliterate(rsource, index,
-                                source[i] + "");
-                // Append the string buffer with a vertical bar '|' where
-                // the committed index is.
-                String s = rsource.ToString();
-                log.Append(s.Substring(0, index.Start)). // ICU4N: Checked 2nd parameter
-                    Append('|').
-                    Append(s.Substring(index.Start));
+
+                // As a final step in keyboard transliteration, we must call
+                // transliterate to finish off any pending partial matches that
+                // were waiting for more input.
+                t.FinishTransliteration(rsource, index);
+                result = rsource.ToString();
+                log.Append(" => ");
+                log.Append(rsource.ToString());
+                expectAux(t.ID + ":Keyboard", log.ToString(),
+                         result.Equals(expectedResult),
+                         expectedResult);
+
             }
-
-            // As a final step in keyboard transliteration, we must call
-            // transliterate to finish off any pending partial matches that
-            // were waiting for more input.
-            t.FinishTransliteration(rsource, index);
-            result = rsource.ToString();
-            log.Append(" => ").Append(rsource.ToString());
-            expectAux(t.ID + ":Keyboard", log.ToString(),
-                     result.Equals(expectedResult),
-                     expectedResult);
-
+            finally
+            {
+                log.Dispose();
+            }
         }
         private void expectAux(String tag, String source,
                       String result, String expectedResult)

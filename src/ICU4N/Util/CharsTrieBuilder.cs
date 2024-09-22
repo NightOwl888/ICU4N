@@ -25,6 +25,42 @@ namespace ICU4N.Util
         { }
 
         /// <summary>
+        /// Adds a (string, value) pair.
+        /// The string must be unique.
+        /// The string contents will be copied; the builder does not keep
+        /// a reference to the input <see cref="string"/>.
+        /// </summary>
+        /// <param name="s">The input <see cref="string"/>.</param>
+        /// <param name="value">The value associated with this char sequence.</param>
+        /// <returns>This.</returns>
+        /// <stable>ICU 4.8</stable>
+        public CharsTrieBuilder Add(string s, int value)
+        {
+#pragma warning disable 612, 618
+            AddImpl(s.AsSpan(), value);
+#pragma warning restore 612, 618
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a (string, value) pair.
+        /// The string must be unique.
+        /// The string contents will be copied; the builder does not keep
+        /// a reference to the input <see cref="string"/>.
+        /// </summary>
+        /// <param name="s">The input <see cref="string"/>.</param>
+        /// <param name="value">The value associated with this char sequence.</param>
+        /// <returns>This.</returns>
+        /// <stable>ICU 4.8</stable>
+        public CharsTrieBuilder Add(ReadOnlySpan<char> s, int value)
+        {
+#pragma warning disable 612, 618
+            AddImpl(s, value);
+#pragma warning restore 612, 618
+            return this;
+        }
+
+        /// <summary>
         /// Builds a <see cref="CharsTrie"/> for the <see cref="Add(string, int)"/>ed data.
         /// Once built, no further data can be <see cref="Add(string, int)"/>ed until <see cref="Clear()"/> is called.
         /// </summary>
@@ -57,12 +93,12 @@ namespace ICU4N.Util
         /// After <see cref="Clear()"/> has been called, a new array will be used.
         /// </remarks>
         /// <param name="buildOption">Build option, see <see cref="TrieBuilderOption"/>.</param>
-        /// <returns>A <see cref="ICharSequence"/> with the char-serialized <see cref="CharsTrie"/> for the <see cref="Add(string, int)"/>ed data.</returns>
+        /// <returns>A <see cref="ReadOnlyMemory{Char}"/> with the char-serialized <see cref="CharsTrie"/> for the <see cref="Add(string, int)"/>ed data.</returns>
         /// <stable>ICU 4.8</stable>
-        public ICharSequence BuildCharSequence(TrieBuilderOption buildOption)
+        public ReadOnlyMemory<char> BuildCharSequence(TrieBuilderOption buildOption)
         {
             BuildChars(buildOption);
-            return CharBuffer.Wrap(chars, chars.Length - charsLength, charsLength);
+            return new ReadOnlyMemory<char>(chars, chars.Length - charsLength, charsLength);
         }
 
         private void BuildChars(TrieBuilderOption buildOption)

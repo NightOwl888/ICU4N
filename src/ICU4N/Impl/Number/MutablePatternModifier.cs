@@ -453,7 +453,7 @@ namespace ICU4N.Numerics
             }
         }
 
-        public virtual char this[int index]
+        public virtual char this[int index] // ICU4N TODO: Need to figure out how to make it possible to use ReadOnlySpan<char> with this
         {
             get
             {

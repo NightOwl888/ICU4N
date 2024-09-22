@@ -2,6 +2,7 @@
 using ICU4N.Util;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace ICU4N.Text
@@ -15,6 +16,8 @@ namespace ICU4N.Text
     [Obsolete("This API is ICU internal only.")]
     internal sealed class PluralRanges : IFreezable<PluralRanges>, IComparable<PluralRanges> // ICU4N: Marked internal since it is obsolete anyway
     {
+        private const int CharStackBufferSize = 32;
+
         private volatile bool isFrozen;
         private Matrix matrix = new Matrix();
         private bool[] @explicit = new bool[StandardPluralUtil.Count];
@@ -182,15 +185,21 @@ namespace ICU4N.Text
 
             public override String ToString()
             {
-                StringBuilder result = new StringBuilder();
-                foreach (StandardPlural i in Enum.GetValues(typeof(StandardPlural)))
+                using ValueStringBuilder result = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                foreach (StandardPlural i in StandardPluralUtil.Values)
                 {
-                    foreach (StandardPlural j in Enum.GetValues(typeof(StandardPlural)))
+                    foreach (StandardPlural j in StandardPluralUtil.Values)
                     {
                         StandardPlural? x = Get(i, j);
                         if (x != null)
                         {
-                            result.Append(i + " & " + j + " → " + x + ";\n");
+                            result.Append(i.ToString());
+                            result.Append(" & ");
+                            result.Append(j.ToString());
+                            result.Append(" → ");
+                            result.Append(x.ToString());
+                            result.Append(";");
+                            result.Append(Environment.NewLine);
                         }
                     }
                 }

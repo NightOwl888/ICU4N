@@ -3,8 +3,9 @@ using ICU4N.Impl;
 using ICU4N.Util;
 using J2N.IO;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using StringBuffer = System.Text.StringBuilder;
+#nullable enable
 
 namespace ICU4N.Text
 {
@@ -18,7 +19,8 @@ namespace ICU4N.Text
         /// Option to prohibit processing of unassigned code points in the input.
         /// </summary>
         /// <see cref="StringPrep.Prepare(string, StringPrepOptions)"/>
-        /// <see cref="StringPrep.Prepare(UCharacterIterator, StringPrepOptions)"/>
+        /// <see cref="StringPrep.Prepare(ReadOnlySpan{char}, StringPrepOptions)"/>
+        /// <see cref="StringPrep.TryPrepare(ReadOnlySpan{char}, Span{char}, out int, StringPrepOptions, out StringPrepErrorType)"/>
         /// <stable>ICU 2.8</stable>
         Default = 0x0000,
 
@@ -26,7 +28,8 @@ namespace ICU4N.Text
         /// Option to allow processing of unassigned code points in the input.
         /// </summary>
         /// <see cref="StringPrep.Prepare(string, StringPrepOptions)"/>
-        /// <see cref="StringPrep.Prepare(UCharacterIterator, StringPrepOptions)"/>
+        /// <see cref="StringPrep.Prepare(ReadOnlySpan{char}, StringPrepOptions)"/>
+        /// <see cref="StringPrep.TryPrepare(ReadOnlySpan{char}, Span{char}, out int, StringPrepOptions, out StringPrepErrorType)"/>
         /// <stable>ICU 2.8</stable>
         AllowUnassigned = 0x0001,
     }
@@ -147,8 +150,8 @@ namespace ICU4N.Text
     /// how a code point should be treated. The tables are broadly classied into
     /// <list type="table">
     ///     <item><term>Unassigned Table</term><description>
-    ///         Contains code points that are unassigned in the 
-    ///         Unicode Version supported by <see cref="StringPrep"/>. Currently 
+    ///         Contains code points that are unassigned in the
+    ///         Unicode Version supported by <see cref="StringPrep"/>. Currently
     ///         RFC 3454 supports Unicode 3.2.
     ///     </description></item>
     ///     <item><term>Prohibited Table</term><description>
@@ -187,6 +190,8 @@ namespace ICU4N.Text
     /// <stable>ICU 2.8</stable>
     public sealed class StringPrep
     {
+        private const int CharStackBufferSize = 32;
+
         // ICU4N specific - options moved to StringPrepOptions [Flags] enum.
         // Profile constants moved to StringPrepProfile enum.
 
@@ -217,11 +222,15 @@ namespace ICU4N.Text
         private static readonly WeakReference[] CACHE = new WeakReference[(int)MAX_PROFILE + 1];
 #endif
 
-        private const int UNASSIGNED = 0x0000;
-        private const int MAP = 0x0001;
-        private const int PROHIBITED = 0x0002;
-        private const int DELETE = 0x0003;
-        private const int TYPE_LIMIT = 0x0004;
+        // ICU4N: Ported from usprep.cpp
+        private enum StringPrepType
+        {
+            Unassigned = 0x0000,
+            Map = 0x0001,
+            Prohibited = 0x0002,
+            Delete = 0x0003,
+            TypeLimit = 0x0004,
+        }
 
         private const int NORMALIZATION_ON = 0x0001;
         private const int CHECK_BIDI_ON = 0x0002;
@@ -249,7 +258,7 @@ namespace ICU4N.Text
         // mapping data read from the data file
         private char[] mappingData;
         // the version of Unicode supported by the data file
-        private VersionInfo sprepUniVer;
+        private VersionInfo? sprepUniVer;
         // the Unicode version of last entry in the
         // NormalizationCorrections.txt file if normalization
         // is turned on 
@@ -259,7 +268,7 @@ namespace ICU4N.Text
         // Option to turn on checking for BiDi rules
         private bool checkBiDi;
         // bidi properties
-        private UBiDiProps bdp;
+        private UBiDiProps? bdp;
 
         private char GetCodePointValue(int ch)
         {
@@ -275,7 +284,7 @@ namespace ICU4N.Text
             return VersionInfo.GetInstance(major, minor, milli, micro);
         }
 
-        private static VersionInfo GetVersionInfo(byte[] version)
+        private static VersionInfo? GetVersionInfo(byte[] version)
         {
             if (version.Length != 4)
             {
@@ -291,6 +300,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="inputStream">The stream for reading the <see cref="StringPrep"/> profile binarySun.</param>
         /// <exception cref="IOException">An exception occurs when I/O of the inputstream is invalid.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="inputStream"/> is <c>null</c>.</exception>
         /// <stable>ICU 2.8</stable>
         public StringPrep(Stream inputStream)
             : this(ICUBinary.GetByteBufferFromStreamAndDisposeStream(inputStream))
@@ -343,7 +353,7 @@ namespace ICU4N.Text
                 throw new ArgumentException("Bad profile type");
             }
 
-            StringPrep instance = null;
+            StringPrep? instance = null;
 
             // A StringPrep instance is immutable.  We use a single instance
             // per type and store it in the internal cache.
@@ -369,14 +379,8 @@ namespace ICU4N.Text
                     ByteBuffer bytes = ICUBinary.GetRequiredData(PROFILE_NAMES[(int)profile] + ".spp");
                     if (bytes != null)
                     {
-                        try
-                        {
-                            instance = new StringPrep(bytes);
-                        }
-                        catch (IOException e)
-                        {
-                            throw new ICUUncheckedIOException(e);
-                        }
+                        // ICU4N: Removed unnecessary try/catch
+                        instance = new StringPrep(bytes);
                     }
                     if (instance != null)
                     {
@@ -388,25 +392,13 @@ namespace ICU4N.Text
                     }
                 }
             }
-            return instance;
+            return instance!;
         }
 
-        private sealed class Values
+        // ICU4N: Ported from usprep.cpp
+        private static StringPrepType GetValues(char trieWord, out int value, out bool isIndex)
         {
-            internal bool isIndex;
-            internal int value;
-            internal int type;
-            public void Reset()
-            {
-                isIndex = false;
-                value = 0;
-                type = -1;
-            }
-        }
-
-        private static void GetValues(char trieWord, Values values)
-        {
-            values.Reset();
+            StringPrepType type;
             if (trieWord == 0)
             {
                 /* 
@@ -414,71 +406,75 @@ namespace ICU4N.Text
                  * just return TYPE_LIMIT .. so that
                  * the source codepoint is copied to the destination
                  */
-                values.type = TYPE_LIMIT;
+                type = StringPrepType.TypeLimit;
+                isIndex = false;
+                value = 0;
             }
             else if (trieWord >= TYPE_THRESHOLD)
             {
-                values.type = (trieWord - TYPE_THRESHOLD);
+                type = (StringPrepType)(trieWord - TYPE_THRESHOLD);
+                isIndex = false;
+                value = 0;
             }
             else
             {
                 /* get the type */
-                values.type = MAP;
+                type = StringPrepType.Map;
                 /* ascertain if the value is index or delta */
                 if ((trieWord & 0x02) > 0)
                 {
-                    values.isIndex = true;
-                    values.value = trieWord >> 2; //mask off the lower 2 bits and shift
+                    isIndex = true;
+                    value = trieWord >> 2; //mask off the lower 2 bits and shift
 
                 }
                 else
                 {
-                    values.isIndex = false;
-                    values.value = (trieWord << 16) >> 16;
-                    values.value = (values.value >> 2);
+                    isIndex = false;
+                    value = (trieWord << 16) >> 16;
+                    value = (value >> 2);
 
                 }
 
                 if ((trieWord >> 2) == MAX_INDEX_VALUE)
                 {
-                    values.type = DELETE;
-                    values.isIndex = false;
-                    values.value = 0;
+                    type = StringPrepType.Delete;
+                    isIndex = false;
+                    value = 0;
                 }
             }
+            return type;
         }
 
-
-
-        private StringBuffer Map(UCharacterIterator iter, StringPrepOptions options)
+        // ICU4N: Factored out UCharacterIterator, a port of usprep.cpp/usprep_map()
+        private bool TryMap(ReadOnlySpan<char> src, ref ValueStringBuilder dest, StringPrepOptions options, out StringPrepErrorType errorType, [MaybeNullWhen(true)] out string rules, out int errorPosition)
         {
-
-            Values val = new Values();
             char result = (char)0;
-            int ch = UCharacterIterator.Done;
-            StringBuffer dest = new StringBuffer();
             bool allowUnassigned = ((options & StringPrepOptions.AllowUnassigned) > 0);
+            int srcLength = src.Length;
 
-            while ((ch = iter.NextCodePoint()) != UCharacterIterator.Done)
+            for (int srcIndex = 0; srcIndex < srcLength;)
             {
+                UTF16.Next(src, ref srcIndex, out int ch);
 
                 result = GetCodePointValue(ch);
-                GetValues(result, val);
+
+                StringPrepType type = GetValues(result, out int value, out bool isIndex);
 
                 // check if the source codepoint is unassigned
-                if (val.type == UNASSIGNED && allowUnassigned == false)
+                if (type == StringPrepType.Unassigned && allowUnassigned == false)
                 {
-                    throw new StringPrepParseException("An unassigned code point was found in the input",
-                                             StringPrepErrorType.UnassignedError,
-                                             iter.GetText(), iter.Index);
+                    errorType = StringPrepErrorType.UnassignedError;
+                    rules = src.ToString();
+                    errorPosition = srcIndex;
+                    return false;
                 }
-                else if ((val.type == MAP))
+                else if ((type == StringPrepType.Map))
                 {
                     int index, length;
 
-                    if (val.isIndex)
+                    if (isIndex)
                     {
-                        index = val.value;
+                        index = value;
                         if (index >= indexes[ONE_UCHAR_MAPPING_INDEX_START] &&
                                  index < indexes[TWO_UCHARS_MAPPING_INDEX_START])
                         {
@@ -505,32 +501,35 @@ namespace ICU4N.Text
                     }
                     else
                     {
-                        ch -= val.value;
+                        ch -= value;
                     }
                 }
-                else if (val.type == DELETE)
+                else if (type == StringPrepType.Delete)
                 {
                     // just consume the codepoint and contine
                     continue;
                 }
-                //copy the source into destination
-                UTF16.Append(dest, ch);
+                //copy the code point into destination
+                dest.AppendCodePoint(ch);
             }
 
-            return dest;
+            errorType = (StringPrepErrorType)(-1);
+            rules = default;
+            errorPosition = -1;
+            return true;//return dest;
         }
 
-
-        private StringBuffer Normalize(StringBuffer src)
+        private void Normalize(ReadOnlySpan<char> source, ref ValueStringBuilder destination)
         {
 #pragma warning disable 612, 618
-            return new StringBuffer(
-                Normalizer.Normalize(
-                    src.ToString(),
-                    NormalizerMode.NFKC, 
-                    NormalizerUnicodeVersion.Unicode3_2));
+            Normalizer.Normalize(
+                source,
+                NormalizerMode.NFKC,
+                NormalizerUnicodeVersion.Unicode3_2,
+                ref destination);
 #pragma warning restore 612, 618
         }
+
         /*
         boolean isLabelSeparator(int ch){
             int result = getCodePointValue(ch);
@@ -579,100 +578,109 @@ namespace ICU4N.Text
                  RandALCat character MUST be the last character of the string.
         */
 
-        /// <summary>
-        /// Prepare the input buffer for use in applications with the given profile. This operation maps, normalizes(NFKC),
-        /// checks for prohibited and BiDi characters in the order defined by RFC 3454
-        /// depending on the options specified in the profile.
-        /// </summary>
-        /// <param name="src">A <see cref="UCharacterIterator"/> object containing the source string.</param>
-        /// <param name="options">A bit set of options:
-        /// <list type="bullet">
-        ///     <item><term><see cref="StringPrepOptions.Default"/></term><description>Prohibit processing of unassigned code points in the input.</description></item>
-        ///     <item><term><see cref="StringPrepOptions.AllowUnassigned"/></term><description>Treat the unassigned code points are in the input as normal Unicode code points.</description></item>
-        /// </list>
-        /// </param>
-        /// <returns>A <see cref="StringBuffer"/> containing the output.</returns>
-        /// <exception cref="StringPrepParseException">An exception occurs when parsing a string is invalid.</exception>
-        /// <stable>ICU 2.8</stable>
-        public StringBuffer Prepare(UCharacterIterator src, StringPrepOptions options)
+        internal bool TryPrepare(ReadOnlySpan<char> source, ref ValueStringBuilder destination, StringPrepOptions options, out StringPrepErrorType errorType, [MaybeNullWhen(true)] out string rules, out int errorPosition)
         {
-
-            // map 
-            StringBuffer mapOut = Map(src, options);
-            StringBuffer normOut = mapOut;// initialize 
-
-            if (doNFKC)
+            ValueStringBuilder mapOut = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            ValueStringBuilder normOut = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                // normalize 
-                normOut = Normalize(mapOut);
-            }
+                // map 
+                if (!TryMap(source, ref mapOut, options, out errorType, out rules, out errorPosition))
+                    return false;
 
-            int ch;
-            char result;
-            UCharacterIterator iter = UCharacterIterator.GetInstance(normOut);
-            Values val = new Values();
+                if (doNFKC)
+                {
+                    // normalize 
+                    Normalize(mapOut.AsSpan(), ref normOut);
+                }
+                else
+                {
+                    destination.Append(mapOut.AsSpan());
+                }
+
+                int ch;
+                char result;
+                ReadOnlySpan<char> normOutSpan = normOut.AsSpan();
+                int normOutLength = normOut.Length;
 #pragma warning disable 612, 618
-            UCharacterDirection direction = UCharacterDirectionExtensions.CharDirectionCount,
-                firstCharDir = UCharacterDirectionExtensions.CharDirectionCount;
+                UCharacterDirection direction = UCharacterDirectionExtensions.CharDirectionCount,
+                    firstCharDir = UCharacterDirectionExtensions.CharDirectionCount;
 #pragma warning restore 612, 618
-            int rtlPos = -1, ltrPos = -1;
-            bool rightToLeft = false, leftToRight = false;
+                int rtlPos = -1, ltrPos = -1;
+                bool rightToLeft = false, leftToRight = false;
 
-            while ((ch = iter.NextCodePoint()) != UCharacterIterator.Done)
-            {
-                result = GetCodePointValue(ch);
-                GetValues(result, val);
-
-                if (val.type == PROHIBITED)
+                for (int normOutIndex = 0; normOutIndex < normOutLength;)
                 {
-                    throw new StringPrepParseException("A prohibited code point was found in the input",
-                                             StringPrepErrorType.ProhibitedError, iter.GetText(), val.value);
-                }
+                    UTF16.Next(normOutSpan, ref normOutIndex, out ch);
 
-                if (checkBiDi)
-                {
-                    direction = (UCharacterDirection)bdp.GetClass(ch);
+                    result = GetCodePointValue(ch);
+
+                    StringPrepType type = GetValues(result, out int value, out _);
+
+                    if (type == StringPrepType.Prohibited)
+                    {
+                        errorType = StringPrepErrorType.ProhibitedError;
+                        rules = normOutSpan.ToString(); //iter.GetText();
+                        errorPosition = value;
+                        return false;
+                    }
+
+                    if (checkBiDi)
+                    {
+                        direction = bdp!.GetClass(ch);
 #pragma warning disable 612, 618
-                    if (firstCharDir == UCharacterDirectionExtensions.CharDirectionCount)
+                        if (firstCharDir == UCharacterDirectionExtensions.CharDirectionCount)
 #pragma warning restore 612, 618
-                    {
-                        firstCharDir = direction;
-                    }
-                    if (direction == UCharacterDirection.LeftToRight)
-                    {
-                        leftToRight = true;
-                        ltrPos = iter.Index - 1;
-                    }
-                    if (direction == UCharacterDirection.RightToLeft || direction == UCharacterDirection.RightToLeftArabic)
-                    {
-                        rightToLeft = true;
-                        rtlPos = iter.Index - 1;
+                        {
+                            firstCharDir = direction;
+                        }
+                        if (direction == UCharacterDirection.LeftToRight)
+                        {
+                            leftToRight = true;
+                            ltrPos = normOutIndex - 1; //ltrPos = iter.Index - 1;
+                        }
+                        if (direction == UCharacterDirection.RightToLeft || direction == UCharacterDirection.RightToLeftArabic)
+                        {
+                            rightToLeft = true;
+                            rtlPos = normOutIndex - 1; //rtlPos = iter.Index - 1;
+                        }
                     }
                 }
+                if (checkBiDi == true)
+                {
+                    // satisfy 2
+                    if (leftToRight == true && rightToLeft == true)
+                    {
+                        errorType = StringPrepErrorType.CheckBiDiError;
+                        rules = normOutSpan.ToString(); //iter.GetText();
+                        errorPosition = (rtlPos > ltrPos) ? rtlPos : ltrPos;
+                        return false;
+                    }
+
+                    //satisfy 3
+                    if (rightToLeft == true &&
+                        !((firstCharDir == UCharacterDirection.RightToLeft || firstCharDir == UCharacterDirection.RightToLeftArabic) &&
+                        (direction == UCharacterDirection.RightToLeft || direction == UCharacterDirection.RightToLeftArabic))
+                      )
+                    {
+                        errorType = StringPrepErrorType.CheckBiDiError;
+                        rules = normOutSpan.ToString(); //iter.GetText();
+                        errorPosition = (rtlPos > ltrPos) ? rtlPos : ltrPos;
+                        return false;
+                    }
+                }
+
+                destination.Append(normOutSpan);//return normOut;
+                errorType = (StringPrepErrorType)(-1);
+                rules = default;
+                errorPosition = -1;
+                return true;
             }
-            if (checkBiDi == true)
+            finally
             {
-                // satisfy 2
-                if (leftToRight == true && rightToLeft == true)
-                {
-                    throw new StringPrepParseException("The input does not conform to the rules for BiDi code points.",
-                                             StringPrepErrorType.CheckBiDiError, iter.GetText(),
-                                             (rtlPos > ltrPos) ? rtlPos : ltrPos);
-                }
-
-                //satisfy 3
-                if (rightToLeft == true &&
-                    !((firstCharDir == UCharacterDirection.RightToLeft || firstCharDir == UCharacterDirection.RightToLeftArabic) &&
-                    (direction == UCharacterDirection.RightToLeft || direction == UCharacterDirection.RightToLeftArabic))
-                  )
-                {
-                    throw new StringPrepParseException("The input does not conform to the rules for BiDi code points.",
-                                             StringPrepErrorType.CheckBiDiError, iter.GetText(),
-                                             (rtlPos > ltrPos) ? rtlPos : ltrPos);
-                }
+                mapOut.Dispose();
+                normOut.Dispose();
             }
-            return normOut;
-
         }
 
         /// <summary>
@@ -680,7 +688,7 @@ namespace ICU4N.Text
         /// checks for prohibited and BiDi characters in the order defined by RFC 3454
         /// depending on the options specified in the profile.
         /// </summary>
-        /// <param name="src">A string.</param>
+        /// <param name="source">A string.</param>
         /// <param name="options">A bit set of options:
         /// <list type="bullet">
         ///     <item><term><see cref="StringPrepOptions.Default"/></term><description>Prohibit processing of unassigned code points in the input.</description></item>
@@ -688,12 +696,83 @@ namespace ICU4N.Text
         /// </list>
         /// </param>
         /// <returns>A string containing the output.</returns>
-        /// <exception cref="StringPrepParseException">An exception occurs when parsing a string is invalid.</exception>
+        /// <exception cref="StringPrepFormatException">An exception occurs when parsing a string is invalid.</exception>
         /// <stable>ICU 4.2</stable>
-        public string Prepare(string src, StringPrepOptions options)
+        public string Prepare(string source, StringPrepOptions options)
         {
-            StringBuffer result = Prepare(UCharacterIterator.GetInstance(src), options);
-            return result.ToString();
+            if (source is null)
+                throw new ArgumentNullException(nameof(source));
+
+            return Prepare(source.AsSpan(), options);
+        }
+
+        /// <summary>
+        /// Prepare the input String for use in applications with the given profile. This operation maps, normalizes(NFKC),
+        /// checks for prohibited and BiDi characters in the order defined by RFC 3454
+        /// depending on the options specified in the profile.
+        /// </summary>
+        /// <param name="source">A string.</param>
+        /// <param name="options">A bit set of options:
+        /// <list type="bullet">
+        ///     <item><term><see cref="StringPrepOptions.Default"/></term><description>Prohibit processing of unassigned code points in the input.</description></item>
+        ///     <item><term><see cref="StringPrepOptions.AllowUnassigned"/></term><description>Treat the unassigned code points are in the input as normal Unicode code points.</description></item>
+        /// </list>
+        /// </param>
+        /// <returns>A string containing the output.</returns>
+        /// <exception cref="StringPrepFormatException">An exception occurs when parsing a string is invalid.</exception>
+        /// <stable>ICU 4.2</stable>
+        public string Prepare(ReadOnlySpan<char> source, StringPrepOptions options)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                if (!TryPrepare(source, ref sb, options, out StringPrepErrorType errorType, out string? rules, out int errorPosition))
+                    ThrowHelper.ThrowStringPrepFormatException(errorType, rules, errorPosition);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Prepare the input String for use in applications with the given profile. This operation maps, normalizes(NFKC),
+        /// checks for prohibited and BiDi characters in the order defined by RFC 3454
+        /// depending on the options specified in the profile.
+        /// </summary>
+        /// <param name="source">A string.</param>
+        /// <param name="destination">The span in which to write the converted value.</param>
+        /// <param name="charsLength">Upon return, will contain the length of <paramref name="destination"/> after
+        /// the operation. If the return value is <c>false</c>,
+        /// this will contain the length of <paramref name="destination"/> that would need to be provided to make the
+        /// operation succeed.</param>
+        /// <param name="options">A bit set of options:
+        /// <list type="bullet">
+        ///     <item><term><see cref="StringPrepOptions.Default"/></term><description>Prohibit processing of unassigned code points in the input.</description></item>
+        ///     <item><term><see cref="StringPrepOptions.AllowUnassigned"/></term><description>Treat the unassigned code points are in the input as normal Unicode code points.</description></item>
+        /// </list>
+        /// </param>
+        /// <param name="errorType">Upon unsuccessful return (<c>false</c>), will contain the type of error that occurred.</param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <draft>ICU 60.1</draft>
+        public bool TryPrepare(ReadOnlySpan<char> source, Span<char> destination, out int charsLength, StringPrepOptions options, out StringPrepErrorType errorType)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                bool success = TryPrepare(source, ref sb, options, out errorType, out _, out _);
+                if (!sb.FitsInitialBuffer(out charsLength) && success)
+                {
+                    errorType = StringPrepErrorType.BufferOverflowError;
+                    return false;
+                }
+                return success;
+            }
+            finally
+            {
+                sb.Dispose();
+            }
         }
     }
 }

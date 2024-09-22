@@ -1,6 +1,8 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Impl;
+using ICU4N.Support.Text;
 using System;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 
@@ -40,8 +42,6 @@ namespace ICU4N.Text
         private readonly UCultureInfo locale;
 
         private readonly UCaseProperties csp;
-        private ReplaceableContextEnumerator iter;
-        private StringBuilder result;
         private CaseLocale caseLocale;
 
         /// <summary>
@@ -54,8 +54,6 @@ namespace ICU4N.Text
             // Need to look back 2 characters in the case of "can't"
             MaximumContextLength = 2;
             csp = UCaseProperties.Instance;
-            iter = new ReplaceableContextEnumerator();
-            result = new StringBuilder();
             caseLocale = UCaseProperties.GetCaseLocale(locale);
         }
 
@@ -110,70 +108,89 @@ namespace ICU4N.Text
                     // else case-ignorable: continue
                 }
 
+                ValueStringBuilder replacementChars = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
                 // Convert things after a cased character toLower; things
                 // after a uncased, non-case-ignorable character toTitle.  Case-ignorable
                 // characters are copied directly and do not change the mode.
-
-                iter.SetText(text);
-                iter.SetIndex(offsets.Start);
-                iter.SetLimit(offsets.Limit);
-                iter.SetContextLimits(offsets.ContextStart, offsets.ContextLimit);
-
-                result.Length = 0;
-
-                // Walk through original string
-                // If there is a case change, modify corresponding position in replaceable
-                int delta;
-
-                while ((c = iter.NextCaseMapCP()) >= 0)
+                UCaseContext csc = new UCaseContext();
+                GCHandle handle = GCHandle.Alloc(text, GCHandleType.Normal);
+                try
                 {
-                    // ICU4N: Simplfied version of GetTypeOrIgnorable
-                    if (!csp.IsCaseIgnorable(c, out type))
-                    {// not case-ignorable
-                        if (doTitle)
-                        {
-                            c = csp.ToFullTitle(c, iter, result, caseLocale);
-                        }
-                        else
-                        {
-                            c = csp.ToFullLower(c, iter, result, caseLocale);
-                        }
-                        doTitle = type == CaseType.None; // doTitle=isUncased
+                    csc.p = GCHandle.ToIntPtr(handle);
+                    csc.start = offsets.ContextStart;
+                    csc.limit = offsets.ContextLimit;
 
-                        if (iter.DidReachLimit && isIncremental)
-                        {
-                            // the case mapping function tried to look beyond the context limit
-                            // wait for more input
-                            offsets.Start = iter.CaseMapCPStart;
-                            return;
-                        }
+                    int textPos, delta = 0, result;
 
-                        /* decode the result */
-                        if (c < 0)
-                        {
-                            /* c mapped to itself, no change */
-                            continue;
-                        }
-                        else if (c <= UCaseProperties.MaxStringLength)
-                        {
-                            /* replace by the mapping string */
-                            delta = iter.Replace(result.ToString());
-                            result.Length = 0;
-                        }
-                        else
-                        {
-                            /* replace by single-code point mapping */
-                            delta = iter.Replace(UTF16.ValueOf(c));
-                        }
+                    Span<char> codePointBuffer = stackalloc char[2];
 
-                        if (delta != 0)
-                        {
-                            offsets.Limit += delta;
-                            offsets.ContextLimit += delta;
+                    // Walk through original string
+                    // If there is a case change, modify corresponding position in replaceable
+                    for (textPos = offsets.Start; textPos < offsets.Limit;)
+                    {
+                        csc.cpStart = textPos;
+                        c = text.Char32At(textPos);
+                        csc.cpLimit = textPos += UTF16.GetCharCount(c);
+
+                        // ICU4N: Simplfied version of GetTypeOrIgnorable
+                        if (!csp.IsCaseIgnorable(c, out type))
+                        {// not case-ignorable
+                            unsafe
+                            {
+                                if (doTitle)
+                                {
+                                    result = csp.ToFullTitle(c, Replaceable.CaseContextIterator, (IntPtr)(&csc), ref replacementChars, caseLocale);
+                                }
+                                else
+                                {
+                                    result = csp.ToFullLower(c, Replaceable.CaseContextIterator, (IntPtr)(&csc), ref replacementChars, caseLocale);
+                                }
+                            }
+                            doTitle = type == CaseType.None; // doTitle=isUncased
+
+                            if (csc.b1 && isIncremental)
+                            {
+                                // fMap() tried to look beyond the context limit
+                                // wait for more input
+                                offsets.Start = csc.cpStart;
+                                return;
+                            }
+
+                            if (result > 0)
+                            {
+                                // replace the current code point with its full case mapping result
+                                // see UCaseProperties.MaxStringLength
+                                if (result <= UCaseProperties.MaxStringLength)
+                                {
+                                    /* replace by the mapping string */
+                                    delta = result - UTF16.GetCharCount(c);
+                                    text.Replace(csc.cpStart, textPos - csc.cpStart, replacementChars.AsSpan()); // ICU4N: Corrected 2nd parameter
+                                    replacementChars.Length = 0;
+                                }
+                                else
+                                {
+                                    /* replace by single-code point mapping */
+                                    ReadOnlySpan<char> utf32 = UTF16.ValueOf(result, codePointBuffer);
+                                    delta = utf32.Length - UTF16.GetCharCount(c);
+                                    text.Replace(csc.cpStart, textPos - csc.cpStart, utf32); // ICU4N: Corrected 2nd parameter
+                                }
+
+                                if (delta != 0)
+                                {
+                                    textPos += delta;
+                                    csc.limit = offsets.ContextLimit += delta;
+                                    offsets.Limit += delta;
+                                }
+                            }
                         }
                     }
+                    offsets.Start = offsets.Limit;
                 }
-                offsets.Start = offsets.Limit;
+                finally
+                {
+                    handle.Free(); // Release the handle so the GC can collect the IReplaceable instance
+                    replacementChars.Dispose();
+                }
             }
         }
 

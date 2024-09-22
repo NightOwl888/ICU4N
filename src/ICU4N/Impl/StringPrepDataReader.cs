@@ -13,8 +13,12 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="bytes">ICU StringPrep data file buffer.</param>
         /// <exception cref="System.IO.IOException">If data file fails authentication.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="bytes"/> is <c>null</c>.</exception>
         public StringPrepDataReader(ByteBuffer bytes)
         {
+            if (bytes is null)
+                throw new ArgumentNullException(nameof(bytes));
+
             if (debug) Console.Out.WriteLine("Bytes in buffer " + bytes.Remaining);
 
             byteBuffer = bytes;

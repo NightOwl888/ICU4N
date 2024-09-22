@@ -33,6 +33,8 @@ namespace ICU4N.Text
     /// <author>Alan Liu</author>
     internal class TransliteratorIDParser
     {
+        private const int CharStackBufferSize = 32;
+
         private const char ID_DELIM = ';';
 
         private const char TARGET_SEP = '-';
@@ -287,7 +289,7 @@ namespace ICU4N.Text
         // ICU4N: Converted pos and withParens parameters from int[] to ref int
         public static UnicodeSet ParseGlobalFilter(string id, ref int pos, TransliterationDirection dir,
                                                    ref int withParens,
-                                                   StringBuffer canonID)
+                                                   StringBuffer canonID) // ICU4N TODO: API - Make ValueStringBuilder overload for internal use
         {
             UnicodeSet filter = null;
             int start = pos;
@@ -320,7 +322,7 @@ namespace ICU4N.Text
                     return null;
                 }
 
-                string pattern = id.Substring(pos, ppos.Index - pos); // ICU4N: Corrected 2nd parameter
+                ReadOnlySpan<char> pattern = id.AsSpan(pos, ppos.Index - pos); // ICU4N: Corrected 2nd parameter
                 pos = ppos.Index;
 
                 if (withParens == 1 && !Utility.ParseChar(id, ref pos, CLOSE_REV))
@@ -334,21 +336,35 @@ namespace ICU4N.Text
                 // the presence of parens ("A" <-> "(A)").
                 if (canonID != null)
                 {
-                    if (dir == Forward)
+                    var pat = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                    try
                     {
-                        if (withParens == 1)
+                        if (dir == Forward)
                         {
-                            pattern = OPEN_REV + pattern + CLOSE_REV;
+                            if (withParens == 1)
+                            {
+                                pat.Append(OPEN_REV);
+                                pat.Append(pattern);
+                                pat.Append(CLOSE_REV);
+                            }
+                            canonID.Append(pat.AsSpan());
+                            canonID.Append(ID_DELIM);
                         }
-                        canonID.Append(pattern + ID_DELIM);
+                        else
+                        {
+                            if (withParens == 0)
+                            {
+                                pat.Append(OPEN_REV);
+                                pat.Append(pattern);
+                                pat.Append(CLOSE_REV);
+                            }
+                            canonID.Insert(0, pat.AsSpan());
+                            canonID.Insert(pat.Length, ID_DELIM);
+                        }
                     }
-                    else
+                    finally
                     {
-                        if (withParens == 0)
-                        {
-                            pattern = OPEN_REV + pattern + CLOSE_REV;
-                        }
-                        canonID.Insert(0, pattern + ID_DELIM);
+                        pat.Dispose();
                     }
                 }
             }
@@ -381,7 +397,7 @@ namespace ICU4N.Text
         /// <returns><c>true</c> if the parse succeeds, that is, if the entire
         /// <paramref name="id"/> is consumed without syntax error.</returns>
         public static bool ParseCompoundID(string id, TransliterationDirection dir,
-                                              StringBuffer canonID,
+                                              StringBuffer canonID, // ICU4N TODO: API - Make ValueStringBuilder overload for internal use
                                               IList<SingleID> list,
                                               out UnicodeSet? globalFilter) // ICU4N: Changed globalFilter from UnicodeSet[] to out UnicodeSet
         {
@@ -577,6 +593,8 @@ namespace ICU4N.Text
             }
         }
 
+#nullable enable
+
         /// <summary>
         /// Given <paramref name="source"/>, <paramref name="target"/>, and <paramref name="variant"/> strings, concatenate them into a
         /// full ID.  If the source is empty, then "Any" will be used for the
@@ -584,20 +602,47 @@ namespace ICU4N.Text
         /// </summary>
         public static string STVtoID(string source,
                                      string target,
-                                     string variant)
+                                     string? variant)
         {
-            StringBuilder id = new StringBuilder(source);
-            if (id.Length == 0)
-            {
-                id.Append(ANY);
-            }
-            id.Append(TARGET_SEP).Append(target);
-            if (variant != null && variant.Length != 0)
-            {
-                id.Append(VARIANT_SEP).Append(variant);
-            }
-            return id.ToString();
+            return STVtoID(source.AsSpan(), target.AsSpan(), variant.AsSpan());
         }
+
+        /// <summary>
+        /// Given <paramref name="source"/>, <paramref name="target"/>, and <paramref name="variant"/> strings, concatenate them into a
+        /// full ID.  If the source is empty, then "Any" will be used for the
+        /// source, so the ID will always be of the form s-t/v or s-t.
+        /// </summary>
+        public static string STVtoID(ReadOnlySpan<char> source,
+                                     ReadOnlySpan<char> target,
+                                     ReadOnlySpan<char> variant)
+        {
+            int length = source.Length + 1 + target.Length + (variant.IsEmpty ? 0 : 1 + variant.Length);
+            ValueStringBuilder id = length <= Transliterator.CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[length])
+                : new ValueStringBuilder(length);
+            try
+            {
+                id.Append(source);
+                if (id.Length == 0)
+                {
+                    id.Append(ANY);
+                }
+                id.Append(TARGET_SEP);
+                id.Append(target);
+                if (variant.Length != 0)
+                {
+                    id.Append(VARIANT_SEP);
+                    id.Append(variant);
+                }
+                return id.ToString();
+            }
+            finally
+            {
+                id.Dispose();
+            }
+        }
+
+#nullable restore
 
         /// <summary>
         /// Register two targets as being inverses of one another.  For
@@ -797,36 +842,49 @@ namespace ICU4N.Text
         {
             string canonID = "";
             string basicID = "";
-            string basicPrefix = "";
             if (specs != null)
             {
-                StringBuilder buf = new StringBuilder();
-                if (dir == Forward)
+                ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                ValueStringBuilder basicPrefix = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                try
                 {
-                    if (specs.SawSource)
+                    if (dir == Forward)
                     {
-                        buf.Append(specs.Source).Append(TARGET_SEP);
+                        if (specs.SawSource)
+                        {
+                            buf.Append(specs.Source);
+                            buf.Append(TARGET_SEP);
+                        }
+                        else
+                        {
+                            basicPrefix.Append(specs.Source);
+                            basicPrefix.Append(TARGET_SEP);
+                        }
+                        buf.Append(specs.Target);
                     }
                     else
                     {
-                        basicPrefix = specs.Source + TARGET_SEP;
+                        buf.Append(specs.Target);
+                        buf.Append(TARGET_SEP);
+                        buf.Append(specs.Source);
                     }
-                    buf.Append(specs.Target);
+                    if (specs.Variant != null)
+                    {
+                        buf.Append(VARIANT_SEP);
+                        buf.Append(specs.Variant);
+                    }
+                    basicID = StringHelper.Concat(basicPrefix.AsSpan(), buf.AsSpan());
+                    if (specs.Filter != null)
+                    {
+                        buf.Insert(0, specs.Filter);
+                    }
+                    canonID = buf.ToString();
                 }
-                else
+                finally
                 {
-                    buf.Append(specs.Target).Append(TARGET_SEP).Append(specs.Source);
+                    buf.Dispose();
+                    basicPrefix.Dispose();
                 }
-                if (specs.Variant != null)
-                {
-                    buf.Append(VARIANT_SEP).Append(specs.Variant);
-                }
-                basicID = basicPrefix + buf.ToString();
-                if (specs.Filter != null)
-                {
-                    buf.Insert(0, specs.Filter);
-                }
-                canonID = buf.ToString();
             }
             return new SingleID(canonID, basicID);
         }
@@ -849,25 +907,40 @@ namespace ICU4N.Text
                 // If the original ID contained "Any-" then make the
                 // special inverse "Any-Foo"; otherwise make it "Foo".
                 // So "Any-NFC" => "Any-NFD" but "NFC" => "NFD".
-                StringBuilder buf = new StringBuilder();
-                if (specs.Filter != null)
+                ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                ValueStringBuilder basicID = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                try
                 {
-                    buf.Append(specs.Filter);
-                }
-                if (specs.SawSource)
-                {
-                    buf.Append(ANY).Append(TARGET_SEP);
-                }
-                buf.Append(inverseTarget);
+                    if (specs.Filter != null)
+                    {
+                        buf.Append(specs.Filter);
+                    }
+                    if (specs.SawSource)
+                    {
+                        buf.Append(ANY);
+                        buf.Append(TARGET_SEP);
+                    }
+                    buf.Append(inverseTarget);
 
-                string basicID = ANY + TARGET_SEP + inverseTarget;
+                    basicID.Append(ANY);
+                    basicID.Append(TARGET_SEP);
+                    basicID.Append(inverseTarget);
 
-                if (specs.Variant != null)
-                {
-                    buf.Append(VARIANT_SEP).Append(specs.Variant);
-                    basicID = basicID + VARIANT_SEP + specs.Variant;
+                    if (specs.Variant != null)
+                    {
+                        buf.Append(VARIANT_SEP);
+                        buf.Append(specs.Variant);
+
+                        basicID.Append(VARIANT_SEP);
+                        basicID.Append(specs.Variant);
+                    }
+                    return new SingleID(buf.ToString(), basicID.ToString());
                 }
-                return new SingleID(buf.ToString(), basicID);
+                finally
+                {
+                    buf.Dispose();
+                    basicID.Dispose();
+                }
             }
             return null;
         }

@@ -45,7 +45,49 @@ namespace ICU4N.Impl
             this.ignoreCase = ignoreCase;
         }
 
-        // ICU4N specific: Put(ICharSequence text, TValue val) moved to TextTrieMapExtension.tt
+        /// <summary>
+        /// Adds the text key and its associated value in this object.
+        /// </summary>
+        /// <param name="text">The text.</param>
+        /// <param name="value">The value associated with the text.</param>
+        /// <returns></returns>
+        public virtual TextTrieMap<TValue> Put(string text, TValue value)
+        {
+            if (text is null)
+                throw new ArgumentNullException(nameof(text)); // ICU4N: Added guard clause.
+            return Put(text.AsSpan(), value);
+        }
+
+        /// <summary>
+        /// Adds the text key and its associated value in this object.
+        /// </summary>
+        /// <param name="text">The text.</param>
+        /// <param name="value">The value associated with the text.</param>
+        /// <returns></returns>
+        public virtual TextTrieMap<TValue> Put(ReadOnlySpan<char> text, TValue value)
+        {
+            CharEnumerator chitr = new CharEnumerator(text, ignoreCase);
+            root.Add(chitr, value);
+            return this;
+        }
+
+        /// <summary>
+        /// Gets an enumerator of the values associated with the
+        /// longest prefix matching string key.
+        /// </summary>
+        /// <param name="text">The text to be matched with prefixes.</param>
+        /// <returns>
+        /// An enumerator of the values associated with
+        /// the longest prefix matching matching key, or <c>null</c>
+        /// if no matching entry is found.
+        /// </returns>
+        public virtual IEnumerator<TValue> Get(string text)
+        {
+            if (text is null)
+                throw new ArgumentNullException(nameof(text)); // ICU4N: Added guard clause.
+
+            return Get(text.AsSpan());
+        }
 
         /// <summary>
         /// Gets an enumerator of the objects associated with the
@@ -57,18 +99,44 @@ namespace ICU4N.Impl
         /// the longest prefix matching matching key, or <c>null</c>
         /// if no matching entry is found.
         /// </returns>
-        public virtual IEnumerator<TValue> Get(string text)
+        public virtual IEnumerator<TValue> Get(ReadOnlySpan<char> text)
         {
-            return Get(text, 0);
+            return Get(text, out _);
         }
 
-        // ICU4N specific: Get(ICharSequence text, int start) moved to TextTrieMapExtension.tt
+        // ICU4N specific: Eliminatd Get(ICharSequence text, int start, int[] matchLen) because we can slice a ReadOnlySpan<char>
 
-        // ICU4N specific: Get(ICharSequence text, int start, int[] matchLen) moved to TextTrieMapExtension.tt
+        public virtual IEnumerator<TValue> Get(string text, out int matchLength)
+        {
+            if (text is null)
+                throw new ArgumentNullException(nameof(text)); // ICU4N: Added guard clause.
 
-        // ICU4N specific: Find(ICharSequence text, IResultHandler<TValue> handler) moved to TextTrieMapExtension.tt
+            return Get(text.AsSpan(), out matchLength);
+        }
 
-        // ICU4N specific: Find(ICharSequence text, int offset, IResultHandler<TValue> handler) moved to TextTrieMapExtension.tt
+        public virtual IEnumerator<TValue> Get(ReadOnlySpan<char> text, out int matchLength)
+        {
+            LongestMatchHandler<TValue> handler = new LongestMatchHandler<TValue>();
+            Find(text, handler);
+            matchLength = handler.MatchLength;
+            return handler.Matches;
+        }
+
+        public virtual void Find(string text, IResultHandler<TValue> handler)
+        {
+            if (text is null)
+                throw new ArgumentNullException(nameof(text)); // ICU4N: Added guard clause.
+
+            Find(text.AsSpan(), handler);
+        }
+
+        public virtual void Find(ReadOnlySpan<char> text, IResultHandler<TValue> handler)
+        {
+            CharEnumerator chitr = new CharEnumerator(text, ignoreCase);
+            Find(root, chitr, handler);
+        }
+
+        // ICU4N specific: Eliminated Find(ICharSequence text, int offset, IResultHandler<TValue> handler) because we can slice a ReadOnlySpan<char>
 
         private void Find(Node node, CharEnumerator chitr, IResultHandler<TValue> handler)
         {
@@ -112,7 +180,7 @@ namespace ICU4N.Impl
                 return null;
             }
 
-            return new ParseState(this, root);
+            return new ParseState(ignoreCase, root);
         }
 
         /// <summary>
@@ -121,17 +189,15 @@ namespace ICU4N.Impl
         /// </summary>
         public class ParseState
         {
-            private readonly TextTrieMap<TValue> map;
+            private readonly bool ignoreCase;
             private Node node;
             private int offset;
-            private Node.StepResult result;
 
-            internal ParseState(TextTrieMap<TValue> map, Node start)
+            internal ParseState(bool ignoreCase, Node start)
             {
-                this.map = map ?? throw new ArgumentNullException(nameof(map));
+                this.ignoreCase = ignoreCase;
                 node = start ?? throw new ArgumentNullException(nameof(start));
                 offset = 0;
-                result = start.CreateStepResult();
             }
 
             /// <summary>
@@ -141,20 +207,18 @@ namespace ICU4N.Impl
             public virtual void Accept(int cp)
             {
                 Debug.Assert(node != null);
-                if (map.ignoreCase)
+                if (ignoreCase)
                 {
                     cp = UChar.FoldCase(cp, true);
                 }
                 int count = Character.CharCount(cp);
                 char ch1 = (count == 1) ? (char)cp : UTF16.GetLeadSurrogate(cp);
-                node.TakeStep(ch1, offset, result);
-                if (count == 2 && result.node != null)
+                node = node.TakeStep(ch1, ref offset);
+                if (count == 2 && node != null)
                 {
                     char ch2 = UTF16.GetTrailSurrogate(cp);
-                    result.node.TakeStep(ch2, result.offset, result);
+                    node = node.TakeStep(ch2, ref offset);
                 }
-                node = result.node;
-                offset = result.offset;
             }
 
             /// <summary>
@@ -178,20 +242,19 @@ namespace ICU4N.Impl
             public bool AtEnd => node == null || (node.CharCount == offset && node.children == null);
         }
 
-        public class CharEnumerator : IEnumerator<char>
+        internal ref struct CharEnumerator // ICU4N: Cannot implement IEnumerator<char> here because we are a ref struct. Eliminate like in C++? Not sure why this is public in Java, since it cannot be instantiated or subclassed with a package private constructor.
         {
             private readonly bool ignoreCase;
-            private readonly ICharSequence text;
+            private readonly ReadOnlySpan<char> text;
             private int nextIdx;
-            private int startIdx;
 
             private char? remainingChar;
             private char current;
 
-            internal CharEnumerator(ICharSequence text, int offset, bool ignoreCase)
+            internal CharEnumerator(ReadOnlySpan<char> text, bool ignoreCase)
             {
-                this.text = text ?? throw new ArgumentNullException(nameof(text)); // ICU4N: Added guard clause
-                nextIdx = startIdx = offset;
+                this.text = text;
+                nextIdx = 0;
                 this.ignoreCase = ignoreCase;
             }
 
@@ -248,25 +311,12 @@ namespace ICU4N.Impl
                 return next;
             }
 
-            /* (non-Javadoc)
-             * @see java.util.Iterator#remove()
-             */
-            void IEnumerator.Reset()
-            {
-                throw new NotSupportedException("Reset() not supported");
-            }
-
             public bool MoveNext()
             {
                 if (!HasNext)
                     return false;
                 current = Next().Value;
                 return true;
-            }
-
-            public void Dispose()
-            {
-                // Intentionally empty
             }
 
             public int NextIndex => nextIdx;
@@ -279,13 +329,11 @@ namespace ICU4N.Impl
                     {
                         throw new InvalidOperationException("In the middle of surrogate pair");
                     }
-                    return nextIdx - startIdx;
+                    return nextIdx;
                 }
             }
 
             public char Current => current;
-
-            object IEnumerator.Current => current;
         }
 
         // ICU4N specific - de-nested IResultHandler<V>
@@ -310,35 +358,39 @@ namespace ICU4N.Impl
             public int MatchLength => length;
         }
 
+#nullable enable
+
         /// <summary>
         /// Inner class representing a text node in the trie.
         /// </summary>
         public class Node
         {
-            private char[] text;
-            private IList<TValue> values;
-            internal IList<Node> children;
+            private ReadOnlyMemory<char> text;
+            private object? textReference; // ICU4N: Keeps the string or char[] behind text alive for the lifetime of this class
+            private IList<TValue>? values;
+            internal IList<Node>? children;
 
             internal Node()
             {
             }
 
-            private Node(char[] text, IList<TValue> values, IList<Node> children) // ICU4N NOTE: all params are nullable
+            private Node(ReadOnlyMemory<char> text, IList<TValue>? values, IList<Node>? children)
             {
                 this.text = text;
+                text.TryGetReference(ref this.textReference);
                 this.values = values;
                 this.children = children;
             }
 
-            public int CharCount => text == null ? 0 : text.Length;
+            public int CharCount => text.Length;
 
             public bool HasChildFor(char ch)
             {
                 for (int i = 0; children != null && i < children.Count; i++)
                 {
-                    Node child = children[i];
-                    if (ch < child.text[0]) break;
-                    if (ch == child.text[0])
+                    ReadOnlySpan<char> childText = children[i].text.Span;
+                    if (ch < childText[0]) break;
+                    if (ch == childText[0])
                     {
                         return true;
                     }
@@ -346,7 +398,7 @@ namespace ICU4N.Impl
                 return false;
             }
 
-            public IEnumerator<TValue> GetValues()
+            public IEnumerator<TValue>? GetValues()
             {
                 if (values == null)
                 {
@@ -355,17 +407,19 @@ namespace ICU4N.Impl
                 return values.GetEnumerator();
             }
 
-            public void Add(CharEnumerator chitr, TValue value)
+            internal void Add(CharEnumerator chitr, TValue value) // ICU4N: Marked internal instead of public so we don't expose CharEnumerator (which has an internal constructor, anyway).
             {
-                StringBuilder buf = new StringBuilder();
+                using ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[32]);
                 while (chitr.MoveNext())
                 {
                     buf.Append(chitr.Current);
                 }
-                Add(ToCharArray(buf), 0, value);
+
+                // ICU4N: Now that we know the length, allocate the memory for the node.
+                Add(buf.ToString().AsMemory(), value);
             }
 
-            public Node FindMatch(CharEnumerator chitr)
+            internal Node? FindMatch(CharEnumerator chitr) // ICU4N: Marked internal instead of public so we don't expose CharEnumerator (which has an internal constructor, anyway).
             {
                 if (children == null)
                 {
@@ -375,15 +429,16 @@ namespace ICU4N.Impl
                 {
                     return null;
                 }
-                Node match = null;
+                Node? match = null;
                 char ch = chitr.Current;
                 foreach (Node child in children)
                 {
-                    if (ch < child.text[0])
+                    char childText0 = child.text.Span[0];
+                    if (ch < childText0)
                     {
                         break;
                     }
-                    if (ch == child.text[0])
+                    if (ch == childText0)
                     {
                         if (child.MatchFollowing(chitr))
                         {
@@ -395,18 +450,11 @@ namespace ICU4N.Impl
                 return match;
             }
 
-            public class StepResult
-            {
-                public Node node;
-                public int offset;
-            }
+            // ICU4N: Factored out StepResult and CreateStepResult() because we can
+            // use a ref int for offset and simply return the node instead of maintaining
+            // this state in a separate type.
 
-            public virtual StepResult CreateStepResult()
-            {
-                return new StepResult();
-            }
-
-            public void TakeStep(char ch, int offset, StepResult result)
+            public Node? TakeStep(char ch, ref int offset)
             {
                 Debug.Assert(offset <= CharCount);
                 if (offset == CharCount)
@@ -415,32 +463,31 @@ namespace ICU4N.Impl
                     for (int i = 0; children != null && i < children.Count; i++)
                     {
                         Node child = children[i];
-                        if (ch < child.text[0]) break;
-                        if (ch == child.text[0])
+                        char childText0 = child.text.Span[0];
+                        if (ch < childText0) break;
+                        if (ch == childText0)
                         {
                             // Found a matching child node
-                            result.node = child;
-                            result.offset = 1;
-                            return;
+                            offset = 1;
+                            return child;
                         }
                     }
                     // No matching children; fall through
                 }
-                else if (text[offset] == ch)
+                else if (text.Span[offset] == ch)
                 {
                     // Return to this node; increase offset
-                    result.node = this;
-                    result.offset = offset + 1;
-                    return;
+                    offset += 1;
+                    return this;
                 }
                 // No matches
-                result.node = null;
-                result.offset = -1;
+                offset = -1;
+                return null;
             }
 
-            private void Add(char[] text, int offset, TValue value)
+            private void Add(ReadOnlyMemory<char> text, TValue value) // ICU4N: Removed offset, since we can slice a ReadOnlyMemory
             {
-                if (text.Length == offset)
+                if (text.Length == 0)
                 {
                     values = AddValue(values, value);
                     return;
@@ -449,7 +496,7 @@ namespace ICU4N.Impl
                 if (children == null)
                 {
                     children = new List<Node>();
-                    Node child = new Node(SubArray(text, offset), AddValue(null, value), null);
+                    Node child = new Node(text, AddValue(null, value), null);
                     children.Add(child);
                     return;
                 }
@@ -460,24 +507,26 @@ namespace ICU4N.Impl
                 for (; index < children.Count; index++)
                 {
                     Node next = children[index];
-                    if (text[offset] < next.text[0])
+                    char nextText0 = next.text.Span[0];
+                    ReadOnlySpan<char> textSpan = text.Span;
+                    if (textSpan[0] < nextText0)
                     {
                         //isPrevious = true;
                         break;
                     }
-                    if (text[offset] == next.text[0])
+                    if (textSpan[0] == nextText0)
                     {
-                        int matchLen = next.LenMatches(text, offset);
+                        int matchLen = next.LenMatches(textSpan);
                         if (matchLen == next.text.Length)
                         {
                             // full match
-                            next.Add(text, offset + matchLen, value);
+                            next.Add(text.Slice(matchLen), value);
                         }
                         else
                         {
                             // partial match, create a branch
                             next.Split(matchLen);
-                            next.Add(text, offset + matchLen, value);
+                            next.Add(text.Slice(matchLen), value);
                         }
                         return;
                     }
@@ -494,7 +543,7 @@ namespace ICU4N.Impl
                 // previous would return the new element. (This call increases by one the value that would be
                 // returned by a call to nextIndex or previousIndex.)
 
-                var newNode = new Node(SubArray(text, offset), AddValue(null, value), null);
+                var newNode = new Node(text, AddValue(null, value), null);
                 if (index != children.Count)
                 {
                     children.Insert(index, newNode);
@@ -540,6 +589,7 @@ namespace ICU4N.Impl
             {
                 bool matched = true;
                 int idx = 1;
+                ReadOnlySpan<char> textSpan = text.Span;
                 while (idx < text.Length)
                 {
                     if (!chitr.MoveNext())
@@ -548,7 +598,7 @@ namespace ICU4N.Impl
                         break;
                     }
                     char ch = chitr.Current;
-                    if (ch != text[idx])
+                    if (ch != textSpan[idx])
                     {
                         matched = false;
                         break;
@@ -558,14 +608,15 @@ namespace ICU4N.Impl
                 return matched;
             }
 
-            private int LenMatches(char[] text, int offset)
+            private int LenMatches(ReadOnlySpan<char> text)
             {
-                int textLen = text.Length - offset;
+                int textLen = text.Length;
                 int limit = this.text.Length < textLen ? this.text.Length : textLen;
                 int len = 0;
+                ReadOnlySpan<char> thisText = this.text.Span;
                 while (len < limit)
                 {
-                    if (this.text[len] != text[offset + len])
+                    if (thisText[len] != text[len])
                     {
                         break;
                     }
@@ -577,8 +628,13 @@ namespace ICU4N.Impl
             private void Split(int offset)
             {
                 // split the current node at the offset
-                char[] childText = SubArray(text, offset);
-                text = SubArray(text, 0, offset);
+
+                // ICU4N: Note that we don't allocate memory for the new
+                // node, we simply slice the existing memory. Each node
+                // holds a reference to the original underlying string
+                // to keep it in scope.
+                ReadOnlyMemory<char> childText = text.Slice(offset);
+                text = text.Slice(0, offset);
 
                 // add the Node representing after the offset as a child
                 Node child = new Node(childText, values, children);
@@ -587,7 +643,7 @@ namespace ICU4N.Impl
                 children = new List<Node> { child };
             }
 
-            private IList<TValue> AddValue(IList<TValue> list, TValue value)
+            private IList<TValue> AddValue(IList<TValue>? list, TValue value)
             {
                 if (list == null)
                 {
@@ -598,37 +654,8 @@ namespace ICU4N.Impl
             }
         }
 
-        private static char[] ToCharArray(StringBuilder text)
-        {
-            char[] array = new char[text.Length];
-            //for (int i = 0; i < array.Length; i++)
-            //{
-            //    array[i] = text[i];
-            //}
-            text.CopyTo(sourceIndex: 0, array, destinationIndex: 0, array.Length);
-            return array;
-        }
+        // ICU4N: Removed ToCharArray() and replaced with StringBuilder.ToString().AsMemory()
 
-        private static char[] SubArray(char[] array, int start)
-        {
-            if (start == 0)
-            {
-                return array;
-            }
-            char[] sub = new char[array.Length - start];
-            Array.Copy(array, start, sub, 0, sub.Length);
-            return sub;
-        }
-
-        private static char[] SubArray(char[] array, int start, int limit) // ICU4N TODO: Change limit to length
-        {
-            if (start == 0 && limit == array.Length)
-            {
-                return array;
-            }
-            char[] sub = new char[limit - start];
-            Array.Copy(array, start, sub, 0, limit - start);
-            return sub;
-        }
+        // ICU4N: Removed SubArray() and replaced with ReadOnlyMemory<char>.Slice()
     }
 }

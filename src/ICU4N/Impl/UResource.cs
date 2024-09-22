@@ -1,11 +1,14 @@
-﻿using ICU4N.Support.Text;
+﻿using ICU4N.Text;
 using ICU4N.Util;
 using J2N.IO;
 using J2N.Text;
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
+#nullable enable
 
 namespace ICU4N.Impl
 {
@@ -18,7 +21,7 @@ namespace ICU4N.Impl
     /// Mutable, not thread-safe.
     /// For permanent storage, use <see cref="Clone()"/> or <see cref="ToString()"/>.
     /// </summary>
-    public sealed partial class ResourceKey : ICharSequence, IComparable<ResourceKey> // ICU4N: Renamed from Key
+    public sealed partial class ResourceKey : IComparable<ResourceKey> // ICU4N: Renamed from Key
 #if FEATURE_CLONEABLE
         , ICloneable
 #endif
@@ -28,17 +31,16 @@ namespace ICU4N.Impl
         // until one is really needed.
         // Alternatively, we could try to always just get the key String object,
         // and cache it in the reader, and see if that performs better or worse.
-        private byte[] bytes;
-        private int offset;
-        private int length;
-        private string s;
+        private ReadOnlyMemory<byte> bytes;
+        private object? bytesReference;
+        private string? s;
 
         /// <summary>
         /// Constructs an empty resource key string object.
         /// </summary>
         public ResourceKey()
         {
-            s = "";
+            s = string.Empty;
         }
 
         /// <summary>
@@ -46,31 +48,37 @@ namespace ICU4N.Impl
         /// </summary>
         public ResourceKey(string s)
         {
-            SetString(s);
+            SetValue(s);
         }
 
-        private ResourceKey(byte[] keyBytes, int keyOffset, int keyLength)
+        /// <summary>
+        /// Constructs a resource key object equal to the given string.
+        /// </summary>
+        public ResourceKey(ReadOnlySpan<char> s)
         {
-            bytes = keyBytes;
-            offset = keyOffset;
-            length = keyLength;
+            SetValue(s);
         }
 
         /// <summary>
         /// Mutates this key for a new NUL-terminated resource key string.
         /// The corresponding ASCII-character bytes are not copied and
         /// must not be changed during the lifetime of this key
-        /// (or until the next <see cref="SetBytes(byte[], int)"/> call)
+        /// (or until the next <see cref="SetValue(byte[], int)"/> call)
         /// and lifetimes of subSequences created from this key.
         /// </summary>
-        /// <param name="keyBytes">New key string byte array.</param>
-        /// <param name="keyOffset">New key string offset.</param>
+        /// <param name="bytes">New key string byte array.</param>
+        /// <param name="start">New key string offset.</param>
         /// <returns>This.</returns>
-        public ResourceKey SetBytes(byte[] keyBytes, int keyOffset)
+        public ResourceKey SetValue(byte[] bytes, int start) // ICU4N: Renamed from SetBytes()
         {
-            bytes = keyBytes;
-            offset = keyOffset;
-            for (length = 0; keyBytes[keyOffset + length] != 0; ++length) { }
+            if (bytes is null)
+                throw new ArgumentNullException(nameof(bytes));
+
+            // Find the null terminator
+            int length;
+            for (length = 0; bytes[start + length] != 0; ++length) { /* intentionally empty */ }
+            this.bytes = bytes.AsMemory(start, length);
+            this.bytesReference = bytes;
             s = null;
             return this;
         }
@@ -81,9 +89,8 @@ namespace ICU4N.Impl
         /// <returns>This.</returns>
         public ResourceKey SetToEmpty()
         {
-            bytes = null;
-            offset = length = 0;
-            s = "";
+            bytes = default;
+            s = string.Empty;
             return this;
         }
 
@@ -91,7 +98,7 @@ namespace ICU4N.Impl
         /// Mutates this key to be equal to the given string.
         /// </summary>
         /// <returns>This.</returns>
-        public ResourceKey SetString(string s)
+        public ResourceKey SetValue(string? s) // ICU4N: Renamed from SetString()
         {
             if (string.IsNullOrEmpty(s))
             {
@@ -99,9 +106,8 @@ namespace ICU4N.Impl
             }
             else
             {
-                bytes = new byte[s.Length];
-                offset = 0;
-                length = s.Length;
+                int length = s!.Length;
+                var bytes = new byte[length];
                 for (int i = 0; i < length; ++i)
                 {
                     char c = s[i];
@@ -114,7 +120,42 @@ namespace ICU4N.Impl
                         throw new ArgumentException('\"' + s + "\" is not an ASCII string");
                     }
                 }
+                this.bytes = bytes.AsMemory();
+                this.bytesReference = bytes;
                 this.s = s;
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Mutates this key to be equal to the given string.
+        /// </summary>
+        /// <returns>This.</returns>
+        public ResourceKey SetValue(ReadOnlySpan<char> s)
+        {
+            if (s.IsEmpty)
+            {
+                SetToEmpty();
+            }
+            else
+            {
+                int length = s.Length;
+                var bytes = new byte[length];
+                for (int i = 0; i < length; ++i)
+                {
+                    char c = s[i];
+                    if (c <= 0x7f)
+                    {
+                        bytes[i] = (byte)c;
+                    }
+                    else
+                    {
+                        throw new ArgumentException('\"' + s.ToString() + "\" is not an ASCII string");
+                    }
+                }
+                this.bytes = bytes.AsMemory();
+                this.bytesReference = bytes;
+                this.s = null;
             }
             return this;
         }
@@ -133,21 +174,12 @@ namespace ICU4N.Impl
         {
             get
             {
-                Debug.Assert(0 <= i && i < length);
-                return (char)bytes[offset + i];
+                Debug.Assert(0 <= i && i < bytes.Length);
+                return (char)bytes.Span[i];
             }
         }
 
-        public int Length => length;
-
-        public ICharSequence Subsequence(int startIndex, int length)
-        {
-            Debug.Assert(0 <= startIndex); // ICU4N: Changed to using length instead of end index
-            Debug.Assert(0 <= length);
-            return new ResourceKey(bytes, offset + startIndex, length);
-        }
-
-        bool ICharSequence.HasValue => s != string.Empty;
+        public int Length => bytes.Length;
 
         /// <summary>
         /// Creates/caches/returns this resource key string as a .NET <see cref="string"/>.
@@ -156,70 +188,58 @@ namespace ICU4N.Impl
         {
             if (s == null)
             {
-                s = InternalSubString(0, length);
+                s = InternalSubString(0, Length);
             }
             return s;
+        }
+
+        public void CopyTo(int sourceIndex, Span<char> destination, int count)
+        {
+            if (count < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(count), SR.Arg_NegativeArgCount);
+            }
+
+            if ((uint)sourceIndex > (uint)Length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(sourceIndex), SR.ArgumentOutOfRange_Index);
+            }
+
+            if (sourceIndex > Length - count)
+            {
+                throw new ArgumentException(SR.Arg_LongerThanSrcString);
+            }
+
+            if (destination.Length < count)
+            {
+                throw new ArgumentException(SR.Arg_LongerThanDestSpan);
+            }
+
+            var span = bytes.Slice(sourceIndex, count).Span;
+            for (int i = 0; i < count; i++)
+            {
+                destination[i] = (char)span[i];
+            }
         }
 
         private string InternalSubString(int start, int length)
         {
             int end = length - start;
-#if FEATURE_SPAN
             const int CharStackBufferSize = 32;
-            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-#else
-            StringBuilder sb = new StringBuilder(length);
-#endif
+            using ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            var bytesSpan = bytes.Span;
             for (int i = start; i < end; ++i)
             {
-                sb.Append((char)bytes[offset + i]);
+                sb.Append((char)bytesSpan[i]);
             }
             return sb.ToString();
         }
 
-        /// <summary>
-        /// Creates a new .NET <see cref="string"/> for a sub-sequence of this resource key string.
-        /// </summary>
-        public string Substring(int startIndex)
-        {
-            // ICU4N: Added guard clauses
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex), "Non-negative number required.");
-            if (startIndex >= length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex), "Index and length must refer to a location within the string.");
-            return InternalSubString(startIndex, length);
-        }
+        // ICU4N specific - RegionMatches(int start, ICharSequence cs, int n) replacd with SequenceEqual(int sourceIndex, ReadOnlySpan<char> other, int count)
 
-        /// <summary>
-        /// Creates a new .NET <see cref="string"/> for a sub-sequence of this resource key string.
-        /// </summary>
-        public string Substring(int startIndex, int length) // ICU4N: Changed end to length (.NET convention)
+        public override bool Equals(object? other)
         {
-            // ICU4N: Added guard clauses
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex), "Non-negative number required.");
-            if (startIndex > this.length - length)
-                throw new ArgumentOutOfRangeException(nameof(startIndex), "Index and length must refer to a location within the string.");
-            return InternalSubString(startIndex, length);
-        }
-
-        private bool RegionMatches(byte[] otherBytes, int otherOffset, int n)
-        {
-            for (int i = 0; i < n; ++i)
-            {
-                if (bytes[offset + i] != otherBytes[otherOffset + i])
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        // ICU4N specific - RegionMatches(int start, ICharSequence cs, int n) moved to UResourceExtension.tt
-
-        public override bool Equals(object other)
-        {
-            if (other == null)
+            if (other is null)
             {
                 return false;
             }
@@ -227,11 +247,9 @@ namespace ICU4N.Impl
             {
                 return true;
             }
-            else if (other is ResourceKey)
+            else if (other is ResourceKey otherKey)
             {
-                ResourceKey otherKey = (ResourceKey)other;
-                return length == otherKey.length &&
-                        RegionMatches(otherKey.bytes, otherKey.offset, length);
+                return this.bytes.Span.SequenceEqual(otherKey.bytes.Span);
             }
             else
             {
@@ -239,37 +257,161 @@ namespace ICU4N.Impl
             }
         }
 
-        // ICU4N specific - ContentEquals(ICharSequence cs) moved to UResourceExtension.tt
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool SequenceEqual(string other)
+        {
+            int csLength = other?.Length ?? 0;
+            return Length == csLength && SequenceEqual(sourceIndex: 0, other!, count: csLength);
+        }
 
-        // ICU4N specific - StartsWith(ICharSequence cs) moved to UResourceExtension.tt
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool SequenceEqual(ReadOnlySpan<char> other)
+        {
+            int csLength = other.Length;
+            return Length == csLength && SequenceEqual(sourceIndex: 0, other, count: csLength);
+        }
 
-        // ICU4N specific - EndsWith(ICharSequence cs) moved to UResourceExtension.tt
+        public bool SequenceEqual(int sourceIndex, string other, int count)
+        {
+            if (other is null)
+                throw new ArgumentNullException(nameof(other));
 
-        // ICU4N specific - RegionMatches(int start, ICharSequence cs) moved to UResourceExtension.tt
+            return SequenceEqual(sourceIndex, other.AsSpan(), count);
+        }
+
+        public bool SequenceEqual(int sourceIndex, ReadOnlySpan<char> other, int count)
+        {
+            if (count < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(count), SR.Arg_NegativeArgCount);
+            }
+
+            int len = Length;
+            if ((uint)sourceIndex > (uint)len)
+            {
+                throw new ArgumentOutOfRangeException(nameof(sourceIndex), SR.ArgumentOutOfRange_Index);
+            }
+
+            if (sourceIndex > len - count)
+            {
+                throw new ArgumentException(SR.Arg_LongerThanSrcString);
+            }
+
+            var bytesSpan = bytes.Span;
+            for (int i = 0; i < count; ++i)
+            {
+                if (bytesSpan[sourceIndex + i] != other[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public bool StartsWith(string cs)
+        {
+            // ICU4N: Added guard clause
+            if (cs is null)
+                throw new ArgumentNullException(nameof(cs));
+
+            int csLength = cs.Length;
+            return csLength <= Length && SequenceEqual(0, cs, csLength);
+        }
+
+
+        public bool StartsWith(ReadOnlySpan<char> cs)
+        {
+            int csLength = cs.Length;
+            return csLength <= Length && SequenceEqual(0, cs, csLength);
+        }
+
+        public bool EndsWith(string cs)
+        {
+            // ICU4N: Added guard clause
+            if (cs is null)
+                throw new ArgumentNullException(nameof(cs));
+
+            int length = Length;
+            int csLength = cs.Length;
+            return csLength <= length && SequenceEqual(length - csLength, cs, csLength);
+        }
+
+
+        public bool EndsWith(ReadOnlySpan<char> cs)
+        {
+            int length = Length;
+            int csLength = cs.Length;
+            return csLength <= length && SequenceEqual(length - csLength, cs, csLength);
+        }
 
         public override int GetHashCode()
         {
             // Never return s.hashCode(), so that
             // Key.hashCode() is the same whether we have cached s or not.
-            if (length == 0)
+            int length = bytes.Length;
+            if (bytes.Length == 0)
             {
                 return 0;
             }
 
-            int h = bytes[offset];
+            var bytesSpan = bytes.Span;
+
+            int h = bytesSpan[0];
             for (int i = 1; i < length; ++i)
             {
-                h = 37 * h + bytes[offset];
+                h = 37 * h + bytesSpan[i]; // ICU4N: Fixed bug in hashcode calculation (i rather than offset)
             }
             return h;
         }
 
-        public int CompareTo(ResourceKey other)
+        public int CompareTo(ResourceKey? other)
         {
-            return CompareTo((ICharSequence)other);
+            if (other is null) return 1; // ICU4N: Using 1 if other is null as specified here: https://stackoverflow.com/a/4852537
+
+            int length = Length;
+            int otherLength = other.Length;
+            int minLength = length <= otherLength ? length : otherLength;
+            for (int i = 0; i < minLength; ++i)
+            {
+                int diff = this[i] - other[i];
+                if (diff != 0)
+                {
+                    return diff;
+                }
+            }
+            return length - otherLength;
         }
 
-        // ICU4N specific - CompareTo(ICharSequence cs) moved to UResourceExtension.tt
+        public int CompareTo(string? other)
+        {
+            if (other is null) return 1; // ICU4N: Using 1 if other is null as specified here: https://stackoverflow.com/a/4852537
+
+            return CompareTo(other.AsSpan());
+        }
+
+        public int CompareTo(ReadOnlySpan<char> other)
+        {
+            int length = Length;
+            int otherLength = other.Length;
+            int minLength = length <= otherLength ? length : otherLength;
+            for (int i = 0; i < minLength; ++i)
+            {
+                int diff = this[i] - other[i];
+                if (diff != 0)
+                {
+                    return diff;
+                }
+            }
+            return length - otherLength;
+        }
+
+        private static class SR
+        {
+            public static string Arg_NegativeArgCount = "Argument count must not be negative.";
+            public static string ArgumentOutOfRange_Index = "Index was out of range. Must be non-negative and less than the size of the collection.";
+            public static string Arg_LongerThanSrcString = "Source string was not long enough. Check sourceIndex and count.";
+            public static string Arg_LongerThanDestSpan = "Destination span was not long enough.";
+        }
     }
 
     /// <summary>
@@ -318,6 +460,8 @@ namespace ICU4N.Impl
     /// </summary>
     public abstract class ResourceValue // ICU4N: Renamed from Value
     {
+        private const int CharStackBufferSize = 32;
+
         protected ResourceValue() { }
 
         /// <summary>
@@ -422,17 +566,28 @@ namespace ICU4N.Impl
                     return GetInt32().ToString(CultureInfo.InvariantCulture);
                 case UResourceType.Int32Vector:
                     int[] iv = GetInt32Vector();
-                    StringBuilder sb = new StringBuilder("[");
-                    sb.Append(iv.Length).Append("]{");
-                    if (iv.Length != 0)
+                    ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                    try
                     {
-                        sb.Append(iv[0]);
-                        for (int i = 1; i < iv.Length; ++i)
+                        sb.Append("[");
+                        sb.Append(iv.Length);
+                        sb.Append("]{");
+                        if (iv.Length != 0)
                         {
-                            sb.Append(", ").Append(iv[i]);
+                            sb.Append(iv[0]);
+                            for (int i = 1; i < iv.Length; ++i)
+                            {
+                                sb.Append(", ");
+                                sb.Append(iv[i]);
+                            }
                         }
+                        sb.Append('}');
+                        return sb.ToString();
                     }
-                    return sb.Append('}').ToString();
+                    finally
+                    {
+                        sb.Dispose();
+                    }
                 case UResourceType.Binary:
                     return "(binary blob)";
                 case UResourceType.Array:

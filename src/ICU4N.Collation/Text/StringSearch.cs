@@ -4,6 +4,7 @@ using ICU4N.Util;
 using J2N;
 using J2N.Numerics;
 using System;
+using System.Configuration;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
@@ -206,7 +207,7 @@ namespace ICU4N.Text
             variableTop_ = collator.VariableTop;
 #pragma warning restore 612, 618
 
-            nfd_ = Normalizer2.GetNFDInstance();
+            nfd_ = Normalizer2.NFDInstance;
 
             pattern_ = new UPattern(pattern);
 
@@ -227,7 +228,6 @@ namespace ICU4N.Text
             search_.reset_ = true;
              */
             UCultureInfo collLocale = collator.ValidCulture;
-            // ICU4N TODO: BreakIterator doesn't recognize UCultureInfo
             search_.internalBreakIter_ = BreakIterator.GetCharacterInstance(collLocale == null ? UCultureInfo.InvariantCulture : collLocale);
             search_.internalBreakIter_.SetText((CharacterIterator)target.Clone());  // We need to create a clone
 
@@ -973,21 +973,47 @@ namespace ICU4N.Text
             {
                 return true;
             }
-            // Note: We could use Normalizer::compare() or similar, but for short strings
-            // which may not be in FCD it might be faster to just NFD them.
-            string textstr = GetString(m_targetText, start, end - start);
+            int textBufferLength = end - start;
+            var textBuffer = textBufferLength <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                : new ValueStringBuilder(textBufferLength);
+            var normalizedTextBuffer = textBufferLength <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                : new ValueStringBuilder(textBufferLength);
+
+            scoped ReadOnlySpan<char> patternstr = pattern_.Text.AsSpan();
+            int patternBufferLength = patternstr.Length;
+            var normalizedPatternBuffer = patternBufferLength <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                : new ValueStringBuilder(patternBufferLength);
+            try
+            {
+
+                // Note: We could use Normalizer::compare() or similar, but for short strings
+                // which may not be in FCD it might be faster to just NFD them.
+
+                GetString(m_targetText, start, textBufferLength, ref textBuffer);
+                scoped ReadOnlySpan<char> textstr = textBuffer.AsSpan();
 #pragma warning disable 612, 618
-            if (Normalizer.QuickCheck(textstr, NormalizerMode.NFD, 0) == QuickCheckResult.No)
-            {
-                textstr = Normalizer.Decompose(textstr, false);
-            }
-            string patternstr = pattern_.Text;
-            if (Normalizer.QuickCheck(patternstr, NormalizerMode.NFD, 0) == QuickCheckResult.No)
-            {
-                patternstr = Normalizer.Decompose(patternstr, false);
-            }
+                if (Normalizer.QuickCheck(textstr, NormalizerMode.NFD, 0) == QuickCheckResult.No)
+                {
+                    Normalizer.Decompose(textstr, false, ref normalizedTextBuffer);
+                    textstr = normalizedTextBuffer.AsSpan();
+                }
+                if (Normalizer.QuickCheck(patternstr, NormalizerMode.NFD, 0) == QuickCheckResult.No)
+                {
+                    Normalizer.Decompose(patternstr, false, ref normalizedPatternBuffer);
+                    patternstr = normalizedPatternBuffer.AsSpan();
+                }
 #pragma warning restore 612, 618
-            return textstr.Equals(patternstr);
+                return textstr.Equals(patternstr, StringComparison.Ordinal);
+            }
+            finally
+            {
+                textBuffer.Dispose();
+                normalizedTextBuffer.Dispose();
+                normalizedPatternBuffer.Dispose();
+            }
         }
 
         private bool InitTextProcessedIter()
@@ -1822,10 +1848,9 @@ namespace ICU4N.Text
         /// <param name="text"><see cref="CharacterIterator"/>.</param>
         /// <param name="start">Start offset.</param>
         /// <param name="length">Length of substring.</param>
-        /// <returns>Substring from <paramref name="text"/> starting at <paramref name="start"/> and <paramref name="length"/>.</returns>
-        private static string GetString(CharacterIterator text, int start, int length)
+        /// <param name="result">When this method returns, contains a substring from <paramref name="text"/> starting at <paramref name="start"/> and <paramref name="length"/>.</param>
+        private static void GetString(CharacterIterator text, int start, int length, ref ValueStringBuilder result)
         {
-            StringBuilder result = new StringBuilder(length);
             int offset = text.Index;
             text.SetIndex(start);
             for (int i = 0; i < length; i++)
@@ -1834,7 +1859,6 @@ namespace ICU4N.Text
                 text.Next();
             }
             text.SetIndex(offset);
-            return result.ToString();
         }
 
         /// <summary>

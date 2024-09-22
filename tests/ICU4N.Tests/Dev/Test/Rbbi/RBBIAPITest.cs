@@ -117,7 +117,7 @@ namespace ICU4N.Dev.Test.Rbbi
             String str2 = "Second string.";
             //RuleBasedBreakIterator charIter1 = (RuleBasedBreakIterator) BreakIterator.getCharacterInstance(Locale.getDefault());
             RuleBasedBreakIterator wordIter1 = (RuleBasedBreakIterator)BreakIterator.GetWordInstance(CultureInfo.CurrentCulture);
-            CharacterIterator text1 = new StringCharacterIterator(str1);
+            CharacterIterator text1 = new ICU4N.Impl.ReadOnlyMemoryCharacterIterator(str1.AsMemory());
             //CharacterIterator text1Clone = (CharacterIterator) text1.Clone();
             //CharacterIterator text2 = new StringCharacterIterator(str2);
             wordIter1.SetText(str1);
@@ -134,7 +134,7 @@ namespace ICU4N.Dev.Test.Rbbi
 
             // Test the CharSequence overload of setText() for a simple case.
             BreakIterator lineIter = BreakIterator.GetLineInstance(new CultureInfo("en"));
-            ICharSequence csText = "Hello, World. ".AsCharSequence();
+            ReadOnlyMemory<char> csText = "Hello, World. ".AsMemory();
             // Expected Line Brks  ^      ^      ^
             //                     0123456789012345
             List<int> expected = new List<int>();

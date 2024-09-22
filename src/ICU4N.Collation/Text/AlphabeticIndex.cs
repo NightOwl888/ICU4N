@@ -130,6 +130,8 @@ namespace ICU4N.Text
     /// <stable>ICU 4.8</stable>
     public sealed class AlphabeticIndex<T> : IEnumerable<Bucket<T>>
     {
+        private const int CharStackBufferSize = 32;
+
         /// <summary>
         /// Prefix string for Chinese index buckets.
         /// See http://unicode.org/repos/cldr/trunk/specs/ldml/tr35-collation.html#Collation_Indexes
@@ -401,7 +403,7 @@ namespace ICU4N.Text
         /// </summary>
         private IList<string> InitLabels()
         {
-            Normalizer2 nfkdNormalizer = Normalizer2.GetNFKDInstance();
+            Normalizer2 nfkdNormalizer = Normalizer2.NFKDInstance;
             List<String> indexCharacters = new List<string>();
 
             string firstScriptBoundary = firstCharsInScripts.FirstOrDefault();
@@ -618,7 +620,10 @@ namespace ICU4N.Text
         /// </summary>
         private string Separated(string item)
         {
-            StringBuilder result = new StringBuilder();
+            int lengthEstimate = item.Length * 2;
+            using ValueStringBuilder result = lengthEstimate <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                : new ValueStringBuilder(lengthEstimate);
             // add a CGJ except within surrogates
             char last = item[0];
             result.Append(last);
@@ -715,7 +720,21 @@ namespace ICU4N.Text
         /// <param name="data">Data, such as an address or link.</param>
         /// <returns>this, for chaining.</returns>
         /// <stable>ICU 4.8</stable>
-        public AlphabeticIndex<T> AddRecord(string name, T data) // ICU4N specific - changed name from ICharSequence to string
+        public AlphabeticIndex<T> AddRecord(string name, T data)
+        {
+            return AddRecord(name.AsMemory(), data);
+        }
+
+        /// <summary>
+        /// Add a record (name and data) to the index. The name will be used to sort the items into buckets, and to sort
+        /// within the bucket. Two records may have the same name. When they do, the sort order is according to the order added:
+        /// the first added comes first.
+        /// </summary>
+        /// <param name="name">Name, such as a name.</param>
+        /// <param name="data">Data, such as an address or link.</param>
+        /// <returns>this, for chaining.</returns>
+        /// <stable>ICU 4.8</stable>
+        public AlphabeticIndex<T> AddRecord(ReadOnlyMemory<char> name, T data)
         {
             // TODO instead of invalidating, just add to unprocessed list.
             buckets = null; // invalidate old bucketlist
@@ -740,7 +759,25 @@ namespace ICU4N.Text
         /// <param name="name">Name, such as a name.</param>
         /// <returns>The bucket index for the name.</returns>
         /// <stable>ICU 4.8</stable>
-        public int GetBucketIndex(string name) // ICU4N specific - changed name from ICharSequence to string
+        public int GetBucketIndex(string name) // ICU4N TODO: API - is null allowed here?
+        {
+            return GetBucketIndex(name.AsMemory());
+        }
+
+        /// <summary>
+        /// Get the bucket number for the given name. This routine permits callers to implement their own bucket handling
+        /// mechanisms, including client-server handling. For example, when a new name is created on the client, it can ask
+        /// the server for the bucket for that name, and the sortkey (using <see cref="Collator"/>). Once the client has that
+        /// information, it can put the name into the right bucket, and sort it within that bucket, without having access to
+        /// the index or collator.
+        /// <para/>
+        /// Note that the bucket number (and sort key) are only valid for the settings of the current <see cref="AlphabeticIndex{T}"/>; if
+        /// those are changed, then the bucket number and sort key must be regenerated.
+        /// </summary>
+        /// <param name="name">Name, such as a name.</param>
+        /// <returns>The bucket index for the name.</returns>
+        /// <stable>ICU 4.8</stable>
+        public int GetBucketIndex(ReadOnlyMemory<char> name)
         {
             InitBuckets();
             return buckets.GetBucketIndex(name, collatorPrimaryOnly);
@@ -1093,7 +1130,7 @@ namespace ICU4N.Text
 
             internal int BucketCount => immutableVisibleList.Count;
 
-            internal int GetBucketIndex(string name, Collator collatorPrimaryOnly) // ICU4N specific - changed name from ICharSequence to string
+            internal int GetBucketIndex(ReadOnlyMemory<char> name, Collator collatorPrimaryOnly)
             {
                 // binary search
                 int start = 0;
@@ -1102,7 +1139,7 @@ namespace ICU4N.Text
                 {
                     int i = (start + limit) / 2;
                     Bucket<T> bucket = bucketList[i];
-                    int nameVsBucket = collatorPrimaryOnly.Compare(name, bucket.LowerBoundary);
+                    int nameVsBucket = collatorPrimaryOnly.Compare(name, bucket.LowerBoundary.AsMemory());
                     if (nameVsBucket < 0)
                     {
                         limit = i;
@@ -1148,7 +1185,7 @@ namespace ICU4N.Text
                 RuleBasedCollator coll, long variableTop, string s)
         {
 #pragma warning disable 612, 618
-            long[] ces = coll.InternalGetCEs(s.AsCharSequence());
+            long[] ces = coll.InternalGetCEs(s.AsMemory());
 #pragma warning restore 612, 618
             bool seenPrimary = false;
             for (int i = 0; i < ces.Length; ++i)
@@ -1243,7 +1280,19 @@ namespace ICU4N.Text
         /// <param name="name">The string to be sorted into an index bucket.</param>
         /// <returns>The bucket number for the name.</returns>
         /// <stable>ICU 51</stable>
-        public int GetBucketIndex(string name) // ICU4N specific - changed name from ICharSequence to string
+        public int GetBucketIndex(string name) // ICU4N TODO: API Is null allowed here?
+        {
+            return GetBucketIndex(name.AsMemory());
+        }
+
+        /// <summary>
+        /// Finds the index bucket for the given name and returns the number of that bucket.
+        /// Use <see cref="GetBucket(int)"/> to get the bucket's properties.
+        /// </summary>
+        /// <param name="name">The string to be sorted into an index bucket.</param>
+        /// <returns>The bucket number for the name.</returns>
+        /// <stable>ICU 51</stable>
+        public int GetBucketIndex(ReadOnlyMemory<char> name)
         {
             return buckets.GetBucketIndex(name, collatorPrimaryOnly);
         }
@@ -1284,6 +1333,8 @@ namespace ICU4N.Text
         #endregion
     }
 
+#nullable enable
+
     /// <summary>
     /// A (name, data) pair, to be sorted by name into one of the index buckets.
     /// The user data is not used by the index implementation.
@@ -1291,12 +1342,14 @@ namespace ICU4N.Text
     /// <stable>ICU 4.8</stable>
     public class Record<T>
     {
-        private readonly string name;
+        private readonly ReadOnlyMemory<char> name;
+        private readonly object? nameReference; // ICU4N: Keeps the string or char[] behind name alive for the lifetime of this class
         private readonly T data;
 
-        internal Record(string name, T data) // ICU4N specific - changed name from ICharsequence to string
+        internal Record(ReadOnlyMemory<char> name, T data)
         {
             this.name = name;
+            name.TryGetReference(ref nameReference);
             this.data = data;
         }
 
@@ -1304,7 +1357,7 @@ namespace ICU4N.Text
         /// Gets the name.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public virtual string Name => name;
+        public virtual ReadOnlyMemory<char> Name => name;
 
         /// <summary>
         /// Gets the data.
@@ -1327,7 +1380,7 @@ namespace ICU4N.Text
     /// It is referenced by <see cref="AlphabeticIndex{T}.GetBucketIndex(string)"/>
     /// and <see cref="ImmutableIndex{T}.GetBucketIndex(string)"/>,
     /// returned by <see cref="ImmutableIndex{T}.GetBucket(int)"/>,
-    /// and <see cref="AlphabeticIndex{T}.AddRecord(string, T)"/> adds a record
+    /// and <see cref="AlphabeticIndex{T}.AddRecord(ReadOnlyMemory{char}, T)"/> adds a record
     /// into a bucket according to the record's name.
     /// </summary>
     /// <stable>ICU 4.8</stable>
@@ -1336,15 +1389,15 @@ namespace ICU4N.Text
         private readonly string label;
         private readonly string lowerBoundary;
         private readonly BucketLabelType labelType;
-        private Bucket<T> displayBucket;
+        private Bucket<T>? displayBucket;
         private int displayIndex;
-        private IList<Record<T>> records;
+        private IList<Record<T>>? records;
 
         // ICU4N specific - de-nested LabelType enum and renamed BucketLabelType
 
         internal string LowerBoundary => lowerBoundary;
 
-        internal Bucket<T> DisplayBucket
+        internal Bucket<T>? DisplayBucket
         {
             get => displayBucket;
             set => displayBucket = value;
@@ -1356,7 +1409,7 @@ namespace ICU4N.Text
             set => displayIndex = value;
         }
 
-        internal IList<Record<T>> Records
+        internal IList<Record<T>>? Records
         {
             get => records;
             set => records = value;
@@ -1369,10 +1422,12 @@ namespace ICU4N.Text
         /// <param name="lowerBoundary"></param>
         /// <param name="labelType">Is an underflow, overflow, or inflow bucket.</param>
         /// <stable>ICU 4.8</stable>
-        internal Bucket(string label, string lowerBoundary, BucketLabelType labelType)
+        internal Bucket(string label, string lowerBoundary, BucketLabelType labelType) // ICU4N TODO: API - nullable on label?
         {
+            Debug.Assert(lowerBoundary != null);
+
             this.label = label;
-            this.lowerBoundary = lowerBoundary;
+            this.lowerBoundary = lowerBoundary!;
             this.labelType = labelType;
         }
 

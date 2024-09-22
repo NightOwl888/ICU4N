@@ -1,36 +1,30 @@
 ﻿using ICU4N.Support.Text;
 using ICU4N.Util;
 using J2N.Text;
+using System;
 using System.Text;
+#nullable enable
 
 namespace ICU4N.Text
 {
     internal class CharsDictionaryMatcher : DictionaryMatcher
     {
-        private ICharSequence characters;
+        private readonly ReadOnlyMemory<char> characters;
+        private readonly object? reference; // ICU4N: Keeps the string or char[] behind characters alive for the lifetime of this class
 
         public CharsDictionaryMatcher(string chars)
-            : this(chars.AsCharSequence())
+            : this(chars.AsMemory())
         {
         }
 
-        public CharsDictionaryMatcher(StringBuilder chars)
-            : this(chars.AsCharSequence())
-        {
-        }
-
-        public CharsDictionaryMatcher(char[] chars)
-            : this(chars.AsCharSequence())
-        {
-        }
-
-        public CharsDictionaryMatcher(ICharSequence chars)
+        public CharsDictionaryMatcher(ReadOnlyMemory<char> chars)
         {
             characters = chars;
+            chars.TryGetReference(ref reference);
         }
 
         // ICU4N: Changed count parameter from int[] to out int
-        public override int Matches(CharacterIterator text_, int maxLength, int[] lengths, out int count, int limit, int[] values)
+        public override int Matches(CharacterIterator text_, int maxLength, Span<int> lengths, out int count, int limit, Span<int> values)
         {
             count = 0;
             UCharacterIterator text = UCharacterIterator.GetInstance(text_);
@@ -49,7 +43,7 @@ namespace ICU4N.Text
                 {
                     if (count < limit)
                     {
-                        if (values != null)
+                        if (!values.IsEmpty)
                         {
                             values[count] = uct.GetValue();
                         }

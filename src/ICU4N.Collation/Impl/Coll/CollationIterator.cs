@@ -1,4 +1,5 @@
-﻿using ICU4N.Util;
+﻿using ICU4N.Text;
+using ICU4N.Util;
 using J2N;
 using J2N.Collections;
 using J2N.Text;
@@ -179,7 +180,7 @@ namespace ICU4N.Impl.Coll
                 // Note: UnicodeString.replace() pins pos to at most length().
                 int oldLength = oldBuffer.Length;
                 if (pos > oldLength) { pos = oldLength; }
-                oldBuffer.Delete(0, pos - 0).Insert(0, newBuffer, 0, Math.Max(Math.Min(skipLengthAtMatch, newBuffer.Length), 0)); // ICU4N: Corrected 4th parameter of Insert and 2nd parameter of Delete
+                oldBuffer.Delete(0, pos - 0).Insert(0, newBuffer.AsSpan(0, Math.Max(Math.Min(skipLengthAtMatch, newBuffer.Length), 0))); // ICU4N: Corrected 4th parameter of Insert and 2nd parameter of Delete
                 pos = 0;
             }
 
@@ -188,10 +189,10 @@ namespace ICU4N.Impl.Coll
 
             // Combining marks skipped in previous discontiguous-contraction matching.
             // After that discontiguous contraction was completed, we start reading them from here.
-            private readonly StringBuilder oldBuffer = new StringBuilder();
+            private readonly OpenStringBuilder oldBuffer = new OpenStringBuilder();
             // Combining marks newly skipped in current discontiguous-contraction matching.
             // These might have been read from the normal text or from the oldBuffer.
-            private readonly StringBuilder newBuffer = new StringBuilder();
+            private readonly OpenStringBuilder newBuffer = new OpenStringBuilder();
             // Reading index in oldBuffer,
             // or counter for how many code points have been read beyond oldBuffer (pos-oldBuffer.length()).
             private int pos;
@@ -637,7 +638,7 @@ namespace ICU4N.Impl.Coll
                                     break;
                                 }
                             }
-                            ce32 = NextCE32FromContraction(d, ce32, d.contexts, index + 2, defaultCE32, nextCp);
+                            ce32 = NextCE32FromContraction(d, ce32, d.contexts.AsMemory(), index + 2, defaultCE32, nextCp);
                             if (ce32 == Collation.NO_CE32)
                             {
                                 // CEs from a discontiguous contraction plus the skipped combining marks
@@ -826,7 +827,7 @@ namespace ICU4N.Impl.Coll
 
         private int NextCE32FromContraction(
                 CollationData d, int contractionCE32,
-                string trieChars, int trieOffset, int ce32, int c) // ICU4N specific - changed trieChars from ICharSequence to string
+                ReadOnlyMemory<char> trieChars, int trieOffset, int ce32, int c)
         {
             // c: next code point after the original one
 
@@ -1126,7 +1127,7 @@ namespace ICU4N.Impl.Coll
         {
             // Collect digits.
             // TODO: Use some kind of a byte buffer? We only store values 0..9.
-            StringBuilder digits = new StringBuilder();
+            using ValueStringBuilder digits = new ValueStringBuilder(stackalloc char[Collator.CharStackBufferSize]);
             if (forward)
             {
                 for (; ; )
@@ -1179,7 +1180,7 @@ namespace ICU4N.Impl.Coll
                 // Write a sequence of CEs for at most 254 digits at a time.
                 int segmentLength = digits.Length - pos;
                 if (segmentLength > 254) { segmentLength = 254; }
-                AppendNumericSegmentCEs(digits.Subsequence(pos, /*pos +*/ segmentLength)); // ICU4N: Corrected Subsequence math
+                AppendNumericSegmentCEs(digits.AsSpan(pos, /*pos +*/ segmentLength)); // ICU4N: Corrected AsSpan math
                 pos += segmentLength;
             } while (pos < digits.Length);
         }
@@ -1188,7 +1189,7 @@ namespace ICU4N.Impl.Coll
         /// Turns 1..254 digits into a sequence of CEs.
         /// Called by <see cref="AppendNumericCEs(int, bool)"/> for each segment of at most 254 digits.
         /// </summary>
-        private void AppendNumericSegmentCEs(ICharSequence digits)
+        private void AppendNumericSegmentCEs(ReadOnlySpan<char> digits)
         {
             int length = digits.Length;
             Debug.Assert(1 <= length && length <= 254);

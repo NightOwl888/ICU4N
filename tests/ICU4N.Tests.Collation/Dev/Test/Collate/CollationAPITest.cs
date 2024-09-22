@@ -120,7 +120,30 @@ namespace ICU4N.Dev.Test.Collate
             DoAssert(ArrayEqualityComparer<byte>.OneDimensional.Equals(tempkey, subkey2compat),
                      "Binary format for 'abcda' sortkey different for secondary strength!");
 
+            // ICU4N: Confirm big endian hash code calculation is the same as ICU4J
+            DoAssert((sortk1.GetHashCode() != GetHashCode_Old(sortk1)), "sort key hashCode() doesn't match original");
+            DoAssert((sortk2.GetHashCode() != GetHashCode_Old(sortk2)), "sort key hashCode() doesn't match original");
+
             Logln("testing sortkey ends...");
+        }
+
+        // ICU4N: This is the old (slow) implementation from ICU4J
+        private static int GetHashCode_Old(CollationKey collationKey)
+        {
+            byte[] m_key_ = collationKey.m_key_;
+            int size = m_key_.Length >> 1;
+            StringBuilder key = new StringBuilder(size);
+            int i = 0;
+            while (m_key_[i] != 0 && m_key_[i + 1] != 0)
+            {
+                key.Append((char)((m_key_[i] << 8) | (0xff & collationKey.m_key_[i + 1])));
+                i += 2;
+            }
+            if (m_key_[i] != 0)
+            {
+                key.Append((char)(m_key_[i] << 8));
+            }
+            return key.ToString().GetHashCode();
         }
 
         [Test]
@@ -819,9 +842,9 @@ namespace ICU4N.Dev.Test.Collate
                 return 0;
             }
 
-            public override int Compare(String source, String target)
+            public override int Compare(ReadOnlyMemory<char> source, ReadOnlyMemory<char> target)
             {
-                return source.CompareToOrdinal(target);
+                return source.Span.CompareTo(target.Span, StringComparison.Ordinal);
             }
 
             public override CollationKey GetCollationKey(String source)

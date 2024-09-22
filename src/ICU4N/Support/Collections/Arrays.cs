@@ -1,4 +1,7 @@
-﻿namespace ICU4N.Support.Collections
+﻿using System;
+using System.Runtime.CompilerServices;
+
+namespace ICU4N.Support.Collections
 {
     internal static class Arrays
     {
@@ -21,5 +24,29 @@
 
             return array;
         }
+
+        /// <summary>
+        /// Returns an empty array.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of the array.</typeparam>
+        /// <returns>An empty array.</returns>
+        // ICU4N: Since Array.Empty<T>() doesn't exist in all supported platforms, we
+        // have this wrapper method to add support.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] 
+        public static T[] Empty<T>()
+        {
+#if FEATURE_ARRAYEMPTY
+            return Array.Empty<T>();
+#else
+            return EmptyArrayHolder<T>.Empty;
+#endif
+        }
+
+#if !FEATURE_ARRAYEMPTY
+        private static class EmptyArrayHolder<T>
+        {
+            public static readonly T[] Empty = new T[0];
+        }
+#endif
     }
 }

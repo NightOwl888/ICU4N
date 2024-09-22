@@ -189,7 +189,7 @@ namespace ICU4N.Dev.Test.StringPrep
                                 Errln("Failed: Test[" + i + "] Result string does not match expected string for StringPrep test for profile: " + profileName);
                             }
                         }
-                        catch (StringPrepParseException ex)
+                        catch (StringPrepFormatException ex)
                         {
                             if (!src.StartsWith("FAIL", StringComparison.Ordinal))
                             {

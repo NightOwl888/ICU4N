@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using JCG = J2N.Collections.Generic;
 using ICU4N.Impl;
 
-#if FEATURE_SPAN
 namespace ICU4N.Text
 {
     public class SplitTokenizerEnumeratorTest : TestFmwk
@@ -139,4 +138,4 @@ namespace ICU4N.Text
         }
     }
 }
-#endif
+

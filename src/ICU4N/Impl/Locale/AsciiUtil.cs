@@ -1,13 +1,17 @@
-﻿using ICU4N.Support.Text;
-using J2N.Text;
+﻿using ICU4N;
+using ICU4N.Support;
+using ICU4N.Text;
 using System;
-using System.Text;
+using System.Buffers;
+using System.Runtime.CompilerServices;
+#nullable enable
 
 namespace ICU4N.Impl.Locale
 {
-    public sealed class AsciiUtil
+    public static partial class AsciiUtil
     {
-        private const int CharStackBufferSize = 128;
+        private const int CharStackBufferSize = 32;
+        private const char CaseDifference = (char)0x20;
 
         public static bool CaseIgnoreMatch(string s1, string s2)
         {
@@ -16,6 +20,11 @@ namespace ICU4N.Impl.Locale
             {
                 return true;
             }
+            if (s1 is null)
+                return s2 is null;
+            else if (s2 is null)
+                return false;
+
             int len = s1.Length;
             if (len != s2.Length)
             {
@@ -35,22 +44,87 @@ namespace ICU4N.Impl.Locale
             return (i == len);
         }
 
-        public static int CaseIgnoreCompare(string s1, string s2)
+        public static bool CaseIgnoreMatch(ReadOnlySpan<char> s1, ReadOnlySpan<char> s2)
+        {
+            int len = s1.Length;
+            if (len != s2.Length)
+            {
+                return false;
+            }
+            int i = 0;
+            while (i < len)
+            {
+                char c1 = s1[i];
+                char c2 = s2[i];
+                if (c1 != c2 && ToLower(c1) != ToLower(c2))
+                {
+                    break;
+                }
+                i++;
+            }
+            return (i == len);
+        }
+
+        public static int CaseIgnoreCompare(string? s1, string? s2)
         {
             //if (Utility.SameObjects(s1, s2))
             if (ReferenceEquals(s1, s2))
             {
                 return 0;
             }
-            return AsciiUtil.ToLower(s1).CompareToOrdinal(AsciiUtil.ToLower(s2));
+
+            // They can't both be null at this point.
+            if (s1 == null)
+            {
+                return -1;
+            }
+            if (s2 == null)
+            {
+                return 1;
+            }
+
+            return CaseIgnoreCompare(s1.AsSpan(), s2.AsSpan());
         }
 
+        public static int CaseIgnoreCompare(ReadOnlySpan<char> s1, ReadOnlySpan<char> s2)
+        {
+            int s1Length = s1.Length, s2Length = s2.Length;
+            if (s1Length > 0 && s2Length > 0)
+            {
+                if (s1[0] - s2[0] != 0)
+                {
+                    return s1[0] - s2[0];
+                }
+            }
+
+            char[]? s1PoolArray = null;
+            char[]? s2PoolArray = null;
+            try
+            {
+                Span<char> s1Buffer = s1Length > CharStackBufferSize
+                    ? (s1PoolArray = ArrayPool<char>.Shared.Rent(s1Length))
+                    : stackalloc char[s1Length];
+                Span<char> s2Buffer = s2Length > CharStackBufferSize
+                    ? (s2PoolArray = ArrayPool<char>.Shared.Rent(s2Length))
+                    : stackalloc char[s2Length];
+
+                ReadOnlySpan<char> s1Lowered = AsciiUtil.ToLower(s1, s1Buffer);
+                ReadOnlySpan<char> s2Lowered = AsciiUtil.ToLower(s2, s2Buffer);
+
+                return s1Lowered.CompareTo(s2Lowered, StringComparison.Ordinal);
+            }
+            finally
+            {
+                ArrayPool<char>.Shared.ReturnIfNotNull(s1PoolArray);
+                ArrayPool<char>.Shared.ReturnIfNotNull(s2PoolArray);
+            }
+        }
 
         public static char ToUpper(char c)
         {
             if (c >= 'a' && c <= 'z')
             {
-                c -= (char)0x20;
+                c -= CaseDifference;
             }
             return c;
         }
@@ -59,13 +133,16 @@ namespace ICU4N.Impl.Locale
         {
             if (c >= 'A' && c <= 'Z')
             {
-                c += (char)0x20;
+                c += CaseDifference;
             }
             return c;
         }
 
         public static string ToLower(string s) // ICU4N specific - renamed from ToLowerString()
         {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
             int idx = 0;
             for (; idx < s.Length; idx++)
             {
@@ -79,21 +156,54 @@ namespace ICU4N.Impl.Locale
             {
                 return s;
             }
-#if FEATURE_SPAN
-            ValueStringBuilder buf = s.Length <= CharStackBufferSize ? new ValueStringBuilder(stackalloc char[s.Length]) : new ValueStringBuilder(s.Length);
-            buf.Append(s.AsSpan(0, idx - 0)); // ICU4N: Checked 2nd parameter
-#else
-            StringBuilder buf = new StringBuilder(s.Substring(0, idx - 0)); // ICU4N: Checked 2nd parameter
-#endif
-            for (; idx < s.Length; idx++)
+            ValueStringBuilder buf = s.Length <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[s.Length])
+                : new ValueStringBuilder(s.Length);
+            try
             {
-                buf.Append(ToLower(s[idx]));
+                buf.Append(s.AsSpan(0, idx)); // ICU4N: Checked 2nd parameter
+                for (; idx < s.Length; idx++)
+                {
+                    buf.Append(ToLower(s[idx]));
+                }
+                return buf.ToString();
             }
-            return buf.ToString();
+            finally
+            {
+                buf.Dispose();
+            }
         }
 
-        public static string ToUpper(string s) // ICU4N specific - renamed from ToUpperString()
+        public static ReadOnlySpan<char> ToLower(ReadOnlySpan<char> s, Span<char> buffer) // ICU4N specific - renamed from ToLowerString()
         {
+            if (buffer.Length < s.Length)
+                throw new ArgumentException("buffer must be at least the length of 's'.");
+
+            int idx = 0;
+            for (; idx < s.Length; idx++)
+            {
+                char c = s[idx];
+                if (c >= 'A' && c <= 'Z')
+                {
+                    break;
+                }
+            }
+            if (idx == s.Length)
+            {
+                return s;
+            }
+            s.Slice(0, idx).CopyTo(buffer); // ICU4N: Checked 2nd parameter
+            for (; idx < s.Length; idx++)
+            {
+                buffer[idx] = ToLower(s[idx]); // This is okay because we only support ASCII
+            }
+            return buffer.Slice(0, s.Length);
+        }
+
+        public static string ToUpper(string s)
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
             int idx = 0;
             for (; idx < s.Length; idx++)
             {
@@ -107,21 +217,54 @@ namespace ICU4N.Impl.Locale
             {
                 return s;
             }
-#if FEATURE_SPAN
-            ValueStringBuilder buf = s.Length <= CharStackBufferSize ? new ValueStringBuilder(stackalloc char[s.Length]) : new ValueStringBuilder(s.Length);
-            buf.Append(s.AsSpan(0, idx - 0)); // ICU4N: Checked 2nd parameter
-#else
-            StringBuilder buf = new StringBuilder(s.Substring(0, idx - 0)); // ICU4N: Checked 2nd parameter
-#endif
+            ValueStringBuilder buf = s.Length <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[s.Length])
+                : new ValueStringBuilder(s.Length);
+            try
+            {
+                buf.Append(s.AsSpan(0, idx)); // ICU4N: Checked 2nd parameter
+                for (; idx < s.Length; idx++)
+                {
+                    buf.Append(ToUpper(s[idx]));
+                }
+                return buf.ToString();
+            }
+            finally
+            {
+                buf.Dispose();
+            }
+        }
+
+        public static ReadOnlySpan<char> ToUpper(ReadOnlySpan<char> s, Span<char> buffer) // ICU4N specific - renamed from ToUpperString()
+        {
+            if (buffer.Length < s.Length)
+                throw new ArgumentException("buffer must be at least the length of 's'.");
+
+            int idx = 0;
             for (; idx < s.Length; idx++)
             {
-                buf.Append(ToUpper(s[idx]));
+                char c = s[idx];
+                if (c >= 'a' && c <= 'z')
+                {
+                    break;
+                }
             }
-            return buf.ToString();
+            if (idx == s.Length)
+            {
+                return s;
+            }
+            s.Slice(0, idx).CopyTo(buffer); // ICU4N: Checked 2nd parameter
+            for (; idx < s.Length; idx++)
+            {
+                buffer[idx] = ToUpper(s[idx]); // This is okay because we only support ASCII
+            }
+            return buffer.Slice(0, s.Length);
         }
 
         public static string ToTitle(string s) // ICU4N specific - renamed from ToTitleString()
         {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
             if (s.Length == 0)
             {
                 return s;
@@ -142,22 +285,65 @@ namespace ICU4N.Impl.Locale
             {
                 return s;
             }
-#if FEATURE_SPAN
-            ValueStringBuilder buf = s.Length <= CharStackBufferSize ? new ValueStringBuilder(stackalloc char[s.Length]) : new ValueStringBuilder(s.Length);
-            buf.Append(s.AsSpan(0, idx - 0)); // ICU4N: Checked 2nd parameter
-#else
-            StringBuilder buf = new StringBuilder(s.Substring(0, idx - 0)); // ICU4N: Checked 2nd parameter
-#endif
+            ValueStringBuilder buf = s.Length <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[s.Length])
+                : new ValueStringBuilder(s.Length);
+            try
+            {
+                buf.Append(s.AsSpan(0, idx)); // ICU4N: Checked 2nd parameter
+                if (idx == 0)
+                {
+                    buf.Append(ToUpper(s[idx]));
+                    idx++;
+                }
+                for (; idx < s.Length; idx++)
+                {
+                    buf.Append(ToLower(s[idx]));
+                }
+                return buf.ToString();
+            }
+            finally
+            {
+                buf.Dispose();
+            }
+        }
+
+        public static ReadOnlySpan<char> ToTitle(ReadOnlySpan<char> s, Span<char> buffer) // ICU4N specific - renamed from ToTitleString()
+        {
+            if (buffer.Length < s.Length)
+                throw new ArgumentException("buffer must be at least the length of 's'.");
+
+            if (s.Length == 0)
+            {
+                return s;
+            }
+            int idx = 0;
+            char c = s[idx];
+            if (!(c >= 'a' && c <= 'z'))
+            {
+                for (idx = 1; idx < s.Length; idx++)
+                {
+                    if (c >= 'A' && c <= 'Z')
+                    {
+                        break;
+                    }
+                }
+            }
+            if (idx == s.Length)
+            {
+                return s;
+            }
+            s.Slice(0, idx).CopyTo(buffer); // ICU4N: Checked 2nd parameter
             if (idx == 0)
             {
-                buf.Append(ToUpper(s[idx]));
+                buffer[idx] = ToUpper(s[idx]); // This is okay because we only support ASCII
                 idx++;
             }
             for (; idx < s.Length; idx++)
             {
-                buf.Append(ToLower(s[idx]));
+                buffer[idx] = ToLower(s[idx]); // This is okay because we only support ASCII
             }
-            return buf.ToString();
+            return buffer.Slice(0, s.Length);
         }
 
         public static bool IsAlpha(char c)
@@ -165,7 +351,15 @@ namespace ICU4N.Impl.Locale
             return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
         }
 
-        public static bool IsAlpha(string s) // ICU4N specific - renamed from ToAlphaString()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsAlpha(string s)
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+            return IsAlpha(s.AsSpan());
+        }
+
+        public static bool IsAlpha(ReadOnlySpan<char> s) // ICU4N specific - renamed from ToAlphaString()
         {
             bool b = true;
             for (int i = 0; i < s.Length; i++)
@@ -179,12 +373,20 @@ namespace ICU4N.Impl.Locale
             return b;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNumeric(char c)
         {
             return (c >= '0' && c <= '9');
         }
 
-        public static bool IsNumeric(string s) // ICU4N specific - renamed from IsNumericString()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsNumeric(string s)
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+            return IsNumeric(s.AsSpan());
+        }
+        public static bool IsNumeric(ReadOnlySpan<char> s) // ICU4N specific - renamed from IsNumericString()
         {
             bool b = true;
             for (int i = 0; i < s.Length; i++)
@@ -198,12 +400,21 @@ namespace ICU4N.Impl.Locale
             return b;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsAlphaNumeric(char c)
         {
             return IsAlpha(c) || IsNumeric(c);
         }
 
-        public static bool IsAlphaNumeric(string s) // ICU4N specific - renamed from IsAlphaNumericString()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsAlphaNumeric(string s)
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+            return IsAlphaNumeric(s.AsSpan());
+        }
+
+        public static bool IsAlphaNumeric(ReadOnlySpan<char> s) // ICU4N specific - renamed from IsAlphaNumericString()
         {
             bool b = true;
             for (int i = 0; i < s.Length; i++)
@@ -215,33 +426,6 @@ namespace ICU4N.Impl.Locale
                 }
             }
             return b;
-        }
-    }
-    public class AsciiCaseInsensitiveKey // ICU4N specific - renamed from CaseInsensitiveKey
-    {
-        private readonly string _key;
-        private readonly int _hash;
-
-        public AsciiCaseInsensitiveKey(string key)
-        {
-            _key = key;
-            _hash = AsciiUtil.ToLower(key).GetHashCode();
-        }
-
-        public override bool Equals(object o)
-        {
-            if (ReferenceEquals(this, o))
-                return true;
-
-            if (o is AsciiCaseInsensitiveKey other)
-                return AsciiUtil.CaseIgnoreMatch(_key, other._key);
-
-            return false;
-        }
-
-        public override int GetHashCode()
-        {
-            return _hash;
         }
     }
 }

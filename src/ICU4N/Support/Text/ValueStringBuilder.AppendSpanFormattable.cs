@@ -6,7 +6,7 @@ using System;
 
 #if FEATURE_SPANFORMATTABLE
 
-namespace ICU4N.Support.Text
+namespace ICU4N.Text
 {
     internal ref partial struct ValueStringBuilder
     {
@@ -15,10 +15,24 @@ namespace ICU4N.Support.Text
             if (value.TryFormat(_chars.Slice(_pos), out int charsWritten, format, provider))
             {
                 _pos += charsWritten;
+                UpdateMaxLength();
             }
             else
             {
                 Append(value.ToString(format, provider));
+            }
+        }
+
+        internal void InsertSpanFormattable<T>(int index, T value, string? format = null, IFormatProvider? provider = null) where T : ISpanFormattable
+        {
+            Span<char> buffer = stackalloc char[CharStackBufferSize];
+            if (value.TryFormat(buffer, out int charsWritten, format, provider))
+            {
+                Insert(index, buffer.Slice(0, charsWritten));
+            }
+            else
+            {
+                Insert(index, value.ToString(format, provider));
             }
         }
     }

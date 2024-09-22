@@ -4,15 +4,17 @@ using ICU4N.Util;
 using J2N;
 using J2N.IO;
 using J2N.Text;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading;
+#nullable enable
 
 namespace ICU4N.Impl
 {
-    public sealed partial class Hangul
+    public static partial class Hangul
     {
         /* Korean Hangul and Jamo constants */
         public const int JamoLBase = 0x1100;     /* "lead" jamo */
@@ -65,72 +67,418 @@ namespace ICU4N.Impl
                 (c <= JamoLEnd || (JamoVBase <= c && c <= JamoVEnd) || JamoTBase < c);
         }
 
-        // ICU4N specific - Decompose(int c, IAppendable buffer) moved to Normalizer2ImplExtension.tt
-
-        // ICU4N specific - GetRawDecomposition(int c, IAppendable buffer) moved to Normalizer2ImplExtension.tt
-    }
-
-    /// <summary>
-    /// Writable buffer that takes care of canonical ordering.
-    /// Its <see cref="IAppendable"/> methods behave like the C++ implementation's
-    /// appendZeroCC() methods.
-    /// <para/>
-    /// If dest is a <see cref="System.Text.StringBuilder"/>, then the buffer writes directly to it.
-    /// Otherwise, the buffer maintains a <see cref="System.Text.StringBuilder"/> for intermediate text segments
-    /// until no further changes are necessary and whole segments are appended.
-    /// Append() methods that take combining-class values always write to the <see cref="System.Text.StringBuilder"/>.
-    /// Other Append() methods flush and append to the <see cref="IAppendable"/>.
-    /// </summary>
-    public sealed partial class ReorderingBuffer : IAppendable
-    {
-        public ReorderingBuffer(Normalizer2Impl ni, StringBuilder dest, int destCapacity)
-            : this(ni, dest.AsAppendable(), destCapacity)
+        #region AppendHangulDecomposition(int, IAppendable)
+        /// <summary>
+        /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer
+        /// and returns the length of the decomposition (2 or 3).
+        /// </summary>
+        public static int AppendHangulDecomposition(this StringBuilder buffer, int c)
         {
-        }
-
-        internal ReorderingBuffer(Normalizer2Impl ni, IAppendable dest, int destCapacity)
-        {
-            impl = ni;
-            app = dest;
-            if (app is StringBuilderCharSequence)
+            // ICU4N: Added guard clause
+            if (buffer is null)
+                throw new ArgumentNullException(nameof(buffer));
+            // ICU4N: Removed unnecessary try/catch for IOException
+            c -= HangulBase;
+            int c2 = c % JamoTCount;
+            c /= JamoTCount;
+            buffer.Append((char)(JamoLBase + c / JamoVCount));
+            buffer.Append((char)(JamoVBase + c % JamoVCount));
+            if (c2 == 0)
             {
-                appIsStringBuilder = true;
-                str = ((StringBuilderCharSequence)dest).Value;
-                // In Java, the constructor subsumes public void init(int destCapacity) {
-                str.EnsureCapacity(destCapacity);
-                reorderStart = 0;
-                if (str.Length == 0)
-                {
-                    lastCC = 0;
-                }
-                else
-                {
-                    SetIterator();
-                    lastCC = PreviousCC();
-                    // Set reorderStart after the last code point with cc<=1 if there is one.
-                    if (lastCC > 1)
-                    {
-                        while (PreviousCC() > 1) { }
-                    }
-                    reorderStart = codePointLimit;
-                }
+                return 2;
             }
             else
             {
-                appIsStringBuilder = false;
-                str = new StringBuilder();
-                reorderStart = 0;
-                lastCC = 0;
+                buffer.Append((char)(JamoTBase + c2));
+                return 3;
             }
         }
+
+
+
+        /// <summary>
+        /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer
+        /// and returns the length of the decomposition (2 or 3).
+        /// </summary>
+        public static int AppendHangulDecomposition(this IAppendable buffer, int c)
+        {
+            // ICU4N: Added guard clause
+            if (buffer is null)
+                throw new ArgumentNullException(nameof(buffer));
+            // ICU4N: Removed unnecessary try/catch for IOException
+            c -= HangulBase;
+            int c2 = c % JamoTCount;
+            c /= JamoTCount;
+            buffer.Append((char)(JamoLBase + c / JamoVCount));
+            buffer.Append((char)(JamoVBase + c % JamoVCount));
+            if (c2 == 0)
+            {
+                return 2;
+            }
+            else
+            {
+                buffer.Append((char)(JamoTBase + c2));
+                return 3;
+            }
+        }
+
+
+        /// <summary>
+        /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer
+        /// and returns the length of the decomposition (2 or 3).
+        /// </summary>
+        internal static int AppendHangulDecomposition(this ref ValueStringBuilder buffer, int c)
+        {
+            // ICU4N: Removed unnecessary try/catch for IOException
+            c -= HangulBase;
+            int c2 = c % JamoTCount;
+            c /= JamoTCount;
+            buffer.Append((char)(JamoLBase + c / JamoVCount));
+            buffer.Append((char)(JamoVBase + c % JamoVCount));
+            if (c2 == 0)
+            {
+                return 2;
+            }
+            else
+            {
+                buffer.Append((char)(JamoTBase + c2));
+                return 3;
+            }
+        }
+
+
+        /// <summary>
+        /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer
+        /// and returns the length of the decomposition (2 or 3).
+        /// </summary>
+        public static int AppendHangulDecomposition(this ref ReorderingBuffer buffer, int c)
+        {
+            // ICU4N: Removed unnecessary try/catch for IOException
+            c -= HangulBase;
+            int c2 = c % JamoTCount;
+            c /= JamoTCount;
+            buffer.Append((char)(JamoLBase + c / JamoVCount));
+            buffer.Append((char)(JamoVBase + c % JamoVCount));
+            if (c2 == 0)
+            {
+                return 2;
+            }
+            else
+            {
+                buffer.Append((char)(JamoTBase + c2));
+                return 3;
+            }
+        }
+
+        #endregion AppendHangulDecomposition(int, IAppendable)
+
+        /// <summary>
+        /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer
+        /// and returns the length of the decomposition (2 or 3).
+        /// </summary>
+        /// <param name="c">The codepoint to decompose.</param>
+        /// <param name="buffer">A buffer with length >= 3 to write the output.</param>
+        /// <returns>The decomposed text, sliced to the correct length.</returns>
+        public static ReadOnlySpan<char> GetDecomposition(int c, Span<char> buffer) // Buffer should be length 3
+        {
+            if (buffer.Length < 3)
+                throw new ArgumentException("Buffer must be at least 3 characters in length.");
+            int charsLength;
+            c -= HangulBase;
+            int c2 = c % JamoTCount;
+            c /= JamoTCount;
+            buffer[0] = (char)(JamoLBase + c / JamoVCount);
+            buffer[1] = (char)(JamoVBase + c % JamoVCount);
+            if (c2 == 0)
+            {
+                charsLength = 2;
+            }
+            else
+            {
+                buffer[2] = (char)(JamoTBase + c2);
+                charsLength = 3;
+            }
+            return buffer.Slice(0, charsLength);
+        }
+
+        #region AppendHangulRawDecomposition(int, IAppendable)
+        /// <summary>
+        /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer.
+        /// This is the raw, not recursive, decomposition. Its length is always 2.
+        /// </summary>
+        public static void AppendHangulRawDecomposition(this StringBuilder buffer, int c)
+        {
+            // ICU4N: Added guard clause
+            if (buffer is null)
+                throw new ArgumentNullException(nameof(buffer));
+            // ICU4N: Removed unnecessary try/catch for IOException
+            int orig = c;
+            c -= HangulBase;
+            int c2 = c % JamoTCount;
+            if (c2 == 0)
+            {
+                c /= JamoTCount;
+                buffer.Append((char)(JamoLBase + c / JamoVCount));
+                buffer.Append((char)(JamoVBase + c % JamoVCount));
+            }
+            else
+            {
+                buffer.Append((char)(orig - c2));  // LV syllable
+                buffer.Append((char)(JamoTBase + c2));
+            }
+        }
+
+        /// <summary>
+        /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer.
+        /// This is the raw, not recursive, decomposition. Its length is always 2.
+        /// </summary>
+        public static void AppendHangulRawDecomposition(this IAppendable buffer, int c)
+        {
+            // ICU4N: Added guard clause
+            if (buffer is null)
+                throw new ArgumentNullException(nameof(buffer));
+            // ICU4N: Removed unnecessary try/catch for IOException
+            int orig = c;
+            c -= HangulBase;
+            int c2 = c % JamoTCount;
+            if (c2 == 0)
+            {
+                c /= JamoTCount;
+                buffer.Append((char)(JamoLBase + c / JamoVCount));
+                buffer.Append((char)(JamoVBase + c % JamoVCount));
+            }
+            else
+            {
+                buffer.Append((char)(orig - c2));  // LV syllable
+                buffer.Append((char)(JamoTBase + c2));
+            }
+        }
+
+        /// <summary>
+        /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer.
+        /// This is the raw, not recursive, decomposition. Its length is always 2.
+        /// </summary>
+        internal static void AppendHangulRawDecomposition(this ref ValueStringBuilder buffer, int c)
+        {
+            // ICU4N: Removed unnecessary try/catch for IOException
+            int orig = c;
+            c -= HangulBase;
+            int c2 = c % JamoTCount;
+            if (c2 == 0)
+            {
+                c /= JamoTCount;
+                buffer.Append((char)(JamoLBase + c / JamoVCount));
+                buffer.Append((char)(JamoVBase + c % JamoVCount));
+            }
+            else
+            {
+                buffer.Append((char)(orig - c2));  // LV syllable
+                buffer.Append((char)(JamoTBase + c2));
+            }
+        }
+
+        /// <summary>
+        /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer.
+        /// This is the raw, not recursive, decomposition. Its length is always 2.
+        /// </summary>
+        public static void AppendHangulRawDecomposition(this ref ReorderingBuffer buffer, int c)
+        {
+            // ICU4N: Removed unnecessary try/catch for IOException
+            int orig = c;
+            c -= HangulBase;
+            int c2 = c % JamoTCount;
+            if (c2 == 0)
+            {
+                c /= JamoTCount;
+                buffer.Append((char)(JamoLBase + c / JamoVCount));
+                buffer.Append((char)(JamoVBase + c % JamoVCount));
+            }
+            else
+            {
+                buffer.Append((char)(orig - c2));  // LV syllable
+                buffer.Append((char)(JamoTBase + c2));
+            }
+        }
+
+        #endregion AppendHangulRawDecomposition(int, IAppendable)
+
+        /// <summary>
+        /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer.
+        /// This is the raw, not recursive, decomposition. Its length is always 2.
+        /// </summary>
+        /// <param name="c">The codepoint to decompose.</param>
+        /// <param name="buffer">A buffer with length >= 2 to write the output.</param>
+        /// <returns>The decomposed text, sliced to the correct length.</returns>
+        public static ReadOnlySpan<char> GetRawDecomposition(int c, Span<char> buffer) // Buffer should be length 2
+        {
+            if (buffer.Length < 2)
+                throw new ArgumentException("Buffer must be at least 2 characters in length.");
+            // ICU4N: Removed unnecessary try/catch for IOException
+            int orig = c;
+            c -= HangulBase;
+            int c2 = c % JamoTCount;
+            if (c2 == 0)
+            {
+                c /= JamoTCount;
+                buffer[0] = (char)(JamoLBase + c / JamoVCount);
+                buffer[1] = (char)(JamoVBase + c % JamoVCount);
+            }
+            else
+            {
+                buffer[0] = (char)(orig - c2);  // LV syllable
+                buffer[1] = (char)(JamoTBase + c2);
+            }
+            return buffer.Slice(0, 2);
+        }
+    }
+
+    #region ReorderingBuffer
+
+    /// <summary>
+    /// Writable buffer that takes care of canonical ordering.
+    /// Its Append methods behave like the C++ implementation's
+    /// appendZeroCC() methods.
+    /// <para/>
+    /// The buffer maintains a ValueStringBuilder for intermediate text segments
+    /// until no further changes are necessary and whole segments are appended.
+    /// When done editing, the value can be obtained by calling
+    /// <see cref="TryCopyTo(Span{char}, out int)"/>, <see cref="AsSpan()"/>, or
+    /// <see cref="ToString()"/>. The user is responsible for calling <see cref="Dispose()"/>
+    /// if the value is not obtained through <see cref="ToString()"/>.
+    /// </summary>
+    public unsafe ref struct ReorderingBuffer
+    {
+        public ReorderingBuffer(Normalizer2Impl ni, Span<char> initialBuffer)
+            : this(ni, ReadOnlySpan<char>.Empty, initialBuffer)
+        {
+        }
+        public ReorderingBuffer(Normalizer2Impl ni, ReadOnlySpan<char> initialValue, Span<char> initialBuffer)
+        {
+            impl = ni ?? throw new ArgumentNullException(nameof(ni));
+            str = new ValueStringBuilder(initialBuffer);
+            if (!initialValue.IsEmpty)
+            {
+                str.Append(initialValue);
+            }
+            reorderStart = 0;
+            codePointStart = 0;
+            codePointLimit = 0;
+            lastCC = 0;
+            if (str.Length == 0)
+            {
+                lastCC = 0;
+            }
+            else
+            {
+                SetIterator();
+                lastCC = PreviousCC();
+                // Set reorderStart after the last code point with cc<=1 if there is one.
+                if (lastCC > 1)
+                {
+                    while (PreviousCC() > 1) { }
+                }
+                reorderStart = codePointLimit;
+            }
+        }
+
+        public ReorderingBuffer(Normalizer2Impl ni, int initialCapacity)
+            : this(ni, ReadOnlySpan<char>.Empty, initialCapacity)
+        {
+        }
+
+        // ICU4N TODO: Evaluate whether this approach makes sense and if not, remove
+        public ReorderingBuffer(Normalizer2Impl ni, ReadOnlySpan<char> initialValue, int initialCapacity)
+        {
+            impl = ni ?? throw new ArgumentNullException(nameof(ni));
+            str = new ValueStringBuilder(initialCapacity);
+            if (!initialValue.IsEmpty)
+            {
+                str.Append(initialValue);
+            }
+            reorderStart = 0;
+            codePointStart = 0;
+            codePointLimit = 0;
+            lastCC = 0;
+            if (str.Length == 0)
+            {
+                lastCC = 0;
+            }
+            else
+            {
+                SetIterator();
+                lastCC = PreviousCC();
+                // Set reorderStart after the last code point with cc<=1 if there is one.
+                if (lastCC > 1)
+                {
+                    while (PreviousCC() > 1) { }
+                }
+                reorderStart = codePointLimit;
+            }
+        }
+
+        internal ReorderingBuffer(Normalizer2Impl ni, ref ValueStringBuilder destination, int destinationCapacity)
+        {
+            impl = ni ?? throw new ArgumentNullException(nameof(ni));
+            str = destination;
+            str.EnsureCapacity(destinationCapacity);
+            reorderStart = 0;
+            codePointStart = 0;
+            codePointLimit = 0;
+            lastCC = 0;
+            if (str.Length == 0)
+            {
+                lastCC = 0;
+            }
+            else
+            {
+                SetIterator();
+                lastCC = PreviousCC();
+                // Set reorderStart after the last code point with cc<=1 if there is one.
+                if (lastCC > 1)
+                {
+                    while (PreviousCC() > 1) { }
+                }
+                reorderStart = codePointLimit;
+            }
+        }
+
 
         public bool IsEmpty => str.Length == 0;
         public int Length => str.Length;
         public int LastCC => lastCC;
 
-        public StringBuilder StringBuilder => str;
+        // ICU4N: It is not possible to return ValueStringBuilder by ref here,
+        // so we surface the part of the ValueStringBuilder API that Recompose() uses instead.
+        internal ref char this[int index] => ref str[index];
+        internal void Insert(int index, char value) => str.Insert(index, value);
+        internal void Remove(int startIndex, int length) => str.Remove(startIndex, length);
+        internal int CodePointAt(int index) => str.CodePointAt(index);
 
-        // ICU4N specific - Equals(ICharSequence s, int start, int limit) moved to Normalizer2ImplExtension.tt
+        public ReadOnlySpan<char> AsSpan() => str.AsSpan();
+        public ReadOnlySpan<char> AsSpan(int start) => str.AsSpan(start);
+        public ReadOnlySpan<char> AsSpan(int start, int length) => str.AsSpan(start, length);
+
+        [CLSCompliant(false)]
+        public char* GetCharsPointer() => str.GetCharsPointer();
+
+        public Span<char> RawChars => str.RawChars;
+
+        public bool TryCopyTo(Span<char> destination, out int charsWritten) => str.TryCopyTo(destination, out charsWritten);
+
+        public override string ToString() => str.ToString();
+        public void Dispose() => str.Dispose();
+
+
+        public bool Equals(string s, int start, int length) // ICU4N specific: changed limit to length
+        {
+            return UTF16Plus.Equal(str.AsSpan(), s.AsSpan(start, length));
+        }
+
+        public bool Equals(ReadOnlySpan<char> s)
+        {
+            return UTF16Plus.Equal(str.AsSpan(), s);
+        }
+
 
         public void Append(int c, int cc)
         {
@@ -149,20 +497,91 @@ namespace ICU4N.Impl
             }
         }
 
-        // ICU4N specific - Append(ICharSequence s, int start, int limit,
-        //    int leadCC, int trailCC)
+        // s must be in NFD, otherwise change the implementation.
+        public void Append(string s, int start, int length,
+            int leadCC, int trailCC) // ICU4N specific: changed limit to length
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
+            Append(s.AsSpan(start, length), leadCC, trailCC);
+        }
+
+        // s must be in NFD, otherwise change the implementation.
+        public void Append(StringBuilder s, int start, int length,
+            int leadCC, int trailCC) // ICU4N specific: changed limit to length
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
+            ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[Normalizer2.CharStackBufferSize]);
+            try
+            {
+                buffer.Append(s);
+                Append(buffer.AsSpan(), leadCC, trailCC);
+            }
+            finally
+            {
+                buffer.Dispose();
+            }
+        }
+
+        // s must be in NFD, otherwise change the implementation.
+        public void Append(scoped ReadOnlySpan<char> s, int leadCC, int trailCC)
+        {
+            int start = 0, length = s.Length; // ICU4N: Removed from method signature because we can slice
+            if (length == 0)
+            {
+                return;
+            }
+            if (lastCC <= leadCC || leadCC == 0)
+            {
+                if (trailCC <= 1)
+                {
+                    reorderStart = str.Length + length;
+                }
+                else if (leadCC <= 1)
+                {
+                    reorderStart = str.Length + 1;  // Ok if not a code point boundary.
+                }
+                str.Append(s); // ICU4N: removed start and length - we slice to get here
+                lastCC = trailCC;
+            }
+            else
+            {
+                int limit = start + length;
+                int c = Character.CodePointAt(s, start);
+                start += Character.CharCount(c);
+                Insert(c, leadCC);  // insert first code point
+                while (start < limit)
+                {
+                    c = Character.CodePointAt(s, start);
+                    start += Character.CharCount(c);
+                    if (start < limit)
+                    {
+                        // s must be in NFD, otherwise we need to use getCC().
+                        leadCC = Normalizer2Impl.GetCCFromYesOrMaybe(impl.GetNorm16(c));
+                    }
+                    else
+                    {
+                        leadCC = trailCC;
+                    }
+                    Append(c, leadCC);
+                }
+            }
+        }
 
 
         // The following append() methods work like C++ appendZeroCC().
         // They assume that the cc or trailCC of their input is 0.
         // Most of them implement Appendable interface methods.
-        public ReorderingBuffer Append(char c)
+        public void Append(char c)
         {
             str.Append(c);
             lastCC = 0;
             reorderStart = str.Length;
-            return this;
         }
+
         public void AppendZeroCC(int c)
         {
             str.AppendCodePoint(c);
@@ -170,35 +589,65 @@ namespace ICU4N.Impl
             reorderStart = str.Length;
         }
 
-        // ICU4N specific - Append(ICharSequence s) moved to Normalizer2ImplExtension.tt
+        public void Append(string? s)
+        {
+            if (s != null && s.Length != 0)
+            {
+                str.Append(s);
+                lastCC = 0;
+                reorderStart = str.Length;
+            }
+        }
 
-        // ICU4N specific - Append(ICharSequence s, int start, int limit)
+        public void Append(StringBuilder? s)
+        {
+            if (s != null && s.Length != 0)
+            {
+                str.Append(s);
+                lastCC = 0;
+                reorderStart = str.Length;
+            }
+        }
+
+        public void Append(scoped ReadOnlySpan<char> s)
+        {
+            if (s.Length != 0)
+            {
+                str.Append(s);
+                lastCC = 0;
+                reorderStart = str.Length;
+            }
+        }
+
+        public void Append(string? s, int start, int length) // ICU4N specific: changed limit to length
+        {
+            if (length != 0)
+            {
+                str.Append(s, start, length); // ICU4N: checked 3rd parameter
+                lastCC = 0;
+                reorderStart = str.Length;
+            }
+        }
+
+        public void Append(StringBuilder? s, int start, int length) // ICU4N specific: changed limit to length
+        {
+            if (length != 0)
+            {
+                str.Append(s, start, length); // ICU4N: checked 3rd parameter
+                lastCC = 0;
+                reorderStart = str.Length;
+            }
+        }
 
         /// <summary>
         /// Flushes from the intermediate <see cref="StringBuilder"/> to the <see cref="IAppendable"/>,
         /// if they are different objects.
         /// Used after recomposition.
-        /// Must be called at the end when writing to a non-<see cref="StringBuilderCharSequence"/> <see cref="IAppendable"/>.
+        /// Must be called at the end when writing.
         /// </summary>
         public void Flush()
         {
-            if (appIsStringBuilder)
-            {
-                reorderStart = str.Length;
-            }
-            else
-            {
-                try
-                {
-                    app.Append(str);
-                    str.Length = 0;
-                    reorderStart = 0;
-                }
-                catch (IOException e)
-                {
-                    throw new ICUUncheckedIOException(e);  // Avoid declaring "throws IOException".
-                }
-            }
+            reorderStart = str.Length;
             lastCC = 0;
         }
 
@@ -216,7 +665,12 @@ namespace ICU4N.Impl
             reorderStart = str.Length;
         }
 
-        // ICU4N specific - FlushAndAppendZeroCC(ICharSequence s, int start, int limit)
+        // ICU4N NOTE: Instead of FlushAndAppendZeroCC(string, int, int), call Append(string, int, int)
+        // ICU4N NOTE: Instead of FlushAndAppendZeroCC(StringBuilder, int, int), call Append(StringBuilder, int, int)
+        // ICU4N NOTE: Instead of FlushAndAppendZeroCC(char[], int, int), call Append(char[], int, int)
+        // ICU4N NOTE: Instead of FlushAndAppendZeroCC(ICharSequence, int, int), call Append(ICharSequence, int, int)
+        // ICU4N NOTE: Instead of FlushAndAppendZeroCC(ReadOnlySpan<char>, int, int), call Append(ReadOnlySpan<char>, int, int)
+
 
         /*
          * TODO: Revisit whether it makes sense to track reorderStart.
@@ -247,7 +701,7 @@ namespace ICU4N.Impl
             }
             else
             {
-                str.Insert(codePointLimit, Character.ToChars(c));
+                str.InsertCodePoint(codePointLimit, c);
                 if (cc <= 1)
                 {
                     reorderStart = codePointLimit + 2;
@@ -255,10 +709,8 @@ namespace ICU4N.Impl
             }
         }
 
-        private readonly Normalizer2Impl impl;
-        private readonly IAppendable app;
-        private readonly StringBuilder str;
-        private readonly bool appIsStringBuilder;
+        private /*readonly*/ Normalizer2Impl impl;
+        private /*readonly*/ ValueStringBuilder str;
         private int reorderStart;
         private int lastCC;
 
@@ -281,60 +733,11 @@ namespace ICU4N.Impl
             return impl.GetCCFromYesOrMaybeCP(c);
         }
 
-        // ICU4N specific - implementing interface explicitly allows
-        // for us to have a concrete type above that returns itself (similar to
-        // how it was in Java).
-        #region IAppendable interface
-
-        IAppendable IAppendable.Append(char c)
-        {
-            return Append(c);
-        }
-
-        IAppendable IAppendable.Append(string csq)
-        {
-            return Append(csq);
-        }
-
-        IAppendable IAppendable.Append(string csq, int start, int length)
-        {
-            return Append(csq, start, length);
-        }
-
-        IAppendable IAppendable.Append(StringBuilder csq)
-        {
-            return Append(csq);
-        }
-
-        IAppendable IAppendable.Append(StringBuilder csq, int start, int length)
-        {
-            return Append(csq, start, length);
-        }
-
-        IAppendable IAppendable.Append(char[] csq)
-        {
-            return Append(csq);
-        }
-
-        IAppendable IAppendable.Append(char[] csq, int start, int length)
-        {
-            return Append(csq, start, length);
-        }
-
-        IAppendable IAppendable.Append(ICharSequence csq)
-        {
-            return Append(csq);
-        }
-
-        IAppendable IAppendable.Append(ICharSequence csq, int start, int length)
-        {
-            return Append(csq, start, length);
-        }
-
-        #endregion
 
         private int codePointStart, codePointLimit;
     }
+
+    #endregion ReorderingBuffer
 
     // TODO: Propose as public API on the UTF16 class.
     // TODO: Propose widening UTF16 methods that take char to take int.
@@ -349,10 +752,66 @@ namespace ICU4N.Impl
         /// <returns>true or false</returns>
         public static bool IsSurrogateLead(int c) { return (c & 0x400) == 0; }
 
-        // ICU4N specific -  Equal(ICharSequence s1, ICharSequence s2) moved to Normalizer2ImplExtension.tt
+        #region Equal(ICharSequence, ICharSequence)
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        public static bool Equal(string s1, string s2)
+        {
+            if (s1 == s2)
+            {
+                return true;
+            }
+            if (s1 is null || s2 is null) return false;
+            // ICU4N: Use optimized equality comparison in System.Memory
+            return System.MemoryExtensions.Equals(s1.AsSpan(), s2.AsSpan(), StringComparison.Ordinal);
+        }
+
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        public static bool Equal(string s1, ReadOnlySpan<char> s2)
+        {
+            if (s1 is null) return false;
+            // ICU4N: Use optimized equality comparison in System.Memory
+            return System.MemoryExtensions.Equals(s1.AsSpan(), s2, StringComparison.Ordinal);
+        }
+
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        public static bool Equal(ReadOnlySpan<char> s1, string s2)
+        {
+            if (s2 is null) return false;
+            // ICU4N: Use optimized equality comparison in System.Memory
+            return System.MemoryExtensions.Equals(s1, s2.AsSpan(), StringComparison.Ordinal);
+        }
+
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        public static bool Equal(ReadOnlySpan<char> s1, ReadOnlySpan<char> s2)
+        {
+            // ICU4N: Use optimized equality comparison in System.Memory
+            return System.MemoryExtensions.Equals(s1, s2, StringComparison.Ordinal);
+        }
+
+        #endregion Equal(ICharSequence, ICharSequence)
 
         // ICU4N specific -  Equal(ICharSequence s1, int start1, int limit1,
-        //    ICharSequence s2, int start2, int limit2) moved to Normalizer2ImplExtension.tt
+        //    ICharSequence s2, int start2, int limit2) factored out because we can slice
     }
 
     /// <summary>
@@ -363,13 +822,19 @@ namespace ICU4N.Impl
     /// </summary>
     public sealed partial class Normalizer2Impl
     {
+        private const int CharStackBufferSize = 64;
+
         // ICU4N specific - de-nested Hangul class
-        
+
         // ICU4N specific - de-nested ReorderingBuffer class
-        
+
         // ICU4N specific - de-nested UTF16Plus class
 
+#nullable disable
+        // ICU4N TODO: Some fields are not populated here so we get nullable warnings. Disabling for now.
         public Normalizer2Impl() { }
+
+#nullable enable
 
         private sealed class IsAcceptable : IAuthenticate
         {
@@ -565,7 +1030,7 @@ namespace ICU4N.Impl
         {
             if (canonIterData == null)
             {
-                LazyInitializer.EnsureInitialized(ref canonIterData, () =>
+                LazyInitializer.EnsureInitialized(ref canonIterData!, () =>
                 {
                     Trie2Writable newData = new Trie2Writable(0, 0);
                     canonStartSets = new List<UnicodeSet>();
@@ -796,7 +1261,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="c">Code point.</param>
         /// <returns><paramref name="c"/>'s decomposition, if it has one; returns null if it does not have a decomposition.</returns>
-        public string GetDecomposition(int c)
+        public string? GetDecomposition(int c)
         {
             int norm16;
             if (c < minDecompNoCP || IsMaybeOrNonZeroCC(norm16 = GetNorm16(c)))
@@ -826,9 +1291,16 @@ namespace ICU4N.Impl
             else if (IsHangulLV(norm16) || IsHangulLVT(norm16))
             {
                 // Hangul syllable: decompose algorithmically
-                StringBuilder buffer = new StringBuilder();
-                Hangul.Decompose(c, buffer);
-                return buffer.ToString();
+                ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[3]);
+                try
+                {
+                    buffer.AppendHangulDecomposition(c);
+                    return buffer.ToString();
+                }
+                finally
+                {
+                    buffer.Dispose();
+                }
             }
             // c decomposes, get everything from the variable-length extra data
             int mapping = norm16 >> OFFSET_SHIFT;
@@ -837,11 +1309,72 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
+        /// Gets the decomposition for one code point and writes it to <paramref name="destination"/>.
+        /// </summary>
+        /// <param name="c">Code point.</param>
+        /// <param name="destination">Upon return, will contain the decomposition.</param>
+        /// <param name="charsLength">Upon return, will contain the length of the decomposition (whether successuful or not).
+        /// If the value is 0, it means there is not a valid decomposition value. If the value is greater than 0 and
+        /// the method returns <c>false</c>, it means that there was not enough space allocated and the number indicates
+        /// the minimum number of chars required.</param>
+        /// <returns><c>true</c> if the decomposition was succssfully written to <paramref name="destination"/>; otherwise, <c>false</c>.</returns>
+        public bool TryGetDecomposition(int c, Span<char> destination, out int charsLength) // ICU4N TODO: Tests
+        {
+            int norm16;
+            if (c < minDecompNoCP || IsMaybeOrNonZeroCC(norm16 = GetNorm16(c)))
+            {
+                // c does not decompose
+                charsLength = 0;
+                return false;
+            }
+            int decomp = -1;
+            if (IsDecompNoAlgorithmic(norm16))
+            {
+                // Maps to an isCompYesAndZeroCC.
+                decomp = c = MapAlgorithmic(c, norm16);
+                // The mapping might decompose further.
+                norm16 = GetNorm16(c);
+            }
+            if (norm16 < minYesNo)
+            {
+                if (decomp < 0)
+                {
+                    charsLength = 0;
+                    return false;
+                }
+                else
+                {
+                    charsLength = UTF16.ValueOf(decomp, destination, 0);
+                    return true;
+                }
+            }
+            else if (IsHangulLV(norm16) || IsHangulLVT(norm16))
+            {
+                // Hangul syllable: decompose algorithmically
+                ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[2]);
+                try
+                {
+                    charsLength = buffer.AppendHangulDecomposition(c);
+                    return buffer.TryCopyTo(destination, out _);
+                }
+                finally
+                {
+                    buffer.Dispose();
+                }
+            }
+            // c decomposes, get everything from the variable-length extra data
+            int mapping = norm16 >> OFFSET_SHIFT;
+            charsLength = extraData[mapping++] & MAPPING_LENGTH_MASK;
+            return extraData.AsSpan(mapping, charsLength).TryCopyTo(destination); // ICU4N: (mapping + length) - mapping == length
+        }
+
+
+        /// <summary>
         /// Gets the raw decomposition for one code point.
         /// </summary>
         /// <param name="c">Code point.</param>
         /// <returns><paramref name="c"/>'s raw decomposition, if it has one; returns null if it does not have a decomposition.</returns>
-        public string GetRawDecomposition(int c)
+        public string? GetRawDecomposition(int c)
         {
             int norm16;
             if (c < minDecompNoCP || IsDecompYes(norm16 = GetNorm16(c)))
@@ -852,9 +1385,16 @@ namespace ICU4N.Impl
             else if (IsHangulLV(norm16) || IsHangulLVT(norm16))
             {
                 // Hangul syllable: decompose algorithmically
-                StringBuilder buffer = new StringBuilder();
-                Hangul.GetRawDecomposition(c, buffer);
-                return buffer.ToString();
+                ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[3]);
+                try
+                {
+                    buffer.AppendHangulRawDecomposition(c);
+                    return buffer.ToString();
+                }
+                finally
+                {
+                    buffer.Dispose();
+                }
             }
             else if (IsDecompNoAlgorithmic(norm16))
             {
@@ -877,15 +1417,90 @@ namespace ICU4N.Impl
                 else
                 {
                     // Copy the normal mapping and replace its first two code units with rm0.
-                    StringBuilder buffer = new StringBuilder(mLength - 1).Append(rm0);
+                    using ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[mLength - 1]);
+                    buffer.Append(rm0);
                     mapping += 1 + 2;  // skip over the firstUnit and the first two mapping code units
-                    return buffer.Append(extraData, mapping, mLength - 2).ToString(); // (mapping + mLength - 2) - mapping == mLength - 2
+                    buffer.Append(extraData, mapping, mLength - 2); // (mapping + mLength - 2) - mapping == mLength - 2
+                    return buffer.ToString();
                 }
             }
             else
             {
                 mapping += 1;  // skip over the firstUnit
                 return extraData.Substring(mapping, mLength); // ICU4N: (mapping + mLength) - mapping == mLength
+            }
+        }
+
+        /// <summary>
+        /// Gets the raw decomposition for one code point and writes it to <paramref name="destination"/>.
+        /// </summary>
+        /// <param name="c">Code point.</param>
+        /// <param name="destination">Upon return, will contain the raw decomposition.</param>
+        /// <param name="charsLength">Upon return, will contain the length of the decomposition (whether successuful or not).
+        /// If the value is 0, it means there is not a valid decomposition value. If the value is greater than 0 and
+        /// the method returns <c>false</c>, it means that there was not enough space allocated and the number indicates
+        /// the minimum number of chars required.</param>
+        /// <returns><c>true</c> if the decomposition was succssfully written to <paramref name="destination"/>; otherwise, <c>false</c>.</returns>
+        public bool TryGetRawDecomposition(int c, Span<char> destination, out int charsLength) // ICU4N TODO: Tests
+        {
+            int norm16;
+            if (c < minDecompNoCP || IsDecompYes(norm16 = GetNorm16(c)))
+            {
+                // c does not decompose
+                charsLength = 0;
+                return false;
+            }
+            else if (IsHangulLV(norm16) || IsHangulLVT(norm16))
+            {
+                // Hangul syllable: decompose algorithmically
+                ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[2]);
+                try
+                {
+                    buffer.AppendHangulRawDecomposition(c);
+                    buffer.TryCopyTo(destination, out charsLength);
+                }
+                finally
+                {
+                    buffer.Dispose();
+                }
+            }
+            else if (IsDecompNoAlgorithmic(norm16))
+            {
+                charsLength = UTF16.ValueOf(MapAlgorithmic(c, norm16), destination, 0);
+                return true;
+            }
+            // c decomposes, get everything from the variable-length extra data
+            int mapping = norm16 >> OFFSET_SHIFT;
+            int firstUnit = extraData[mapping];
+            int mLength = firstUnit & MAPPING_LENGTH_MASK;  // length of normal mapping
+            if ((firstUnit & MAPPING_HAS_RAW_MAPPING) != 0)
+            {
+                // Read the raw mapping from before the firstUnit and before the optional ccc/lccc word.
+                // Bit 7=MAPPING_HAS_CCC_LCCC_WORD
+                int rawMapping = mapping - ((firstUnit >> 7) & 1) - 1;
+                char rm0 = extraData[rawMapping];
+                if (rm0 <= MAPPING_LENGTH_MASK)
+                {
+                    //return extraData.Substring(rawMapping - rm0, rm0); // ICU4N: (rawMapping - rm0) - rawMapping == rm0
+                    charsLength = rm0;
+                    return extraData.AsSpan(rawMapping - rm0, rm0).TryCopyTo(destination); // ICU4N: (rawMapping - rm0) - rawMapping == rm0
+                }
+                else
+                {
+                    // Copy the normal mapping and replace its first two code units with rm0.
+                    using ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[mLength - 1]);
+                    buffer.Append(rm0);
+                    mapping += 1 + 2;  // skip over the firstUnit and the first two mapping code units
+                    buffer.Append(extraData.AsSpan(mapping, mLength - 2));
+                    charsLength = mLength - 1;
+                    return buffer.TryCopyTo(destination, out _);
+                }
+            }
+            else
+            {
+                mapping += 1;  // skip over the firstUnit
+                charsLength = mLength;
+                return extraData.AsSpan(mapping, mLength).TryCopyTo(destination); // ICU4N: (mapping + mLength) - mapping == mLength
             }
         }
 
@@ -1012,29 +1627,1106 @@ namespace ICU4N.Impl
 
         // higher-level functionality ------------------------------------------ ***
 
-        // ICU4N specific - Decompose(ICharSequence s, StringBuilder dest) moved to Normalizer2ImplExtension.tt
+        // NFD without an NFD Normalizer2 instance.
+        public StringBuilder Decompose(ReadOnlySpan<char> s, StringBuilder dest)
+        {
+            Decompose(s, dest, s.Length);
+            return dest;
+        }
 
-        // ICU4N specific - Decompose(ICharSequence s, int src, int limit, StringBuilder dest,
-        //    int destLengthEstimate) moved to Normalizer2ImplExtension.tt
+        // ICU4N TODO: Make public TryDecompose() method that accepts ReadOnlySpan<char>, Span<char>, out int charLength
+        internal void Decompose(ReadOnlySpan<char> s, ref ValueStringBuilder dest) // ICU4N: internal because ValueStringBuilder is internal
+        {
+            Decompose(s, ref dest, s.Length);
+        }
 
-        // ICU4N specific - Decompose(ICharSequence s, int src, int limit,
-        //    ReorderingBuffer buffer) moved to Normalizer2ImplExtension.tt
+        /// <summary>
+        /// Decomposes s[src, length[ and writes the result to <paramref name="dest"/>.
+        /// length can be NULL if src is NUL-terminated.
+        /// <paramref name="destLengthEstimate"/> is the initial <paramref name="dest"/> buffer capacity and can be -1.
+        /// </summary>
+        public void Decompose(ReadOnlySpan<char> s, StringBuilder dest, int destLengthEstimate)
+        {
+            var sb = destLengthEstimate <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                : new ValueStringBuilder(destLengthEstimate);
 
-        // ICU4N specific - DecomposeAndAppend(ICharSequence s, bool doDecompose, ReorderingBuffer buffer) moved to Normalizer2ImplExtension.tt
+            try
+            {
+                Decompose(s, ref sb, destLengthEstimate);
+                dest.Append(sb.AsSpan());
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
 
-        // ICU4N specific - Compose(ICharSequence s, int src, int limit,
-        //    bool onlyContiguous, bool doCompose, ReorderingBuffer buffer) moved to Normalizer2ImplExtension.tt
+        /// <summary>
+        /// Decomposes s[src, length[ and writes the result to <paramref name="dest"/>.
+        /// length can be NULL if src is NUL-terminated.
+        /// <paramref name="destLengthEstimate"/> is the initial <paramref name="dest"/> buffer capacity and can be -1.
+        /// </summary>
+        internal void Decompose(ReadOnlySpan<char> s, ref ValueStringBuilder dest, int destLengthEstimate)
+        {
+            int src = 0, limit = s.Length;
+            if (destLengthEstimate < 0)
+            {
+                destLengthEstimate = limit - src;
+            }
+            ReorderingBuffer buffer = new ReorderingBuffer(this, ref dest, destLengthEstimate);
+            dest.Length = 0;
+            Decompose(s, ref buffer);
+            dest.Length = buffer.Length; // HACK: Although the value gets written to dest, the length value needs to be manually transferred.
+        }
 
-        // ICU4N specific - ComposeQuickCheck(ICharSequence s, int src, int limit,
-        //    bool onlyContiguous, bool doSpan) moved to Normalizer2ImplExtension.tt
+        // normalize
+        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J.
+        // Separated out into Decompose() and DecomposeQuickCheck() so we can use a ref struct for the buffer.
+        public int Decompose(ReadOnlySpan<char> s, ref ReorderingBuffer buffer)
+        {
+            int src = 0, limit = s.Length;
+            int minNoCP = minDecompNoCP;
 
-        // ICU4N specific - ComposeAndAppend(ICharSequence s, bool doCompose,
-        //    bool onlyContiguous, ReorderingBuffer buffer) moved to Normalizer2ImplExtension.tt
+            int prevSrc;
+            int c = 0;
+            int norm16 = 0;
 
-        // ICU4N specific - MakeFCD(ICharSequence s, int src, int limit, ReorderingBuffer buffer) moved to Normalizer2ImplExtension.tt
 
-        // ICU4N specific - MakeFCDAndAppend(ICharSequence s, bool doMakeFCD, ReorderingBuffer buffer) moved to Normalizer2ImplExtension.tt
+            for (; ; )
+            {
+                // count code units below the minimum or with irrelevant data for the quick check
+                for (prevSrc = src; src != limit;)
+                {
+                    if ((c = s[src]) < minNoCP ||
+                        IsMostDecompYesAndZeroCC(norm16 = normTrie.GetFromU16SingleLead((char)c))
+                    )
+                    {
+                        ++src;
+                    }
+                    else if (!UTF16.IsSurrogate((char)c))
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        char c2;
+                        if (UTF16Plus.IsSurrogateLead(c))
+                        {
+                            if ((src + 1) != limit && char.IsLowSurrogate(c2 = s[src + 1]))
+                            {
+                                c = Character.ToCodePoint((char)c, c2);
+                            }
+                        }
+                        else /* trail surrogate */
+                        {
+                            if (prevSrc < src && char.IsHighSurrogate(c2 = s[src - 1]))
+                            {
+                                --src;
+                                c = Character.ToCodePoint(c2, (char)c);
+                            }
+                        }
+                        if (IsMostDecompYesAndZeroCC(norm16 = GetNorm16(c)))
+                        {
+                            src += Character.CharCount(c);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+                // copy these code units all at once
+                if (src != prevSrc)
+                {
+                    // For ReorderingBuffer, call Append() instead of FlushAndAppendZeroCC()
+                    buffer.Append(s.Slice(prevSrc, src - prevSrc)); // ICU4N: Corrected 3rd parameter
+                }
+                if (src == limit)
+                {
+                    break;
+                }
 
+                // Check one above-minimum, relevant code point.
+                src += Character.CharCount(c);
+                Decompose(c, norm16, ref buffer);
+            }
+            return src;
+        }
+
+        // normalize
+        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J.
+        // Separated out into Decompose() and DecomposeQuickCheck() so we can use a ref struct for the buffer.
+        public int DecomposeQuickCheck(ReadOnlySpan<char> s)
+        {
+            int src = 0, limit = s.Length;
+            int minNoCP = minDecompNoCP;
+
+            int prevSrc;
+            int c = 0;
+            int norm16 = 0;
+
+            int prevBoundary = src;
+            int prevCC = 0;
+
+            for (; ; )
+            {
+                // count code units below the minimum or with irrelevant data for the quick check
+                for (prevSrc = src; src != limit;)
+                {
+                    if ((c = s[src]) < minNoCP ||
+                        IsMostDecompYesAndZeroCC(norm16 = normTrie.GetFromU16SingleLead((char)c))
+                    )
+                    {
+                        ++src;
+                    }
+                    else if (!UTF16.IsSurrogate((char)c))
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        char c2;
+                        if (UTF16Plus.IsSurrogateLead(c))
+                        {
+                            if ((src + 1) != limit && char.IsLowSurrogate(c2 = s[src + 1]))
+                            {
+                                c = Character.ToCodePoint((char)c, c2);
+                            }
+                        }
+                        else /* trail surrogate */
+                        {
+                            if (prevSrc < src && char.IsHighSurrogate(c2 = s[src - 1]))
+                            {
+                                --src;
+                                c = Character.ToCodePoint(c2, (char)c);
+                            }
+                        }
+                        if (IsMostDecompYesAndZeroCC(norm16 = GetNorm16(c)))
+                        {
+                            src += Character.CharCount(c);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+                // copy these code units all at once
+                if (src != prevSrc)
+                {
+                    prevCC = 0;
+                    prevBoundary = src;
+                }
+                if (src == limit)
+                {
+                    break;
+                }
+
+                // Check one above-minimum, relevant code point.
+                src += Character.CharCount(c);
+                if (IsDecompYes(norm16))
+                {
+                    int cc = GetCCFromYesOrMaybe(norm16);
+                    if (prevCC <= cc || cc == 0)
+                    {
+                        prevCC = cc;
+                        if (cc <= 1)
+                        {
+                            prevBoundary = src;
+                        }
+                        continue;
+                    }
+                }
+                return prevBoundary;  // "no" or cc out of order
+            }
+            return src;
+        }
+
+        public void DecomposeAndAppend(ReadOnlySpan<char> s, bool doDecompose, ref ReorderingBuffer buffer)
+        {
+            int limit = s.Length;
+            if (limit == 0)
+            {
+                return;
+            }
+            if (doDecompose)
+            {
+                Decompose(s, ref buffer);
+                return;
+            }
+            // Just merge the strings at the boundary.
+            int c = Character.CodePointAt(s, 0);
+            int src = 0;
+            int firstCC, prevCC, cc;
+            firstCC = prevCC = cc = GetCC(GetNorm16(c));
+            while (cc != 0)
+            {
+                prevCC = cc;
+                src += Character.CharCount(c);
+                if (src >= limit)
+                {
+                    break;
+                }
+                c = Character.CodePointAt(s, src);
+                cc = GetCC(GetNorm16(c));
+            };
+            buffer.Append(s.Slice(0, src - 0), firstCC, prevCC); // ICU4N: Corrected 3rd parameter
+            buffer.Append(s.Slice(src, limit - src)); // ICU4N: Corrected 3rd parameter
+        }
+
+        // Very similar to ComposeQuickCheck(): Make the same changes in both places if relevant.
+        // doCompose: normalize
+        // !doCompose: isNormalized (buffer must be empty and initialized)
+        public bool Compose(ReadOnlySpan<char> s,
+                           bool onlyContiguous,
+                           bool doCompose,
+                           ref ReorderingBuffer buffer)
+        {
+            int src = 0, limit = s.Length;
+            int prevBoundary = src;
+            int minNoMaybeCP = minCompNoMaybeCP;
+
+            for (; ; )
+            {
+                // Fast path: Scan over a sequence of characters below the minimum "no or maybe" code point,
+                // or with (compYes && ccc==0) properties.
+                int prevSrc;
+                int c = 0;
+                int norm16 = 0;
+                for (; ; )
+                {
+                    if (src == limit)
+                    {
+                        if (prevBoundary != limit && doCompose)
+                        {
+                            buffer.Append(s.Slice(prevBoundary, limit - prevBoundary)); // ICU4N: Corrected 3rd parameter
+                        }
+                        return true;
+                    }
+                    if ((c = s[src]) < minNoMaybeCP ||
+                        IsCompYesAndZeroCC(norm16 = normTrie.GetFromU16SingleLead((char)c))
+                    )
+                    {
+                        ++src;
+                    }
+                    else
+                    {
+                        prevSrc = src++;
+                        if (!UTF16.IsSurrogate((char)c))
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            char c2;
+                            if (UTF16Plus.IsSurrogateLead(c))
+                            {
+                                if (src != limit && char.IsLowSurrogate(c2 = s[src]))
+                                {
+                                    ++src;
+                                    c = Character.ToCodePoint((char)c, c2);
+                                }
+                            }
+                            else /* trail surrogate */
+                            {
+                                if (prevBoundary < prevSrc && char.IsHighSurrogate(c2 = s[prevSrc - 1]))
+                                {
+                                    --prevSrc;
+                                    c = Character.ToCodePoint(c2, (char)c);
+                                }
+                            }
+                            if (!IsCompYesAndZeroCC(norm16 = GetNorm16(c)))
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+                // isCompYesAndZeroCC(norm16) is false, that is, norm16>=minNoNo.
+                // The current character is either a "noNo" (has a mapping)
+                // or a "maybeYes" (combines backward)
+                // or a "yesYes" with ccc!=0.
+                // It is not a Hangul syllable or Jamo L because those have "yes" properties.
+
+                // Medium-fast path: Handle cases that do not require full decomposition and recomposition.
+                if (!IsMaybeOrNonZeroCC(norm16))
+                {  // minNoNo <= norm16 < minMaybeYes
+                    if (!doCompose)
+                    {
+                        return false;
+                    }
+                    // Fast path for mapping a character that is immediately surrounded by boundaries.
+                    // In this case, we need not decompose around the current character.
+                    if (IsDecompNoAlgorithmic(norm16))
+                    {
+                        // Maps to a single isCompYesAndZeroCC character
+                        // which also implies hasCompBoundaryBefore.
+                        if (Norm16HasCompBoundaryAfter(norm16, onlyContiguous) ||
+                                HasCompBoundaryBefore(s, src, limit))
+                        {
+                            if (prevBoundary != prevSrc)
+                            {
+                                buffer.Append(s.Slice(prevBoundary, prevSrc - prevBoundary)); // ICU4N: Corrected 3rd parameter
+                            }
+                            buffer.Append(MapAlgorithmic(c, norm16), 0);
+                            prevBoundary = src;
+                            continue;
+                        }
+                    }
+                    else if (norm16 < minNoNoCompBoundaryBefore)
+                    {
+                        // The mapping is comp-normalized which also implies hasCompBoundaryBefore.
+                        if (Norm16HasCompBoundaryAfter(norm16, onlyContiguous) ||
+                                HasCompBoundaryBefore(s, src, limit))
+                        {
+                            if (prevBoundary != prevSrc)
+                            {
+                                buffer.Append(s.Slice(prevBoundary, prevSrc - prevBoundary)); // ICU4N: Corrected 3rd parameter
+                            }
+                            int mapping = norm16 >> OFFSET_SHIFT;
+                            int length2 = extraData[mapping++] & MAPPING_LENGTH_MASK;
+                            buffer.Append(extraData, mapping, length2); // ICU4N: Corrected 3rd parameter
+                            prevBoundary = src;
+                            continue;
+                        }
+                    }
+                    else if (norm16 >= minNoNoEmpty)
+                    {
+                        // The current character maps to nothing.
+                        // Simply omit it from the output if there is a boundary before _or_ after it.
+                        // The character itself implies no boundaries.
+                        if (HasCompBoundaryBefore(s, src, limit) ||
+                                HasCompBoundaryAfter(s, prevBoundary, prevSrc, onlyContiguous))
+                        {
+                            if (prevBoundary != prevSrc)
+                            {
+                                buffer.Append(s.Slice(prevBoundary, prevSrc - prevBoundary)); // ICU4N: Corrected 3rd parameter
+                            }
+                            prevBoundary = src;
+                            continue;
+                        }
+                    }
+                    // Other "noNo" type, or need to examine more text around this character:
+                    // Fall through to the slow path.
+                }
+                else if (IsJamoVT(norm16) && prevBoundary != prevSrc)
+                {
+                    char prev = s[prevSrc - 1];
+                    if (c < Hangul.JamoTBase)
+                    {
+                        // The current character is a Jamo Vowel,
+                        // compose with previous Jamo L and following Jamo T.
+                        char l = (char)(prev - Hangul.JamoLBase);
+                        if (l < Hangul.JamoLCount)
+                        {
+                            if (!doCompose)
+                            {
+                                return false;
+                            }
+                            int t;
+                            if (src != limit &&
+                                    0 < (t = (s[src] - Hangul.JamoTBase)) &&
+                                    t < Hangul.JamoTCount)
+                            {
+                                // The next character is a Jamo T.
+                                ++src;
+                            }
+                            else if (HasCompBoundaryBefore(s, src, limit))
+                            {
+                                // No Jamo T follows, not even via decomposition.
+                                t = 0;
+                            }
+                            else
+                            {
+                                t = -1;
+                            }
+                            if (t >= 0)
+                            {
+                                int syllable = Hangul.HangulBase +
+                                    (l * Hangul.JamoVCount + (c - Hangul.JamoVBase)) *
+                                    Hangul.JamoTCount + t;
+                                --prevSrc;  // Replace the Jamo L as well.
+                                if (prevBoundary != prevSrc)
+                                {
+                                    buffer.Append(s.Slice(prevBoundary, prevSrc - prevBoundary)); // ICU4N: Corrected 3rd parameter
+                                }
+                                buffer.Append((char)syllable);
+                                prevBoundary = src;
+                                continue;
+                            }
+                            // If we see L+V+x where x!=T then we drop to the slow path,
+                            // decompose and recompose.
+                            // This is to deal with NFKC finding normal L and V but a
+                            // compatibility variant of a T.
+                            // We need to either fully compose that combination here
+                            // (which would complicate the code and may not work with strange custom data)
+                            // or use the slow path.
+                        }
+                    }
+                    else if (Hangul.IsHangulLV(prev))
+                    {
+                        // The current character is a Jamo Trailing consonant,
+                        // compose with previous Hangul LV that does not contain a Jamo T.
+                        if (!doCompose)
+                        {
+                            return false;
+                        }
+                        int syllable = prev + c - Hangul.JamoTBase;
+                        --prevSrc;  // Replace the Hangul LV as well.
+                        if (prevBoundary != prevSrc)
+                        {
+                            buffer.Append(s.Slice(prevBoundary, prevSrc - prevBoundary)); // ICU4N: Corrected 3rd parameter
+                        }
+                        buffer.Append((char)syllable);
+                        prevBoundary = src;
+                        continue;
+                    }
+                    // No matching context, or may need to decompose surrounding text first:
+                    // Fall through to the slow path.
+                }
+                else if (norm16 > JAMO_VT)
+                {  // norm16 >= MIN_YES_YES_WITH_CC
+                   // One or more combining marks that do not combine-back:
+                   // Check for canonical order, copy unchanged if ok and
+                   // if followed by a character with a boundary-before.
+                    int cc = GetCCFromNormalYesOrMaybe(norm16);  // cc!=0
+                    if (onlyContiguous /* FCC */ && GetPreviousTrailCC(s, prevBoundary, prevSrc) > cc)
+                    {
+                        // Fails FCD test, need to decompose and contiguously recompose.
+                        if (!doCompose)
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        // If !onlyContiguous (not FCC), then we ignore the tccc of
+                        // the previous character which passed the quick check "yes && ccc==0" test.
+                        int n16;
+                        for (; ; )
+                        {
+                            if (src == limit)
+                            {
+                                if (doCompose)
+                                {
+                                    buffer.Append(s.Slice(prevBoundary, limit - prevBoundary)); // ICU4N: Corrected 3rd parameter
+                                }
+                                return true;
+                            }
+                            int prevCC = cc;
+                            c = Character.CodePointAt(s, src);
+                            n16 = normTrie.Get(c);
+                            if (n16 >= MIN_YES_YES_WITH_CC)
+                            {
+                                cc = GetCCFromNormalYesOrMaybe(n16);
+                                if (prevCC > cc)
+                                {
+                                    if (!doCompose)
+                                    {
+                                        return false;
+                                    }
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                break;
+                            }
+                            src += Character.CharCount(c);
+                        }
+                        // p is after the last in-order combining mark.
+                        // If there is a boundary here, then we continue with no change.
+                        if (Norm16HasCompBoundaryBefore(n16))
+                        {
+                            if (IsCompYesAndZeroCC(n16))
+                            {
+                                src += Character.CharCount(c);
+                            }
+                            continue;
+                        }
+                        // Use the slow path. There is no boundary in [prevSrc, src[.
+                    }
+                }
+
+                // Slow path: Find the nearest boundaries around the current character,
+                // decompose and recompose.
+                if (prevBoundary != prevSrc && !Norm16HasCompBoundaryBefore(norm16))
+                {
+                    c = Character.CodePointBefore(s, prevSrc);
+                    norm16 = normTrie.Get(c);
+                    if (!Norm16HasCompBoundaryAfter(norm16, onlyContiguous))
+                    {
+                        prevSrc -= Character.CharCount(c);
+                    }
+                }
+                if (doCompose && prevBoundary != prevSrc)
+                {
+                    buffer.Append(s.Slice(prevBoundary, prevSrc - prevBoundary)); // ICU4N: Corrected 3rd parameter
+                }
+                int recomposeStartIndex = buffer.Length;
+                // We know there is not a boundary here.
+                DecomposeShort(s, prevSrc, src, false /* !stopAtCompBoundary */, onlyContiguous,
+                               ref buffer);
+                // Decompose until the next boundary.
+                src = DecomposeShort(s, src, limit, true /* stopAtCompBoundary */, onlyContiguous,
+                                     ref buffer);
+                Recompose(ref buffer, recomposeStartIndex, onlyContiguous);
+                if (!doCompose)
+                {
+                    if (!buffer.Equals(s.Slice(prevSrc, src - prevSrc))) // ICU4N: Corrected 3rd parameter
+                    {
+                        return false;
+                    }
+                    buffer.Remove();
+                }
+                prevBoundary = src;
+            }
+        }
+
+        /// <summary>
+        /// Very similar to Compose(): Make the same changes in both places if relevant.
+        /// doSpan: SpanQuickCheckYes (ignore bit 0 of the return value)
+        /// !doSpan: QuickCheck
+        /// </summary>
+        /// <returns>
+        /// bits 31..1: SpanQuickCheckYes (==s.Length if "yes") and
+        /// bit 0: set if "maybe"; otherwise, if the span length&lt;s.Length
+        /// then the quick check result is "no"
+        /// </returns>
+        public int ComposeQuickCheck(ReadOnlySpan<char> s,
+            bool onlyContiguous, bool doSpan)
+        {
+            int src = 0, limit = s.Length;
+            int qcResult = 0;
+            int prevBoundary = src;
+            int minNoMaybeCP = minCompNoMaybeCP;
+
+            for (; ; )
+            {
+                // Fast path: Scan over a sequence of characters below the minimum "no or maybe" code point,
+                // or with (compYes && ccc==0) properties.
+                int prevSrc;
+                int c = 0;
+                int norm16 = 0;
+                for (; ; )
+                {
+                    if (src == limit)
+                    {
+                        return (src << 1) | qcResult;  // "yes" or "maybe"
+                    }
+                    if ((c = s[src]) < minNoMaybeCP ||
+                        IsCompYesAndZeroCC(norm16 = normTrie.GetFromU16SingleLead((char)c))
+                    )
+                    {
+                        ++src;
+                    }
+                    else
+                    {
+                        prevSrc = src++;
+                        if (!UTF16.IsSurrogate((char)c))
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            char c2;
+                            if (UTF16Plus.IsSurrogateLead(c))
+                            {
+                                if (src != limit && char.IsLowSurrogate(c2 = s[src]))
+                                {
+                                    ++src;
+                                    c = Character.ToCodePoint((char)c, c2);
+                                }
+                            }
+                            else /* trail surrogate */
+                            {
+                                if (prevBoundary < prevSrc && char.IsHighSurrogate(c2 = s[prevSrc - 1]))
+                                {
+                                    --prevSrc;
+                                    c = Character.ToCodePoint(c2, (char)c);
+                                }
+                            }
+                            if (!IsCompYesAndZeroCC(norm16 = GetNorm16(c)))
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+                // isCompYesAndZeroCC(norm16) is false, that is, norm16>=minNoNo.
+                // The current character is either a "noNo" (has a mapping)
+                // or a "maybeYes" (combines backward)
+                // or a "yesYes" with ccc!=0.
+                // It is not a Hangul syllable or Jamo L because those have "yes" properties.
+
+                int prevNorm16 = INERT;
+                if (prevBoundary != prevSrc)
+                {
+                    prevBoundary = prevSrc;
+                    if (!Norm16HasCompBoundaryBefore(norm16))
+                    {
+                        c = Character.CodePointBefore(s, prevSrc);
+                        int n16 = GetNorm16(c);
+                        if (!Norm16HasCompBoundaryAfter(n16, onlyContiguous))
+                        {
+                            prevBoundary -= Character.CharCount(c);
+                            prevNorm16 = n16;
+                        }
+                    }
+                }
+
+                if (IsMaybeOrNonZeroCC(norm16))
+                {
+                    int cc = GetCCFromYesOrMaybe(norm16);
+                    if (onlyContiguous /* FCC */ && cc != 0 &&
+                            GetTrailCCFromCompYesAndZeroCC(prevNorm16) > cc)
+                    {
+                        // The [prevBoundary..prevSrc[ character
+                        // passed the quick check "yes && ccc==0" test
+                        // but is out of canonical order with the current combining mark.
+                    }
+                    else
+                    {
+                        // If !onlyContiguous (not FCC), then we ignore the tccc of
+                        // the previous character which passed the quick check "yes && ccc==0" test.
+                        for (; ; )
+                        {
+                            if (norm16 < MIN_YES_YES_WITH_CC)
+                            {
+                                if (!doSpan)
+                                {
+                                    qcResult = 1;
+                                }
+                                else
+                                {
+                                    return prevBoundary << 1;  // spanYes does not care to know it's "maybe"
+                                }
+                            }
+                            if (src == limit)
+                            {
+                                return (src << 1) | qcResult;  // "yes" or "maybe"
+                            }
+                            int prevCC = cc;
+                            c = Character.CodePointAt(s, src);
+                            norm16 = GetNorm16(c);
+                            if (IsMaybeOrNonZeroCC(norm16))
+                            {
+                                cc = GetCCFromYesOrMaybe(norm16);
+                                if (!(prevCC <= cc || cc == 0))
+                                {
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                break;
+                            }
+                            src += Character.CharCount(c);
+                        }
+                        // src is after the last in-order combining mark.
+                        if (IsCompYesAndZeroCC(norm16))
+                        {
+                            prevBoundary = src;
+                            src += Character.CharCount(c);
+                            continue;
+                        }
+                    }
+                }
+                return prevBoundary << 1;  // "no"
+            }
+        }
+
+        public void ComposeAndAppend(ReadOnlySpan<char> s,
+            bool doCompose,
+            bool onlyContiguous,
+            ref ReorderingBuffer buffer)
+        {
+            int src = 0, limit = s.Length;
+            if (!buffer.IsEmpty)
+            {
+                int firstStarterInSrc = FindNextCompBoundary(s, 0, limit, onlyContiguous);
+                if (0 != firstStarterInSrc)
+                {
+                    int lastStarterInDest = FindPreviousCompBoundary(buffer.AsSpan(),
+                                                                   buffer.Length, onlyContiguous);
+                    int middleLength = (buffer.Length - lastStarterInDest) + firstStarterInSrc + 16;
+                    ValueStringBuilder middle = middleLength <= CharStackBufferSize
+                        ? new ValueStringBuilder(stackalloc char[middleLength])
+                        : new ValueStringBuilder(middleLength);
+                    try
+                    {
+                        middle.Append(buffer.AsSpan(), lastStarterInDest, buffer.Length - lastStarterInDest); // ICU4N : Fixed 3rd parameter
+                        buffer.RemoveSuffix(buffer.Length - lastStarterInDest);
+                        middle.Append(s, 0, firstStarterInSrc - 0);
+                        unsafe
+                        {
+                            Compose(new ReadOnlySpan<char>(middle.GetCharsPointer(), middle.Length), onlyContiguous, true, ref buffer);
+                        }
+                        src = firstStarterInSrc;
+                    }
+                    finally
+                    {
+                        middle.Dispose();
+                    }
+                }
+            }
+            if (doCompose)
+            {
+                Compose(s.Slice(src, limit - src), onlyContiguous, true, ref buffer); // ICU4N: Corrected 3rd parameter
+            }
+            else
+            {
+                buffer.Append(s.Slice(src, limit - src)); // ICU4N: Corrected 3rd parameter
+            }
+        }
+
+        // normalize
+        // ICU4N: Separated dual functionality that was in ICU4J into MakeFCD() and MakeFCDSpanQuickCheckYes()
+        public int MakeFCD(ReadOnlySpan<char> s, ref ReorderingBuffer buffer)
+        {
+            // Note: In this function we use buffer->appendZeroCC() because we track
+            // the lead and trail combining classes here, rather than leaving it to
+            // the ReorderingBuffer.
+            // The exception is the call to decomposeShort() which uses the buffer
+            // in the normal way.
+
+            int src = 0, limit = s.Length;
+
+            // Tracks the last FCD-safe boundary, before lccc=0 or after properly-ordered tccc<=1.
+            // Similar to the prevBoundary in the compose() implementation.
+            int prevBoundary = src;
+            int prevSrc;
+            int c = 0;
+            int prevFCD16 = 0;
+            int fcd16 = 0;
+
+            for (; ; )
+            {
+                // count code units with lccc==0
+                for (prevSrc = src; src != limit;)
+                {
+                    if ((c = s[src]) < minLcccCP)
+                    {
+                        prevFCD16 = ~c;
+                        ++src;
+                    }
+                    else if (!SingleLeadMightHaveNonZeroFCD16(c))
+                    {
+                        prevFCD16 = 0;
+                        ++src;
+                    }
+                    else
+                    {
+                        if (UTF16.IsSurrogate((char)c))
+                        {
+                            char c2;
+                            if (UTF16Plus.IsSurrogateLead(c))
+                            {
+                                if ((src + 1) != limit && char.IsLowSurrogate(c2 = s[src + 1]))
+                                {
+                                    c = Character.ToCodePoint((char)c, c2);
+                                }
+                            }
+                            else /* trail surrogate */
+                            {
+                                if (prevSrc < src && char.IsHighSurrogate(c2 = s[src - 1]))
+                                {
+                                    --src;
+                                    c = Character.ToCodePoint(c2, (char)c);
+                                }
+                            }
+                        }
+                        if ((fcd16 = GetFCD16FromNormData(c)) <= 0xff)
+                        {
+                            prevFCD16 = fcd16;
+                            src += Character.CharCount(c);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+                // copy these code units all at once
+                if (src != prevSrc)
+                {
+                    if (src == limit)
+                    {
+                        buffer.Append(s.Slice(prevSrc, src - prevSrc)); // ICU4N: Corrected 3rd parameter
+                        break;
+                    }
+                    prevBoundary = src;
+                    // We know that the previous character's lccc==0.
+                    if (prevFCD16 < 0)
+                    {
+                        // Fetching the fcd16 value was deferred for this below-minLcccCP code point.
+                        int prev = ~prevFCD16;
+                        if (prev < minDecompNoCP)
+                        {
+                            prevFCD16 = 0;
+                        }
+                        else
+                        {
+                            prevFCD16 = GetFCD16FromNormData(prev);
+                            if (prevFCD16 > 1)
+                            {
+                                --prevBoundary;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        int p = src - 1;
+                        if (char.IsLowSurrogate(s[p]) && prevSrc < p &&
+                            char.IsHighSurrogate(s[p - 1])
+                        )
+                        {
+                            --p;
+                            // Need to fetch the previous character's FCD value because
+                            // prevFCD16 was just for the trail surrogate code point.
+                            prevFCD16 = GetFCD16FromNormData(Character.ToCodePoint(s[p], s[p + 1]));
+                            // Still known to have lccc==0 because its lead surrogate unit had lccc==0.
+                        }
+                        if (prevFCD16 > 1)
+                        {
+                            prevBoundary = p;
+                        }
+                    }
+                    // The last lccc==0 character is excluded from the
+                    // flush-and-append call in case it needs to be modified.
+                    // ICU4N: Call Append() rather than FlushAndAppendZeroCC() on ReorderingBuffer
+                    buffer.Append(s.Slice(prevSrc, prevBoundary - prevSrc)); // ICU4N: Corrected 3rd parameter
+                    buffer.Append(s.Slice(prevBoundary, src - prevBoundary)); // ICU4N: Corrected 3rd parameter
+                    // The start of the current character (c).
+                    prevSrc = src;
+                }
+                else if (src == limit)
+                {
+                    break;
+                }
+
+                src += Character.CharCount(c);
+                // The current character (c) at [prevSrc..src[ has a non-zero lead combining class.
+                // Check for proper order, and decompose locally if necessary.
+                if ((prevFCD16 & 0xff) <= (fcd16 >> 8))
+                {
+                    // proper order: prev tccc <= current lccc
+                    if ((fcd16 & 0xff) <= 1)
+                    {
+                        prevBoundary = src;
+                    }
+                    buffer.AppendZeroCC(c);
+                    prevFCD16 = fcd16;
+                    continue;
+                }
+                else
+                {
+                    /*
+                     * Back out the part of the source that we copied or appended
+                     * already but is now going to be decomposed.
+                     * prevSrc is set to after what was copied/appended.
+                     */
+                    buffer.RemoveSuffix(prevSrc - prevBoundary);
+                    /*
+                     * Find the part of the source that needs to be decomposed,
+                     * up to the next safe boundary.
+                     */
+                    src = FindNextFCDBoundary(s, src, limit);
+                    /*
+                     * The source text does not fulfill the conditions for FCD.
+                     * Decompose and reorder a limited piece of the text.
+                     */
+                    DecomposeShort(s, prevBoundary, src, false, false, ref buffer);
+                    prevBoundary = src;
+                    prevFCD16 = 0;
+                }
+            }
+            return src;
+        }
+
+        // normalize
+        // ICU4N: Separated dual functionality that was in ICU4J into MakeFCD() and MakeFCDSpanQuickCheckYes()
+        public int MakeFCDQuickCheck(ReadOnlySpan<char> s)
+        {
+            // Note: In this function we use buffer->appendZeroCC() because we track
+            // the lead and trail combining classes here, rather than leaving it to
+            // the ReorderingBuffer.
+            // The exception is the call to decomposeShort() which uses the buffer
+            // in the normal way.
+
+            int src = 0, limit = s.Length;
+
+            // Tracks the last FCD-safe boundary, before lccc=0 or after properly-ordered tccc<=1.
+            // Similar to the prevBoundary in the compose() implementation.
+            int prevBoundary = src;
+            int prevSrc;
+            int c = 0;
+            int prevFCD16 = 0;
+            int fcd16 = 0;
+
+            for (; ; )
+            {
+                // count code units with lccc==0
+                for (prevSrc = src; src != limit;)
+                {
+                    if ((c = s[src]) < minLcccCP)
+                    {
+                        prevFCD16 = ~c;
+                        ++src;
+                    }
+                    else if (!SingleLeadMightHaveNonZeroFCD16(c))
+                    {
+                        prevFCD16 = 0;
+                        ++src;
+                    }
+                    else
+                    {
+                        if (UTF16.IsSurrogate((char)c))
+                        {
+                            char c2;
+                            if (UTF16Plus.IsSurrogateLead(c))
+                            {
+                                if ((src + 1) != limit && char.IsLowSurrogate(c2 = s[src + 1]))
+                                {
+                                    c = Character.ToCodePoint((char)c, c2);
+                                }
+                            }
+                            else /* trail surrogate */
+                            {
+                                if (prevSrc < src && char.IsHighSurrogate(c2 = s[src - 1]))
+                                {
+                                    --src;
+                                    c = Character.ToCodePoint(c2, (char)c);
+                                }
+                            }
+                        }
+                        if ((fcd16 = GetFCD16FromNormData(c)) <= 0xff)
+                        {
+                            prevFCD16 = fcd16;
+                            src += Character.CharCount(c);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+                // copy these code units all at once
+                if (src != prevSrc)
+                {
+                    if (src == limit)
+                    {
+                        break;
+                    }
+                    prevBoundary = src;
+                    // We know that the previous character's lccc==0.
+                    if (prevFCD16 < 0)
+                    {
+                        // Fetching the fcd16 value was deferred for this below-minLcccCP code point.
+                        int prev = ~prevFCD16;
+                        if (prev < minDecompNoCP)
+                        {
+                            prevFCD16 = 0;
+                        }
+                        else
+                        {
+                            prevFCD16 = GetFCD16FromNormData(prev);
+                            if (prevFCD16 > 1)
+                            {
+                                --prevBoundary;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        int p = src - 1;
+                        if (char.IsLowSurrogate(s[p]) && prevSrc < p &&
+                            char.IsHighSurrogate(s[p - 1])
+                        )
+                        {
+                            --p;
+                            // Need to fetch the previous character's FCD value because
+                            // prevFCD16 was just for the trail surrogate code point.
+                            prevFCD16 = GetFCD16FromNormData(Character.ToCodePoint(s[p], s[p + 1]));
+                            // Still known to have lccc==0 because its lead surrogate unit had lccc==0.
+                        }
+                        if (prevFCD16 > 1)
+                        {
+                            prevBoundary = p;
+                        }
+                    }
+                    // The last lccc==0 character is excluded from the
+                    // flush-and-append call in case it needs to be modified.
+                    // The start of the current character (c).
+                    prevSrc = src;
+                }
+                else if (src == limit)
+                {
+                    break;
+                }
+
+                src += Character.CharCount(c);
+                // The current character (c) at [prevSrc..src[ has a non-zero lead combining class.
+                // Check for proper order, and decompose locally if necessary.
+                if ((prevFCD16 & 0xff) <= (fcd16 >> 8))
+                {
+                    // proper order: prev tccc <= current lccc
+                    if ((fcd16 & 0xff) <= 1)
+                    {
+                        prevBoundary = src;
+                    }
+                    prevFCD16 = fcd16;
+                    continue;
+                }
+                else
+                {
+                    return prevBoundary;  // quick check "no"
+                }
+            }
+            return src;
+        }
+
+        public void MakeFCDAndAppend(ReadOnlySpan<char> s, bool doMakeFCD, ref ReorderingBuffer buffer)
+        {
+            int src = 0, limit = s.Length;
+            if (!buffer.IsEmpty)
+            {
+                int firstBoundaryInSrc = FindNextFCDBoundary(s, 0, limit);
+                if (0 != firstBoundaryInSrc)
+                {
+                    int lastBoundaryInDest = FindPreviousFCDBoundary(buffer.AsSpan(),
+                                                                   buffer.Length);
+                    int middleLength = (buffer.Length - lastBoundaryInDest) + firstBoundaryInSrc + 16;
+                    ValueStringBuilder middle = middleLength <= CharStackBufferSize
+                        ? new ValueStringBuilder(stackalloc char[middleLength])
+                        : new ValueStringBuilder(middleLength);
+                    try
+                    {
+                        middle.Append(buffer.AsSpan(), lastBoundaryInDest, buffer.Length - lastBoundaryInDest); // ICU4N : Fixed 3rd parameter
+                        buffer.RemoveSuffix(buffer.Length - lastBoundaryInDest);
+                        middle.Append(s, 0, firstBoundaryInSrc - 0);
+                        unsafe
+                        {
+                            MakeFCD(new ReadOnlySpan<char>(middle.GetCharsPointer(), middle.Length), ref buffer);
+                        }
+                        src = firstBoundaryInSrc;
+                    }
+                    finally
+                    {
+                        middle.Dispose();
+                    }
+                }
+            }
+            if (doMakeFCD)
+            {
+                MakeFCD(s.Slice(src, limit - src), ref buffer); // ICU4N: Corrected 3rd parameter
+            }
+            else
+            {
+                buffer.Append(s.Slice(src, limit - src)); // ICU4N: Corrected 3rd parameter
+            }
+        }
 
         public bool HasDecompBoundaryBefore(int c)
         {
@@ -1178,7 +2870,7 @@ namespace ICU4N.Impl
                 return 0;
             }
         }
-        int GetTrailCCFromCompYesAndZeroCC(int norm16)
+        private int GetTrailCCFromCompYesAndZeroCC(int norm16)
         {
             if (norm16 <= minYesNo)
             {
@@ -1244,11 +2936,39 @@ namespace ICU4N.Impl
                     GetCompositionsListForComposite(norm16);
         }
 
-        // ICU4N specific - DecomposeShort(ICharSequence s, int src, int limit,
-        //    bool stopAtCompBoundary, bool onlyContiguous, ReorderingBuffer buffer) moved to Normalizer2ImplExtention.tt
+        // Decompose a short piece of text which is likely to contain characters that
+        // fail the quick check loop and/or where the quick check loop's overhead
+        // is unlikely to be amortized.
+        // Called by the Compose() and MakeFCD() implementations.
+        // Public in .NET for collation implementation code.
+        private int DecomposeShort(
+                ReadOnlySpan<char> s, int src, int limit,
+                bool stopAtCompBoundary, bool onlyContiguous,
+                ref ReorderingBuffer buffer)
+        {
+            while (src < limit)
+            {
+                int c = Character.CodePointAt(s, src);
+                if (stopAtCompBoundary && c < minCompNoMaybeCP)
+                {
+                    return src;
+                }
+                int norm16 = GetNorm16(c);
+                if (stopAtCompBoundary && Norm16HasCompBoundaryBefore(norm16))
+                {
+                    return src;
+                }
+                src += Character.CharCount(c);
+                Decompose(c, norm16, ref buffer);
+                if (stopAtCompBoundary && Norm16HasCompBoundaryAfter(norm16, onlyContiguous))
+                {
+                    return src;
+                }
+            }
+            return src;
+        }
 
-
-        private void Decompose(int c, int norm16, ReorderingBuffer buffer)
+        private void Decompose(int c, int norm16, ref ReorderingBuffer buffer)
         {
             // get the decomposition and the lead and trail cc's
             if (norm16 >= limitNoNo)
@@ -1270,7 +2990,7 @@ namespace ICU4N.Impl
             else if (IsHangulLV(norm16) || IsHangulLVT(norm16))
             {
                 // Hangul syllable: decompose algorithmically
-                Hangul.Decompose(c, buffer);
+                buffer.AppendHangulDecomposition(c);
             }
             else
             {
@@ -1385,6 +3105,7 @@ namespace ICU4N.Impl
             }
             return -1;
         }
+
         /// <param name="list">Some character's compositions list.</param>
         /// <param name="set">Recursively receives the composites from these compositions.</param>
         private void AddComposites(int list, UnicodeSet set)
@@ -1412,8 +3133,9 @@ namespace ICU4N.Impl
                 set.Add(composite);
             } while ((firstUnit & COMP_1_LAST_TUPLE) == 0);
         }
+
         /// <summary>
-        /// Recomposes the buffer text starting at <paramref name="recomposeStartIndex"/>
+        /// Recomposes the buffer text starting at <paramref name="startIndex"/>
         /// (which is in NFD - decomposed and canonically ordered),
         /// and truncates the buffer contents.
         /// </summary>
@@ -1423,11 +3145,11 @@ namespace ICU4N.Impl
         /// a composition may contain at most one more code unit than the original starter,
         /// while the combining mark that is removed has at least one code unit.
         /// </remarks>
-        private void Recompose(ReorderingBuffer buffer, int recomposeStartIndex,
+        private void Recompose(ref ReorderingBuffer buffer, int startIndex,
                                bool onlyContiguous)
         {
-            StringBuilder sb = buffer.StringBuilder;
-            int p = recomposeStartIndex;
+            ref ReorderingBuffer sb = ref buffer;
+            int p = startIndex;
             if (p == sb.Length)
             {
                 return;
@@ -1484,7 +3206,7 @@ namespace ICU4N.Impl
                                 //sb.setCharAt(starter, syllable);
                                 sb[starter] = syllable;
                                 // remove the Jamo V/T
-                                sb.Delete(pRemove, p - pRemove); // ICU4N: Corrected 2nd parameter
+                                sb.Remove(pRemove, p - pRemove); // ICU4N: Corrected 2nd parameter
                                 p = pRemove;
                             }
                         }
@@ -1508,7 +3230,7 @@ namespace ICU4N.Impl
 
                         // Remove the combining mark.
                         pRemove = p - Character.CharCount(c);  // pRemove & p: start & limit of the combining mark
-                        sb.Delete(pRemove, p - pRemove); // ICU4N: Corrected 2nd parameter
+                        sb.Remove(pRemove, p - pRemove); // ICU4N: Corrected 2nd parameter
                         p = pRemove;
                         // Replace the starter with the composite.
                         if (starterIsSupplementary)
@@ -1683,7 +3405,10 @@ namespace ICU4N.Impl
             return norm16 < minNoNoCompNoMaybeCC || IsAlgorithmicNoNo(norm16);
         }
 
-        // ICU4N specific - HasCompBoundaryBefore(ICharSequence s, int src, int limit) moved to Normalizer2ImplExtention.tt
+        private bool HasCompBoundaryBefore(ReadOnlySpan<char> s, int src, int limit)
+        {
+            return src == limit || HasCompBoundaryBefore(Character.CodePointAt(s, src));
+        }
 
         private bool Norm16HasCompBoundaryAfter(int norm16, bool onlyContiguous)
         {
@@ -1691,7 +3416,10 @@ namespace ICU4N.Impl
                 (!onlyContiguous || IsTrailCC01ForCompBoundaryAfter(norm16));
         }
 
-        // ICU4N specific - HasCompBoundaryAfter(ICharSequence s, int start, int p, bool onlyContiguous) moved to Normalizer2ImplExtention.tt
+        private bool HasCompBoundaryAfter(ReadOnlySpan<char> s, int start, int p, bool onlyContiguous)
+        {
+            return start == p || HasCompBoundaryAfter(Character.CodePointBefore(s, p), onlyContiguous);
+        }
 
         /// <summary>For FCC: Given norm16 HAS_COMP_BOUNDARY_AFTER, does it have tccc&lt;=1?</summary>
         private bool IsTrailCC01ForCompBoundaryAfter(int norm16)
@@ -1700,16 +3428,90 @@ namespace ICU4N.Impl
                 (norm16 & DELTA_TCCC_MASK) <= DELTA_TCCC_1 : extraData[norm16 >> OFFSET_SHIFT] <= 0x1ff);
         }
 
-        // ICU4N specific - FindPreviousCompBoundary(ICharSequence s, int p, bool onlyContiguous) moved to Normalizer2ImplExtention.tt
+        private int FindPreviousCompBoundary(ReadOnlySpan<char> s, int p, bool onlyContiguous)
+        {
+            while (p > 0)
+            {
+                int c = Character.CodePointBefore(s, p);
+                int norm16 = GetNorm16(c);
+                if (Norm16HasCompBoundaryAfter(norm16, onlyContiguous))
+                {
+                    break;
+                }
+                p -= Character.CharCount(c);
+                if (HasCompBoundaryBefore(c, norm16))
+                {
+                    break;
+                }
+            }
+            return p;
+        }
 
-        // ICU4N specific - FindNextCompBoundary(ICharSequence s, int p, int limit, bool onlyContiguous) moved to Normalizer2ImplExtention.tt
+        private int FindNextCompBoundary(ReadOnlySpan<char> s, int p, int limit, bool onlyContiguous)
+        {
+            while (p < limit)
+            {
+                int c = Character.CodePointAt(s, p);
+                int norm16 = normTrie.Get(c);
+                if (HasCompBoundaryBefore(c, norm16))
+                {
+                    break;
+                }
+                p += Character.CharCount(c);
+                if (Norm16HasCompBoundaryAfter(norm16, onlyContiguous))
+                {
+                    break;
+                }
+            }
+            return p;
+        }
 
-        // ICU4N specific - FindPreviousFCDBoundary(ICharSequence s, int p) moved to Normalizer2ImplExtention.tt
+        private int FindPreviousFCDBoundary(ReadOnlySpan<char> s, int p)
+        {
+            while (p > 0)
+            {
+                int c = Character.CodePointBefore(s, p);
+                int norm16;
+                if (c < minDecompNoCP || Norm16HasDecompBoundaryAfter(norm16 = GetNorm16(c)))
+                {
+                    break;
+                }
+                p -= Character.CharCount(c);
+                if (Norm16HasDecompBoundaryBefore(norm16))
+                {
+                    break;
+                }
+            }
+            return p;
+        }
 
-        // ICU4N specific - FindNextFCDBoundary(ICharSequence s, int p, int limit) moved to Normalizer2ImplExtention.tt
+        private int FindNextFCDBoundary(ReadOnlySpan<char> s, int p, int limit)
+        {
+            while (p < limit)
+            {
+                int c = Character.CodePointAt(s, p);
+                int norm16;
+                if (c < minLcccCP || Norm16HasDecompBoundaryBefore(norm16 = GetNorm16(c)))
+                {
+                    break;
+                }
+                p += Character.CharCount(c);
+                if (Norm16HasDecompBoundaryAfter(norm16))
+                {
+                    break;
+                }
+            }
+            return p;
+        }
 
-        // ICU4N specific - GetPreviousTrailCC(ICharSequence s, int start, int p) moved to Normalizer2ImplExtention.tt
-
+        private int GetPreviousTrailCC(ReadOnlySpan<char> s, int start, int p)
+        {
+            if (start == p)
+            {
+                return 0;
+            }
+            return GetFCD16(Character.CodePointBefore(s, p));
+        }
 
         private void AddToStartSet(Trie2Writable newData, int origin, int decompLead)
         {
@@ -1743,7 +3545,7 @@ namespace ICU4N.Impl
             }
         }
 
-        private VersionInfo dataVersion;
+        private VersionInfo? dataVersion;
 
         // BMP code point thresholds for quick check loops looking at single UTF-16 code units.
         private int minDecompNoCP;

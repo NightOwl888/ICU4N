@@ -150,7 +150,7 @@ namespace ICU4N.Numerics
                 return right - left;
             }
 
-            public virtual string GetString(AffixPatternProviderFlags flags) // ICU4N TODO: return ReadOnlySpan<char>?
+            public virtual string GetString(AffixPatternProviderFlags flags)
             {
                 long endpoints = GetEndpoints(flags);
                 int left = (int)(endpoints & 0xffffffff);
@@ -160,6 +160,18 @@ namespace ICU4N.Numerics
                     return "";
                 }
                 return pattern.Substring(left, right - left); // ICU4N: Corrected 2nd arg
+            }
+
+            public virtual ReadOnlySpan<char> AsSpan(AffixPatternProviderFlags flags) // ICU4N: Added so we don't need to rely on ICharSequence
+            {
+                long endpoints = GetEndpoints(flags);
+                int left = (int)(endpoints & 0xffffffff);
+                int right = (int)(endpoints.TripleShift(32));
+                if (left == right)
+                {
+                    return ReadOnlySpan<char>.Empty;
+                }
+                return pattern.AsSpan(left, right - left); // ICU4N: Corrected 2nd arg
             }
 
             private long GetEndpoints(AffixPatternProviderFlags flags)

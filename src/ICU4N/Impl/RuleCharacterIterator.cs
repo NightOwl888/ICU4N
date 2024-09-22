@@ -16,19 +16,11 @@ namespace ICU4N.Impl
         /// its value.  Variables are parsed using the <see cref="SymbolTable"/> API.
         /// </summary>
         ParseVariables = 1,
-#if FEATURE_SPAN
         /// <summary>
         /// Bitmask option to enable parsing of escape sequences.  If (options &amp;
         /// <see cref="ParseEscapes"/> != 0, then an embedded escape sequence will be expanded
         /// to its value.  Escapes are parsed using <see cref="Utility.UnescapeAt(ReadOnlySpan{char}, ref int)"/>.
         /// </summary>
-#else
-        /// <summary>
-        /// Bitmask option to enable parsing of escape sequences.  If (options &amp;
-        /// <see cref="ParseEscapes"/> != 0, then an embedded escape sequence will be expanded
-        /// to its value.  Escapes are parsed using <see cref="Utility.UnescapeAt(string, ref int)"/>.
-        /// </summary>
-#endif
         ParseEscapes = 2,
         /// <summary>
         /// Bitmask option to enable skipping of whitespace.  If (options &amp;
@@ -176,23 +168,7 @@ namespace ICU4N.Impl
                 if (c == '\\' && (options & RuleCharacterIteratorOptions.ParseEscapes) != 0)
                 {
                     int offset = 0;
-#if FEATURE_SPAN
                     c = Utility.UnescapeAt(Lookahead(), ref offset); // ICU4N: Changed array to ref parameter
-#else
-                    // ICU4N: Refactored so we don't call Lookahead and allocate a string just for this operation
-                    int originalOffset;
-                    if (buf != null)
-                    {
-                        originalOffset = offset = buf.Length - bufPos;
-                        c = Utility.UnescapeAt(buf, ref offset); // ICU4N: Changed array to ref parameter
-                    }
-                    else
-                    {
-                        originalOffset = offset = pos.Index;
-                        c = Utility.UnescapeAt(text, ref offset); // ICU4N: Changed array to ref parameter
-                    }
-                    offset -= originalOffset;
-#endif
                     Jumpahead(offset);
                     isEscaped = true;
                     if (c < 0)
@@ -307,8 +283,6 @@ namespace ICU4N.Impl
         /// </remarks>
         /// <returns>A string containing the characters to be returned by future
         /// calls to <see cref="Next(RuleCharacterIteratorOptions)"/>.</returns>
-
-#if FEATURE_SPAN
         public virtual ReadOnlySpan<char> Lookahead()
         {
             if (buf != null)
@@ -320,19 +294,6 @@ namespace ICU4N.Impl
                 return text.AsSpan(pos.Index);
             }
         }
-#else
-        public virtual string Lookahead()
-        {
-            if (buf != null)
-            {
-                return new string(buf, bufPos, buf.Length - bufPos);
-            }
-            else
-            {
-                return text.Substring(pos.Index);
-            }
-        }
-#endif
 
         /// <summary>
         /// Advances the position by the given number of 16-bit code units.
@@ -389,7 +350,7 @@ namespace ICU4N.Impl
         {
             if (buf != null)
             {
-                return UTF16.CharAt(buf, 0, buf.Length, bufPos);
+                return UTF16.CharAt(buf.AsSpan(), bufPos);
             }
             else
             {

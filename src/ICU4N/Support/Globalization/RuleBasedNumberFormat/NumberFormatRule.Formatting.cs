@@ -1,11 +1,10 @@
-﻿using ICU4N.Support.Text;
+﻿using ICU4N.Text;
 using System;
 using System.Diagnostics;
 #nullable enable
 
 namespace ICU4N.Globalization
 {
-#if FEATURE_SPAN
     internal partial class NumberFormatRule
     {
         //-----------------------------------------------------------------------
@@ -42,25 +41,13 @@ namespace ICU4N.Globalization
                 int initialLength = toInsertInto.Length;
                 if (pluralRuleEnd < ruleText.Length - 1)
                 {
-#if FEATURE_SPAN
                     toInsertInto.Insert(pos, ruleText.AsSpan(pluralRuleEnd + 2));
-#else
-                    toInsertInto.Insert(pos, ruleText.Substring(pluralRuleEnd + 2));
-#endif
                 }
                 double pluralVal = (double)number / Power(radix, exponent);
-#if FEATURE_SPAN
                 toInsertInto.InsertFormatPlural(pos, pluralVal, null, pluralMessagePattern, pluralType, info!);
-#else
-                toInsertInto.Insert(pos, IcuNumber.FormatPlural(pluralVal, null, pluralMessagePattern, pluralType, info));
-#endif
                 if (pluralRuleStart > 0)
                 {
-#if FEATURE_SPAN
                     toInsertInto.Insert(pos, ruleText.AsSpan(0, pluralRuleStart)); // ICU4N: Checked 2nd parameter
-#else
-                    toInsertInto.Insert(pos, ruleText.Substring(0, pluralRuleStart)); // ICU4N: Checked 2nd parameter
-#endif
                 }
                 lengthOffset = ruleText.Length - (toInsertInto.Length - initialLength);
             }
@@ -99,11 +86,7 @@ namespace ICU4N.Globalization
                 int initialLength = toInsertInto.Length;
                 if (pluralRuleEnd < ruleText.Length - 1)
                 {
-#if FEATURE_SPAN
                     toInsertInto.Insert(pos, ruleText.AsSpan(pluralRuleEnd + 2));
-#else
-                    toInsertInto.Insert(pos, ruleText.Substring(pluralRuleEnd + 2));
-#endif
                 }
                 double pluralVal = number;
                 if (0 <= pluralVal && pluralVal < 1)
@@ -116,18 +99,10 @@ namespace ICU4N.Globalization
                 {
                     pluralVal = pluralVal / Power(radix, exponent);
                 }
-#if FEATURE_SPAN
                 toInsertInto.InsertFormatPlural(pos, (long)pluralVal, null, pluralMessagePattern, pluralType, info!);
-#else
-                toInsertInto.Insert(pos, IcuNumber.FormatPlural((long)pluralVal, null, pluralMessagePattern, pluralType, info));
-#endif
                 if (pluralRuleStart > 0)
                 {
-#if FEATURE_SPAN
                     toInsertInto.Insert(pos, ruleText.AsSpan(0, pluralRuleStart)); // ICU4N: Checked 2nd parameter
-#else
-                    toInsertInto.Insert(pos, ruleText.Substring(0, pluralRuleStart)); // ICU4N: Checked 2nd parameter
-#endif
                 }
                 lengthOffset = ruleText.Length - (toInsertInto.Length - initialLength);
             }
@@ -203,5 +178,4 @@ namespace ICU4N.Globalization
             return (number % divisor) == 0 && (baseValue % divisor) != 0;
         }
     }
-#endif
 }

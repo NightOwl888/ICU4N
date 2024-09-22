@@ -1309,7 +1309,7 @@ namespace ICU4N.Text
                 {
                     for (int i = 0; i < SYMBOL_KEYS.Length; i++)
                     {
-                        if (key.ContentEquals(SYMBOL_KEYS[i]))
+                        if (key.SequenceEqual(SYMBOL_KEYS[i]))
                         {
                             if (numberElements[i] == null)
                             {

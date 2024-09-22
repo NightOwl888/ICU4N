@@ -3,13 +3,11 @@ using ICU4N.Impl.Locale;
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
-using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Resources;
-using System.Text;
 using System.Threading;
 using JCG = J2N.Collections.Generic;
 
@@ -19,6 +17,8 @@ namespace ICU4N.Globalization
 {
     public class DataTableCultureDisplayNames : CultureDisplayNames
     {
+        private const int CharStackBufferSize = 32;
+
         private static ILanguageDataTableProvider languageDataTableProvider = new DefaultLanguageDataTableProvider();
         private static IRegionDataTableProvider regionDataTableProvider = new DefaultRegionDataTableProvider();
 
@@ -72,16 +72,16 @@ namespace ICU4N.Globalization
         /// <summary>
         /// Map from resource key to <see cref="CapitalizationContextUsage"/> value
         /// </summary>
-        private static readonly IDictionary<string, CapitalizationContextUsage> contextUsageTypeMap
+        private static readonly Dictionary<ResourceKey, CapitalizationContextUsage> contextUsageTypeMap
             // ICU4N: Avoid static constructor and initialize inline
-            = new Dictionary<string, CapitalizationContextUsage>
+            = new Dictionary<ResourceKey, CapitalizationContextUsage>()
             {
-                {"languages", CapitalizationContextUsage.Language},
-                {"script",    CapitalizationContextUsage.Script},
-                {"territory", CapitalizationContextUsage.Territory},
-                {"variant",   CapitalizationContextUsage.Variant},
-                {"key",       CapitalizationContextUsage.Key},
-                {"keyValue",  CapitalizationContextUsage.KeyValue},
+                {new ResourceKey("languages"), CapitalizationContextUsage.Language},
+                {new ResourceKey("script"),    CapitalizationContextUsage.Script},
+                {new ResourceKey("territory"), CapitalizationContextUsage.Territory},
+                {new ResourceKey("variant"),   CapitalizationContextUsage.Variant},
+                {new ResourceKey("key"),       CapitalizationContextUsage.Key},
+                {new ResourceKey("keyValue"),  CapitalizationContextUsage.KeyValue},
             };
 
         /// <summary>
@@ -94,8 +94,17 @@ namespace ICU4N.Globalization
 
         private static string ToTitleWholeStringNoLowercase(UCultureInfo culture, string s)
         {
-            return ToTitleWholeStringNoLower.Apply(
-                    culture.ToCultureInfo(), null, s, new StringBuilder(), null).ToString();
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                ToTitleWholeStringNoLower.Apply(
+                    culture.ToCultureInfo(), null, s.AsMemory(), ref sb, null);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
         }
 
         // ICU4N: Removed static GetInstance() method and moved the cache to the DefaultCultureDisplayNamesFactory
@@ -115,7 +124,7 @@ namespace ICU4N.Globalization
                 IResourceTable contextsTable = value.GetTable();
                 for (int i = 0; contextsTable.GetKeyAndValue(i, key, value); ++i)
                 {
-                    if (!contextUsageTypeMap.TryGetValue(key.ToString(), out CapitalizationContextUsage usage))
+                    if (!contextUsageTypeMap.TryGetValue(key, out CapitalizationContextUsage usage))
                     {
                         continue;
                     }
@@ -155,37 +164,46 @@ namespace ICU4N.Globalization
             {
                 sep = "{0}, {1}";
             }
-            StringBuilder sb = new StringBuilder();
-            this.separatorFormat = SimpleFormatterImpl.CompileToStringMinMaxArguments(sep, sb, 2, 2);
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                SimpleFormatterImpl.CompileToStringMinMaxArguments(sep.AsSpan(), ref sb, 2, 2);
+                this.separatorFormat = sb.AsSpan().ToString();
 
-            string pattern = langData.Get("localeDisplayPattern", "pattern");
-            if (pattern == null || "pattern".Equals(pattern))
-            {
-                pattern = "{0} ({1})";
-            }
-            this.format = SimpleFormatterImpl.CompileToStringMinMaxArguments(pattern, sb, 2, 2);
-            if (pattern.Contains("（"))
-            {
-                formatOpenParen = '（';
-                formatCloseParen = '）';
-                formatReplaceOpenParen = '［';
-                formatReplaceCloseParen = '］';
-            }
-            else
-            {
-                formatOpenParen = '(';
-                formatCloseParen = ')';
-                formatReplaceOpenParen = '[';
-                formatReplaceCloseParen = ']';
-            }
+                string pattern = langData.Get("localeDisplayPattern", "pattern");
+                if (pattern == null || "pattern".Equals(pattern))
+                {
+                    pattern = "{0} ({1})";
+                }
+                SimpleFormatterImpl.CompileToStringMinMaxArguments(pattern.AsSpan(), ref sb, 2, 2);
+                this.format = sb.AsSpan().ToString();
+                if (pattern.Contains("（"))
+                {
+                    formatOpenParen = '（';
+                    formatCloseParen = '）';
+                    formatReplaceOpenParen = '［';
+                    formatReplaceCloseParen = '］';
+                }
+                else
+                {
+                    formatOpenParen = '(';
+                    formatCloseParen = ')';
+                    formatReplaceOpenParen = '[';
+                    formatReplaceCloseParen = ']';
+                }
 
-            string keyTypePattern = langData.Get("localeDisplayPattern", "keyTypePattern");
-            if (keyTypePattern == null || "keyTypePattern".Equals(keyTypePattern))
-            {
-                keyTypePattern = "{0}={1}";
+                string keyTypePattern = langData.Get("localeDisplayPattern", "keyTypePattern");
+                if (keyTypePattern == null || "keyTypePattern".Equals(keyTypePattern))
+                {
+                    keyTypePattern = "{0}={1}";
+                }
+                SimpleFormatterImpl.CompileToStringMinMaxArguments(keyTypePattern.AsSpan(), ref sb, 2, 2);
+                this.keyTypeFormat = sb.AsSpan().ToString();
             }
-            this.keyTypeFormat = SimpleFormatterImpl.CompileToStringMinMaxArguments(
-                    keyTypePattern, sb, 2, 2);
+            finally
+            {
+                sb.Dispose();
+            }
 
             // Get values from the contextTransforms data if we need them
             // Also check whether we will need a break iterator (depends on the data)
@@ -323,80 +341,85 @@ namespace ICU4N.Globalization
                         .Replace(formatCloseParen, formatReplaceCloseParen);
             }
 
-            StringBuilder buf = new StringBuilder();
-            if (hasScript)
+            ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                // first element, don't need appendWithSep
-                string result = GetScriptDisplayNameInContext(script, true);
-                if (result == null) { return null; }
-                buf.Append(result
-                        .Replace(formatOpenParen, formatReplaceOpenParen)
-                        .Replace(formatCloseParen, formatReplaceCloseParen));
-            }
-            if (hasCountry)
-            {
-                string result = GetRegionDisplayName(country, true);
-                if (result == null) { return null; }
-                AppendWithSep(result
-                        .Replace(formatOpenParen, formatReplaceOpenParen)
-                        .Replace(formatCloseParen, formatReplaceCloseParen), buf);
-            }
-            if (hasVariant)
-            {
-                string result = GetVariantDisplayName(variant, true);
-                if (result == null) { return null; }
-                AppendWithSep(result
-                        .Replace(formatOpenParen, formatReplaceOpenParen)
-                        .Replace(formatCloseParen, formatReplaceCloseParen), buf);
-            }
-
-            using (var pairs = locale.Keywords.GetEnumerator())
-            {
-                if (pairs != null)
+                if (hasScript)
                 {
-                    while (pairs.MoveNext())
+                    // first element, don't need appendWithSep
+                    string result = GetScriptDisplayNameInContext(script, true);
+                    if (result == null) { return null; }
+                    buf.Append(result
+                            .Replace(formatOpenParen, formatReplaceOpenParen)
+                            .Replace(formatCloseParen, formatReplaceCloseParen));
+                }
+                if (hasCountry)
+                {
+                    string result = GetRegionDisplayName(country, true);
+                    if (result == null) { return null; }
+                    AppendWithSep(result
+                            .Replace(formatOpenParen, formatReplaceOpenParen)
+                            .Replace(formatCloseParen, formatReplaceCloseParen), ref buf);
+                }
+                if (hasVariant)
+                {
+                    string result = GetVariantDisplayName(variant, true);
+                    if (result == null) { return null; }
+                    AppendWithSep(result
+                            .Replace(formatOpenParen, formatReplaceOpenParen)
+                            .Replace(formatCloseParen, formatReplaceCloseParen), ref buf);
+                }
+
+                using (var pairs = locale.Keywords.GetEnumerator())
+                {
+                    if (pairs != null)
                     {
-                        string key = pairs.Current.Key;
-                        string value = pairs.Current.Value; // locale.GetKeywordValue(key);
-                        string keyDisplayName = GetKeyDisplayName(key, true);
-                        if (keyDisplayName == null) { return null; }
-                        keyDisplayName = keyDisplayName
-                                .Replace(formatOpenParen, formatReplaceOpenParen)
-                                .Replace(formatCloseParen, formatReplaceCloseParen);
-                        string valueDisplayName = GetKeyValueDisplayName(key, value, true);
-                        if (valueDisplayName == null) { return null; }
-                        valueDisplayName = valueDisplayName
-                                .Replace(formatOpenParen, formatReplaceOpenParen)
-                                .Replace(formatCloseParen, formatReplaceCloseParen);
-                        if (!valueDisplayName.Equals(value))
+                        while (pairs.MoveNext())
                         {
-                            AppendWithSep(valueDisplayName, buf);
-                        }
-                        else if (!key.Equals(keyDisplayName))
-                        {
-                            string keyValue = SimpleFormatterImpl.FormatCompiledPattern(
-                            keyTypeFormat, keyDisplayName, valueDisplayName);
-                            AppendWithSep(keyValue, buf);
-                        }
-                        else
-                        {
-                            AppendWithSep(keyDisplayName, buf)
-                            .Append("=")
-                            .Append(valueDisplayName);
+                            string key = pairs.Current.Key;
+                            string value = pairs.Current.Value; // locale.GetKeywordValue(key);
+                            string keyDisplayName = GetKeyDisplayName(key, true);
+                            if (keyDisplayName == null) { return null; }
+                            keyDisplayName = keyDisplayName
+                                    .Replace(formatOpenParen, formatReplaceOpenParen)
+                                    .Replace(formatCloseParen, formatReplaceCloseParen);
+                            string valueDisplayName = GetKeyValueDisplayName(key, value, true);
+                            if (valueDisplayName == null) { return null; }
+                            valueDisplayName = valueDisplayName
+                                    .Replace(formatOpenParen, formatReplaceOpenParen)
+                                    .Replace(formatCloseParen, formatReplaceCloseParen);
+                            if (!valueDisplayName.Equals(value))
+                            {
+                                AppendWithSep(valueDisplayName, ref buf);
+                            }
+                            else if (!key.Equals(keyDisplayName))
+                            {
+                                string keyValue = SimpleFormatterImpl.FormatCompiledPattern(
+                                    keyTypeFormat.AsSpan(), keyDisplayName, valueDisplayName);
+                                AppendWithSep(keyValue, ref buf);
+                            }
+                            else
+                            {
+                                AppendWithSep(keyDisplayName, ref buf);
+                                buf.Append('=');
+                                buf.Append(valueDisplayName);
+                            }
                         }
                     }
                 }
-            }
-            string resultRemainder = null;
-            if (buf.Length > 0)
-            {
-                resultRemainder = buf.ToString();
-            }
 
-            if (resultRemainder != null)
+                // ICU4N: Eliminated resultRemainder allocation by passing
+                // buf directly to FormatCompiledPattern
+
+                if (buf.Length > 0)
+                {
+                    resultName = SimpleFormatterImpl.FormatCompiledPattern(
+                        format.AsSpan(), resultName.AsSpan(), buf.AsSpan());
+                }
+            }
+            finally
             {
-                resultName = SimpleFormatterImpl.FormatCompiledPattern(
-                        format, resultName, resultRemainder);
+                buf.Dispose();
             }
 
             return AdjustForUsageAndContext(CapitalizationContextUsage.Language, resultName);
@@ -652,7 +675,7 @@ namespace ICU4N.Globalization
             }
         }
 
-        private StringBuilder AppendWithSep(string s, StringBuilder b)
+        private void AppendWithSep(string s, ref ValueStringBuilder b)
         {
             if (b.Length == 0)
             {
@@ -660,9 +683,8 @@ namespace ICU4N.Globalization
             }
             else
             {
-                SimpleFormatterImpl.FormatAndReplace(separatorFormat, b, null, b.AsCharSequence(), s.AsCharSequence());
+                SimpleFormatterImpl.FormatAndReplace(separatorFormat.AsSpan(), ref b, null, b.AsSpan(), s.AsSpan());
             }
-            return b;
         }
 
         // ICU4N: Removed static GetInstance() method and moved the cache to the DefaultCultureDisplayNamesFactory

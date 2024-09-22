@@ -4,11 +4,11 @@ using J2N;
 using J2N.Collections;
 using J2N.Text;
 using System;
-#if FEATURE_SPAN
 using System.Buffers;
-#endif
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -32,9 +32,7 @@ namespace ICU4N.Impl
         /// Convenience utility to compare two <see cref="T:object[]"/>s.
         /// Ought to be in System.
         /// </summary>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static bool ArrayEquals<T>(T[] source, T[] target)
         {
             // ICU4N: Using generics and a comparer is much faster in .NET
@@ -75,9 +73,7 @@ namespace ICU4N.Impl
         /// This method should help document that we really want == not <see cref="object.Equals(object, object)"/>
         /// and to have a single place to suppress warnings from static analysis tools.
         /// </summary>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static bool SameObjects(object a, object b) // ICU4N: Factor out and use object.ReferenceEquals()
         {
             return a == b;
@@ -86,9 +82,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Convenience utility. Does null checks on objects, then calls <see cref="object.Equals(object)"/>.
         /// </summary>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static bool ObjectEquals(object a, object b)
         {
             return a == null ?
@@ -100,9 +94,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Convenience utility. Does null checks on objects, then calls <see cref="J2N.Text.StringExtensions.CompareToOrdinal(string, string)"/>.
         /// </summary>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static int CheckCompare(string a, string b)
         {
             return a == null ?
@@ -114,9 +106,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Convenience utility. Does null checks on objects, then calls <see cref="IComparable{T}.CompareTo(T)"/>.
         /// </summary>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static int CheckCompare<T>(T a, T b) where T : IComparable<T>
         {
             return a == null ?
@@ -127,9 +117,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Convenience utility. Does null checks on objects, then calls <see cref="IComparable.CompareTo(object)"/>.
         /// </summary>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static int CheckCompare(IComparable a, IComparable b)
         {
             return a == null ?
@@ -140,420 +128,17 @@ namespace ICU4N.Impl
         /// <summary>
         /// Convenience utility. Does null checks on object, then calls <see cref="object.GetHashCode()"/>.
         /// </summary>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static int CheckHashCode(object a)
         {
             return a == null ? 0 : a.GetHashCode();
         }
 
-        /// <summary>
-        /// The <see cref="ESCAPE"/> character is used during run-length encoding.  It signals
-        /// a run of identical chars.
-        /// </summary>
-        private const char ESCAPE = '\uA5A5';
-
-        /// <summary>
-        /// The <see cref="ESCAPE_BYTE"/> character is used during run-length encoding.  It signals
-        /// a run of identical bytes.
-        /// </summary>
-        internal const byte ESCAPE_BYTE = (byte)0xA5;
-
-        /// <summary>
-        /// Construct a string representing an <see cref="int"/> array.  Use run-length encoding.
-        /// </summary>
-        /// <remarks>
-        /// A character represents itself, unless it is the <see cref="ESCAPE"/> character.  Then
-        /// the following notations are possible:
-        /// <code>
-        ///   ESCAPE ESCAPE   ESCAPE literal
-        ///   ESCAPE n c      n instances of character c
-        /// </code>
-        /// Since an encoded run occupies 3 characters, we only encode runs of 4 or
-        /// more characters.  Thus we have n > 0 and n != <see cref="ESCAPE"/> and n &lt;= 0xFFFF.
-        /// If we encounter a run where n == <see cref="ESCAPE"/>, we represent this as:
-        /// <code>
-        ///   c ESCAPE n-1 c
-        /// </code>
-        /// The <see cref="ESCAPE"/> value is chosen so as not to collide with commonly
-        /// seen values.
-        /// </remarks>
-        static public string ArrayToRLEString(int[] a)
-        {
-            StringBuilder buffer = new StringBuilder();
-
-            AppendInt32(buffer, a.Length);
-            int runValue = a[0];
-            int runLength = 1;
-            for (int i = 1; i < a.Length; ++i)
-            {
-                int s = a[i];
-                if (s == runValue && runLength < 0xFFFF)
-                {
-                    ++runLength;
-                }
-                else
-                {
-                    EncodeRun(buffer, runValue, runLength);
-                    runValue = s;
-                    runLength = 1;
-                }
-            }
-            EncodeRun(buffer, runValue, runLength);
-            return buffer.ToString();
-        }
-
-        /// <summary>
-        /// Construct a string representing a <see cref="short"/> array.  Use run-length encoding.
-        /// </summary>
-        /// <remarks>
-        /// A character represents itself, unless it is the <see cref="ESCAPE"/> character.  Then
-        /// the following notations are possible:
-        /// <code>
-        ///   ESCAPE ESCAPE   ESCAPE literal
-        ///   ESCAPE n c      n instances of character c
-        /// </code>
-        /// Since an encoded run occupies 3 characters, we only encode runs of 4 or
-        /// more characters.  Thus we have n > 0 and n != <see cref="ESCAPE"/> and n &lt;= 0xFFFF.
-        /// If we encounter a run where n == <see cref="ESCAPE"/>, we represent this as:
-        /// <code>
-        ///   c ESCAPE n-1 c
-        /// </code>
-        /// The <see cref="ESCAPE"/> value is chosen so as not to collide with commonly
-        /// seen values.
-        /// </remarks>
-        static public string ArrayToRLEString(short[] a)
-        {
-            StringBuilder buffer = new StringBuilder();
-            // for (int i=0; i<a.length; ++i) buffer.append((char) a[i]);
-            buffer.Append((char)(a.Length >> 16));
-            buffer.Append((char)a.Length);
-            short runValue = a[0];
-            int runLength = 1;
-            for (int i = 1; i < a.Length; ++i)
-            {
-                short s = a[i];
-                if (s == runValue && runLength < 0xFFFF) ++runLength;
-                else
-                {
-                    EncodeRun(buffer, runValue, runLength);
-                    runValue = s;
-                    runLength = 1;
-                }
-            }
-            EncodeRun(buffer, runValue, runLength);
-            return buffer.ToString();
-        }
-
-        /// <summary>
-        /// Construct a string representing a <see cref="char"/> array.  Use run-length encoding.
-        /// </summary>
-        /// <remarks>
-        /// A character represents itself, unless it is the <see cref="ESCAPE"/> character.  Then
-        /// the following notations are possible:
-        /// <code>
-        ///   ESCAPE ESCAPE   ESCAPE literal
-        ///   ESCAPE n c      n instances of character c
-        /// </code>
-        /// Since an encoded run occupies 3 characters, we only encode runs of 4 or
-        /// more characters.  Thus we have n > 0 and n != <see cref="ESCAPE"/> and n &lt;= 0xFFFF.
-        /// If we encounter a run where n == <see cref="ESCAPE"/>, we represent this as:
-        /// <code>
-        ///   c ESCAPE n-1 c
-        /// </code>
-        /// The <see cref="ESCAPE"/> value is chosen so as not to collide with commonly
-        /// seen values.
-        /// </remarks>
-        static public string ArrayToRLEString(char[] a)
-        {
-            StringBuilder buffer = new StringBuilder();
-            buffer.Append((char)(a.Length >> 16));
-            buffer.Append((char)a.Length);
-            char runValue = a[0];
-            int runLength = 1;
-            for (int i = 1; i < a.Length; ++i)
-            {
-                char s = a[i];
-                if (s == runValue && runLength < 0xFFFF) ++runLength;
-                else
-                {
-                    EncodeRun(buffer, (short)runValue, runLength);
-                    runValue = s;
-                    runLength = 1;
-                }
-            }
-            EncodeRun(buffer, (short)runValue, runLength);
-            return buffer.ToString();
-        }
-
-        /// <summary>
-        /// Construct a string representing a <see cref="byte"/> array.  Use run-length encoding.
-        /// </summary>
-        /// <remarks>
-        /// Two bytes are packed into a single <see cref="char"/>, with a single extra zero byte at
-        /// the end if needed.  A byte represents itself, unless it is the
-        /// <see cref="ESCAPE_BYTE"/>.  Then the following notations are possible:
-        /// <code>
-        ///   ESCAPE_BYTE ESCAPE_BYTE   ESCAPE_BYTE literal
-        ///   ESCAPE_BYTE n b           n instances of byte b
-        /// </code>
-        /// Since an encoded run occupies 3 bytes, we only encode runs of 4 or
-        /// more bytes.  Thus we have n > 0 and n != <see cref="ESCAPE_BYTE"/> and n &lt;= 0xFF.
-        /// If we encounter a run where n == <see cref="ESCAPE_BYTE"/>, we represent this as:
-        /// <code>
-        ///   b ESCAPE_BYTE n-1 b
-        /// </code>
-        /// The <see cref="ESCAPE_BYTE"/> value is chosen so as not to collide with commonly
-        /// seen values.
-        /// </remarks>
-        static public string ArrayToRLEString(byte[] a)
-        {
-            StringBuilder buffer = new StringBuilder();
-            buffer.Append((char)(a.Length >> 16));
-            buffer.Append((char)a.Length);
-            byte runValue = a[0];
-            int runLength = 1;
-            byte state0 = 0, state1 = 0;
-            for (int i = 1; i < a.Length; ++i)
-            {
-                byte b = a[i];
-                if (b == runValue && runLength < 0xFF) ++runLength;
-                else
-                {
-                    EncodeRun(buffer, runValue, runLength, ref state0, ref state1);
-                    runValue = b;
-                    runLength = 1;
-                }
-            }
-            EncodeRun(buffer, runValue, runLength, ref state0, ref state1);
-
-            // We must save the final byte, if there is one, by padding
-            // an extra zero.
-            if (state0 != 0) AppendEncodedByte(buffer, (byte)0, ref state0, ref state1);
-
-            return buffer.ToString();
-        }
-
-        // ICU4N specific - EncodeRun(IAppendable buffer, int value, int length)
-        //    moved to UtilityExtension.tt
-
-        // ICU4N specific - AppendInt32(IAppendable buffer, int value)
-        //    moved to UtilityExtension.tt
-
-        // ICU4N specific - EncodeRun(IAppendable buffer, short value, int length)
-        //    moved to UtilityExtension.tt
-
-        // ICU4N specific - EncodeRun(IAppendable buffer, byte value, int length,
-        //    byte[] state) moved to UtilityExtension.tt
-
-        // ICU4N specific - AppendEncodedByte(IAppendable buffer, byte value,
-        //    byte[] state) moved to UtilityExtension.tt
-
-        /// <summary>
-        /// Construct an array of <see cref="int"/>s from a run-length encoded <see cref="string"/>.
-        /// </summary>
-        static public int[] RLEStringToInt32Array(string s) // ICU4N specific - renamed from RLEStringToIntArray
-        {
-            int length = GetInt32(s, 0);
-            int[] array = new int[length];
-            int ai = 0, i = 1;
-
-            int maxI = s.Length / 2;
-            while (ai < length && i < maxI)
-            {
-                int c = GetInt32(s, i++);
-
-                if (c == ESCAPE)
-                {
-                    c = GetInt32(s, i++);
-                    if (c == ESCAPE)
-                    {
-                        array[ai++] = c;
-                    }
-                    else
-                    {
-                        int runLength = c;
-                        int runValue = GetInt32(s, i++);
-                        for (int j = 0; j < runLength; ++j)
-                        {
-                            array[ai++] = runValue;
-                        }
-                    }
-                }
-                else
-                {
-                    array[ai++] = c;
-                }
-            }
-
-            if (ai != length || i != maxI)
-            {
-                throw new InvalidOperationException("Bad run-length encoded int array");
-            }
-
-            return array;
-        }
-        internal static int GetInt32(string s, int i) // ICU4N specific - renamed from GetInt
-        {
-            return ((s[2 * i]) << 16) | s[2 * i + 1];
-        }
-
-        /// <summary>
-        /// Construct an array of <see cref="short"/>s from a run-length encoded <see cref="string"/>.
-        /// </summary>
-        static public short[] RLEStringToInt16Array(string s) // ICU4N specific - renamed from RLEStringToShortArray
-        {
-            int length = ((s[0]) << 16) | (s[1]);
-            short[] array = new short[length];
-            int ai = 0;
-            for (int i = 2; i < s.Length; ++i)
-            {
-                char c = s[i];
-                if (c == ESCAPE)
-                {
-                    c = s[++i];
-                    if (c == ESCAPE)
-                    {
-                        array[ai++] = (short)c;
-                    }
-                    else
-                    {
-                        int runLength = c;
-                        short runValue = (short)s[++i];
-                        for (int j = 0; j < runLength; ++j) array[ai++] = runValue;
-                    }
-                }
-                else
-                {
-                    array[ai++] = (short)c;
-                }
-            }
-
-            if (ai != length)
-                throw new InvalidOperationException("Bad run-length encoded short array");
-
-            return array;
-        }
-
-        /// <summary>
-        /// Construct an array of <see cref="char"/>s from a run-length encoded <see cref="string"/>.
-        /// </summary>
-        static public char[] RLEStringToCharArray(string s)
-        {
-            int length = ((s[0]) << 16) | (s[1]);
-            char[] array = new char[length];
-            int ai = 0;
-            for (int i = 2; i < s.Length; ++i)
-            {
-                char c = s[i];
-                if (c == ESCAPE)
-                {
-                    c = s[++i];
-                    if (c == ESCAPE)
-                    {
-                        array[ai++] = c;
-                    }
-                    else
-                    {
-                        int runLength = c;
-                        char runValue = s[++i];
-                        for (int j = 0; j < runLength; ++j) array[ai++] = runValue;
-                    }
-                }
-                else
-                {
-                    array[ai++] = c;
-                }
-            }
-
-            if (ai != length)
-                throw new InvalidOperationException("Bad run-length encoded short array");
-
-            return array;
-        }
-
-        /// <summary>
-        /// Construct an array of <see cref="byte"/>s from a run-length encoded <see cref="string"/>.
-        /// </summary>
-        static public byte[] RLEStringToByteArray(string s)
-        {
-            int length = ((s[0]) << 16) | (s[1]);
-            byte[] array = new byte[length];
-            bool nextChar = true;
-            char c = (char)0;
-            int node = 0;
-            int runLength = 0;
-            int i = 2;
-            for (int ai = 0; ai < length;)
-            {
-                // This part of the loop places the next byte into the local
-                // variable 'b' each time through the loop.  It keeps the
-                // current character in 'c' and uses the boolean 'nextChar'
-                // to see if we've taken both bytes out of 'c' yet.
-                byte b;
-                if (nextChar)
-                {
-                    c = s[i++];
-                    b = (byte)(c >> 8);
-                    nextChar = false;
-                }
-                else
-                {
-                    b = (byte)(c & 0xFF);
-                    nextChar = true;
-                }
-
-                // This part of the loop is a tiny state machine which handles
-                // the parsing of the run-length encoding.  This would be simpler
-                // if we could look ahead, but we can't, so we use 'node' to
-                // move between three nodes in the state machine.
-                switch (node)
-                {
-                    case 0:
-                        // Normal idle node
-                        if (b == ESCAPE_BYTE)
-                        {
-                            node = 1;
-                        }
-                        else
-                        {
-                            array[ai++] = b;
-                        }
-                        break;
-                    case 1:
-                        // We have seen one ESCAPE_BYTE; we expect either a second
-                        // one, or a run length and value.
-                        if (b == ESCAPE_BYTE)
-                        {
-                            array[ai++] = ESCAPE_BYTE;
-                            node = 0;
-                        }
-                        else
-                        {
-                            runLength = b;
-                            // Interpret signed byte as unsigned
-                            if (runLength < 0) runLength += 0x100;
-                            node = 2;
-                        }
-                        break;
-                    case 2:
-                        // We have seen an ESCAPE_BYTE and length byte.  We interpret
-                        // the next byte as the value to be repeated.
-                        for (int j = 0; j < runLength; ++j) array[ai++] = b;
-                        node = 0;
-                        break;
-                }
-            }
-
-            if (node != 0)
-                throw new InvalidOperationException("Bad run-length encoded byte array");
-
-            if (i != s.Length)
-                throw new InvalidOperationException("Excess data in RLE byte array string");
-
-            return array;
-        }
+        // ICU4N: Factored out Run-Length Encoding (RLE) methods and constants, as they
+        // are not in use and the only tests are for CompactByteArray and CompactCharArray,
+        // both of which are marked internal and not used internally by anything.
+        // If we ever need to resurrect this, we should allow the user to pass in the destination
+        // Span<T> so memory can be reused.
 
         static public string LINE_SEPARATOR = Environment.NewLine;
 
@@ -693,17 +278,40 @@ namespace ICU4N.Impl
             return buffer.ToString();
         }
 
+#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
         /// <summary>
         /// Convert characters outside the range U+0020 to U+007F to
         /// Unicode escapes, and convert backslash to a double backslash.
         /// </summary>
-        public static string Escape(string s)
-        {
-#if FEATURE_SPAN
-            ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-#else
-            StringBuilder buf = new StringBuilder();
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static string Escape(string s)
+            => Escape(s.AsSpan());
 #endif
+
+        /// <summary>
+        /// Convert characters outside the range U+0020 to U+007F to
+        /// Unicode escapes, and convert backslash to a double backslash.
+        /// </summary>
+        public static string Escape(ReadOnlySpan<char> s)
+        {
+            ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                Escape(s, ref buf);
+                return buf.ToString();
+            }
+            finally
+            {
+                buf.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Convert characters outside the range U+0020 to U+007F to
+        /// Unicode escapes, and convert backslash to a double backslash.
+        /// </summary>
+        internal static void Escape(ReadOnlySpan<char> s, ref ValueStringBuilder result)
+        {
             for (int i = 0; i < s.Length;)
             {
                 int c = Character.CodePointAt(s, i);
@@ -712,21 +320,20 @@ namespace ICU4N.Impl
                 {
                     if (c == '\\')
                     {
-                        buf.Append("\\\\"); // That is, "\\"
+                        result.Append("\\\\"); // That is, "\\"
                     }
                     else
                     {
-                        buf.Append((char)c);
+                        result.Append((char)c);
                     }
                 }
                 else
                 {
                     bool four = c <= 0xFFFF;
-                    buf.Append(four ? "\\u" : "\\U");
-                    buf.Append(Hex(c, four ? 4 : 8));
+                    result.Append(four ? "\\u" : "\\U");
+                    result.AppendFormatHex(c, four ? 4 : 8);
                 }
             }
-            return buf.ToString();
         }
 
         /* This map must be in ASCENDING ORDER OF THE ESCAPE CODE */
@@ -745,7 +352,7 @@ namespace ICU4N.Impl
             /*v*/ (char)0x76, (char)0x0b
         };
 
-#if FEATURE_SPAN && !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
         /// <summary>
         /// Convert an escape to a 32-bit code point value.  We attempt
         /// to parallel the icu4c unescapeAt() function.
@@ -756,10 +363,8 @@ namespace ICU4N.Impl
         /// be updated to point after the escape sequence.</param>
         /// <returns>Character value from 0 to 10FFFF, or -1 on error.</returns>
         // ICU4N: To fix lack of implicit conversion
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
-        public static int UnescapeAt(string s, ref int offset16)
+        internal static int UnescapeAt(string s, ref int offset16)
             => UnescapeAt(s.AsSpan(), ref offset16);
 #endif
 
@@ -772,13 +377,7 @@ namespace ICU4N.Impl
         /// <em>after</em> the backslash.  Upon return offset16 will
         /// be updated to point after the escape sequence.</param>
         /// <returns>Character value from 0 to 10FFFF, or -1 on error.</returns>
-        public static int UnescapeAt(
-#if FEATURE_SPAN
-            ReadOnlySpan<char> s,
-#else
-            string s,
-#endif
-            ref int offset16) // ICU4N: Changed array to ref parameter
+        public static int UnescapeAt(ReadOnlySpan<char> s, ref int offset16) // ICU4N: Changed array to ref parameter
         {
             int c;
             int result = 0;
@@ -917,169 +516,14 @@ namespace ICU4N.Impl
             return c;
         }
 
-#if !FEATURE_SPAN
-        /// <summary>
-        /// Convert an escape to a 32-bit code point value.  We attempt
-        /// to parallel the icu4c unescapeAt() function.
-        /// </summary>
-        /// <param name="s">The character sequence to escape.</param>
-        /// <param name="offset16">An offset to the character
-        /// <em>after</em> the backslash.  Upon return offset16 will
-        /// be updated to point after the escape sequence.</param>
-        /// <returns>Character value from 0 to 10FFFF, or -1 on error.</returns>
-        public static int UnescapeAt(char[] s, ref int offset16) // ICU4N: Changed array to ref parameter
-        {
-            int c;
-            int result = 0;
-            int n = 0;
-            int minDig = 0;
-            int maxDig = 0;
-            int bitsPerDigit = 4;
-            int dig;
-            int i;
-            bool braces = false;
-
-            /* Check that offset is in range */
-            int offset = offset16;
-            int length = s.Length;
-            if (offset < 0 || offset >= length)
-            {
-                return -1;
-            }
-
-            /* Fetch first UChar after '\\' */
-            c = Character.CodePointAt(s, offset);
-            offset += UTF16.GetCharCount(c);
-
-            /* Convert hexadecimal and octal escapes */
-            switch (c)
-            {
-                case 'u':
-                    minDig = maxDig = 4;
-                    break;
-                case 'U':
-                    minDig = maxDig = 8;
-                    break;
-                case 'x':
-                    minDig = 1;
-                    if (offset < length && UTF16.CharAt(s, offset) == 0x7B /*{*/)
-                    {
-                        ++offset;
-                        braces = true;
-                        maxDig = 8;
-                    }
-                    else
-                    {
-                        maxDig = 2;
-                    }
-                    break;
-                default:
-                    dig = UChar.Digit(c, 8);
-                    if (dig >= 0)
-                    {
-                        minDig = 1;
-                        maxDig = 3;
-                        n = 1; /* Already have first octal digit */
-                        bitsPerDigit = 3;
-                        result = dig;
-                    }
-                    break;
-            }
-            if (minDig != 0)
-            {
-                while (offset < length && n < maxDig)
-                {
-                    c = UTF16.CharAt(s, offset);
-                    dig = UChar.Digit(c, (bitsPerDigit == 3) ? 8 : 16);
-                    if (dig < 0)
-                    {
-                        break;
-                    }
-                    result = (result << bitsPerDigit) | dig;
-                    offset += UTF16.GetCharCount(c);
-                    ++n;
-                }
-                if (n < minDig)
-                {
-                    return -1;
-                }
-                if (braces)
-                {
-                    if (c != 0x7D /*}*/)
-                    {
-                        return -1;
-                    }
-                    ++offset;
-                }
-                if (result < 0 || result >= 0x110000)
-                {
-                    return -1;
-                }
-                // If an escape sequence specifies a lead surrogate, see
-                // if there is a trail surrogate after it, either as an
-                // escape or as a literal.  If so, join them up into a
-                // supplementary.
-                if (offset < length &&
-                        UTF16.IsLeadSurrogate((char)result))
-                {
-                    int ahead = offset + 1;
-                    c = s[offset]; // [sic] get 16-bit code unit
-                    if (c == '\\' && ahead < length)
-                    {
-                        c = UnescapeAt(s, ref ahead); // ICU4N: Changed array to ref parameter
-                    }
-                    if (UTF16.IsTrailSurrogate((char)c))
-                    {
-                        offset = ahead;
-                        result = Character.ToCodePoint((char)result, (char)c);
-                    }
-                }
-                offset16 = offset;
-                return result;
-            }
-
-            /* Convert C-style escapes in table */
-            for (i = 0; i < UNESCAPE_MAP.Length; i += 2)
-            {
-                if (c == UNESCAPE_MAP[i])
-                {
-                    offset16 = offset;
-                    return UNESCAPE_MAP[i + 1];
-                }
-                else if (c < UNESCAPE_MAP[i])
-                {
-                    break;
-                }
-            }
-
-            /* Map \cX to control-X: X & 0x1F */
-            if (c == 'c' && offset < length)
-            {
-                c = UTF16.CharAt(s, offset);
-                offset16 = offset + UTF16.GetCharCount(c);
-                return 0x1F & c;
-            }
-
-            /* If no special forms are recognized, then consider
-             * the backslash to generically escape the next character. */
-            offset16 = offset;
-            return c;
-        }
-
-#endif
-
-
-#if FEATURE_SPAN
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
         /// <summary>
         /// Convert all escapes in a given string using <see cref="UnescapeAt(ReadOnlySpan{char}, ref int)"/>.
         /// </summary>
         /// <exception cref="ArgumentException">If an invalid escape is seen.</exception>
         // ICU4N: To fix lack of implicit conversion
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
-        public static string Unescape(string s)
+        internal static string Unescape(string s)
             => Unescape(s.AsSpan());
 #endif
 
@@ -1090,15 +534,23 @@ namespace ICU4N.Impl
         public static string Unescape(ReadOnlySpan<char> s)
         {
             ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-#else
+            try
+            {
+                Unescape(s, ref buf);
+                return buf.ToString();
+            }
+            finally
+            {
+                buf.Dispose();
+            }
+        }
+
         /// <summary>
-        /// Convert all escapes in a given string using <see cref="UnescapeAt(string, ref int)"/>.
+        /// Convert all escapes in a given string using <see cref="UnescapeAt(ReadOnlySpan{char}, ref int)"/>.
         /// </summary>
         /// <exception cref="ArgumentException">If an invalid escape is seen.</exception>
-        public static string Unescape(string s)
+        internal static void Unescape(ReadOnlySpan<char> s, ref ValueStringBuilder result)
         {
-            StringBuilder buf = new StringBuilder();
-#endif
             int pos;
             for (int i = 0; i < s.Length;)
             {
@@ -1109,35 +561,25 @@ namespace ICU4N.Impl
                     int e = UnescapeAt(s, ref pos); // ICU4N: Changed array to ref parameter
                     if (e < 0)
                     {
-                        throw new ArgumentException(
-#if FEATURE_SPAN
-                            StringHelper.Concat("Invalid escape sequence ".AsSpan(), s.Slice(i - 1, Math.Min(i + 8, s.Length) - (i - 1)))); // ICU4N: Corrected 2nd parameter
-#else
-                            string.Concat("Invalid escape sequence ", s.Substring(i - 1, Math.Min(i + 8, s.Length) - (i - 1)))); // ICU4N: Corrected 2nd parameter
-#endif
-
+                        throw new ArgumentException(StringHelper.Concat("Invalid escape sequence ".AsSpan(), s.Slice(i - 1, Math.Min(i + 8, s.Length) - (i - 1)))); // ICU4N: Corrected 2nd parameter
                     }
-                    buf.AppendCodePoint(e);
+                    result.AppendCodePoint(e);
                     i = pos;
                 }
                 else
                 {
-                    buf.Append(c);
+                    result.Append(c);
                 }
             }
-            return buf.ToString();
         }
 
-#if FEATURE_SPAN
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
         /// <summary>
         /// Convert all escapes in a given string using <see cref="UnescapeAt(ReadOnlySpan{char}, ref int)"/>.
         /// Leave invalid escape sequences unchanged.
         /// </summary>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
-        public static string UnescapeLeniently(string s)
+        internal static string UnescapeLeniently(string s)
             => UnescapeLeniently(s.AsSpan());
 #endif
         /// <summary>
@@ -1147,15 +589,23 @@ namespace ICU4N.Impl
         public static string UnescapeLeniently(ReadOnlySpan<char> s)
         {
             ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-#else
+            try
+            {
+                UnescapeLeniently(s, ref buf);
+                return buf.ToString();
+            }
+            finally
+            {
+                buf.Dispose();
+            }
+        }
+
         /// <summary>
-        /// Convert all escapes in a given string using <see cref="UnescapeAt(string, ref int)"/>.
+        /// Convert all escapes in a given string using <see cref="UnescapeAt(ReadOnlySpan{char}, ref int)"/>.
         /// Leave invalid escape sequences unchanged.
         /// </summary>
-        public static string UnescapeLeniently(string s)
+        internal static void UnescapeLeniently(ReadOnlySpan<char> s, ref ValueStringBuilder result)
         {
-            StringBuilder buf = new StringBuilder();
-#endif
             int pos;
             for (int i = 0; i < s.Length;)
             {
@@ -1167,20 +617,19 @@ namespace ICU4N.Impl
                     int e = UnescapeAt(s, ref pos); // ICU4N: Changed array to ref parameter
                     if (e < 0)
                     {
-                        buf.Append(c);
+                        result.Append(c);
                     }
                     else
                     {
-                        buf.AppendCodePoint(e);
+                        result.AppendCodePoint(e);
                         i = pos;
                     }
                 }
                 else
                 {
-                    buf.Append(c);
+                    result.Append(c);
                 }
             }
-            return buf.ToString();
         }
 
         /// <summary>
@@ -1194,19 +643,63 @@ namespace ICU4N.Impl
 
 #nullable enable
 
+        private const string Int64MinHexValue = "-8000000000000000";
+
         /// <summary>
         /// Supplies a zero-padded hex representation of an integer (without 0x)
         /// </summary>
-        static public string Hex(long i, int places)
+        public static string Hex(long i, int places) // ICU4N TODO: API - create overload that writes to Span<char> and use throughout ICU4N. Do not throw excpetions.
         {
-            if (i == long.MinValue) return "-8000000000000000";
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                sb.AppendFormatHex(i, places);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Supplies a zero-padded hex representation of an integer (without 0x).
+        /// </summary>
+        /// <param name="i">The number to convert.</param>
+        /// <param name="places">The number of places to pad the hexadecimal number to.</param>
+        /// <param name="destination">Upon successful return, will contain the result of the conversion.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters
+        /// that are usable in destination; otherwise, this is the length of buffer that will need to be allocated
+        /// to succeed in another attempt.</param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        public static bool TryFormatHex(long i, int places, Span<char> destination, out int charsLength) // ICU4N specific so we don't have to use heap
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                sb.AppendFormatHex(i, places);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        // ICU4N: Extracted business logic from Hex() so it can be used without allocating strings
+        internal static void AppendFormatHex(this ref ValueStringBuilder destination, long i, int places)
+        {
+            if (i == long.MinValue)
+            {
+                destination.Append(Int64MinHexValue);
+                return;
+            }
             bool negative = i < 0;
             if (negative)
             {
                 i = -i;
             }
-            //string result = Long.toString(i, 16).toUpperCase(Locale.ENGLISH);
-#if FEATURE_SPAN
+            // ICU4N: Use built-in precision specifier instead of substring
             int length = places + (negative ? 1 : 0) + 16;
             bool usePool = length > CharStackBufferSize;
             char[]? arrayToReturnToPool = usePool ? ArrayPool<char>.Shared.Rent(length) : null;
@@ -1217,11 +710,13 @@ namespace ICU4N.Impl
 
                 Span<char> format = stackalloc char[16]; // ICU4N: This is more than enough for the longest positive integer
                 format[0] = 'X';
-                J2N.Numerics.Int32.TryFormat(places, format.Slice(1), out int intLength, provider: CultureInfo.InvariantCulture);
-
-                bool success = J2N.Numerics.Int64.TryFormat(i, buffer.Slice(1), out int charsWritten, format.Slice(0, intLength + 1), CultureInfo.InvariantCulture);
+                bool success = J2N.Numerics.Int32.TryFormat(places, format.Slice(1), out int intLength, provider: CultureInfo.InvariantCulture);
                 if (!success)
-                    throw new ArgumentException("Not enough characters in buffer.");
+                    throw new InvalidOperationException("Not enough characters in format."); // Unexpected
+
+                success = J2N.Numerics.Int64.TryFormat(i, buffer.Slice(1), out int charsWritten, format.Slice(0, intLength + 1), CultureInfo.InvariantCulture);
+                if (!success)
+                    throw new InvalidOperationException("Not enough characters in buffer."); // Unexpected
 
                 int start = 1, totalLength = charsWritten;
                 if (negative)
@@ -1229,33 +724,136 @@ namespace ICU4N.Impl
                     start -= 1;
                     totalLength += 1;
                 }
-                return buffer.Slice(start, totalLength).ToString();
+                destination.Append(buffer.Slice(start, totalLength));
             }
             finally
             {
-                if (arrayToReturnToPool is not null)
-                    ArrayPool<char>.Shared.Return(arrayToReturnToPool);
+                ArrayPool<char>.Shared.ReturnIfNotNull(arrayToReturnToPool);
             }
-            
-#else
-            // ICU4N: Use built-in precision specifier instead of substring
-            string result = i.ToString("X" + places.ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture);
-            if (negative)
-            {
-                return '-' + result;
-            }
-            return result;
-#endif
         }
 
+        /// <summary>
+        /// Convert a string to comma-separated groups of 4 hex uppercase
+        /// digits.  E.g., hex('ab') => "0041,0042".
+        /// </summary>
+        public static string Hex(string s)
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
+            return Hex(s.AsSpan());
+        }
+
+        /// <summary>
+        /// Convert a string to comma-separated groups of 4 hex uppercase
+        /// digits.  E.g., hex('ab') => "0041,0042".
+        /// </summary>
+        public static string Hex(ReadOnlySpan<char> s)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                Hex(s, 4, ",".AsSpan(), true, ref sb);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Convert a string to separated groups of hex uppercase
+        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
+        /// to the given <see cref="IAppendable"/>.
+        /// </summary>
+        public static StringBuilder Hex(ReadOnlySpan<char> s, int width, ReadOnlySpan<char> separator, bool useCodePoints, StringBuilder result) // ICU4N TODO: Factor out and replace with Span<char> overload
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                Hex(s, width, separator, useCodePoints, ref sb);
+                return result.Append(sb.AsSpan());
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Convert a string to separated groups of hex uppercase
+        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
+        /// to the given <see cref="IAppendable"/>.
+        /// </summary>
+        public static T Hex<T>(ReadOnlySpan<char> s, int width, ReadOnlySpan<char> separator, bool useCodePoints, T result) where T : IAppendable // ICU4N TODO: Factor out and replace with Span<char> overload
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                Hex(s, width, separator, useCodePoints, ref sb);
+                return result.Append(sb.AsSpan());
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Convert a string to separated groups of hex uppercase
+        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
+        /// to the given <see cref="ValueStringBuilder"/>.
+        /// </summary>
+        internal static void Hex(ReadOnlySpan<char> s, int width, ReadOnlySpan<char> separator, bool useCodePoints, ref ValueStringBuilder result)
+        {
+            // ICU4N: Removed unnecessary try/catch
+            if (useCodePoints)
+            {
+                int cp;
+                for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
+                {
+                    cp = Character.CodePointAt(s, i);
+                    if (i != 0)
+                    {
+                        result.Append(separator);
+                    }
+                    result.AppendFormatHex(cp, width);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < s.Length; ++i)
+                {
+                    if (i != 0)
+                    {
+                        result.Append(separator);
+                    }
+                    result.AppendFormatHex(s[i], width);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Convert a string to comma-separated groups of 4 hex uppercase
+        /// digits.  E.g., hex('ab') => "0041,0042".
+        /// </summary>
+        public static string Hex(ReadOnlySpan<char> s, int width, ReadOnlySpan<char> separator)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                Hex(s, width, separator, true, ref sb);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+
 #nullable restore
-
-        // ICU4N specific - Hex(ICharSequence s) moved to UtilityExtension.tt
-
-        // ICU4N specific - Hex(ICharSequence s, int width, ICharSequence separator, bool useCodePoints, 
-        //      StringBuilder result) moved to UtilityExtension.tt
-
-        // ICU4N specific - Hex(ICharSequence s, int width, ICharSequence separator) moved to UtilityExtension.tt
 
         /// <summary>
         /// Split a string into pieces based on the given <paramref name="divider"/> character
@@ -1268,7 +866,7 @@ namespace ICU4N.Impl
         /// accomodate all output.  Adjacent instances of the <paramref name="divider"/>
         /// character will place empty strings into output.  Before
         /// returning, output is padded out with empty strings.</param>
-        public static void Split(string s, char divider, string[] output)
+        public static void Split(string s, char divider, string[] output) // ICU4N TODO: API - factor out (we don't want to use string[])
         {
             int last = 0;
             int current = 0;
@@ -1297,7 +895,7 @@ namespace ICU4N.Impl
         /// <returns>An array of the substrings between
         /// instances of <paramref name="divider"/>. Adjacent instances of the <paramref name="divider"/>
         /// character will place empty strings into output.</returns>
-        public static string[] Split(string s, char divider)
+        public static string[] Split(string s, char divider) // ICU4N TODO: API - factor out (we don't want to use string[])
         {
             int last = 0;
             int i;
@@ -1324,7 +922,7 @@ namespace ICU4N.Impl
         /// look for source.</param>
         /// <returns>The index of target at which source first occurs, or -1
         /// if not found.</returns>
-        public static int Lookup(string source, string[] target)
+        public static int Lookup(string source, string[] target) // ICU4N TODO: API - factor out (we don't want to use string[])
         {
             for (int i = 0; i < target.Length; ++i)
             {
@@ -1621,18 +1219,65 @@ namespace ICU4N.Impl
             return buf.ToString();
         }
 
-        internal static readonly char[] DIGITS = {
+        private static readonly char[] DIGITS = new char[] {
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
             'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
             'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
             'U', 'V', 'W', 'X', 'Y', 'Z'
         };
 
-        // ICU4N specific - RecursiveAppendNumber(IAppendable result, int n,
-        //    int radix, int minDigits) moved to UtilityExtension.tt
+        // ICU4N: Factored out RecursiveAppendNumber(IAppendable result, int n,
+        //    int radix, int minDigits) and loop inside AppendNumber() instead
 
-        // ICU4N specific - AppendNumber(T result, int n,
-        //    int radix, int minDigits) where T : IAppendable moved to UtilityExtension.tt
+        /// <summary>
+        /// Append a number to the given <see cref="StringBuilder"/> in the given radix.
+        /// Standard digits '0'-'9' are used and letters 'A'-'Z' for
+        /// radices 11 through 36.
+        /// </summary>
+        /// <param name="result">The digits of the number are appended here.</param>
+        /// <param name="n">The number to be converted to digits; may be negative. If negative, a '-' is prepended to the digits.</param>
+        /// <param name="radix">A radix from 2 to 36 inclusive.</param>
+        /// <param name="minDigits">
+        /// The minimum number of digits, not including
+        /// any '-', to produce.  Values less than 2 have no effect.  One
+        /// digit is always emitted regardless of this parameter.
+        /// </param>
+        /// <returns>A reference to result.</returns>
+        // ICU4N: Refactored to eliminate recursion to keep the stack size small
+        internal static void AppendNumber(this ref ValueStringBuilder result, int n,
+            int radix, int minDigits)
+        {
+            if (radix < 2 || radix > 36)
+            {
+                throw new ArgumentException("Illegal radix " + radix);
+            }
+            int abs = n;
+            if (n < 0)
+            {
+                abs = -n;
+                result.Append('-');
+            }
+            // Pre-count the amount to allocate
+            int count = 1;
+            while ((n /= radix) != 0)
+                count++;
+            if (count < minDigits)
+                count = minDigits;
+
+            Span<char> buffer = result.AppendSpan(count);
+
+            // Append the actual number
+            do
+            {
+                int digit = abs % radix;
+                buffer[--count] = DIGITS[digit];
+
+            } while ((abs /= radix) != 0);
+
+            // Fill any remaining space with zeros
+            while (--count >= 0)
+                buffer[count] = '0';
+        }
 
         /// <summary>
         /// Parse an unsigned 31-bit integer at the given offset.  Use
@@ -1692,8 +1337,84 @@ namespace ICU4N.Impl
             return !(c >= 0x20 && c <= 0x7E);
         }
 
-        // ICU4N specific - EscapeUnprintable(IAppendable result, int c)
-        //    moved to UtilityExtension.tt
+        /// <summary>
+        /// Escape unprintable characters using \uxxxx notation
+        /// for U+0000 to U+FFFF and \Uxxxxxxxx for U+10000 and
+        /// above. If the character is printable ASCII, then do nothing
+        /// and return FALSE. Otherwise, append the escaped notation and
+        /// return TRUE.
+        /// </summary>
+        public static bool EscapeUnprintable(StringBuilder result, int c) // ICU4N TODO: API - Rename TryEscapeUnprintable, since this does nothing if it fails
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                bool success = EscapeUnprintable(ref sb, c);
+                result.Append(sb.AsSpan());
+                return success;
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Escape unprintable characters using \uxxxx notation
+        /// for U+0000 to U+FFFF and \Uxxxxxxxx for U+10000 and
+        /// above. If the character is printable ASCII, then do nothing
+        /// and return FALSE. Otherwise, append the escaped notation and
+        /// return TRUE.
+        /// </summary>
+        public static bool EscapeUnprintable(IAppendable result, int c) // ICU4N TODO: API - Rename TryEscapeUnprintable, since this does nothing if it fails
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                bool success = EscapeUnprintable(ref sb, c);
+                result.Append(sb.AsSpan());
+                return success;
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Escape unprintable characters using \uxxxx notation
+        /// for U+0000 to U+FFFF and \Uxxxxxxxx for U+10000 and
+        /// above. If the character is printable ASCII, then do nothing
+        /// and return FALSE. Otherwise, append the escaped notation and
+        /// return TRUE.
+        /// </summary>
+        internal static bool EscapeUnprintable(ref ValueStringBuilder result, int c) // ICU4N TODO: API - Rename TryEscapeUnprintable, since this does nothing if it fails
+        {
+            // ICU4N TODO: API - Make an overload named Escape that writes to a Span<char> (6 chars).
+            // ICU4N: Removed unnecessary try/catch
+            if (IsUnprintable(c))
+            {
+                result.Append('\\');
+                if ((c & ~0xFFFF) != 0)
+                {
+                    result.Append('U');
+                    result.Append(DIGITS[0xF & (c >> 28)]);
+                    result.Append(DIGITS[0xF & (c >> 24)]);
+                    result.Append(DIGITS[0xF & (c >> 20)]);
+                    result.Append(DIGITS[0xF & (c >> 16)]);
+                }
+                else
+                {
+                    result.Append('u');
+                }
+                result.Append(DIGITS[0xF & (c >> 12)]);
+                result.Append(DIGITS[0xF & (c >> 8)]);
+                result.Append(DIGITS[0xF & (c >> 4)]);
+                result.Append(DIGITS[0xF & c]);
+                return true;
+            }
+            return false;
+        }
 
         /// <summary>
         /// Returns the index of the first character in a set, ignoring quoted text.
@@ -1702,16 +1423,14 @@ namespace ICU4N.Impl
         /// not for a single character, but for any character of the string <paramref name="setOfChars"/>.
         /// </summary>
         /// <param name="text">Text to be searched.</param>
-        /// <param name="start">The beginning index, inclusive; <c>0 &lt;= start &lt;= limit</c>.</param>
-        /// <param name="limit">The ending index, exclusive; <c>start &lt;= limit &lt;= text.Length</c>.</param>
         /// <param name="setOfChars">String with one or more distinct characters.</param>
         /// <returns>Offset of the first character in <paramref name="setOfChars"/>
         /// found, or -1 if not found.</returns>
         /// <seealso cref="string.IndexOf(char, int, int)"/>
-        public static int QuotedIndexOf(string text, int start, int limit, // ICU4N TODO: API Make limit into length, like in .NET ?
-                string setOfChars)
+        public static int QuotedIndexOf(ReadOnlySpan<char> text, ReadOnlySpan<char> setOfChars)
         {
-            for (int i = start; i < limit; ++i)
+            int limit = text.Length;
+            for (int i = 0; i < limit; ++i)
             {
                 char c = text[i];
                 if (c == BACKSLASH)
@@ -1731,6 +1450,8 @@ namespace ICU4N.Impl
             return -1;
         }
 
+#nullable enable
+
         /// <summary>
         /// Append a character to a rule that is being built up.  To flush
         /// the <paramref name="quoteBuf"/> to <paramref name="rule"/>, make one final call with <paramref name="isLiteral"/> == true.
@@ -1742,18 +1463,18 @@ namespace ICU4N.Impl
         /// quoted or escaped.  Usually this means it is a syntactic element
         /// such as > or $.</param>
         /// <param name="escapeUnprintable">If true, then unprintable characters
-        /// should be escaped using <see cref="EscapeUnprintable(StringBuffer, int)"/>.  These escapes will
+        /// should be escaped using <c>EscapeUnprintable(ref ValueStringBuilder, int)</c>. These escapes will
         /// appear outside of quotes.</param>
         /// <param name="quoteBuf">A buffer which is used to build up quoted
         /// substrings.  The caller should initially supply an empty buffer,
         /// and thereafter should not modify the buffer.  The buffer should be
         /// cleared out by, at the end, calling this method with a literal
         /// character (which may be -1).</param>
-        public static void AppendToRule(StringBuffer rule,
+        internal static void AppendToRule(ref ValueStringBuilder rule,
                 int c,
                 bool isLiteral,
                 bool escapeUnprintable,
-                StringBuffer quoteBuf)
+                ref ValueStringBuilder quoteBuf)
         {
             // If we are escaping unprintables, then escape them outside
             // quotes.  \\u and \\U are not recognized within quotes.  The same
@@ -1774,7 +1495,8 @@ namespace ICU4N.Impl
                             quoteBuf[0] == APOSTROPHE &&
                             quoteBuf[1] == APOSTROPHE)
                     {
-                        rule.Append(BACKSLASH).Append(APOSTROPHE);
+                        rule.Append(BACKSLASH);
+                        rule.Append(APOSTROPHE);
                         quoteBuf.Delete(0, 2 - 0); // ICU4N: Corrected 2nd parameter
                     }
                     // If the last thing in the quoteBuf is APOSTROPHE
@@ -1790,13 +1512,14 @@ namespace ICU4N.Impl
                     if (quoteBuf.Length > 0)
                     {
                         rule.Append(APOSTROPHE);
-                        rule.Append(quoteBuf);
+                        rule.Append(quoteBuf.AsSpan());
                         rule.Append(APOSTROPHE);
                         quoteBuf.Length = 0;
                     }
                     while (trailingCount-- > 0)
                     {
-                        rule.Append(BACKSLASH).Append(APOSTROPHE);
+                        rule.Append(BACKSLASH);
+                        rule.Append(APOSTROPHE);
                     }
                 }
                 if (c != -1)
@@ -1814,7 +1537,7 @@ namespace ICU4N.Impl
                             rule.Append(' ');
                         }
                     }
-                    else if (!escapeUnprintable || !Utility.EscapeUnprintable(rule, c))
+                    else if (!escapeUnprintable || !Utility.EscapeUnprintable(ref rule, c))
                     {
                         rule.AppendCodePoint(c);
                     }
@@ -1825,7 +1548,8 @@ namespace ICU4N.Impl
             else if (quoteBuf.Length == 0 &&
                     (c == APOSTROPHE || c == BACKSLASH))
             {
-                rule.Append(BACKSLASH).Append((char)c);
+                rule.Append(BACKSLASH);
+                rule.Append((char)c);
             }
 
             // Specials (printable ascii that isn't [0-9a-zA-Z]) and
@@ -1855,18 +1579,18 @@ namespace ICU4N.Impl
 
         /// <summary>
         /// Append the given string to the rule.  Calls the single-character
-        /// version of <see cref="AppendToRule(StringBuffer, int, bool, bool, StringBuffer)"/> for each character.
+        /// version of <c>AppendToRule(ref ValueStringBuilder, int, bool, bool, ref ValueStringBuilder)</c> for each character.
         /// </summary>
-        public static void AppendToRule(StringBuffer rule,
-                string text,
+        internal static void AppendToRule(ref ValueStringBuilder rule,
+                scoped ReadOnlySpan<char> text,
                 bool isLiteral,
                 bool escapeUnprintable,
-                StringBuffer quoteBuf)
+                ref ValueStringBuilder quoteBuf)
         {
             for (int i = 0; i < text.Length; ++i)
             {
                 // Okay to process in 16-bit code units here
-                AppendToRule(rule, text[i], isLiteral, escapeUnprintable, quoteBuf);
+                AppendToRule(ref rule, text[i], isLiteral, escapeUnprintable, ref quoteBuf);
             }
         }
 
@@ -1874,17 +1598,36 @@ namespace ICU4N.Impl
         /// Given a matcher reference, which may be null, append its
         /// pattern as a literal to the given rule.
         /// </summary>
-        public static void AppendToRule(StringBuffer rule,
-                IUnicodeMatcher matcher,
+        internal static void AppendToRule(ref ValueStringBuilder rule,
+                IUnicodeMatcher? matcher,
                 bool escapeUnprintable,
-                StringBuffer quoteBuf)
+                ref ValueStringBuilder quoteBuf)
         {
             if (matcher != null)
             {
-                AppendToRule(rule, matcher.ToPattern(escapeUnprintable),
-                        true, escapeUnprintable, quoteBuf);
+                char[]? matcherPatternArray = null;
+                try
+                {
+                    Span<char> matcherPattern = stackalloc char[CharStackBufferSize];
+                    if (!matcher.TryToPattern(escapeUnprintable, matcherPattern, out int matcherPatternLength))
+                    {
+                        // Not enough buffer, use the array pool
+                        matcherPattern = matcherPatternArray = ArrayPool<char>.Shared.Rent(matcherPatternLength);
+                        bool success = matcher.TryToPattern(escapeUnprintable, matcherPattern, out matcherPatternLength);
+                        Debug.Assert(success); // Unexpected
+                    }
+                    AppendToRule(ref rule, matcherPattern.Slice(0, matcherPatternLength),
+                        true, escapeUnprintable, ref quoteBuf);
+                }
+                finally
+                {
+                    ArrayPool<char>.Shared.ReturnIfNotNull(matcherPatternArray);
+                }
             }
         }
+
+#nullable restore
+
 
         /// <summary>
         /// Compares 2 unsigned integers.
@@ -1968,12 +1711,7 @@ namespace ICU4N.Impl
         public static string ValueOf(int[] source)
         {
             // TODO: Investigate why this method is not on UTF16 class
-            StringBuilder result = new StringBuilder(source.Length);
-            for (int i = 0; i < source.Length; i++)
-            {
-                result.AppendCodePoint(source[i]);
-            }
-            return result.ToString();
+            return Character.ToString(source);
         }
 
         /// <summary>

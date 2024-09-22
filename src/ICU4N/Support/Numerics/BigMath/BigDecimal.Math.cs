@@ -1284,9 +1284,7 @@ namespace ICU4N.Numerics.BigMath
             return RoundImpl(value, mc);
         }
 
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         private static BigDecimal RoundImpl(BigDecimal value, MathContext mc)
         {
             var thisBD = new BigDecimal(value.UnscaledValue, value.Scale);

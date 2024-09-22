@@ -221,48 +221,56 @@ namespace ICU4N.Text
             int start = pos.Start;
             int limit = pos.Limit;
 
-            StringBuilder buf = new StringBuilder(prefix);
-            int prefixLen = prefix.Length;
-            bool redoPrefix = false;
-
-            while (start < limit)
+            ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                int c = grokSupplementals ? text.Char32At(start) : text[start];
-                int charLen = grokSupplementals ? UTF16.GetCharCount(c) : 1;
+                buf.Append(prefix);
+                int prefixLen = prefix.Length;
+                bool redoPrefix = false;
 
-                if ((c & 0xFFFF0000) != 0 && supplementalHandler != null)
+                while (start < limit)
                 {
-                    buf.Length = 0;
-                    buf.Append(supplementalHandler.prefix);
-                    Utility.AppendNumber(buf, c, supplementalHandler.radix,
-                                         supplementalHandler.minDigits);
-                    buf.Append(supplementalHandler.suffix);
-                    redoPrefix = true;
-                }
-                else
-                {
-                    if (redoPrefix)
+                    int c = grokSupplementals ? text.Char32At(start) : text[start];
+                    int charLen = grokSupplementals ? UTF16.GetCharCount(c) : 1;
+
+                    if ((c & 0xFFFF0000) != 0 && supplementalHandler != null)
                     {
                         buf.Length = 0;
-                        buf.Append(prefix);
-                        redoPrefix = false;
+                        buf.Append(supplementalHandler.prefix);
+                        Utility.AppendNumber(ref buf, c, supplementalHandler.radix,
+                                             supplementalHandler.minDigits);
+                        buf.Append(supplementalHandler.suffix);
+                        redoPrefix = true;
                     }
                     else
                     {
-                        buf.Length = prefixLen;
+                        if (redoPrefix)
+                        {
+                            buf.Length = 0;
+                            buf.Append(prefix);
+                            redoPrefix = false;
+                        }
+                        else
+                        {
+                            buf.Length = prefixLen;
+                        }
+                        Utility.AppendNumber(ref buf, c, radix, minDigits);
+                        buf.Append(suffix);
                     }
-                    Utility.AppendNumber(buf, c, radix, minDigits);
-                    buf.Append(suffix);
+
+                    text.Replace(start, charLen, buf.AsSpan()); // ICU4N: Corrected 2nd parameter
+                    start += buf.Length;
+                    limit += buf.Length - charLen;
                 }
 
-                text.Replace(start, charLen, buf.ToString()); // ICU4N: Corrected 2nd parameter
-                start += buf.Length;
-                limit += buf.Length - charLen;
+                pos.ContextLimit += limit - pos.Limit;
+                pos.Limit = limit;
+                pos.Start = start;
             }
-
-            pos.ContextLimit += limit - pos.Limit;
-            pos.Limit = limit;
-            pos.Start = start;
+            finally
+            {
+                buf.Dispose();
+            }
         }
 
         /// <seealso cref="Transliterator.AddSourceTargetSet(UnicodeSet, UnicodeSet, UnicodeSet)"/>
@@ -273,18 +281,26 @@ namespace ICU4N.Text
 #pragma warning disable 612, 618
             sourceSet.AddAll(GetFilterAsUnicodeSet(inputFilter));
 #pragma warning restore 612, 618
-            for (EscapeTransliterator it = this; it != null; it = it.supplementalHandler)
+            if (inputFilter.Count != 0) // ICU4N: Moved this condition outside of the loop, since it requires some calculation
             {
-                if (inputFilter.Count != 0)
+                ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                try
                 {
-                    targetSet.AddAll(it.prefix);
-                    targetSet.AddAll(it.suffix);
-                    StringBuilder buffer = new StringBuilder();
-                    for (int i = 0; i < it.radix; ++i)
+                    for (EscapeTransliterator it = this; it != null; it = it.supplementalHandler)
                     {
-                        Utility.AppendNumber(buffer, i, it.radix, it.minDigits);
+                        targetSet.AddAll(it.prefix);
+                        targetSet.AddAll(it.suffix);
+                        buffer.Length = 0;
+                        for (int i = 0; i < it.radix; ++i)
+                        {
+                            Utility.AppendNumber(ref buffer, i, it.radix, it.minDigits);
+                        }
+                        targetSet.AddAll(buffer.AsSpan()); // TODO drop once String is changed to CharSequence in UnicodeSet
                     }
-                    targetSet.AddAll(buffer.ToString()); // TODO drop once String is changed to CharSequence in UnicodeSet
+                }
+                finally
+                {
+                    buffer.Dispose();
                 }
             }
         }

@@ -1,7 +1,6 @@
 ﻿using ICU4N.Impl;
 using J2N.Text;
 using System;
-using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
 {
@@ -40,6 +39,8 @@ namespace ICU4N.Text
     /// <author>Alan Liu</author>
     internal class TransliterationRule
     {
+        private const int CharStackBufferSize = 32;
+
         // TODO Eliminate the pattern and keyLength data members.  They
         // are used only by masks() and getIndexValue() which are called
         // only during build time, not during run-time.  Perhaps these
@@ -519,59 +520,90 @@ namespace ICU4N.Text
         /// </summary>
         public virtual string ToRule(bool escapeUnprintable)
         {
+            ValueStringBuilder rule = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+
+            try
+            {
+                ToRule(escapeUnprintable, ref rule);
+                return rule.ToString();
+            }
+            finally
+            {
+                rule.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Create a source string that represents this rule.  Append it to the
+        /// given <see cref="ValueStringBuilder"/>.
+        /// </summary>
+        public virtual void ToRule(bool escapeUnprintable, ref ValueStringBuilder destination)
+        {
             // int i;
 
-            StringBuffer rule = new StringBuffer();
+            ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+
+            ValueStringBuilder rule = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
 
             // Accumulate special characters (and non-specials following them)
             // into quoteBuf.  Append quoteBuf, within single quotes, when
             // a non-quoted element must be inserted.
-            StringBuffer quoteBuf = new StringBuffer();
+            ValueStringBuilder quoteBuf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
 
-            // Do not emit the braces '{' '}' around the pattern if there
-            // is neither anteContext nor postContext.
-            bool emitBraces =
-                (anteContext != null) || (postContext != null);
-
-            // Emit start anchor
-            if ((flags & ANCHOR_START) != 0)
+            try
             {
-                rule.Append('^');
+                // Do not emit the braces '{' '}' around the pattern if there
+                // is neither anteContext nor postContext.
+                bool emitBraces =
+                    (anteContext != null) || (postContext != null);
+
+                // Emit start anchor
+                if ((flags & ANCHOR_START) != 0)
+                {
+                    rule.Append('^');
+                }
+
+                // Emit the input pattern
+                Utility.AppendToRule(ref rule, anteContext, escapeUnprintable, ref quoteBuf);
+
+                if (emitBraces)
+                {
+                    Utility.AppendToRule(ref rule, '{', true, escapeUnprintable, ref quoteBuf);
+                }
+
+                Utility.AppendToRule(ref rule, key, escapeUnprintable, ref quoteBuf);
+
+                if (emitBraces)
+                {
+                    Utility.AppendToRule(ref rule, '}', true, escapeUnprintable, ref quoteBuf);
+                }
+
+                Utility.AppendToRule(ref rule, postContext, escapeUnprintable, ref quoteBuf);
+
+                // Emit end anchor
+                if ((flags & ANCHOR_END) != 0)
+                {
+                    rule.Append('$');
+                }
+
+                Utility.AppendToRule(ref rule, " > ".AsSpan(), true, escapeUnprintable, ref quoteBuf);
+
+                // Emit the output pattern
+
+                output.ToReplacerPattern(escapeUnprintable, ref buf);
+                Utility.AppendToRule(ref rule, buf.AsSpan(),
+                             true, escapeUnprintable, ref quoteBuf);
+
+                Utility.AppendToRule(ref rule, ';', true, escapeUnprintable, ref quoteBuf);
+
+                destination.Append(rule.AsSpan());
             }
-
-            // Emit the input pattern
-            Utility.AppendToRule(rule, anteContext, escapeUnprintable, quoteBuf);
-
-            if (emitBraces)
+            finally
             {
-                Utility.AppendToRule(rule, '{', true, escapeUnprintable, quoteBuf);
+                buf.Dispose();
+                rule.Dispose();
+                quoteBuf.Dispose();
             }
-
-            Utility.AppendToRule(rule, key, escapeUnprintable, quoteBuf);
-
-            if (emitBraces)
-            {
-                Utility.AppendToRule(rule, '}', true, escapeUnprintable, quoteBuf);
-            }
-
-            Utility.AppendToRule(rule, postContext, escapeUnprintable, quoteBuf);
-
-            // Emit end anchor
-            if ((flags & ANCHOR_END) != 0)
-            {
-                rule.Append('$');
-            }
-
-            Utility.AppendToRule(rule, " > ", true, escapeUnprintable, quoteBuf);
-
-            // Emit the output pattern
-
-            Utility.AppendToRule(rule, output.ToReplacerPattern(escapeUnprintable),
-                         true, escapeUnprintable, quoteBuf);
-
-            Utility.AppendToRule(rule, ';', true, escapeUnprintable, quoteBuf);
-
-            return rule.ToString();
         }
 
         /// <summary>
@@ -580,7 +612,18 @@ namespace ICU4N.Text
         /// <returns>String representation of this object.</returns>
         public override string ToString()
         {
-            return '{' + ToRule(true) + '}';
+            ValueStringBuilder rule = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                rule.Append('{');
+                ToRule(true, ref rule);
+                rule.Append('}');
+                return rule.ToString();
+            }
+            finally
+            {
+                rule.Dispose();
+            }
         }
 
         /// <summary>

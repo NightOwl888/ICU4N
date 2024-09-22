@@ -193,9 +193,7 @@ namespace ICU4N.Impl
             return IsRequestedCulture(satelliteAssembly, cultureName) ? satelliteAssembly : null;
         }
 
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static bool IsRequestedCulture(Assembly satelliteAssembly, string cultureName)
         {
             if (satelliteAssembly is null) return false;

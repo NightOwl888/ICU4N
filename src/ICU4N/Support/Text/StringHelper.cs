@@ -1,14 +1,13 @@
-﻿using System;
-#if FEATURE_SPAN
+﻿using ICU4N.Support.Text;
+using System;
 using System.Buffers;
 using System.Linq;
-#endif
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 #nullable enable
 
 namespace ICU4N.Text
 {
-#if FEATURE_SPAN
-
     /// <summary>
     /// Shim for string concat operations on <see cref="ReadOnlySpan{T}"/> where they are unsupported.
     /// </summary>
@@ -42,8 +41,7 @@ namespace ICU4N.Text
             }
             finally
             {
-                if (arrayToReturnToPool is not null)
-                    ArrayPool<char>.Shared.Return(arrayToReturnToPool);
+                ArrayPool<char>.Shared.ReturnIfNotNull(arrayToReturnToPool);
             }
 #endif
         }
@@ -75,8 +73,7 @@ namespace ICU4N.Text
             }
             finally
             {
-                if (arrayToReturnToPool is not null)
-                    ArrayPool<char>.Shared.Return(arrayToReturnToPool);
+                ArrayPool<char>.Shared.ReturnIfNotNull(arrayToReturnToPool);
             }
 #endif
         }
@@ -109,8 +106,7 @@ namespace ICU4N.Text
             }
             finally
             {
-                if (arrayToReturnToPool is not null)
-                    ArrayPool<char>.Shared.Return(arrayToReturnToPool);
+                ArrayPool<char>.Shared.ReturnIfNotNull(arrayToReturnToPool);
             }
 
 #endif
@@ -141,8 +137,7 @@ namespace ICU4N.Text
             }
             finally
             {
-                if (arrayToReturnToPool is not null)
-                    ArrayPool<char>.Shared.Return(arrayToReturnToPool);
+                ArrayPool<char>.Shared.ReturnIfNotNull(arrayToReturnToPool);
             }
 
 
@@ -174,10 +169,22 @@ namespace ICU4N.Text
             }
             finally
             {
-                if (arrayToReturnToPool is not null)
-                    ArrayPool<char>.Shared.Return(arrayToReturnToPool);
+                ArrayPool<char>.Shared.ReturnIfNotNull(arrayToReturnToPool);
             }
         }
-    }
+
+        // A span-based equivalent of String.GetHashCode(). Computes an ordinal hash code.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int GetHashCode(ReadOnlySpan<char> value)
+        {
+#if FEATURE_STRING_GETHASHCODE_READONLYSPAN
+            return string.GetHashCode(value);
+#else
+            ulong seed = Marvin.DefaultSeed;
+
+            // Multiplication below will not overflow since going from positive Int32 to UInt32.
+            return Marvin.ComputeHash32(ref Unsafe.As<char, byte>(ref MemoryMarshal.GetReference(value)), (uint)value.Length * 2 /* in bytes, not chars */, (uint)seed, (uint)(seed >> 32), BitConverter.IsLittleEndian);
 #endif
+        }
+    }
 }

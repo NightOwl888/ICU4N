@@ -20,8 +20,6 @@ namespace ICU4N.Text
         private const string Empty = "";
 
 
-#if FEATURE_SPAN
-
         [Test]
         [TestCase(a + b, a, b)]
         [TestCase(a + c, a, c)]
@@ -76,7 +74,5 @@ namespace ICU4N.Text
         {
             Assert.AreEqual(expected, StringHelper.Concat(str0.AsSpan(), str1.AsSpan(), str2.AsSpan(), str3.AsSpan(), str4.AsSpan(), str5.AsSpan()));
         }
-#endif
-
     }
 }

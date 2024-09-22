@@ -1,11 +1,11 @@
 ﻿using ICU4N.Globalization;
-using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
 using J2N.Numerics;
 using J2N.Text;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -14,6 +14,8 @@ namespace ICU4N.Impl.Coll
 {
     public sealed class CollationBuilder : CollationRuleParser.ISink
     {
+        private const int CharStackBufferSize = 64;
+
         private static readonly bool DEBUG = false;
         private sealed class BundleImporter : CollationRuleParser.IImporter
         {
@@ -27,9 +29,9 @@ namespace ICU4N.Impl.Coll
 
         public CollationBuilder(CollationTailoring b)
         {
-            nfd = Normalizer2.GetNFDInstance();
-            fcd = Norm2AllModes.GetFCDNormalizer2();
-            nfcImpl = Norm2AllModes.GetNFCInstance().Impl;
+            nfd = Normalizer2.NFDInstance;
+            fcd = Norm2AllModes.FCDNormalizer2;
+            nfcImpl = Norm2AllModes.NFCInstance.Impl;
             @base = b;
             baseData = b.Data;
             rootElements = new CollationRootElements(b.Data.RootElements);
@@ -99,7 +101,7 @@ namespace ICU4N.Impl.Coll
         }
 
         /// <summary>Implements <see cref="CollationRuleParser.ISink"/>.</summary>
-        void CollationRuleParser.ISink.AddReset(CollationStrength strength, ICharSequence str)
+        void CollationRuleParser.ISink.AddReset(CollationStrength strength, ReadOnlySpan<char> str)
         {
             Debug.Assert(str.Length != 0);
             if (str[0] == CollationRuleParser.POS_LEAD)
@@ -111,12 +113,20 @@ namespace ICU4N.Impl.Coll
             else
             {
                 // normal reset to a character or string
-                string nfdString = nfd.Normalize(str);
-                cesLength = dataBuilder.GetCEs(nfdString.AsCharSequence(), ces, 0);
-                if (cesLength > Collation.MAX_EXPANSION_LENGTH)
+                ValueStringBuilder nfdString = new ValueStringBuilder(str.Length);
+                try
                 {
-                    throw new ArgumentException(
-                            "reset position maps to too many collation elements (more than 31)");
+                    nfd.Normalize(str, ref nfdString);
+                    cesLength = dataBuilder.GetCEs(nfdString.AsMemory(), ces, 0);
+                    if (cesLength > Collation.MAX_EXPANSION_LENGTH)
+                    {
+                        throw new ArgumentException(
+                                "reset position maps to too many collation elements (more than 31)");
+                    }
+                }
+                finally
+                {
+                    nfdString.Dispose();
                 }
             }
             if (strength == CollationStrength.Identical) { return; }  // simple reset-at-position
@@ -311,7 +321,7 @@ namespace ICU4N.Impl.Coll
             return weight16;
         }
 
-        private long GetSpecialResetPosition(ICharSequence str)
+        private long GetSpecialResetPosition(ReadOnlySpan<char> str)
         {
             Debug.Assert(str.Length == 2);
             long ce;
@@ -493,103 +503,112 @@ namespace ICU4N.Impl.Coll
         }
 
         /// <summary>Implements <see cref="CollationRuleParser.ISink"/>.</summary>
-        void CollationRuleParser.ISink.AddRelation(CollationStrength strength, ICharSequence prefix, ICharSequence str, string extension) // ICU4N specific - changed extension from ICharSequence to string
+        void CollationRuleParser.ISink.AddRelation(CollationStrength strength, ReadOnlySpan<char> prefix, ReadOnlyMemory<char> str, ReadOnlySpan<char> extension)
         {
-            StringCharSequence nfdPrefix;
-            if (prefix.Length == 0)
+            ReadOnlySpan<char> strSpan = str.Span;
+            // ICU4N: These are intentionally declared on the heap so we can use AsMemory(),
+            // which will be required until the iterators can be made into ref structs
+            // (and into enumerators).
+            ValueStringBuilder nfdPrefix = new ValueStringBuilder(prefix.Length);
+            ValueStringBuilder nfdString = new ValueStringBuilder(str.Length);
+            try
             {
-                nfdPrefix = new StringCharSequence("");
-            }
-            else
-            {
-                nfdPrefix = new StringCharSequence(nfd.Normalize(prefix));
-            }
-            StringCharSequence nfdString = new StringCharSequence(nfd.Normalize(str));
+                if (prefix.Length > 0)
+                {
+                    nfd.Normalize(prefix, ref nfdPrefix);
+                }
+                nfd.Normalize(strSpan, ref nfdString);
 
-            // The runtime code decomposes Hangul syllables on the fly,
-            // with recursive processing but without making the Jamo pieces visible for matching.
-            // It does not work with certain types of contextual mappings.
-            int nfdLength = nfdString.Length;
-            if (nfdLength >= 2)
-            {
-                char c = nfdString[0];
-                if (Hangul.IsJamoL(c) || Hangul.IsJamoV(c))
+                // The runtime code decomposes Hangul syllables on the fly,
+                // with recursive processing but without making the Jamo pieces visible for matching.
+                // It does not work with certain types of contextual mappings.
+                int nfdLength = nfdString.Length;
+                if (nfdLength >= 2)
                 {
-                    // While handling a Hangul syllable, contractions starting with Jamo L or V
-                    // would not see the following Jamo of that syllable.
-                    throw new NotSupportedException(
-                            "contractions starting with conjoining Jamo L or V not supported");
+                    char c = nfdString[0];
+                    if (Hangul.IsJamoL(c) || Hangul.IsJamoV(c))
+                    {
+                        // While handling a Hangul syllable, contractions starting with Jamo L or V
+                        // would not see the following Jamo of that syllable.
+                        throw new NotSupportedException(
+                                "contractions starting with conjoining Jamo L or V not supported");
+                    }
+                    c = nfdString[nfdLength - 1];
+                    if (Hangul.IsJamoL(c) ||
+                            (Hangul.IsJamoV(c) && Hangul.IsJamoL(nfdString[nfdLength - 2])))
+                    {
+                        // A contraction ending with Jamo L or L+V would require
+                        // generating Hangul syllables in addTailComposites() (588 for a Jamo L),
+                        // or decomposing a following Hangul syllable on the fly, during contraction matching.
+                        throw new NotSupportedException(
+                                "contractions ending with conjoining Jamo L or L+V not supported");
+                    }
+                    // A Hangul syllable completely inside a contraction is ok.
                 }
-                c = nfdString[nfdLength - 1];
-                if (Hangul.IsJamoL(c) ||
-                        (Hangul.IsJamoV(c) && Hangul.IsJamoL(nfdString[nfdLength - 2])))
-                {
-                    // A contraction ending with Jamo L or L+V would require
-                    // generating Hangul syllables in addTailComposites() (588 for a Jamo L),
-                    // or decomposing a following Hangul syllable on the fly, during contraction matching.
-                    throw new NotSupportedException(
-                            "contractions ending with conjoining Jamo L or L+V not supported");
-                }
-                // A Hangul syllable completely inside a contraction is ok.
-            }
-            // Note: If there is a prefix, then the parser checked that
-            // both the prefix and the string beging with NFC boundaries (not Jamo V or T).
-            // Therefore: prefix.isEmpty() || !isJamoVOrT(nfdString.charAt(0))
-            // (While handling a Hangul syllable, prefixes on Jamo V or T
-            // would not see the previous Jamo of that syllable.)
+                // Note: If there is a prefix, then the parser checked that
+                // both the prefix and the string beging with NFC boundaries (not Jamo V or T).
+                // Therefore: prefix.isEmpty() || !isJamoVOrT(nfdString.charAt(0))
+                // (While handling a Hangul syllable, prefixes on Jamo V or T
+                // would not see the previous Jamo of that syllable.)
 
-            if (strength != CollationStrength.Identical)
-            {
-                // Find the node index after which we insert the new tailored node.
-                int index = FindOrInsertNodeForCEs(strength);
-                Debug.Assert(cesLength > 0);
-                long ce = ces[cesLength - 1];
-                if (strength == CollationStrength.Primary && !IsTempCE(ce) && (ce.TripleShift(32)) == 0)
+                if (strength != CollationStrength.Identical)
                 {
-                    // There is no primary gap between ignorables and the space-first-primary.
-                    throw new NotSupportedException(
-                            "tailoring primary after ignorables not supported");
+                    // Find the node index after which we insert the new tailored node.
+                    int index = FindOrInsertNodeForCEs(strength);
+                    Debug.Assert(cesLength > 0);
+                    long ce = ces[cesLength - 1];
+                    if (strength == CollationStrength.Primary && !IsTempCE(ce) && (ce.TripleShift(32)) == 0)
+                    {
+                        // There is no primary gap between ignorables and the space-first-primary.
+                        throw new NotSupportedException(
+                                "tailoring primary after ignorables not supported");
+                    }
+                    if (strength == CollationStrength.Quaternary && ce == 0)
+                    {
+                        // The CE data structure does not support non-zero quaternary weights
+                        // on tertiary ignorables.
+                        throw new NotSupportedException(
+                                "tailoring quaternary after tertiary ignorables not supported");
+                    }
+                    // Insert the new tailored node.
+                    index = InsertTailoredNodeAfter(index, strength);
+                    // Strength of the temporary CE:
+                    // The new relation may yield a stronger CE but not a weaker one.
+                    CollationStrength tempStrength = CeStrength(ce);
+                    if (strength < tempStrength) { tempStrength = strength; }
+                    ces[cesLength - 1] = TempCEFromIndexAndStrength(index, tempStrength);
                 }
-                if (strength == CollationStrength.Quaternary && ce == 0)
-                {
-                    // The CE data structure does not support non-zero quaternary weights
-                    // on tertiary ignorables.
-                    throw new NotSupportedException(
-                            "tailoring quaternary after tertiary ignorables not supported");
-                }
-                // Insert the new tailored node.
-                index = InsertTailoredNodeAfter(index, strength);
-                // Strength of the temporary CE:
-                // The new relation may yield a stronger CE but not a weaker one.
-                CollationStrength tempStrength = CeStrength(ce);
-                if (strength < tempStrength) { tempStrength = strength; }
-                ces[cesLength - 1] = TempCEFromIndexAndStrength(index, tempStrength);
-            }
 
-            SetCaseBits(nfdString);
+                SetCaseBits(nfdString.AsMemory());
 
-            int cesLengthBeforeExtension = cesLength;
-            if (extension.Length != 0)
-            {
-                string nfdExtension = nfd.Normalize(extension);
-                cesLength = dataBuilder.GetCEs(nfdExtension.AsCharSequence(), ces, cesLength);
-                if (cesLength > Collation.MAX_EXPANSION_LENGTH)
+                int cesLengthBeforeExtension = cesLength;
+                if (extension.Length != 0)
                 {
-                    throw new ArgumentException(
-                            "extension string adds too many collation elements (more than 31 total)");
+                    string nfdExtension = nfd.Normalize(extension);
+                    cesLength = dataBuilder.GetCEs(nfdExtension.AsMemory(), ces, cesLength);
+                    if (cesLength > Collation.MAX_EXPANSION_LENGTH)
+                    {
+                        throw new ArgumentException(
+                                "extension string adds too many collation elements (more than 31 total)");
+                    }
                 }
+                int ce32 = Collation.UNASSIGNED_CE32;
+                if ((!prefix.Equals(nfdPrefix.AsSpan(), StringComparison.Ordinal) || !strSpan.Equals(nfdString.AsSpan(), StringComparison.Ordinal)) &&
+                    !IgnorePrefix(prefix) && !IgnoreString(strSpan))
+                {
+                    // Map from the original input to the CEs.
+                    // We do this in case the canonical closure is incomplete,
+                    // so that it is possible to explicitly provide the missing mappings.
+                    ce32 = AddIfDifferent(prefix, str, ces, cesLength, ce32);
+                }
+                AddWithClosure(nfdPrefix.AsSpan(), nfdString.AsMemory(), ces, cesLength, ce32);
+                cesLength = cesLengthBeforeExtension;
             }
-            int ce32 = Collation.UNASSIGNED_CE32;
-            if ((!nfdPrefix.Value.ContentEquals(prefix) || !nfdString.Value.ContentEquals(str)) &&
-                    !IgnorePrefix(prefix) && !IgnoreString(str))
+            finally
             {
-                // Map from the original input to the CEs.
-                // We do this in case the canonical closure is incomplete,
-                // so that it is possible to explicitly provide the missing mappings.
-                ce32 = AddIfDifferent(prefix, str, ces, cesLength, ce32);
+                nfdPrefix.Dispose();
+                nfdString.Dispose();
             }
-            AddWithClosure(nfdPrefix, nfdString, ces, cesLength, ce32);
-            cesLength = cesLengthBeforeExtension;
         }
 
         /// <summary>
@@ -885,7 +904,7 @@ namespace ICU4N.Impl.Coll
             return index;
         }
 
-        private void SetCaseBits(ICharSequence nfdString)
+        private void SetCaseBits(ReadOnlyMemory<char> nfdString)
         {
             int numTailoredPrimaries = 0;
             for (int i = 0; i < cesLength; ++i)
@@ -900,8 +919,7 @@ namespace ICU4N.Impl.Coll
             long cases = 0;
             if (numTailoredPrimaries > 0)
             {
-                ICharSequence s = nfdString;
-                UTF16CollationIterator baseCEs = new UTF16CollationIterator(baseData, false, s, 0);
+                UTF16CollationIterator baseCEs = new UTF16CollationIterator(baseData, false, nfdString, 0);
                 int baseCEsLength = baseCEs.FetchCEs() - 1;
                 Debug.Assert(baseCEsLength >= 0 && baseCEs.GetCE(baseCEsLength) == Collation.NoCE);
 
@@ -981,17 +999,17 @@ namespace ICU4N.Impl.Coll
         /// Takes ce32=dataBuilder.EncodeCEs(...) so that the data builder
         /// need not re-encode the CEs multiple times.
         /// </summary>
-        private int AddWithClosure(ICharSequence nfdPrefix, ICharSequence nfdString,
+        private int AddWithClosure(ReadOnlySpan<char> nfdPrefix, ReadOnlyMemory<char> nfdString,
                     long[] newCEs, int newCEsLength, int ce32)
         {
             // Map from the NFD input to the CEs.
             ce32 = AddIfDifferent(nfdPrefix, nfdString, newCEs, newCEsLength, ce32);
-            ce32 = AddOnlyClosure(nfdPrefix, nfdString, newCEs, newCEsLength, ce32);
-            AddTailComposites(nfdPrefix, nfdString);
+            ce32 = AddOnlyClosure(nfdPrefix, nfdString.Span, newCEs, newCEsLength, ce32);
+            AddTailComposites(nfdPrefix, nfdString.Span);
             return ce32;
         }
 
-        private int AddOnlyClosure(ICharSequence nfdPrefix, ICharSequence nfdString,
+        private int AddOnlyClosure(ReadOnlySpan<char> nfdPrefix, ReadOnlySpan<char> nfdString,
             long[] newCEs, int newCEsLength, int ce32)
         {
             // Map from canonically equivalent input to the CEs. (But not from the all-NFD input.)
@@ -999,12 +1017,12 @@ namespace ICU4N.Impl.Coll
             if (nfdPrefix.Length == 0)
             {
                 CanonicalEnumerator stringIter = new CanonicalEnumerator(nfdString.ToString());
-                ICharSequence prefix = new StringCharSequence("");
+                ReadOnlySpan<char> prefix = default;
                 while (stringIter.MoveNext())
                 {
                     string str = stringIter.Current;
-                    if (IgnoreString(str) || str.ContentEquals(nfdString)) { continue; }
-                    ce32 = AddIfDifferent(prefix, str.AsCharSequence(), newCEs, newCEsLength, ce32);
+                    if (IgnoreString(str) || nfdString.Equals(str, StringComparison.Ordinal)) { continue; }
+                    ce32 = AddIfDifferent(prefix, str.AsMemory(), newCEs, newCEsLength, ce32);
                 }
             }
             else
@@ -1016,12 +1034,12 @@ namespace ICU4N.Impl.Coll
                     string prefix = prefixIter.Current;
                     if (IgnorePrefix(prefix)) { continue; }
                     bool samePrefix = prefix.ContentEquals(nfdPrefix);
-                    ICharSequence prefixCharSequence = prefix.AsCharSequence();
+                    ReadOnlySpan<char> prefixCharSequence = prefix.AsSpan();
                     while (stringIter.MoveNext())
                     {
                         string str = stringIter.Current;
                         if (IgnoreString(str) || (samePrefix && str.ContentEquals(nfdString))) { continue; }
-                        ce32 = AddIfDifferent(prefixCharSequence, str.AsCharSequence(), newCEs, newCEsLength, ce32);
+                        ce32 = AddIfDifferent(prefixCharSequence, str.AsMemory(), newCEs, newCEsLength, ce32);
                     }
                     stringIter.Reset();
                 }
@@ -1029,7 +1047,7 @@ namespace ICU4N.Impl.Coll
             return ce32;
         }
 
-        private void AddTailComposites(ICharSequence nfdPrefix, ICharSequence nfdString)
+        private void AddTailComposites(ReadOnlySpan<char> nfdPrefix, ReadOnlySpan<char> nfdString)
         {
             // Look for the last starter in the NFD string.
             int lastStarter;
@@ -1050,7 +1068,12 @@ namespace ICU4N.Impl.Coll
             UnicodeSet composites = new UnicodeSet();
             if (!nfcImpl.GetCanonStartSet(lastStarter, composites)) { return; }
 
-            StringBuilderCharSequence newNFDString = new StringBuilderCharSequence(new StringBuilder()), newString = new StringBuilderCharSequence(new StringBuilder());
+            // ICU4N: Best guess for memory allocation sizes.
+            // We use OpenStringBuilder because it can be converted to ReadOnlyMemory<char>, whereas
+            // StringBuilder cannot be.
+            OpenStringBuilder newNFDString = new OpenStringBuilder(nfdString.Length);
+            OpenStringBuilder newString =  new OpenStringBuilder(nfdPrefix.Length + nfdString.Length);
+
             long[] newCEs = new long[Collation.MAX_EXPANSION_LENGTH];
             UnicodeSetIterator iter = new UnicodeSetIterator(composites);
             while (iter.Next())
@@ -1058,12 +1081,12 @@ namespace ICU4N.Impl.Coll
                 Debug.Assert(iter.Codepoint != UnicodeSetIterator.IsString);
                 int composite = iter.Codepoint;
                 string decomp = nfd.GetDecomposition(composite);
-                if (!MergeCompositeIntoString(nfdString, indexAfterLastStarter, composite, decomp,
-                        newNFDString.Value, newString.Value))
+                if (!MergeCompositeIntoString(nfdString, indexAfterLastStarter, composite, decomp.AsSpan(),
+                        newNFDString, newString))
                 {
                     continue;
                 }
-                int newCEsLength = dataBuilder.GetCEs(nfdPrefix, newNFDString, newCEs, 0);
+                int newCEsLength = dataBuilder.GetCEs(nfdPrefix, newNFDString.AsMemory(), newCEs, 0);
                 if (newCEsLength > Collation.MAX_EXPANSION_LENGTH)
                 {
                     // Ignore mappings that we cannot store.
@@ -1084,22 +1107,22 @@ namespace ICU4N.Impl.Coll
                 // We do not need an explicit mapping for the NFD strings.
                 // It is fine if the NFD input collates like this via a sequence of mappings.
                 // It also saves a little bit of space, and may reduce the set of characters with contractions.
-                int ce32 = AddIfDifferent(nfdPrefix, newString,
-                                              newCEs, newCEsLength, Collation.UNASSIGNED_CE32);
+                int ce32 = AddIfDifferent(nfdPrefix, newString.AsMemory(),
+                                                newCEs, newCEsLength, Collation.UNASSIGNED_CE32);
                 if (ce32 != Collation.UNASSIGNED_CE32)
                 {
                     // was different, was added
-                    AddOnlyClosure(nfdPrefix, newNFDString, newCEs, newCEsLength, ce32);
+                    AddOnlyClosure(nfdPrefix, newNFDString.AsSpan(), newCEs, newCEsLength, ce32);
                 }
             }
         }
 
-        private bool MergeCompositeIntoString(ICharSequence nfdString, int indexAfterLastStarter,
-                    int composite, string decomp,
-                    StringBuilder newNFDString, StringBuilder newString) // ICU4N specific - changed decomp from ICharSequence to string
+        private bool MergeCompositeIntoString(ReadOnlySpan<char> nfdString, int indexAfterLastStarter,
+                    int composite, ReadOnlySpan<char> decomp,
+                    OpenStringBuilder newNFDString, OpenStringBuilder newString)
         {
             Debug.Assert(Character.CodePointBefore(nfdString, indexAfterLastStarter) ==
-            Character.CodePointAt(decomp, 0));
+                Character.CodePointAt(decomp, 0));
             int lastStarterLength = Character.OffsetByCodePoints(decomp, 0, 1);
             if (lastStarterLength == decomp.Length)
             {
@@ -1107,7 +1130,8 @@ namespace ICU4N.Impl.Coll
                 // and the CanonicalIterator, so we can ignore them here.
                 return false;
             }
-            if (EqualSubSequences(nfdString, indexAfterLastStarter, decomp, lastStarterLength))
+            // C++ UnicodeString::compare(leftStart, 0x7fffffff, right, rightStart, 0x7fffffff) == 0
+            if (nfdString.Slice(indexAfterLastStarter).Equals(decomp.Slice(lastStarterLength), StringComparison.Ordinal))
             {
                 // same strings, nothing new to be found here
                 return false;
@@ -1119,8 +1143,8 @@ namespace ICU4N.Impl.Coll
             newNFDString.Length = 0;
             newNFDString.Append(nfdString, 0, indexAfterLastStarter - 0); // ICU4N: Checked 3rd parameter
             newString.Length = 0;
-            newString.Append(nfdString, 0, (indexAfterLastStarter - lastStarterLength) - 0) // ICU4N: Checked 3rd parameter
-                .AppendCodePoint(composite);
+            newString.Append(nfdString, 0, (indexAfterLastStarter - lastStarterLength) - 0); // ICU4N: Checked 3rd parameter
+            newString.AppendCodePoint(composite);
 
             // The following is related to discontiguous contraction matching,
             // but builds only FCD strings (or else returns false).
@@ -1193,33 +1217,21 @@ namespace ICU4N.Impl.Coll
             {  // more characters from decomp, not from nfdString
                 newNFDString.Append(decomp, decompIndex, decomp.Length - decompIndex); // ICU4N: Corrected 3rd parameter
             }
-            Debug.Assert(nfd.IsNormalized(newNFDString));
-            Debug.Assert(fcd.IsNormalized(newString));
-            Debug.Assert(nfd.Normalize(newString).Equals(newNFDString.ToString()));  // canonically equivalent
+            Debug.Assert(nfd.IsNormalized(newNFDString.AsSpan()));
+            Debug.Assert(fcd.IsNormalized(newString.AsSpan()));
+            Debug.Assert(nfd.Normalize(newString.AsSpan()).AsSpan().Equals(newNFDString.AsSpan(), StringComparison.Ordinal));  // canonically equivalent
             return true;
         }
 
-        private bool EqualSubSequences(ICharSequence left, int leftStart, string right, int rightStart) // ICU4N specific - changed right from ICharSequence to string
-        {
-            // C++ UnicodeString::compare(leftStart, 0x7fffffff, right, rightStart, 0x7fffffff) == 0
-            int leftLength = left.Length;
-            if ((leftLength - leftStart) != (right.Length - rightStart)) { return false; }
-            while (leftStart < leftLength)
-            {
-                if (left[leftStart++] != right[rightStart++])
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
+        // ICU4N: Factored out EqualSubSequences because we can slice spans in .NET
+
         // ICU4N specific overload
         private bool IgnorePrefix(string s)
         {
             // Do not map non-FCD prefixes.
             return !IsFCD(s);
         }
-        private bool IgnorePrefix(ICharSequence s) 
+        private bool IgnorePrefix(ReadOnlySpan<char> s)
         {
             // Do not map non-FCD prefixes.
             return !IsFCD(s);
@@ -1231,7 +1243,7 @@ namespace ICU4N.Impl.Coll
             // Do not map strings that start with Hangul syllables: We decompose those on the fly.
             return !IsFCD(s) || Hangul.IsHangul(s[0]);
         }
-        private bool IgnoreString(ICharSequence s)
+        private bool IgnoreString(ReadOnlySpan<char> s)
         {
             // Do not map non-FCD strings.
             // Do not map strings that start with Hangul syllables: We decompose those on the fly.
@@ -1242,7 +1254,7 @@ namespace ICU4N.Impl.Coll
         {
             return fcd.IsNormalized(s);
         }
-        private bool IsFCD(ICharSequence s)
+        private bool IsFCD(ReadOnlySpan<char> s)
         {
             return fcd.IsNormalized(s);
         }
@@ -1256,13 +1268,13 @@ namespace ICU4N.Impl.Coll
 
         private void CloseOverComposites()
         {
-            ICharSequence prefix = new StringCharSequence("");  // empty
+            ReadOnlySpan<char> prefix = default; // empty
             UnicodeSetIterator iter = new UnicodeSetIterator(COMPOSITES);
             while (iter.Next())
             {
                 Debug.Assert(iter.Codepoint != UnicodeSetIterator.IsString);
                 string nfdString = nfd.GetDecomposition(iter.Codepoint);
-                cesLength = dataBuilder.GetCEs(nfdString.AsCharSequence(), ces, 0);
+                cesLength = dataBuilder.GetCEs(nfdString.AsMemory(), ces, 0);
                 if (cesLength > Collation.MAX_EXPANSION_LENGTH)
                 {
                     // Too many CEs from the decomposition (unusual), ignore this composite.
@@ -1271,11 +1283,11 @@ namespace ICU4N.Impl.Coll
                     continue;
                 }
                 string composite = iter.GetString();
-                AddIfDifferent(prefix, composite.AsCharSequence(), ces, cesLength, Collation.UNASSIGNED_CE32);
+                AddIfDifferent(prefix, composite.AsMemory(), ces, cesLength, Collation.UNASSIGNED_CE32);
             }
         }
 
-        private int AddIfDifferent(ICharSequence prefix, ICharSequence str,
+        private int AddIfDifferent(ReadOnlySpan<char> prefix, ReadOnlyMemory<char> str,
                     long[] newCEs, int newCEsLength, int ce32)
         {
             long[] oldCEs = new long[Collation.MAX_EXPANSION_LENGTH];
@@ -1286,7 +1298,7 @@ namespace ICU4N.Impl.Coll
                 {
                     ce32 = dataBuilder.EncodeCEs(newCEs, newCEsLength);
                 }
-                dataBuilder.AddCE32(prefix, str, ce32);
+                dataBuilder.AddCE32(prefix, str.Span, ce32);
             }
             return ce32;
         }

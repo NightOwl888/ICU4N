@@ -1,5 +1,5 @@
 ﻿using ICU4N.Impl;
-using StringBuffer = System.Text.StringBuilder;
+using System;
 
 namespace ICU4N.Text
 {
@@ -14,6 +14,8 @@ namespace ICU4N.Text
     /// <author>Alan Liu</author>
     internal class StringReplacer : IUnicodeReplacer
     {
+        private const int CharStackBufferSize = 32;
+
         /// <summary>
         /// Output text, possibly containing stand-in characters that
         /// represent nested <see cref="IUnicodeReplacer"/>s.
@@ -140,104 +142,112 @@ namespace ICU4N.Text
                  * the integrity of indices into the key and surrounding context while
                  * generating the output text.
                  */
-                StringBuffer buf = new StringBuffer();
-                int oOutput; // offset into 'output'
-                isComplex = false;
-
-                // The temporary buffer starts at tempStart, and extends
-                // to destLimit + tempExtra.  The start of the buffer has a single
-                // character from before the key.  This provides style
-                // data when addition characters are filled into the
-                // temporary buffer.  If there is nothing to the left, use
-                // the non-character U+FFFF, which Replaceable subclasses
-                // should treat specially as a "no-style character."
-                // destStart points to the point after the style context
-                // character, so it is tempStart+1 or tempStart+2.
-                int tempStart = text.Length; // start of temp buffer
-                int destStart = tempStart; // copy new text to here
-                if (start > 0)
+                ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                try
                 {
-                    int len = UTF16.GetCharCount(text.Char32At(start - 1));
-                    text.Copy(start - len, len, tempStart); // ICU4N: Corrected 2nd parameter
-                    destStart += len;
-                }
-                else
-                {
-                    text.Replace(tempStart, tempStart - tempStart, "\uFFFF"); // ICU4N: Corrected 2nd parameter
-                    destStart++;
-                }
-                int destLimit = destStart;
-                int tempExtra = 0; // temp chars after destLimit
 
-                for (oOutput = 0; oOutput < output.Length;)
-                {
-                    if (oOutput == cursorPos)
-                    {
-                        // Record the position of the cursor
-                        newStart = buf.Length + destLimit - destStart; // relative to start
-                                                                       // the buf.length() was inserted for bug 5789
-                                                                       // the problem is that if we are accumulating into a buffer (when r == null below)
-                                                                       // then the actual length of the text at that point needs to add the buf length.
-                                                                       // there was an alternative suggested in #5789, but that looks like it won't work
-                                                                       // if we have accumulated some stuff in the dest part AND have a non-zero buffer.
-                    }
-                    int c = UTF16.CharAt(output, oOutput);
+                    int oOutput; // offset into 'output'
+                    isComplex = false;
 
-                    // When we are at the last position copy the right style
-                    // context character into the temporary buffer.  We don't
-                    // do this before because it will provide an incorrect
-                    // right context for previous replace() operations.
-                    int nextIndex = oOutput + UTF16.GetCharCount(c);
-                    if (nextIndex == output.Length)
+                    // The temporary buffer starts at tempStart, and extends
+                    // to destLimit + tempExtra.  The start of the buffer has a single
+                    // character from before the key.  This provides style
+                    // data when addition characters are filled into the
+                    // temporary buffer.  If there is nothing to the left, use
+                    // the non-character U+FFFF, which Replaceable subclasses
+                    // should treat specially as a "no-style character."
+                    // destStart points to the point after the style context
+                    // character, so it is tempStart+1 or tempStart+2.
+                    int tempStart = text.Length; // start of temp buffer
+                    int destStart = tempStart; // copy new text to here
+                    if (start > 0)
                     {
-                        tempExtra = UTF16.GetCharCount(text.Char32At(limit));
-                        text.Copy(limit, tempExtra, destLimit); // ICU4N: Corrected 2nd parameter
-                    }
-
-                    IUnicodeReplacer r = data.LookupReplacer(c);
-                    if (r == null)
-                    {
-                        // Accumulate straight (non-segment) text.
-                        UTF16.Append(buf, c);
+                        int len = UTF16.GetCharCount(text.Char32At(start - 1));
+                        text.Copy(start - len, len, tempStart); // ICU4N: Corrected 2nd parameter
+                        destStart += len;
                     }
                     else
                     {
-                        isComplex = true;
+                        text.Replace(tempStart, tempStart - tempStart, "\uFFFF"); // ICU4N: Corrected 2nd parameter
+                        destStart++;
+                    }
+                    int destLimit = destStart;
+                    int tempExtra = 0; // temp chars after destLimit
 
-                        // Insert any accumulated straight text.
-                        if (buf.Length > 0)
+                    for (oOutput = 0; oOutput < output.Length;)
+                    {
+                        if (oOutput == cursorPos)
                         {
-                            text.Replace(destLimit, destLimit - destLimit, buf.ToString()); // ICU4N: Corrected 2nd parameter
-                            destLimit += buf.Length;
-                            buf.Length = 0;
+                            // Record the position of the cursor
+                            newStart = buf.Length + destLimit - destStart; // relative to start
+                                                                           // the buf.length() was inserted for bug 5789
+                                                                           // the problem is that if we are accumulating into a buffer (when r == null below)
+                                                                           // then the actual length of the text at that point needs to add the buf length.
+                                                                           // there was an alternative suggested in #5789, but that looks like it won't work
+                                                                           // if we have accumulated some stuff in the dest part AND have a non-zero buffer.
+                        }
+                        int c = UTF16.CharAt(output, oOutput);
+
+                        // When we are at the last position copy the right style
+                        // context character into the temporary buffer.  We don't
+                        // do this before because it will provide an incorrect
+                        // right context for previous replace() operations.
+                        int nextIndex = oOutput + UTF16.GetCharCount(c);
+                        if (nextIndex == output.Length)
+                        {
+                            tempExtra = UTF16.GetCharCount(text.Char32At(limit));
+                            text.Copy(limit, tempExtra, destLimit); // ICU4N: Corrected 2nd parameter
                         }
 
-                        // Delegate output generation to replacer object
-                        int len = r.Replace(text, destLimit, destLimit, out cursor);
-                        destLimit += len;
+                        IUnicodeReplacer r = data.LookupReplacer(c);
+                        if (r == null)
+                        {
+                            // Accumulate straight (non-segment) text.
+                            buf.AppendCodePoint(c);
+                        }
+                        else
+                        {
+                            isComplex = true;
+
+                            // Insert any accumulated straight text.
+                            if (buf.Length > 0)
+                            {
+                                text.Replace(destLimit, destLimit - destLimit, buf.AsSpan()); // ICU4N: Corrected 2nd parameter
+                                destLimit += buf.Length;
+                                buf.Length = 0;
+                            }
+
+                            // Delegate output generation to replacer object
+                            int len = r.Replace(text, destLimit, destLimit, out cursor);
+                            destLimit += len;
+                        }
+                        oOutput = nextIndex;
                     }
-                    oOutput = nextIndex;
+                    // Insert any accumulated straight text.
+                    if (buf.Length > 0)
+                    {
+                        text.Replace(destLimit, destLimit - destLimit, buf.AsSpan()); // ICU4N: Corrected 2nd parameter
+                        destLimit += buf.Length;
+                    }
+                    if (oOutput == cursorPos)
+                    {
+                        // Record the position of the cursor
+                        newStart = destLimit - destStart; // relative to start
+                    }
+
+                    outLen = destLimit - destStart;
+
+                    // Copy new text to start, and delete it
+                    text.Copy(destStart, destLimit - destStart, start); // ICU4N: Corrected 2nd parameter
+                    text.Replace(tempStart + outLen, (destLimit + tempExtra + outLen) - (tempStart + outLen), ReadOnlySpan<char>.Empty); // ICU4N: Corrected 2nd parameter
+
+                    // Delete the old text (the key)
+                    text.Replace(start + outLen, (limit + outLen) - (start + outLen), ReadOnlySpan<char>.Empty); // ICU4N: Corrected 2nd parameter
                 }
-                // Insert any accumulated straight text.
-                if (buf.Length > 0)
+                finally
                 {
-                    text.Replace(destLimit, destLimit - destLimit, buf.ToString()); // ICU4N: Corrected 2nd parameter
-                    destLimit += buf.Length;
+                    buf.Dispose();
                 }
-                if (oOutput == cursorPos)
-                {
-                    // Record the position of the cursor
-                    newStart = destLimit - destStart; // relative to start
-                }
-
-                outLen = destLimit - destStart;
-
-                // Copy new text to start, and delete it
-                text.Copy(destStart, destLimit - destStart, start); // ICU4N: Corrected 2nd parameter
-                text.Replace(tempStart + outLen, (destLimit + tempExtra + outLen) - (tempStart + outLen), ""); // ICU4N: Corrected 2nd parameter
-
-                // Delete the old text (the key)
-                text.Replace(start + outLen, (limit + outLen) - (start + outLen), ""); // ICU4N: Corrected 2nd parameter
             }
 
             if (hasCursor)
@@ -288,61 +298,89 @@ namespace ICU4N.Text
         /// </summary>
         public virtual string ToReplacerPattern(bool escapeUnprintable)
         {
-            StringBuffer rule = new StringBuffer();
-            StringBuffer quoteBuf = new StringBuffer();
-
-            int cursor = cursorPos;
-
-            // Handle a cursor preceding the output
-            if (hasCursor && cursor < 0)
+            ValueStringBuilder rule = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                while (cursor++ < 0)
-                {
-                    Utility.AppendToRule(rule, '@', true, escapeUnprintable, quoteBuf);
-                }
-                // Fall through and append '|' below
+                ToReplacerPattern(escapeUnprintable, ref rule);
+                return rule.ToString();
             }
-
-            for (int i = 0; i < output.Length; ++i)
+            finally
             {
-                if (hasCursor && i == cursor)
-                {
-                    Utility.AppendToRule(rule, '|', true, escapeUnprintable, quoteBuf);
-                }
-                char c = output[i]; // Ok to use 16-bits here
-
-                IUnicodeReplacer r = data.LookupReplacer(c);
-                if (r == null)
-                {
-                    Utility.AppendToRule(rule, c, false, escapeUnprintable, quoteBuf);
-                }
-                else
-                {
-                    StringBuffer buf = new StringBuffer(" ");
-                    buf.Append(r.ToReplacerPattern(escapeUnprintable));
-                    buf.Append(' ');
-                    Utility.AppendToRule(rule, buf.ToString(),
-                                         true, escapeUnprintable, quoteBuf);
-                }
+                rule.Dispose();
             }
+        }
 
-            // Handle a cursor after the output.  Use > rather than >= because
-            // if cursor == output.length() it is at the end of the output,
-            // which is the default position, so we need not emit it.
-            if (hasCursor && cursor > output.Length)
+        /// <summary>
+        /// <see cref="IUnicodeReplacer"/> API
+        /// </summary>
+        public virtual void ToReplacerPattern(bool escapeUnprintable, ref ValueStringBuilder destination)
+        {
+            ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            ValueStringBuilder rule = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            ValueStringBuilder quoteBuf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+
+            try
             {
-                cursor -= output.Length;
-                while (cursor-- > 0)
-                {
-                    Utility.AppendToRule(rule, '@', true, escapeUnprintable, quoteBuf);
-                }
-                Utility.AppendToRule(rule, '|', true, escapeUnprintable, quoteBuf);
-            }
-            // Flush quoteBuf out to result
-            Utility.AppendToRule(rule, -1,
-                                 true, escapeUnprintable, quoteBuf);
+                int cursor = cursorPos;
 
-            return rule.ToString();
+                // Handle a cursor preceding the output
+                if (hasCursor && cursor < 0)
+                {
+                    while (cursor++ < 0)
+                    {
+                        Utility.AppendToRule(ref rule, '@', true, escapeUnprintable, ref quoteBuf);
+                    }
+                    // Fall through and append '|' below
+                }
+
+                for (int i = 0; i < output.Length; ++i)
+                {
+                    if (hasCursor && i == cursor)
+                    {
+                        Utility.AppendToRule(ref rule, '|', true, escapeUnprintable, ref quoteBuf);
+                    }
+                    char c = output[i]; // Ok to use 16-bits here
+
+                    IUnicodeReplacer r = data.LookupReplacer(c);
+                    if (r == null)
+                    {
+                        Utility.AppendToRule(ref rule, c, false, escapeUnprintable, ref quoteBuf);
+                    }
+                    else
+                    {
+                        buf.Length = 0;
+                        buf.Append(' ');
+                        r.ToReplacerPattern(escapeUnprintable, ref buf);
+                        buf.Append(' ');
+                        Utility.AppendToRule(ref rule, buf.AsSpan(),
+                            true, escapeUnprintable, ref quoteBuf);
+                    }
+                }
+
+                // Handle a cursor after the output.  Use > rather than >= because
+                // if cursor == output.length() it is at the end of the output,
+                // which is the default position, so we need not emit it.
+                if (hasCursor && cursor > output.Length)
+                {
+                    cursor -= output.Length;
+                    while (cursor-- > 0)
+                    {
+                        Utility.AppendToRule(ref rule, '@', true, escapeUnprintable, ref quoteBuf);
+                    }
+                    Utility.AppendToRule(ref rule, '|', true, escapeUnprintable, ref quoteBuf);
+                }
+                // Flush quoteBuf out to result
+                Utility.AppendToRule(ref rule, -1,
+                                     true, escapeUnprintable, ref quoteBuf);
+
+                destination.Append(rule.AsSpan());
+            }
+            finally
+            {
+                buf.Dispose();
+                rule.Dispose();
+                quoteBuf.Dispose();
+            }
         }
 
         /// <summary>

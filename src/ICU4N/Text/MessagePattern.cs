@@ -856,8 +856,6 @@ namespace ICU4N.Text
             return msg.Substring(index, part.Length); // ICU4N: (index + part.Length) - index = part.Length
         }
 
-#if FEATURE_SPAN
-
         /// <summary>
         /// Returns the slice of the pattern string indicated by the <paramref name="part"/>.
         /// Convenience method for <c>PatternString.Substring(part.Index, part.Limit - part.Index)</c>.
@@ -870,7 +868,6 @@ namespace ICU4N.Text
             int index = part.Index;
             return msg.AsSpan(index, part.Length); // ICU4N: (index + part.Length) - index = part.Length
         }
-#endif
 
         /// <summary>
         /// Compares the <paramref name="part"/>'s substring with the input string <paramref name="s"/>.
@@ -880,15 +877,8 @@ namespace ICU4N.Text
         /// <returns>true if <c>GetSubstring(part).Equals(s)</c>.</returns>
         /// <stable>ICU 4.8</stable>
         public bool PartSubstringMatches(MessagePatternPart part, string s)
-        {
-#if FEATURE_SPAN
-            return PartSubstringMatches(part, s.AsSpan());
-#else
-            return part.Length == s.Length && msg.RegionMatches(part.Index, s, 0, part.Length, StringComparison.Ordinal);
-#endif
-        }
+            => PartSubstringMatches(part, s.AsSpan());
 
-#if FEATURE_SPAN
         /// <summary>
         /// Compares the <paramref name="part"/>'s substring with the input string <paramref name="s"/>.
         /// </summary>
@@ -900,7 +890,6 @@ namespace ICU4N.Text
         {
             return part.Length == s.Length && msg.AsSpan(part.Index, part.Length).Equals(s.Slice(0, part.Length), StringComparison.Ordinal);
         }
-#endif
 
         /// <summary>
         /// Returns the numeric value associated with an <see cref="MessagePatternPartType.ArgInt"/> 
@@ -1726,7 +1715,6 @@ namespace ICU4N.Text
             }
         }
 
-#if FEATURE_SPAN
         /// <summary>
         /// Appends the s[start, limit[ substring to sb, but with only half of the apostrophes
         /// according to JDK pattern behavior.
@@ -1759,7 +1747,6 @@ namespace ICU4N.Text
                 }
             }
         }
-#endif
 
         private int SkipWhiteSpace(int index)
         {

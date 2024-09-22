@@ -7,9 +7,7 @@ using J2N.Collections.Generic.Extensions;
 using J2N.Globalization;
 using J2N.Text;
 using System;
-#if FEATURE_SPAN
 using System.Buffers;
-#endif
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -213,12 +211,7 @@ namespace ICU4N.Globalization
             this.culture = culture!; // ICU4N: The constructor that calls us with null populates this value
             this.isReadOnly = false;
 
-#if FEATURE_SPAN
             using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], localeID);
-#else
-            using var parser = new LocaleIDParser(localeID);
-#endif
-
             this.localeIdentifier = parser.GetLocaleID();
 
             // NOTE: Invariant culture is not neutral
@@ -289,11 +282,7 @@ namespace ICU4N.Globalization
 
             this.isReadOnly = isReadOnly;
 
-#if FEATURE_SPAN
             using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], localeID);
-#else
-            using var parser = new LocaleIDParser(localeID);
-#endif
             this.localeIdentifier = parser.GetLocaleID();
 
             // NOTE: Invariant culture is not neutral
@@ -318,12 +307,7 @@ namespace ICU4N.Globalization
 
         private static string LscvToID(string? lang, string? script, string? country, string? variant)
         {
-#if FEATURE_SPAN
             using var buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-#else
-            StringBuilder buf = new StringBuilder();
-#endif
-
             if (lang != null && lang.Length > 0)
             {
                 buf.Append(lang);
@@ -536,11 +520,7 @@ namespace ICU4N.Globalization
         /// <stable>ICU4N 60</stable>
         public static string GetLanguage(string localeID)
         {
-#if FEATURE_SPAN
             using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], localeID);
-#else
-            using var parser = new LocaleIDParser(localeID);
-#endif
             return parser.GetLanguage();
         }
 
@@ -563,11 +543,7 @@ namespace ICU4N.Globalization
         /// <stable>ICU4N 60</stable>
         public static string GetScript(string localeID)
         {
-#if FEATURE_SPAN
             using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], localeID);
-#else
-            using var parser = new LocaleIDParser(localeID);
-#endif
             return parser.GetScript();
         }
 
@@ -591,11 +567,7 @@ namespace ICU4N.Globalization
         /// <stable>ICU4N 60</stable>
         public static string GetCountry(string localeID)
         {
-#if FEATURE_SPAN
             using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], localeID);
-#else
-            using var parser = new LocaleIDParser(localeID);
-#endif
             return parser.GetCountry();
         }
 
@@ -659,11 +631,7 @@ namespace ICU4N.Globalization
         /// <stable>ICU4N 60</stable>
         public static string GetVariant(string localeID)
         {
-#if FEATURE_SPAN
             using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], localeID);
-#else
-            using var parser = new LocaleIDParser(localeID);
-#endif
             return parser.GetVariant();
         }
 
@@ -704,7 +672,6 @@ namespace ICU4N.Globalization
             }
 
             // ICU4N: Using LocaleIDParser for more accurate results
-#if FEATURE_SPAN
             using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], fallback);
             int bufferLength = fallback.Length + 5;
             bool usePool = bufferLength > CharStackBufferSize;
@@ -756,46 +723,8 @@ namespace ICU4N.Globalization
             }
             finally
             {
-                if (arrayToReturnToPool is not null)
-                    ArrayPool<char>.Shared.Return(arrayToReturnToPool);
+                ArrayPool<char>.Shared.ReturnIfNotNull(arrayToReturnToPool);
             }
-#else
-            using var parser = new LocaleIDParser(fallback);
-            string language = parser.GetLanguage();
-            string script = parser.GetScript();
-            string country = parser.GetCountry();
-            string variant = parser.GetVariant();
-
-            if (variant == string.Empty)
-            {
-                if (country == string.Empty)
-                {
-                    if (script == string.Empty)
-                    {
-                        if (language != string.Empty)
-                            language = string.Empty;
-                    }
-                    else
-                    {
-                        script = string.Empty;
-                    }
-                }
-                else
-                {
-                    country = string.Empty;
-                }
-            }
-            else
-            {
-                variant = string.Empty;
-            }
-
-            return language +
-                (script.Length > 0 ? '_' + script : "") +
-                (country.Length > 0 ? '_' + country : "") +
-                (variant.Length > 0 ? '_' + variant : "") + 
-                fallback.Substring(extStart);
-#endif
         }
 
         /// <summary>
@@ -811,11 +740,7 @@ namespace ICU4N.Globalization
             {
                 return localeID;
             }
-#if FEATURE_SPAN
             using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], localeID);
-#else
-            using var parser = new LocaleIDParser(localeID);
-#endif
             return parser.GetBaseName();
         }
 
@@ -888,11 +813,7 @@ namespace ICU4N.Globalization
 
             static string GetFullName(string key)
             {
-#if FEATURE_SPAN
                 using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], key);
-#else
-                using var parser = new LocaleIDParser(key);
-#endif
                 return parser.GetFullName();
             }
         }
@@ -927,11 +848,7 @@ namespace ICU4N.Globalization
         public static IDictionary<string, string> GetKeywords(string localeID)
 #endif
         {
-#if FEATURE_SPAN
             using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], localeID);
-#else
-            using var parser = new LocaleIDParser(localeID);
-#endif
             return parser.Keywords;
         }
 
@@ -952,7 +869,6 @@ namespace ICU4N.Globalization
             if (localeID is null)
                 throw new ArgumentNullException(nameof(localeID));
 
-#if FEATURE_SPAN
             return Canonicalize(localeID.AsSpan());
         }
 
@@ -990,8 +906,7 @@ namespace ICU4N.Globalization
             }
             finally
             {
-                if (arrayToReturnToPool is not null)
-                    ArrayPool<char>.Shared.Return(arrayToReturnToPool);
+                ArrayPool<char>.Shared.ReturnIfNotNull(arrayToReturnToPool);
             }
         }
 
@@ -1008,41 +923,23 @@ namespace ICU4N.Globalization
         /// <stable>ICU 60.1</stable>
         public static bool TryCanonicalize(ReadOnlySpan<char> localeID, Span<char> destination, out int charsWritten)
         {
-#endif
-            using LocaleIDParser parser = new LocaleIDParser(
-#if FEATURE_SPAN
-                stackalloc char[CharStackBufferSize],
-#endif
+            using LocaleIDParser parser = new LocaleIDParser(stackalloc char[CharStackBufferSize],
                 localeID, canonicalize: true);
-#if FEATURE_SPAN
             ReadOnlySpan<char> baseName = parser.GetBaseNameAsSpan();
-#else
-            string baseName = parser.GetBaseName();
-#endif
             bool foundVariant = false;
 
             // formerly, we always set to en_US_POSIX if the basename was empty, but
             // now we require that the entire id be empty, so that "@foo=bar"
             // will pass through unchanged.
             // {dlf} I'd rather keep "" unchanged.
-#if FEATURE_SPAN
             if (localeID.IsEmpty)
             {
                 bool success = ReadOnlySpan<char>.Empty.TryCopyTo(destination);
                 charsWritten = 0;
                 return success;
             }
-#else
-            if (localeID == "")
-            {
-                return "";
-                //              return "en_US_POSIX";
-            }
-#endif
 
-#if FEATURE_SPAN
             Span<char> buffer = stackalloc char[CharStackBufferSize];
-#endif
 
             // we have an ID in the form xx_Yyyy_ZZ_KKKKK
 
@@ -1050,29 +947,17 @@ namespace ICU4N.Globalization
             for (int i = 0; i < variantsToKeywords.Length; i++)
             {
                 string[] vals = variantsToKeywords[i];
-#if FEATURE_SPAN
                 buffer[0] = '_';
                 vals[0].CopyTo(buffer.Slice(1));
                 int idx = baseName.LastIndexOf(buffer.Slice(0, vals[0].Length + 1)); // ICU4N: Defaults to ordinal (overload missing in .NET Framework)
-#else
-                int idx = baseName.LastIndexOf("_" + vals[0], StringComparison.Ordinal);
-#endif
                 if (idx > -1)
                 {
                     foundVariant = true;
 
-#if FEATURE_SPAN
                     baseName = baseName.Slice(0, idx - 0); // ICU4N: Checked 2nd parameter
-#else
-                    baseName = baseName.Substring(0, idx - 0); // ICU4N: Checked 2nd parameter
-#endif
                     if (baseName.EndsWith("_", StringComparison.Ordinal))
                     {
-#if FEATURE_SPAN
                         baseName = baseName.Slice(0, (--idx - 0)); // ICU4N: Checked 2nd parameter
-#else
-                        baseName = baseName.Substring(0, (--idx - 0)); // ICU4N: Checked 2nd parameter
-#endif
                     }
                     parser.SetBaseName(baseName);
                     parser.DefaultKeywordValue(vals[1], vals[2]);
@@ -1100,21 +985,13 @@ namespace ICU4N.Globalization
             /* total mondo hack for Norwegian, fortunately the main NY case is handled earlier */
             if (!foundVariant)
             {
-#if FEATURE_SPAN
-                if (parser.TryGetLanguage(buffer, out int languageLength) && buffer.Slice(0, languageLength) == "nb".AsSpan()
-                    && parser.TryGetVariant(buffer, out int variantLength) && buffer.Slice(0, variantLength) == "NY".AsSpan())
-#else
-                if (parser.GetLanguage().Equals("nb") && parser.GetVariant().Equals("NY"))
-#endif
+                if (parser.TryGetLanguage(buffer, out int languageLength) && buffer.Slice(0, languageLength).SequenceEqual("nb".AsSpan())
+                    && parser.TryGetVariant(buffer, out int variantLength) && buffer.Slice(0, variantLength).SequenceEqual("NY".AsSpan()))
                 {
                     parser.SetBaseName(LscvToID("nn", parser.GetScript(), parser.GetCountry(), null));
                 }
             }
-#if FEATURE_SPAN
             return parser.TryGetFullName(destination, out charsWritten);
-#else
-            return parser.GetFullName();
-#endif
         }
 
         /// <summary>
@@ -1158,11 +1035,7 @@ namespace ICU4N.Globalization
         /// <stable>ICU 3.2</stable>
         public static string SetKeywordValue(string localeID, string keyword, string value)
         {
-#if FEATURE_SPAN
             using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], localeID);
-#else
-            using var parser = new LocaleIDParser(localeID);
-#endif
             parser.SetKeywordValue(keyword, value);
             return parser.GetFullName();
         }
@@ -2095,14 +1968,9 @@ namespace ICU4N.Globalization
                     new SortedDictionary<CultureAcceptLanguageQ, UCultureInfo>();
 
             int state = 0;
-#if FEATURE_SPAN
             var languageRangeBuf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
             var qvalBuf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
             try
-#else
-            StringBuilder languageRangeBuf = new StringBuilder();
-            StringBuilder qvalBuf = new StringBuilder();
-#endif
             {
                 acceptLanguage += ","; // append comma to simplify the parsing code
                 int n;
@@ -2378,11 +2246,7 @@ namespace ICU4N.Globalization
                         double q = 1.0;
                         if (qvalBuf.Length != 0)
                         {
-#if FEATURE_SPAN
                             if (!J2N.Numerics.Double.TryParse(qvalBuf.AsSpan(), NumberStyle.Float, CultureInfo.InvariantCulture, out q))
-#else
-                            if (!J2N.Numerics.Double.TryParse(qvalBuf.ToString(), NumberStyle.Float, CultureInfo.InvariantCulture, out q))
-#endif
                             {
                                 // Already validated, so it should never happen
                                 q = 1.0;
@@ -2397,11 +2261,7 @@ namespace ICU4N.Globalization
                             int serial = map.Count;
                             CultureAcceptLanguageQ entry = new CultureAcceptLanguageQ(q, serial);
                             // sort in reverse order..   1.0, 0.9, 0.8 .. etc
-#if FEATURE_SPAN
                             string canonicalizedLocaleID = Canonicalize(languageRangeBuf.AsSpan());
-#else
-                            string canonicalizedLocaleID = Canonicalize(languageRangeBuf.ToString());
-#endif
                             map[entry] = new UCultureInfo(canonicalizedLocaleID);
                         }
 
@@ -2412,13 +2272,11 @@ namespace ICU4N.Globalization
                     }
                 }
             }
-#if FEATURE_SPAN
             finally
             {
                 languageRangeBuf.Dispose();
                 qvalBuf.Dispose();
             }
-#endif
             if (state != 0)
             {
                 // Well, the parser should handle all cases.  So just in case.
@@ -2726,13 +2584,7 @@ namespace ICU4N.Globalization
         /// </summary>
         /// <param name="tag">The tag to add.</param>
         /// <param name="buffer">The output buffer.</param>
-        private static void AppendTag(string tag,
-#if FEATURE_SPAN
-            ref ValueStringBuilder buffer
-#else
-            StringBuilder buffer
-#endif
-            )
+        private static void AppendTag(string tag, ref ValueStringBuilder buffer)
         {
             if (buffer.Length != 0)
             {
@@ -2761,199 +2613,130 @@ namespace ICU4N.Globalization
                 string? trailing, string? alternateTags)
         {
             bool regionAppended = false;
-#if FEATURE_SPAN
             ValueStringBuilder tag = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-            using LocaleIDParser parser = !string.IsNullOrEmpty(alternateTags)
+            LocaleIDParser parser = !string.IsNullOrEmpty(alternateTags)
                 ? new LocaleIDParser(stackalloc char[CharStackBufferSize], alternateTags)
                 : default;
-#else
-            LocaleIDParser? parser = null;
-            StringBuilder tag = new StringBuilder();
-#endif
-
-            if (!string.IsNullOrEmpty(lang))
+            try
             {
-                AppendTag(
-                        lang!,
-#if FEATURE_SPAN
-                        ref tag
-#else
-                        tag
-#endif
-                        );
-            }
-            else if (string.IsNullOrEmpty(alternateTags))
-            {
-                /*
-                 * Append the value for an unknown language, if
-                 * we found no language.
-                 */
-                AppendTag(
-                        UndefinedLanguage,
-#if FEATURE_SPAN
-                        ref tag
-#else
-                        tag
-#endif
-                        );
-            }
-            else
-            {
-#if !FEATURE_SPAN
-                parser = new LocaleIDParser(alternateTags);
-#endif
-
-                string alternateLang = parser.GetLanguage();
-
-                /*
-                 * Append the value for an unknown language, if
-                 * we found no language.
-                 */
-                AppendTag(
-                        !string.IsNullOrEmpty(alternateLang) ? alternateLang : UndefinedLanguage,
-#if FEATURE_SPAN
-                        ref tag
-#else
-                        tag
-#endif
-                        );
-            }
-
-            if (!string.IsNullOrEmpty(script))
-            {
-                AppendTag(
-                        script!,
-#if FEATURE_SPAN
-                        ref tag
-#else
-                        tag
-#endif
-                        );
-            }
-            else if (!string.IsNullOrEmpty(alternateTags))
-            {
-                /*
-                 * Parse the alternateTags string for the script.
-                 */
-#if !FEATURE_SPAN
-                if (parser == null)
+                if (!string.IsNullOrEmpty(lang))
                 {
-                    parser = new LocaleIDParser(alternateTags);
+                    AppendTag(lang!, ref tag);
                 }
-#endif
-
-                string alternateScript = parser.GetScript();
-
-                if (!string.IsNullOrEmpty(alternateScript))
+                else if (string.IsNullOrEmpty(alternateTags))
                 {
-                    AppendTag(
-                            alternateScript,
-#if FEATURE_SPAN
-                            ref tag
-#else
-                            tag
-#endif
-                            );
+                    /*
+                     * Append the value for an unknown language, if
+                     * we found no language.
+                     */
+                    AppendTag(UndefinedLanguage, ref tag);
                 }
-            }
-
-            if (!string.IsNullOrEmpty(region))
-            {
-                AppendTag(
-                        region!,
-#if FEATURE_SPAN
-                        ref tag
-#else
-                        tag
-#endif
-                        );
-
-                regionAppended = true;
-            }
-            else if (!string.IsNullOrEmpty(alternateTags))
-            {
-                /*
-                 * Parse the alternateTags string for the region.
-                 */
-#if !FEATURE_SPAN
-                if (parser == null)
+                else
                 {
-                    parser = new LocaleIDParser(alternateTags);
+                    string alternateLang = parser.GetLanguage();
+
+                    /*
+                     * Append the value for an unknown language, if
+                     * we found no language.
+                     */
+                    AppendTag(!string.IsNullOrEmpty(alternateLang) ? alternateLang : UndefinedLanguage, ref tag);
                 }
-#endif
 
-                string alternateRegion = parser.GetCountry();
-
-                if (!string.IsNullOrEmpty(alternateRegion))
+                if (!string.IsNullOrEmpty(script))
                 {
-                    AppendTag(
-                            alternateRegion,
-#if FEATURE_SPAN
-                            ref tag
-#else
-                            tag
-#endif
-                            );
+                    AppendTag(script!, ref tag);
+                }
+                else if (!string.IsNullOrEmpty(alternateTags))
+                {
+                    /*
+                     * Parse the alternateTags string for the script.
+                     */
+                    string alternateScript = parser.GetScript();
+
+                    if (!string.IsNullOrEmpty(alternateScript))
+                    {
+                        AppendTag(alternateScript, ref tag);
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(region))
+                {
+                    AppendTag(region!, ref tag);
 
                     regionAppended = true;
                 }
-            }
-
-            if (trailing != null && trailing.Length > 1)
-            {
-                /*
-                 * The current ICU format expects two underscores
-                 * will separate the variant from the preceeding
-                 * parts of the tag, if there is no region.
-                 */
-                int separators = 0;
-
-                if (trailing[0] == Underscore)
-                {
-                    if (trailing[1] == Underscore)
-                    {
-                        separators = 2;
-                    }
-                }
-                else
-                {
-                    separators = 1;
-                }
-
-                if (regionAppended)
+                else if (!string.IsNullOrEmpty(alternateTags))
                 {
                     /*
-                     * If we appended a region, we may need to strip
-                     * the extra separator from the variant portion.
+                     * Parse the alternateTags string for the region.
                      */
-                    if (separators == 2)
+                    string alternateRegion = parser.GetCountry();
+
+                    if (!string.IsNullOrEmpty(alternateRegion))
                     {
-#if FEATURE_SPAN
-                        tag.Append(trailing.AsSpan(1));
-#else
-                        tag.Append(trailing.Substring(1));
-#endif
+                        AppendTag(alternateRegion, ref tag);
+
+                        regionAppended = true;
+                    }
+                }
+
+                if (trailing != null && trailing.Length > 1)
+                {
+                    /*
+                     * The current ICU format expects two underscores
+                     * will separate the variant from the preceeding
+                     * parts of the tag, if there is no region.
+                     */
+                    int separators = 0;
+
+                    if (trailing[0] == Underscore)
+                    {
+                        if (trailing[1] == Underscore)
+                        {
+                            separators = 2;
+                        }
                     }
                     else
                     {
+                        separators = 1;
+                    }
+
+                    if (regionAppended)
+                    {
+                        /*
+                         * If we appended a region, we may need to strip
+                         * the extra separator from the variant portion.
+                         */
+                        if (separators == 2)
+                        {
+                            tag.Append(trailing.AsSpan(1));
+                        }
+                        else
+                        {
+                            tag.Append(trailing);
+                        }
+                    }
+                    else
+                    {
+                        /*
+                         * If we did not append a region, we may need to add
+                         * an extra separator to the variant portion.
+                         */
+                        if (separators == 1)
+                        {
+                            tag.Append(Underscore);
+                        }
                         tag.Append(trailing);
                     }
                 }
-                else
-                {
-                    /*
-                     * If we did not append a region, we may need to add
-                     * an extra separator to the variant portion.
-                     */
-                    if (separators == 1)
-                    {
-                        tag.Append(Underscore);
-                    }
-                    tag.Append(trailing);
-                }
-            }
 
-            return tag.ToString();
+                return tag.ToString();
+            }
+            finally
+            {
+                tag.Dispose();
+                parser.Dispose();
+            }
         }
 
         /// <summary>
@@ -2983,12 +2766,7 @@ namespace ICU4N.Globalization
         /// <returns>The number of chars of the localeID parameter consumed.</returns>
         private static int ParseTagString(string localeID, out string language, out string script, out string region)
         {
-#if FEATURE_SPAN
             using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], localeID);
-#else
-            using var parser = new LocaleIDParser(localeID);
-#endif
-
             string lang = parser.GetLanguage();
             string scr = parser.GetScript();
             string reg = parser.GetCountry();
@@ -3343,60 +3121,63 @@ namespace ICU4N.Globalization
                 }
             }
 
-            LanguageTag tag = LanguageTag.ParseLocale(@base, exts);
+            LanguageTag.ParseLocale(@base, exts, out LanguageTag tag);
 
-#if FEATURE_SPAN
             ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-#else
-            StringBuilder buf = new StringBuilder();
-#endif
-            string subtag = tag.Language;
-            if (subtag.Length > 0)
+            try
             {
-                buf.Append(LanguageTag.CanonicalizeLanguage(subtag));
-            }
+                string subtag = tag.Language;
+                if (subtag.Length > 0)
+                {
+                    buf.Append(LanguageTag.CanonicalizeLanguage(subtag));
+                }
 
-            subtag = tag.Script;
-            if (subtag.Length > 0)
-            {
-                buf.Append(LanguageTag.Separator);
-                buf.Append(LanguageTag.CanonicalizeScript(subtag));
-            }
-
-            subtag = tag.Region;
-            if (subtag.Length > 0)
-            {
-                buf.Append(LanguageTag.Separator);
-                buf.Append(LanguageTag.CanonicalizeRegion(subtag));
-            }
-
-            IList<string> subtags = tag.Variants;
-            foreach (string s in subtags)
-            {
-                buf.Append(LanguageTag.Separator);
-                buf.Append(LanguageTag.CanonicalizeVariant(s));
-            }
-
-            subtags = tag.Extensions;
-            foreach (string s in subtags)
-            {
-                buf.Append(LanguageTag.Separator);
-                buf.Append(LanguageTag.CanonicalizeExtension(s));
-            }
-
-            subtag = tag.PrivateUse;
-            if (subtag.Length > 0)
-            {
-                if (buf.Length > 0)
+                subtag = tag.Script;
+                if (subtag.Length > 0)
                 {
                     buf.Append(LanguageTag.Separator);
+                    buf.Append(LanguageTag.CanonicalizeScript(subtag));
                 }
-                buf.Append(LanguageTag.Private_Use);
-                buf.Append(LanguageTag.Separator);
-                buf.Append(LanguageTag.CanonicalizePrivateuse(subtag));
-            }
 
-            return buf.ToString();
+                subtag = tag.Region;
+                if (subtag.Length > 0)
+                {
+                    buf.Append(LanguageTag.Separator);
+                    buf.Append(LanguageTag.CanonicalizeRegion(subtag));
+                }
+
+                IList<string> subtags = tag.Variants;
+                foreach (string s in subtags)
+                {
+                    buf.Append(LanguageTag.Separator);
+                    buf.Append(LanguageTag.CanonicalizeVariant(s));
+                }
+
+                subtags = tag.Extensions;
+                foreach (string s in subtags)
+                {
+                    buf.Append(LanguageTag.Separator);
+                    buf.Append(LanguageTag.CanonicalizeExtension(s));
+                }
+
+                subtag = tag.PrivateUse;
+                if (subtag.Length > 0)
+                {
+                    if (buf.Length > 0)
+                    {
+                        buf.Append(LanguageTag.Separator);
+                    }
+                    buf.Append(LanguageTag.Private_Use);
+                    buf.Append(LanguageTag.Separator);
+                    buf.Append(LanguageTag.CanonicalizePrivateuse(subtag));
+                }
+
+                return buf.ToString();
+            }
+            finally
+            {
+                buf.Dispose();
+            }
         }
 
         /**
@@ -3512,7 +3293,7 @@ namespace ICU4N.Globalization
             if (languageTag == null)
                 throw new ArgumentNullException(nameof(languageTag));
 
-            LanguageTag tag = LanguageTag.Parse(languageTag, null);
+            LanguageTag.TryParse(languageTag.AsSpan(), out LanguageTag tag, out _);
             InternalLocaleBuilder bldr = new InternalLocaleBuilder();
             bldr.SetLanguageTag(tag);
             return GetInstance(bldr.GetBaseLocale(), bldr.GetLocaleExtensions());
@@ -3674,93 +3455,89 @@ namespace ICU4N.Globalization
             string id = LscvToID(@base.Language, @base.Script, @base.Region,
                     @base.Variant);
 
-#if FEATURE_SPAN
-            Span<char> charBuffer = stackalloc char[CharStackBufferSize];
-#endif
-
-            var extKeys = exts.Keys;
-            if (extKeys.Count > 0)
+            var buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                // legacy locale ID assume Unicode locale keywords and
-                // other extensions are at the same level.
-                // e.g. @a=ext-for-aa;calendar=japanese;m=ext-for-mm;x=priv-use
-
-                JCG.SortedDictionary<string?, string?> kwds = new JCG.SortedDictionary<string?, string?>(StringComparer.Ordinal);
-                foreach (char key in extKeys)
+                var extKeys = exts.Keys;
+                if (extKeys.Count > 0)
                 {
-                    Extension ext = exts.GetExtension(key);
-                    if (ext is UnicodeLocaleExtension uext)
+                    // legacy locale ID assume Unicode locale keywords and
+                    // other extensions are at the same level.
+                    // e.g. @a=ext-for-aa;calendar=japanese;m=ext-for-mm;x=priv-use
+
+                    JCG.SortedDictionary<string?, string?> kwds = new JCG.SortedDictionary<string?, string?>(StringComparer.Ordinal);
+                    foreach (char key in extKeys)
                     {
-                        var ukeys = uext.UnicodeLocaleKeys;
-                        foreach (string bcpKey in ukeys)
+                        Extension ext = exts.GetExtension(key);
+                        if (ext is UnicodeLocaleExtension uext)
                         {
-                            string bcpType = uext.GetUnicodeLocaleType(bcpKey);
-                            // convert to legacy key/type
-                            string? lkey = ToLegacyKey(bcpKey);
-                            string? ltype = ToLegacyType(bcpKey, ((bcpType.Length == 0) ? "yes" : bcpType)); // use "yes" as the value of typeless keywords
-                                                                                                            // special handling for u-va-posix, since this is a variant, not a keyword
-                            if ("va".Equals(lkey) && "posix".Equals(ltype) && @base.Variant.Length == 0)
+                            var ukeys = uext.UnicodeLocaleKeys;
+                            foreach (string bcpKey in ukeys)
                             {
-                                id += "_POSIX";
-                            }
-                            else
-                            {
-                                kwds[lkey] = ltype;
-                            }
-                        }
-                        // Mapping Unicode locale attribute to the special keyword, attribute=xxx-yyy
-                        var uattributes = uext.UnicodeLocaleAttributes;
-                        if (uattributes.Count > 0)
-                        {
-#if FEATURE_SPAN
-                            ValueStringBuilder attrbuf = new ValueStringBuilder(charBuffer);
-#else
-                            StringBuilder attrbuf = new StringBuilder();
-#endif
-                            foreach (string attr in uattributes)
-                            {
-                                if (attrbuf.Length > 0)
+                                string bcpType = uext.GetUnicodeLocaleType(bcpKey);
+                                // convert to legacy key/type
+                                string? lkey = ToLegacyKey(bcpKey);
+                                string? ltype = ToLegacyType(bcpKey, ((bcpType.Length == 0) ? "yes" : bcpType)); // use "yes" as the value of typeless keywords
+                                                                                                                 // special handling for u-va-posix, since this is a variant, not a keyword
+                                if ("va".Equals(lkey) && "posix".Equals(ltype) && @base.Variant.Length == 0)
                                 {
-                                    attrbuf.Append('-');
+                                    id += "_POSIX";
                                 }
-                                attrbuf.Append(attr);
+                                else
+                                {
+                                    kwds[lkey] = ltype;
+                                }
                             }
-                            kwds[LocaleAttributeKey] = attrbuf.ToString();
-                        }
-                    }
-                    else
-                    {
-                        kwds[new string(new char[] { key })] = ext.Value;
-                    }
-                }
-
-                if (kwds.Count > 0)
-                {
-#if FEATURE_SPAN
-                    ValueStringBuilder buf = new ValueStringBuilder(charBuffer);
-                    buf.Append(id);
-#else
-                    StringBuilder buf = new StringBuilder(id);
-#endif
-                    buf.Append('@');
-                    bool insertSep = false;
-                    foreach (var kwd in kwds)
-                    {
-                        if (insertSep)
-                        {
-                            buf.Append(';');
+                            // Mapping Unicode locale attribute to the special keyword, attribute=xxx-yyy
+                            var uattributes = uext.UnicodeLocaleAttributes;
+                            if (uattributes.Count > 0)
+                            {
+                                buf.Length = 0;
+                                foreach (string attr in uattributes)
+                                {
+                                    if (buf.Length > 0)
+                                    {
+                                        buf.Append('-');
+                                    }
+                                    buf.Append(attr);
+                                }
+                                kwds[LocaleAttributeKey] = buf.ToString();
+                            }
                         }
                         else
                         {
-                            insertSep = true;
+                            kwds[new string(new char[] { key })] = ext.Value;
                         }
-                        buf.Append(kwd.Key);
-                        buf.Append('=');
-                        buf.Append(kwd.Value);
                     }
 
-                    id = buf.ToString();
+                    if (kwds.Count > 0)
+                    {
+                        buf.Length = 0;
+                        buf.Append(id);
+                        buf.Append('@');
+                        bool insertSep = false;
+                        foreach (var kwd in kwds)
+                        {
+                            if (insertSep)
+                            {
+                                buf.Append(';');
+                            }
+                            else
+                            {
+                                insertSep = true;
+                            }
+                            buf.Append(kwd.Key);
+                            buf.Append('=');
+                            buf.Append(kwd.Value);
+                        }
+
+                        id = buf.ToString();
+                    }
                 }
+            }
+            finally
+            {
+                buf.Dispose();
             }
             return new UCultureInfo(id);
         }
@@ -3775,11 +3552,7 @@ namespace ICU4N.Globalization
                     language = script = region = variant = string.Empty;
                     if (localeID.Length > 0) // Invariant culture
                     {
-#if FEATURE_SPAN
                         using var lp = new LocaleIDParser(stackalloc char[CharStackBufferSize], localeID);
-#else
-                        using var lp = new LocaleIDParser(localeID);
-#endif
                         language = lp.GetLanguage();
                         script = lp.GetScript();
                         region = lp.GetCountry();
@@ -3817,7 +3590,7 @@ namespace ICU4N.Globalization
                                 foreach (string uattr in uattributes)
                                 {
                                     // ICU4N: Proactively check the parameter going in rather than responding to exceptions
-                                    if (uattr != null || UnicodeLocaleExtensionClass.IsAttribute(uattr))
+                                    if (uattr != null && UnicodeLocaleExtensionClass.IsAttribute(uattr))
                                     {
                                         intbld.AddUnicodeLocaleAttribute(uattr);
                                     }
@@ -3843,7 +3616,7 @@ namespace ICU4N.Globalization
                             {
                                 try
                                 {
-                                    intbld.SetExtension(pair.Key[0], pair.Value.Replace("_",
+                                    intbld.SetExtension(pair.Key[0], pair.Value.Replace(BaseLocale.Separator,
                                             LanguageTag.Separator));
                                 }
                                 catch (FormatException) // ICU4N TODO: Make a TrySet version so we don't have an expensive try catch

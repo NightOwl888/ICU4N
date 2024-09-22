@@ -1,5 +1,5 @@
 ﻿using ICU4N.Numerics;
-using ICU4N.Support.Text;
+using ICU4N.Text;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -7,7 +7,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ICU4N.Globalization
 {
-#if FEATURE_SPAN
     //===================================================================
     // NumberFormatSubstitution (abstract base class)
     //===================================================================
@@ -20,6 +19,12 @@ namespace ICU4N.Globalization
     /// <author>Richard Gillam</author>
     internal abstract partial class NumberFormatSubstitution
     {
+        //-----------------------------------------------------------------------
+        // constants
+        //-----------------------------------------------------------------------
+
+        internal const int CharStackBufferSize = 32;
+
         //-----------------------------------------------------------------------
         // data members
         //-----------------------------------------------------------------------
@@ -328,18 +333,34 @@ namespace ICU4N.Globalization
         /// it'll produce the same result.</returns>
         public override string ToString()
         {
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                ToString(ref sb);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        internal virtual void ToString(ref ValueStringBuilder destination)
+        {
             // use TokenChar to get the character at the beginning and
             // end of the substitution token.  In between them will go
             // either the name of the rule set it uses, or the pattern of
             // the DecimalFormat it uses
+            destination.Append(TokenChar);
             if (ruleSet != null)
             {
-                return TokenChar + ruleSet.Name + TokenChar;
+                destination.Append(ruleSet.Name);
             }
             else
             {
-                return TokenChar + numberFormatPattern + TokenChar;
+                destination.Append(numberFormatPattern);
             }
+            destination.Append(TokenChar);
         }
 
         //-----------------------------------------------------------------------
@@ -652,5 +673,4 @@ namespace ICU4N.Globalization
         /// </summary>
         public virtual bool IsModulusSubstitution => false;
     }
-#endif
 }

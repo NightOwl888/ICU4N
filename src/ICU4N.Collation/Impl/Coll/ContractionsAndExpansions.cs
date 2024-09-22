@@ -3,6 +3,7 @@ using ICU4N.Text;
 using ICU4N.Util;
 using J2N.Text;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -22,6 +23,8 @@ namespace ICU4N.Impl.Coll
 
     public sealed class ContractionsAndExpansions
     {
+        private const int CharStackBufferSize = 32;
+
         // C++: The following fields are @internal, only public for access by callback.
         private CollationData data;
         private UnicodeSet contractions;
@@ -31,7 +34,7 @@ namespace ICU4N.Impl.Coll
         private int checkTailored = 0;  // -1: collected tailored  +1: exclude tailored
         private UnicodeSet tailored = new UnicodeSet();
         private UnicodeSet ranges;
-        private StringBuilder unreversedPrefix = new StringBuilder();
+        private OpenStringBuilder unreversedPrefix = new OpenStringBuilder();
         private string suffix;
         private long[] ces = new long[Collation.MAX_EXPANSION_LENGTH];
 
@@ -235,16 +238,22 @@ namespace ICU4N.Impl.Coll
                             // TODO: This should be optimized,
                             // especially if [start..end] is the complete Hangul range. (assert that)
                             UTF16CollationIterator iter = new UTF16CollationIterator(data);
-                            StringBuilderCharSequence hangul = new StringBuilderCharSequence(new StringBuilder(1));
-                            for (int c = start; c <= end; ++c)
+                            char[] hangul = ArrayPool<char>.Shared.Rent(2);
+                            try
                             {
-                                hangul.Value.Length=0;
-                                hangul.Value.AppendCodePoint(c);
-                                iter.SetText(false, hangul, 0);
-                                int length = iter.FetchCEs();
-                                // Ignore the terminating non-CE.
-                                Debug.Assert(length >= 2 && iter.GetCE(length - 1) == Collation.NoCE);
-                                sink.HandleExpansion(iter.GetCEs(), 0, length - 1);
+                                for (int c = start; c <= end; ++c)
+                                {
+                                    int count = J2N.Character.ToChars(c, hangul, 0);
+                                    iter.SetText(false, hangul.AsMemory(0, count), 0);
+                                    int length = iter.FetchCEs();
+                                    // Ignore the terminating non-CE.
+                                    Debug.Assert(length >= 2 && iter.GetCE(length - 1) == Collation.NoCE);
+                                    sink.HandleExpansion(iter.GetCEs(), 0, length - 1);
+                                }
+                            }
+                            finally
+                            {
+                                ArrayPool<char>.Shared.Return(hangul);
                             }
                         }
                         // Optimization: If we have a prefix,
@@ -278,7 +287,7 @@ namespace ICU4N.Impl.Coll
                 while (prefixes.MoveNext())
                 {
                     var e = prefixes.Current;
-                    SetPrefix(e.Chars);
+                    SetPrefix(e.Chars.Span);
                     // Prefix/pre-context mappings are special kinds of contractions
                     // that always yield expansions.
                     AddStrings(start, end, contractions);
@@ -343,21 +352,29 @@ namespace ICU4N.Impl.Coll
             {
                 return;
             }
-            StringBuilder s = new StringBuilder(unreversedPrefix.ToString());
-            do
+            ValueStringBuilder s = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                s.AppendCodePoint(start);
-                if (suffix != null)
+                s.Append(unreversedPrefix.AsSpan());
+                do
                 {
-                    s.Append(suffix);
-                }
-                set.Add(s);
-                s.Length=unreversedPrefix.Length;
-            } while (++start <= end);
+                    s.AppendCodePoint(start);
+                    if (suffix != null)
+                    {
+                        s.Append(suffix);
+                    }
+                    set.Add(s.AsSpan());
+                    s.Length = unreversedPrefix.Length;
+                } while (++start <= end);
+            }
+            finally
+            {
+                s.Dispose();
+            }
         }
 
         // Prefixes are reversed in the data structure.
-        private void SetPrefix(ICharSequence pfx)
+        private void SetPrefix(ReadOnlySpan<char> pfx)
         {
             unreversedPrefix.Length=0;
             unreversedPrefix.Append(pfx).Reverse();

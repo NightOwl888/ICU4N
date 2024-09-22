@@ -3,6 +3,7 @@ using ICU4N.Support.Collections;
 using ICU4N.Text;
 using NUnit.Framework;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -65,8 +66,8 @@ namespace ICU4N.Dev.Test.StringPrep
                     {
                         //by default STD3 rules are not used, but if the description
                         //includes UseSTD3ASCIIRules, we will set it.
-                        if (desc.ToLowerInvariant().IndexOf(
-                                "UseSTD3ASCIIRules".ToLowerInvariant(), StringComparison.Ordinal) == -1)
+                        if (desc.IndexOf(
+                                "UseSTD3ASCIIRules", StringComparison.OrdinalIgnoreCase) == -1)
                         {
                             result = IDNA.ConvertIDNToASCII(namebase,
                                     IDNA2003Options.AllowUnassigned).ToString();
@@ -77,7 +78,7 @@ namespace ICU4N.Dev.Test.StringPrep
                                     IDNA2003Options.UseSTD3Rules).ToString();
                         }
                     }
-                    catch (StringPrepParseException e2)
+                    catch (StringPrepFormatException e2)
                     {
                         //Errln(e2.getMessage());
                         failed = true;
@@ -115,6 +116,8 @@ namespace ICU4N.Dev.Test.StringPrep
                             Errln("\t pass fail standard is fail, but no exception thrown out");
                         }
                     }
+
+                    // ICU4N: Test the Try... version of the API
                 }
                 else if ("tounicode".Equals(tempHash.Get("type")))
                 {
@@ -122,23 +125,82 @@ namespace ICU4N.Dev.Test.StringPrep
                     {
                         //by default STD3 rules are not used, but if the description
                         //includes UseSTD3ASCIIRules, we will set it.
-                        if (desc.ToLowerInvariant().IndexOf(
-                                "UseSTD3ASCIIRules".ToLowerInvariant(), StringComparison.Ordinal) == -1)
+                        if (desc.IndexOf(
+                                "UseSTD3ASCIIRules", StringComparison.OrdinalIgnoreCase) == -1)
                         {
                             result = IDNA.ConvertIDNToUnicode(namebase,
-                                    IDNA2003Options.AllowUnassigned).ToString();
+                                    IDNA2003Options.AllowUnassigned);
                         }
                         else
                         {
                             result = IDNA.ConvertIDNToUnicode(namebase,
-                                    IDNA2003Options.UseSTD3Rules).ToString();
+                                    IDNA2003Options.UseSTD3Rules);
                         }
                     }
-                    catch (StringPrepParseException e2)
+                    catch (StringPrepFormatException e2)
                     {
                         //Errln(e2.getMessage());
                         failed = true;
                     }
+                    if ("pass".Equals(passfail))
+                    {
+                        if (!namezone.Equals(result))
+                        {
+                            PrintInfo(desc, namebase, nameutf8, namezone,
+                                    failzone1, failzone2, result, type, passfail);
+
+                            Errln("\t Did not get the expected result. Expected: " + Prettify(namezone) + " Got: " + Prettify(result));
+                        }
+                        else
+                        {
+                            PrintInfo(desc, namebase, nameutf8, namezone,
+                                    failzone1, failzone2, result, type, passfail);
+                            Logln("\tpassed");
+                        }
+                    }
+
+                    if ("fail".Equals(passfail))
+                    {
+                        if (failed || namebase.Equals(result))
+                        {
+                            PrintInfo(desc, namebase, nameutf8, namezone,
+                                    failzone1, failzone2, result, type, passfail);
+
+                            Logln("\tpassed");
+                        }
+                        else
+                        {
+                            PrintInfo(desc, namebase, nameutf8, namezone,
+                                    failzone1, failzone2, result, type, passfail);
+
+                            Errln("\t pass fail standard is fail, but no exception thrown out");
+                        }
+                    }
+
+                    // ICU4N: Test the Try... version of the API
+
+                    char[] arrayToReturnToPool = ArrayPool<char>.Shared.Rent(namebase.Length + 16);
+                    int charsLength = 0;
+
+                    try
+                    {
+                        //by default STD3 rules are not used, but if the description
+                        //includes UseSTD3ASCIIRules, we will set it.
+                        if (desc.IndexOf(
+                                "UseSTD3ASCIIRules", StringComparison.OrdinalIgnoreCase) == -1)
+                        {
+                            failed = !IDNA.TryConvertIDNToUnicode(namebase.AsSpan(), arrayToReturnToPool, out charsLength, IDNA2003Options.AllowUnassigned, out _);
+                        }
+                        else
+                        {
+                            failed = !IDNA.TryConvertIDNToUnicode(namebase.AsSpan(), arrayToReturnToPool, out charsLength, IDNA2003Options.UseSTD3Rules, out _);
+                        }
+                    }
+                    finally
+                    {
+                        ArrayPool<char>.Shared.Return(arrayToReturnToPool);
+                    }
+
                     if ("pass".Equals(passfail))
                     {
                         if (!namezone.Equals(result))

@@ -5,179 +5,18 @@ using J2N;
 using J2N.Text;
 using System;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Text;
+#nullable enable
 
 namespace ICU4N.Impl
 {
-    /// <summary>
-    /// Implementation of <see cref="ICasePropertiesContextEnumerator"/>, iterates over a string.
-    /// See ustrcase.c/utf16_caseContextIterator().
-    /// </summary>
-    public sealed class StringContextEnumerator : ICasePropertiesContextEnumerator
-    {
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="src">String to iterate over.</param>
-        public StringContextEnumerator(string src)
-            : this(src.AsCharSequence())
-        {
-        }
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="src">String to iterate over.</param>
-        public StringContextEnumerator(StringBuilder src)
-            : this(src.AsCharSequence())
-        {
-        }
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="src">String to iterate over.</param>
-        public StringContextEnumerator(char[] src)
-            : this(src.AsCharSequence())
-        {
-        }
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="src">String to iterate over.</param>
-        public StringContextEnumerator(ICharSequence src)
-        {
-            this.s = src;
-            limit = src.Length;
-            cpStart = cpLimit = index = 0;
-            forward = true;
-        }
-
-        /// <summary>
-        /// Set the iteration limit for <see cref="NextCaseMapCP()"/> to an index within the string.
-        /// If the limit parameter is negative or past the string, then the
-        /// string length is restored as the iteration limit.
-        /// <para/>
-        /// This limit does not affect the <see cref="Next()"/> function which always
-        /// iterates to the very end of the string.
-        /// </summary>
-        /// <param name="lim">The iteration limit.</param>
-        public void SetLimit(int lim)
-        {
-            if (0 <= lim && lim <= s.Length)
-            {
-                limit = lim;
-            }
-            else
-            {
-                limit = s.Length;
-            }
-        }
-
-        /// <summary>
-        /// Move to the iteration limit without fetching code points up to there.
-        /// </summary>
-        public void MoveToLimit()
-        {
-            cpStart = cpLimit = limit;
-        }
-
-        /// <summary>
-        /// Iterate forward through the string to fetch the next code point
-        /// to be case-mapped, and set the context indexes for it.
-        /// </summary>
-        /// <remarks>
-        /// When the iteration limit is reached (and -1 is returned),
-        /// <see cref="CPStart"/> will be at the iteration limit.
-        /// <para/>
-        /// Iteration with <see cref="Next()"/> does not affect the position for <see cref="NextCaseMapCP()"/>.
-        /// </remarks>
-        /// <returns>The next code point to be case-mapped, or &lt;0 when the iteration is done.</returns>
-        public int NextCaseMapCP()
-        {
-            cpStart = cpLimit;
-            if (cpLimit < limit)
-            {
-                int c = Character.CodePointAt(s, cpLimit);
-                cpLimit += Character.CharCount(c);
-                return c;
-            }
-            else
-            {
-                return -1;
-            }
-        }
-
-        /// <summary>
-        /// Gets the start of the code point that was last returned 
-        /// by <see cref="NextCaseMapCP()"/>.
-        /// </summary>
-        public int CPStart => cpStart;
-
-        /// <summary>
-        /// Gets the limit of the code point that was last returned
-        /// by <see cref="NextCaseMapCP()"/>.
-        /// </summary>
-        public int CPLimit => cpLimit;
-
-        /// <summary>
-        /// Gets the length of the code point that was last returned
-        /// by <see cref="NextCaseMapCP()"/>.
-        /// </summary>
-        public int CPLength => cpLimit - cpStart;
-
-        // implement UCaseProps.ContextIterator
-        // The following code is not used anywhere in this private class
-        public void Reset(bool forward)
-        {
-            this.forward = forward;
-            index = forward
-                ? cpLimit  /* reset for forward iteration */
-                : cpStart; /* reset for backward iteration */
-        }
-
-        private int Next()
-        {
-            int c;
-            if (forward && index < s.Length)
-            {
-                c = Character.CodePointAt(s, index);
-                index += Character.CharCount(c);
-                return c;
-            }
-            else if (!forward && index > 0)
-            {
-                c = Character.CodePointBefore(s, index);
-                index -= Character.CharCount(c);
-                return c;
-            }
-            return -1;
-        }
-
-        /// <summary>
-        /// Iterate moving in the direction determined by the <see cref="Reset(bool)"/> call.
-        /// </summary>
-        /// <returns><c>true</c> if the enumerator was successfully advanced to the next element; 
-        /// <c>false</c> if the enumerator has reached the end.</returns>
-        public bool MoveNext()
-        {
-            return (Current = Next()) >= 0;
-        }
-
-        /// <summary>
-        /// Gets the current code point.
-        /// </summary>
-        public int Current { get; private set; }
-
-        // variables
-        private ICharSequence s;
-        private int index, limit, cpStart, cpLimit;
-        private bool forward;
-    }
-
     public sealed partial class CaseMapImpl
     {
+        private const int CharStackBufferSize = 32;
+
+        internal const int U_SENTINEL = -1;
+
         // ICU4N: De-nested StringContextIterator
 
         public const int TitleCaseWholeString = 0x20;  // ICU4N TODO: API Change to [Flags] enum
@@ -253,7 +92,7 @@ namespace ICU4N.Impl
         }
 
         public static BreakIterator GetTitleBreakIterator(
-                CultureInfo locale, int options, BreakIterator iter)
+            CultureInfo? locale, int options, BreakIterator? iter)
         {
             options &= TITLECASE_ITERATOR_MASK;
             if (options != 0 && iter != null)
@@ -261,18 +100,21 @@ namespace ICU4N.Impl
                 throw new ArgumentException(
                         "titlecasing iterator option together with an explicit iterator");
             }
-            if (iter == null)
+            // ICU4N: added guard clause so we don't get a NullReferenceException
+            if (options != TitleCaseWholeString && locale is null && iter is null)
+                throw new ArgumentException($"Either {nameof(locale)} or {nameof(iter)} must be non-null when {nameof(TitleCaseWholeString)} is not used.");
+            if (iter is null)
             {
                 switch (options)
                 {
                     case 0:
-                        iter = BreakIterator.GetWordInstance(locale);
+                        iter = BreakIterator.GetWordInstance(locale!);
                         break;
                     case TitleCaseWholeString:
                         iter = new WholeStringBreakIterator();
                         break;
                     case TitleCaseSentences:
-                        iter = BreakIterator.GetSentenceInstance(locale);
+                        iter = BreakIterator.GetSentenceInstance(locale!);
                         break;
                     default:
                         throw new ArgumentException("unknown titlecasing iterator option");
@@ -282,7 +124,7 @@ namespace ICU4N.Impl
         }
 
         public static BreakIterator GetTitleBreakIterator(
-                UCultureInfo locale, int options, BreakIterator iter)
+            UCultureInfo? locale, int options, BreakIterator? iter)
         {
             options &= TITLECASE_ITERATOR_MASK;
             if (options != 0 && iter != null)
@@ -290,18 +132,22 @@ namespace ICU4N.Impl
                 throw new ArgumentException(
                         "titlecasing iterator option together with an explicit iterator");
             }
-            if (iter == null)
+            // ICU4N: added guard clause so we don't get a NullReferenceException
+            if (options != TitleCaseWholeString && locale is null && iter is null)
+                throw new ArgumentException($"Either {nameof(locale)} or {nameof(iter)} must be non-null when {nameof(TitleCaseWholeString)} is not used.");
+
+            if (iter is null)
             {
                 switch (options)
                 {
                     case 0:
-                        iter = BreakIterator.GetWordInstance(locale);
+                        iter = BreakIterator.GetWordInstance(locale!);
                         break;
                     case TitleCaseWholeString:
                         iter = new WholeStringBreakIterator();
                         break;
                     case TitleCaseSentences:
-                        iter = BreakIterator.GetSentenceInstance(locale);
+                        iter = BreakIterator.GetSentenceInstance(locale!);
                         break;
                     default:
                         throw new ArgumentException("unknown titlecasing iterator option");
@@ -367,7 +213,7 @@ namespace ICU4N.Impl
                 }
             }
 
-            public override CharacterIterator Text
+            public override CharacterIterator? Text
             {
                 get
                 {
@@ -381,7 +227,7 @@ namespace ICU4N.Impl
                 length = newText.EndIndex;
             }
 
-            public override void SetText(ICharSequence newText)
+            public override void SetText(ReadOnlyMemory<char> newText)
             {
                 length = newText.Length;
             }
@@ -392,41 +238,991 @@ namespace ICU4N.Impl
             }
         }
 
-        // ICU4N specific - AppendCodePoint(IAppendable a, int c) moved to CaseMapImplExtension.tt
+        // ICU4N specific - AppendCodePoint(IAppendable a, int c) - use ValueStringBuilder.AppendCodePoint() instead.
 
-        // ICU4N specific - AppendResult(int result, IAppendable dest,
-        //    int cpLength, int options, Edits edits) moved to CaseMapImplExtension.tt
+        /// <summary>
+        /// Appends a full case mapping result, see <see cref="UCaseProperties.MaxStringLength"/>
+        /// </summary>
+        private static void AppendResult(int result, ref ValueStringBuilder dest,
+            int cpLength, int options, Edits? edits)
+        {
+            // Decode the result.
+            if (result < 0)
+            {
+                // (not) original code point
+                if (edits != null)
+                {
+                    edits.AddUnchanged(cpLength);
+                }
+                if ((options & OmitUnchangedText) != 0)
+                {
+                    return;
+                }
+                dest.AppendCodePoint(~result);
+            }
+            else if (result <= UCaseProperties.MaxStringLength)
+            {
+                // The mapping has already been appended to result.
+                if (edits != null)
+                {
+                    edits.AddReplace(cpLength, result);
+                }
+            }
+            else
+            {
+                // Append the single-code point mapping.
+                int length = dest.AppendCodePoint(result);
+                if (edits != null)
+                {
+                    edits.AddReplace(cpLength, length);
+                }
+            }
+        }
 
-        // ICU4N specific - AppendUnchanged(ICharSequence src, int start, int length,
-        //    IAppendable dest, int options, Edits edits) moved to CaseMapImplExtension.tt
+        private unsafe static void AppendUnchanged(char* src, int start, int length,
+            ref ValueStringBuilder dest, int options, Edits? edits)
+        {
+            if (length > 0)
+            {
+                if (edits != null)
+                {
+                    edits.AddUnchanged(length);
+                }
+                if ((options & OmitUnchangedText) != 0)
+                {
+                    return;
+                }
+                dest.Append(src + start, length);
+            }
+        }
 
-        // ICU4N specific - ApplyEdits(ICharSequence src, StringBuilder replacementChars, Edits edits) 
-        // moved to CaseMapImplExtension.tt
+        // ICU4N: Ported from ustrcase.cpp utf16_caseContextIterator
 
-        // ICU4N specific - InternalToLower(int caseLocale, int options, StringContextIterator iter,
-        //    IAppendable dest, Edits edits) moved to CaseMapImplExtension.tt
+        // ICU4N: In C++ context was a void*, but in C# we use IntPtr to allow for managed types to be used.
+        private unsafe static int Utf16CaseContextIterator(IntPtr context, sbyte dir)
+        {
+            UCaseContext* csc = (UCaseContext*)context;
+            int c;
 
-        // ICU4N specific - ToLower(int caseLocale, int options, ICharSequence src) moved to CaseMapImplExtension.tt
+            if (dir < 0)
+            {
+                /* reset for backward iteration */
+                csc->index = csc->cpStart;
+                csc->dir = dir;
+            }
+            else if (dir > 0)
+            {
+                /* reset for forward iteration */
+                csc->index = csc->cpLimit;
+                csc->dir = dir;
+            }
+            else
+            {
+                /* continue current iteration direction */
+                dir = csc->dir;
+            }
 
-        // ICU4N specific - ToLower<T>(int caseLocale, int options,
-        //    ICharSequence src, T dest, Edits edits) where T: IAppendable moved to CaseMapImplExtension.tt
+            if (dir < 0)
+            {
+                if (csc->start < csc->index)
+                {
+                    UTF16.Previous((char*)csc->p, csc->start, ref csc->index, out c);
+                    return c;
+                }
+            }
+            else
+            {
+                if (csc->index < csc->limit)
+                {
+                    UTF16.Next((char*)csc->p, ref csc->index, csc->limit, out c);
+                    return c;
+                }
+            }
+            return U_SENTINEL;
+        }
 
-        // ICU4N specific - ToUpper(int caseLocale, int options, ICharSequence src) moved to CaseMapImplExtension.tt
+        private static void ApplyEdits(ReadOnlySpan<char> src, scoped ReadOnlySpan<char> replacementChars, Edits edits, ref ValueStringBuilder result)
+        {
+            if (!edits.HasChanges)
+            {
+                result.Append(src);
+                return;
+            }
+            for (EditsEnumerator ei = edits.GetCoarseEnumerator(); ei.MoveNext();)
+            {
+                if (ei.HasChange)
+                {
+                    int i = ei.ReplacementIndex;
+                    result.Append(replacementChars.Slice(i, ei.NewLength)); // ICU4N: (i + ei.NewLength) - i == ei.NewLength
+                }
+                else
+                {
+                    int i = ei.SourceIndex;
+                    result.Append(src.Slice(i, ei.OldLength)); // ICU4N: (i + ie.OldLength) - i == ie.OldLength
+                }
+            }
+        }
 
-        // ICU4N specific - ToUpper(int caseLocale, int options,
-        //    ICharSequence src, IAppendable dest, Edits edits) moved to CaseMapImplExtension.tt
+        // ICU4N: Ported this from the ustrcase.cpp file. We don't want to be heap bound, so we are using a pointer
+        // which allows the use of a ref struct for the context parameter. _CaseMap does the actual iteration.
+        private unsafe static void InternalToLower(CaseLocale caseLocale, int options,
+            ref ValueStringBuilder dest, char* src, int srcLength, Edits? edits)
+        {
+            UCaseContext csc = new UCaseContext();
+            csc.p = (IntPtr)src; // ICU4N: In C++ this was a void*, but in C# we use IntPtr to allow for managed types to be used.
+            csc.limit = srcLength;
+            _CaseMap(
+                caseLocale, options, UCaseProperties.Instance.ToFullLower,
+                ref dest, src, &csc, srcStart: 0, srcLength,
+                edits);
+        }
 
-        // ICU4N specific - ToTitle(int caseLocale, int options, BreakIterator iter, ICharSequence src) moved to CaseMapImplExtension.tt
+        // ICU4N: Ported this from the ustrcase.cpp file. We don't want to be heap bound, so we are using a pointer
+        // which allows the use of a ref struct for the context parameter. _CaseMap does the actual iteration.
+        private unsafe static void InternalToUpper(CaseLocale caseLocale, int options,
+            ref ValueStringBuilder dest, char* src, int srcLength, Edits? edits)
+        {
+            if (caseLocale == CaseLocale.Greek)
+            {
+                GreekUpper.ToUpper(options, ref dest, src, srcLength, edits);
+                return;
+            }
+            UCaseContext csc = new UCaseContext();
+            csc.p = (IntPtr)src; // ICU4N: In C++ this was a void*, but in C# we use IntPtr to allow for managed types to be used.
+            csc.limit = srcLength;
+            _CaseMap(
+                caseLocale, options, UCaseProperties.Instance.ToFullUpper,
+                ref dest, src, &csc, srcStart: 0, srcLength,
+                edits);
+        }
 
-        // ICU4N specific - ToTitle(
-        //    int caseLocale, int options, BreakIterator titleIter,
-        //    ICharSequence src, IAppendable dest, Edits edits) moved to CaseMapImplExtension.tt
+        // ICU4N: Ported this from the ustrcase.cpp file. We don't want to be heap bound, so we are using a pointer
+        // which allows the use of a ref struct for the context parameter. _CaseMap does the actual iteration.
+        internal unsafe static void InternalToTitle(
+            CaseLocale caseLocale, int options, BreakIterator titleIter,
+            ref ValueStringBuilder dest,
+            char* src, int srcLength, Edits? edits)
+        {
+            // ICU4N TODO: This check was done in the C++ code, but not in Java. Not sure what message to throw.
+            //if ((options & TITLECASE_ADJUSTMENT_MASK) == TITLECASE_ADJUSTMENT_MASK)
+            //{
+            //    throw new IcuArgumentException("");
+            //}
 
-        // ICU4N specific - Fold(int options, ICharSequence src) moved to CaseMapImplExtension.tt
+            /* set up local variables */
+            UCaseContext csc = new UCaseContext();
+            csc.p = (IntPtr)src; // ICU4N: In C++ this was a void*, but in C# we use IntPtr to allow for managed types to be used.
+            csc.limit = srcLength;
+            int prev = 0;
+            bool isFirstIndex = true;
 
-        // ICU4N specific - Fold<T>(int options,
-        //    ICharSequence src, T dest, Edits edits) where T : IAppendable moved to CaseMapImplExtension.tt
+            /* titlecasing loop */
+            while (prev < srcLength)
+            {
+                /* find next index where to titlecase */
+                int index;
+                if (isFirstIndex)
+                {
+                    isFirstIndex = false;
+                    index = titleIter.First();
+                }
+                else
+                {
+                    index = titleIter.Next();
+                }
+                if (index == BreakIterator.Done || index > srcLength)
+                {
+                    index = srcLength;
+                }
 
+                /*
+                    * Segment [prev..index[ into 3 parts:
+                    * a) skipped characters (copy as-is) [prev..titleStart[
+                    * b) first letter (titlecase)              [titleStart..titleLimit[
+                    * c) subsequent characters (lowercase)                 [titleLimit..index[
+                    */
+                if (prev < index)
+                {
+                    // Find and copy skipped characters [prev..titleStart[
+                    int titleStart = prev;
+                    int titleLimit = prev;
+                    int c;
+                    UTF16.Next(src, ref titleLimit, index, out c);
+                    if ((options & UChar.TitleCaseNoBreakAdjustment) == 0)
+                    {
+                        // Adjust the titlecasing index to the next cased character,
+                        // or to the next letter/number/symbol/private use.
+                        // Stop with titleStart<titleLimit<=index
+                        // if there is a character to be titlecased,
+                        // or else stop with titleStart==titleLimit==index.
+                        bool toCased = (options & CaseMapImpl.TitleCaseAdjustToCased) != 0;
+                        while (toCased ? CaseType.None == UCaseProperties.Instance.GetCaseType(c) : !CaseMapImpl.IsLNS(c))
+                        {
+                            titleStart = titleLimit;
+                            if (titleLimit == index)
+                                break;
+                            UTF16.Next(src, ref titleLimit, index, out c);
+                        }
+                        // If c<0 then we have only uncased characters in [prev..index[
+                        // and stopped with titleStart==titleLimit==index.
+                        //titleStart = iter.CPStart;
+                        if (prev < titleStart)
+                        {
+                            AppendUnchanged(src, prev, titleStart - prev, ref dest, options, edits);
+                        }
+                    }
+
+                    if (titleStart < titleLimit)
+                    {
+                        // titlecase c which is from [titleStart..titleLimit[
+                        c = UCaseProperties.Instance.ToFullTitle(c, Utf16CaseContextIterator, (IntPtr)(&csc), ref dest, caseLocale);
+                        AppendResult(c, ref dest, titleLimit - titleStart, options, edits);
+
+                        // Special case Dutch IJ titlecasing
+                        if (titleStart + 1 < index && caseLocale == CaseLocale.Dutch)
+                        {
+                            char c1 = src[titleStart];
+                            if ((c1 == 'i' || c1 == 'I'))
+                            {
+                                char c2 = src[titleStart + 1];
+                                if (c2 == 'j')
+                                {
+                                    dest.Append('J');
+                                    if (edits != null)
+                                    {
+                                        edits.AddReplace(1, 1);
+                                    }
+                                    titleLimit++;
+                                }
+                                else if (c2 == 'J')
+                                {
+                                    // Keep the capital J from getting lowercased.
+                                    AppendUnchanged(src, titleStart + 1, 1, ref dest, options, edits);
+                                    titleLimit++;
+                                }
+                            }
+                        }
+
+                        // lowercase [titleLimit..index[
+                        if (titleLimit < index)
+                        {
+                            if ((options & UChar.TitleCaseNoLowerCase) == 0)
+                            {
+                                // Normal operation: Lowercase the rest of the word.
+                                _CaseMap(
+                                    caseLocale, options, UCaseProperties.Instance.ToFullLower,
+                                    ref dest,
+                                    src, &csc,
+                                    titleLimit, index,
+                                    edits);
+                            }
+                            else
+                            {
+                                // Optionally just copy the rest of the word unchanged.
+                                AppendUnchanged(src, titleLimit, index - titleLimit, ref dest, options, edits);
+                            }
+                        }
+                    }
+                }
+
+                prev = index;
+            }
+        }
+
+        public static string ToLower(CaseLocale caseLocale, int options, ReadOnlySpan<char> src)
+        {
+            int length = src.Length;
+            if (length <= 100 && (options & OmitUnchangedText) == 0)
+            {
+                if (length == 0)
+                {
+                    return string.Empty;
+                }
+                // Collect and apply only changes.
+                // Good if no or few changes. Bad (slow) if many changes.
+                ValueStringBuilder replacementChars = length <= CharStackBufferSize
+                    ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                    : new ValueStringBuilder(length);
+                scoped ValueStringBuilder result = default;
+                try
+                {
+                    Edits edits = new Edits();
+                    ToLower(caseLocale, options | OmitUnchangedText, src, ref replacementChars, edits);
+
+                    int newLength = length + edits.LengthDelta;
+                    result = newLength <= CharStackBufferSize
+                        ? new ValueStringBuilder(stackalloc char[newLength])
+                        : new ValueStringBuilder(newLength);
+                    ApplyEdits(src, replacementChars.AsSpan(), edits, ref result);
+                    return result.ToString();
+                }
+                finally
+                {
+                    replacementChars.Dispose();
+                    result.Dispose();
+                }
+            }
+            else
+            {
+                ValueStringBuilder result = length <= CharStackBufferSize
+                    ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                    : new ValueStringBuilder(length);
+                try
+                {
+                    ToLower(caseLocale, options, src, ref result, edits: null);
+                    return result.ToString();
+                }
+                finally
+                {
+                    result.Dispose();
+                }
+            }
+        }
+
+        // ICU4N specific overload
+        // charsLength will return either the number of characters that were copied, or on failure, will return the number of chars to allocate to execute successfully.
+        public static bool ToLower(CaseLocale caseLocale, int options, ReadOnlySpan<char> source, Span<char> destination, out int charsLength) // ICU4N TODO: Tests
+        {
+            ValueStringBuilder result = new ValueStringBuilder(destination);
+            try
+            {
+                int length = source.Length;
+                if (length <= 100 && (options & OmitUnchangedText) == 0)
+                {
+                    if (length == 0)
+                    {
+                        charsLength = 0;
+                        return true;
+                    }
+                    // Collect and apply only changes.
+                    // Good if no or few changes. Bad (slow) if many changes.
+                    ValueStringBuilder replacementChars = length <= CharStackBufferSize
+                        ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                        : new ValueStringBuilder(length);
+                    try
+                    {
+                        Edits edits = new Edits();
+                        ToLower(caseLocale, options | OmitUnchangedText, source, ref replacementChars, edits);
+
+                        ApplyEdits(source, replacementChars.AsSpan(), edits, ref result);
+                        return result.FitsInitialBuffer(out charsLength);
+                    }
+                    finally
+                    {
+                        replacementChars.Dispose();
+                    }
+                }
+                else
+                {
+                    ToLower(caseLocale, options, source, ref result, edits: null);
+                    return result.FitsInitialBuffer(out charsLength);
+                }
+            }
+            finally
+            {
+                result.Dispose();
+            }
+        }
+
+        public static bool ToLower(CaseLocale caseLocale, int options,
+            ReadOnlySpan<char> source, Span<char> destination, out int charsLength, Edits? edits) // ICU4N TODO: Tests
+        {
+            if (edits is null)
+            {
+                return ToLower(caseLocale, options, source, destination, out charsLength);
+            }
+
+            var result = new ValueStringBuilder(destination);
+            try
+            {
+                ToLower(caseLocale, options, source, ref result, edits);
+                return result.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                result.Dispose();
+            }
+        }
+
+        public static StringBuilder ToLower(CaseLocale caseLocale, int options,
+            ReadOnlySpan<char> src, StringBuilder dest, Edits? edits) // ICU4N TODO: API - we probably don't want this overload - we should write to Span<char> instead
+        {
+            if (dest is null)
+                throw new ArgumentNullException(nameof(dest));
+
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                ToLower(caseLocale, options, src, ref sb, edits);
+                dest.Append(sb.AsSpan());
+                return dest;
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        public static T ToLower<T>(CaseLocale caseLocale, int options,
+            ReadOnlySpan<char> src, T dest, Edits? edits) where T : IAppendable // ICU4N TODO: API - we probably don't want this overload - we should write to Span<char> instead
+        {
+            if (dest is null)
+                throw new ArgumentNullException(nameof(dest));
+
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                ToLower(caseLocale, options, src, ref sb, edits);
+                dest.Append(sb.AsSpan());
+                return dest;
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        internal unsafe static void ToLower(CaseLocale caseLocale, int options,
+            ReadOnlySpan<char> src, ref ValueStringBuilder dest, Edits? edits)
+        {
+            // ICU4N: Removed unnecessary try/catch
+            if (edits != null)
+            {
+                edits.Reset();
+            }
+            fixed (char* srcPtr = &MemoryMarshal.GetReference(src))
+            {
+                InternalToLower(caseLocale, options, ref dest, srcPtr, src.Length, edits);
+            }
+        }
+
+        public static string ToUpper(CaseLocale caseLocale, int options, ReadOnlySpan<char> src)
+        {
+            int length = src.Length;
+            if (length <= 100 && (options & OmitUnchangedText) == 0)
+            {
+                if (length == 0)
+                {
+                    return string.Empty;
+                }
+                // Collect and apply only changes.
+                // Good if no or few changes. Bad (slow) if many changes.
+                ValueStringBuilder replacementChars = length <= CharStackBufferSize
+                    ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                    : new ValueStringBuilder(length);
+                scoped ValueStringBuilder result = default;
+                try
+                {
+                    Edits edits = new Edits();
+                    ToUpper(caseLocale, options | OmitUnchangedText, src, ref replacementChars, edits);
+
+                    int newLength = length + edits.LengthDelta;
+                    result = newLength <= CharStackBufferSize
+                        ? new ValueStringBuilder(stackalloc char[newLength])
+                        : new ValueStringBuilder(newLength);
+                    ApplyEdits(src, replacementChars.AsSpan(), edits, ref result);
+                    return result.ToString();
+                }
+                finally
+                {
+                    replacementChars.Dispose();
+                    result.Dispose();
+                }
+            }
+            else
+            {
+                ValueStringBuilder result = length <= CharStackBufferSize
+                    ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                    : new ValueStringBuilder(length);
+                try
+                {
+                    ToUpper(caseLocale, options, src, ref result, edits: null);
+                    return result.ToString();
+                }
+                finally
+                {
+                    result.Dispose();
+                }
+            }
+        }
+
+        // ICU4N specific overload
+        // charsLength will return either the number of characters that were copied, or on failure, will return the number of chars to allocate to execute successfully.
+        public static bool ToUpper(CaseLocale caseLocale, int options, ReadOnlySpan<char> source, Span<char> destination, out int charsLength) // ICU4N TODO: Tests
+        {
+            ValueStringBuilder result = new ValueStringBuilder(destination);
+            try
+            {
+                int length = source.Length;
+                if (length <= 100 && (options & OmitUnchangedText) == 0)
+                {
+                    if (length == 0)
+                    {
+                        charsLength = 0;
+                        return true;
+                    }
+                    // Collect and apply only changes.
+                    // Good if no or few changes. Bad (slow) if many changes.
+                    ValueStringBuilder replacementChars = length <= CharStackBufferSize
+                        ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                        : new ValueStringBuilder(length);
+                    try
+                    {
+                        Edits edits = new Edits();
+                        ToUpper(caseLocale, options | OmitUnchangedText, source, ref replacementChars, edits);
+
+                        ApplyEdits(source, replacementChars.AsSpan(), edits, ref result);
+                        return result.FitsInitialBuffer(out charsLength);
+                    }
+                    finally
+                    {
+                        replacementChars.Dispose();
+                    }
+                }
+                else
+                {
+
+                    ToUpper(caseLocale, options, source, ref result, edits: null);
+                    return result.FitsInitialBuffer(out charsLength);
+                }
+            }
+            finally
+            {
+                result.Dispose();
+            }
+        }
+
+        public static bool ToUpper(CaseLocale caseLocale, int options,
+            ReadOnlySpan<char> source, Span<char> destination, out int charsLength, Edits? edits) // ICU4N TODO: Tests
+        {
+            if (edits is null)
+            {
+                return ToUpper(caseLocale, options, source, destination, out charsLength);
+            }
+
+            ValueStringBuilder result = new ValueStringBuilder(destination);
+            try
+            {
+                ToUpper(caseLocale, options, source, ref result, edits);
+                return result.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                result.Dispose();
+            }
+        }
+
+        public static StringBuilder ToUpper(CaseLocale caseLocale, int options,
+            ReadOnlySpan<char> src, StringBuilder dest, Edits? edits) // ICU4N TODO: API - we probably don't want this overload - we should write to Span<char> instead
+        {
+            if (dest is null)
+                throw new ArgumentNullException(nameof(dest));
+
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                ToUpper(caseLocale, options, src, ref sb, edits);
+                dest.Append(sb.AsSpan());
+                return dest;
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        public static T ToUpper<T>(CaseLocale caseLocale, int options,
+            ReadOnlySpan<char> src, T dest, Edits? edits) where T : IAppendable // ICU4N TODO: API - we probably don't want this overload - we should write to Span<char> instead
+        {
+            if (dest is null)
+                throw new ArgumentNullException(nameof(dest));
+
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                ToUpper(caseLocale, options, src, ref sb, edits);
+                dest.Append(sb.AsSpan());
+                return dest;
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        internal unsafe static void ToUpper(CaseLocale caseLocale, int options,
+            ReadOnlySpan<char> src, ref ValueStringBuilder dest, Edits? edits)
+        {
+            // ICU4N: Removed unnecessary try/catch
+            if (edits != null)
+            {
+                edits.Reset();
+            }
+            fixed (char* srcPtr = &MemoryMarshal.GetReference(src))
+            {
+                InternalToUpper(caseLocale, options, ref dest, srcPtr, src.Length, edits);
+            }
+        }
+
+        public static string ToTitle(CaseLocale caseLocale, int options, BreakIterator iter, ReadOnlySpan<char> src)
+        {
+            int length = src.Length;
+            if (length <= 100 && (options & OmitUnchangedText) == 0)
+            {
+                if (length == 0)
+                {
+                    return string.Empty;
+                }
+                // Collect and apply only changes.
+                // Good if no or few changes. Bad (slow) if many changes.
+                ValueStringBuilder replacementChars = length <= CharStackBufferSize
+                    ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                    : new ValueStringBuilder(length);
+                scoped ValueStringBuilder result = default;
+                try
+                {
+                    Edits edits = new Edits();
+                    ToTitle(caseLocale, options | OmitUnchangedText, iter, src, ref replacementChars, edits);
+
+                    int newLength = length + edits.LengthDelta;
+                    result = newLength <= CharStackBufferSize
+                        ? new ValueStringBuilder(stackalloc char[newLength])
+                        : new ValueStringBuilder(newLength);
+                    ApplyEdits(src, replacementChars.AsSpan(), edits, ref result);
+                    return result.ToString();
+                }
+                finally
+                {
+                    replacementChars.Dispose();
+                    result.Dispose();
+                }
+            }
+            else
+            {
+                ValueStringBuilder result = length <= CharStackBufferSize
+                    ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                    : new ValueStringBuilder(length);
+                try
+                {
+                    ToTitle(caseLocale, options, iter, src, ref result, edits: null);
+                    return result.ToString();
+                }
+                finally
+                {
+                    result.Dispose();
+                }
+            }
+        }
+
+        // ICU4N specific overload
+        // charsLength will return either the number of characters that were copied, or on failure, will return the number of chars to allocate to execute successfully.
+        public static bool ToTitle(CaseLocale caseLocale, int options, BreakIterator iter, ReadOnlySpan<char> source, Span<char> destination, out int charsLength) // ICU4N TODO: Tests
+        {
+            ValueStringBuilder result = new ValueStringBuilder(destination);
+            try
+            {
+                int length = source.Length;
+                if (length <= 100 && (options & OmitUnchangedText) == 0)
+                {
+                    if (length == 0)
+                    {
+                        charsLength = 0;
+                        return true;
+                    }
+                    // Collect and apply only changes.
+                    // Good if no or few changes. Bad (slow) if many changes.
+                    ValueStringBuilder replacementChars = length <= CharStackBufferSize
+                        ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                        : new ValueStringBuilder(length);
+                    try
+                    {
+                        Edits edits = new Edits();
+                        ToTitle(caseLocale, options | OmitUnchangedText, iter, source, ref replacementChars, edits);
+
+                        ApplyEdits(source, replacementChars.AsSpan(), edits, ref result);
+                        return result.FitsInitialBuffer(out charsLength);
+                    }
+                    finally
+                    {
+                        replacementChars.Dispose();
+                    }
+                }
+                else
+                {
+
+                    ToTitle(caseLocale, options, iter, source, ref result, null);
+                    return result.FitsInitialBuffer(out charsLength);
+                }
+            }
+            finally
+            {
+                result.Dispose();
+            }
+        }
+
+        public static bool ToTitle(
+            CaseLocale caseLocale, int options, BreakIterator titleIter,
+            ReadOnlySpan<char> source, Span<char> destination, out int charsLength, Edits? edits) // ICU4N TODO: Tests
+        {
+            ValueStringBuilder result = new ValueStringBuilder(destination);
+            try
+            {
+                ToTitle(caseLocale, options, titleIter, source, ref result, edits);
+                return result.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                result.Dispose();
+            }
+        }
+
+        public static StringBuilder ToTitle(
+            CaseLocale caseLocale, int options, BreakIterator titleIter,
+            ReadOnlySpan<char> src, StringBuilder dest, Edits? edits) // ICU4N TODO: API - we probably don't want this overload - we should write to Span<char> instead
+        {
+            if (dest is null)
+                throw new ArgumentNullException(nameof(dest));
+
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                ToTitle(caseLocale, options, titleIter, src, ref sb, edits);
+                dest.Append(sb.AsSpan());
+                return dest;
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        public static T ToTitle<T>(
+            CaseLocale caseLocale, int options, BreakIterator titleIter,
+            ReadOnlySpan<char> src, T dest, Edits? edits) where T: IAppendable // ICU4N TODO: API - we probably don't want this overload - we should write to Span<char> instead
+        {
+            if (dest is null)
+                throw new ArgumentNullException(nameof(dest));
+
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                ToTitle(caseLocale, options, titleIter, src, ref sb, edits);
+                dest.Append(sb.AsSpan());
+                return dest;
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        internal unsafe static void ToTitle(
+            CaseLocale caseLocale, int options, BreakIterator titleIter,
+            ReadOnlySpan<char> src, ref ValueStringBuilder dest, Edits? edits)
+        {
+            if (titleIter is null)
+                throw new ArgumentNullException(nameof(titleIter));
+
+            // ICU4N: Removed unnecessary try/catch
+            if (edits != null)
+            {
+                edits.Reset();
+            }
+            fixed (char* srcPtr = &MemoryMarshal.GetReference(src))
+            {
+                InternalToTitle(caseLocale, options, titleIter, ref dest, srcPtr, src.Length, edits);
+            }
+        }
+
+        public static string Fold(int options, ReadOnlySpan<char> src)
+        {
+            int length = src.Length;
+            if (length <= 100 && (options & OmitUnchangedText) == 0)
+            {
+                if (length == 0)
+                {
+                    return string.Empty;
+                }
+                // Collect and apply only changes.
+                // Good if no or few changes. Bad (slow) if many changes.
+                ValueStringBuilder replacementChars = length <= CharStackBufferSize
+                    ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                    : new ValueStringBuilder(length);
+                scoped ValueStringBuilder result = default;
+                try
+                {
+                    Edits edits = new Edits();
+                    Fold(options | OmitUnchangedText, src, ref replacementChars, edits);
+
+                    int newLength = length + edits.LengthDelta;
+                    result = newLength <= CharStackBufferSize
+                        ? new ValueStringBuilder(stackalloc char[newLength])
+                        : new ValueStringBuilder(newLength);
+                    ApplyEdits(src, replacementChars.AsSpan(), edits, ref result);
+                    return result.ToString();
+                }
+                finally
+                {
+                    replacementChars.Dispose();
+                    result.Dispose();
+                }
+            }
+            else
+            {
+                ValueStringBuilder result = length <= CharStackBufferSize
+                    ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                    : new ValueStringBuilder(length);
+                try
+                {
+                    Fold(options, src, ref result, null);
+                    return result.ToString();
+                }
+                finally
+                {
+                    result.Dispose();
+                }
+            }
+        }
+
+        // ICU4N specific overload
+        // charsLength will return either the number of characters that were copied, or on failure, will return the number of chars to allocate to execute successfully.
+        public static bool Fold(int options, ReadOnlySpan<char> source, Span<char> destination, out int charsLength) // ICU4N TODO: Tests
+        {
+            ValueStringBuilder result = new ValueStringBuilder(destination);
+            try
+            {
+                int length = source.Length;
+                if (length <= 100 && (options & OmitUnchangedText) == 0)
+                {
+                    if (length == 0)
+                    {
+                        charsLength = 0;
+                        return true;
+                    }
+                    // Collect and apply only changes.
+                    // Good if no or few changes. Bad (slow) if many changes.
+                    ValueStringBuilder replacementChars = length <= CharStackBufferSize
+                        ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                        : new ValueStringBuilder(length);
+                    try
+                    {
+                        Edits edits = new Edits();
+                        Fold(options | OmitUnchangedText, source, ref replacementChars, edits);
+
+                        ApplyEdits(source, replacementChars.AsSpan(), edits, ref result);
+                        return result.FitsInitialBuffer(out charsLength);
+                    }
+                    finally
+                    {
+                        replacementChars.Dispose();
+                    }
+                }
+                else
+                {
+
+                    Fold(options, source, ref result, null);
+                    return result.FitsInitialBuffer(out charsLength);
+                }
+            }
+            finally
+            {
+                result.Dispose();
+            }
+        }
+
+        public static bool Fold(int options,
+            ReadOnlySpan<char> source, Span<char> destination, out int charsLength, Edits? edits) // ICU4N TODO: Tests
+        {
+            ValueStringBuilder result = new ValueStringBuilder(destination);
+            try
+            {
+                Fold(options, source, ref result, edits);
+                return result.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                result.Dispose();
+            }
+        }
+
+        public static StringBuilder Fold(int options,
+            ReadOnlySpan<char> src, StringBuilder dest, Edits? edits)
+        {
+            if (dest is null)
+                throw new ArgumentNullException(nameof(dest));
+
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                Fold(options, src, ref sb, edits);
+                dest.Append(sb.AsSpan());
+                return dest;
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        public static T Fold<T>(int options,
+            ReadOnlySpan<char> src, T dest, Edits? edits) where T : IAppendable
+        {
+            if (dest is null)
+                throw new ArgumentNullException(nameof(dest));
+
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                Fold(options, src, ref sb, edits);
+                dest.Append(sb.AsSpan());
+                return dest;
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        internal static void Fold(int options,
+            ReadOnlySpan<char> src, ref ValueStringBuilder dest, Edits? edits)
+        {
+            // ICU4N: Removed unnecessary try/catch
+            if (edits != null)
+            {
+                edits.Reset();
+            }
+            int length = src.Length;
+            for (int i = 0; i < length;)
+            {
+                int c = Character.CodePointAt(src, i);
+                int cpLength = Character.CharCount(c);
+                i += cpLength;
+                c = UCaseProperties.Instance.ToFullFolding(c, ref dest, options);
+                AppendResult(c, ref dest, cpLength, options, edits);
+            }
+        }
+
+        /*
+         * Case-maps [srcStart..srcLimit[ but takes
+         * context [0..srcLength[ into account.
+         */
+        // ICU4N: Ported this from the ustrcase.cpp file. We don't want to be heap bound, so we are using a pointer
+        // which allows the use of a ref struct for the context parameter.
+        private unsafe static void _CaseMap(CaseLocale caseLocale, int options, UCaseMapFull map,
+            ref ValueStringBuilder dest, char* src, UCaseContext* csc, int srcStart, int srcLimit, Edits? edits)
+        {
+            /* case mapping loop */
+            int srcIndex = srcStart;
+            while (srcIndex < srcLimit)
+            {
+                int cpStart;
+                csc->cpStart = cpStart = srcIndex;
+                UTF16.Next(src, ref srcIndex, srcLimit, out int c);
+                csc->cpLimit = srcIndex;
+                c = map(c, Utf16CaseContextIterator, (IntPtr)csc, ref dest, caseLocale);
+                AppendResult(c, ref dest, srcIndex - cpStart, options, edits);
+            }
+        }
 
         private sealed partial class GreekUpper
         {
@@ -920,11 +1716,203 @@ namespace ICU4N.Impl
                 }
             }
 
-            // ICU4N specific - IsFollowedByCasedLetter(ICharSequence s, int i) moved to CaseMapImplExtension.tt
+            private unsafe static bool IsFollowedByCasedLetter(char* s, int i, int length)
+            {
+                while (i < length)
+                {
+                    UTF16.Next(s, ref i, length, out int c);
+                    // ICU4N: Simplfied version of GetTypeOrIgnorable
+                    if (UCaseProperties.Instance.IsCaseIgnorable(c, out CaseType type))
+                    {
+                        // Case-ignorable, continue with the loop.
+                    }
+                    else if (type != CaseType.None)
+                    {
+                        return true;  // Followed by cased letter.
+                    }
+                    else
+                    {
+                        return false;  // Uncased and not case-ignorable.
+                    }
+                }
+                return false;  // Not followed by cased letter.
+            }
 
-            // ICU4N specific - ToUpper<T>(int options,
-            //    ICharSequence src, T dest, Edits edits) where T : IAppendable moved to CaseMapImplExtension.tt
+            /// <summary>
+            /// Greek string uppercasing with a state machine.
+            /// Probably simpler than a stateless function that has to figure out complex context-before
+            /// for each character.
+            /// <para/>
+            /// TODO: Try to re-consolidate one way or another with the non-Greek function.
+            /// <para/>
+            /// Keep this consistent with the C++ versions in ustrcase.cpp (UTF-16) and ucasemap.cpp (UTF-8).
+            /// </summary>
+            public unsafe static void ToUpper(int options,
+                ref ValueStringBuilder dest,
+                char* src, int srcLength, Edits? edits)
+            {
+                int state = 0;
+                for (int i = 0; i < srcLength;)
+                {
+                    int nextIndex = i;
+                    int c;
+                    UTF16.Next(src, ref nextIndex, srcLength, out c);
+                    int nextState = 0;
+                    // ICU4N: Simplfied version of GetTypeOrIgnorable
+                    if (UCaseProperties.Instance.IsCaseIgnorable(c, out CaseType type))
+                    {
+                        // c is case-ignorable
+                        nextState |= (state & AFTER_CASED);
+                    }
+                    else if (type != CaseType.None)
+                    {
+                        // c is cased
+                        nextState |= AFTER_CASED;
+                    }
+                    int data = GetLetterData(c);
+                    if (data > 0)
+                    {
+                        int upper = data & UPPER_MASK;
+                        // Add a dialytika to this iota or ypsilon vowel
+                        // if we removed a tonos from the previous vowel,
+                        // and that previous vowel did not also have (or gain) a dialytika.
+                        // Adding one only to the final vowel in a longer sequence
+                        // (which does not occur in normal writing) would require lookahead.
+                        // Set the same flag as for preserving an existing dialytika.
+                        if ((data & HAS_VOWEL) != 0 && (state & AFTER_VOWEL_WITH_ACCENT) != 0 &&
+                                (upper == 'Ι' || upper == 'Υ'))
+                        {
+                            data |= HAS_DIALYTIKA;
+                        }
+                        int numYpogegrammeni = 0;  // Map each one to a trailing, spacing, capital iota.
+                        if ((data & HAS_YPOGEGRAMMENI) != 0)
+                        {
+                            numYpogegrammeni = 1;
+                        }
+                        // Skip combining diacritics after this Greek letter.
+                        while (nextIndex < srcLength)
+                        {
+                            int diacriticData = GetDiacriticData(src[nextIndex]);
+                            if (diacriticData != 0)
+                            {
+                                data |= diacriticData;
+                                if ((diacriticData & HAS_YPOGEGRAMMENI) != 0)
+                                {
+                                    ++numYpogegrammeni;
+                                }
+                                ++nextIndex;
+                            }
+                            else
+                            {
+                                break;  // not a Greek diacritic
+                            }
+                        }
+                        if ((data & HAS_VOWEL_AND_ACCENT_AND_DIALYTIKA) == HAS_VOWEL_AND_ACCENT)
+                        {
+                            nextState |= AFTER_VOWEL_WITH_ACCENT;
+                        }
+                        // Map according to Greek rules.
+                        bool addTonos = false;
+                        if (upper == 'Η' &&
+                                (data & HAS_ACCENT) != 0 &&
+                                numYpogegrammeni == 0 &&
+                                (state & AFTER_CASED) == 0 &&
+                                !IsFollowedByCasedLetter(src, nextIndex, srcLength))
+                        {
+                            // Keep disjunctive "or" with (only) a tonos.
+                            // We use the same "word boundary" conditions as for the Final_Sigma test.
+                            if (i == nextIndex)
+                            {
+                                upper = 'Ή';  // Preserve the precomposed form.
+                            }
+                            else
+                            {
+                                addTonos = true;
+                            }
+                        }
+                        else if ((data & HAS_DIALYTIKA) != 0)
+                        {
+                            // Preserve a vowel with dialytika in precomposed form if it exists.
+                            if (upper == 'Ι')
+                            {
+                                upper = 'Ϊ';
+                                data &= ~HAS_EITHER_DIALYTIKA;
+                            }
+                            else if (upper == 'Υ')
+                            {
+                                upper = 'Ϋ';
+                                data &= ~HAS_EITHER_DIALYTIKA;
+                            }
+                        }
 
+                        bool change;
+                        if (edits == null && (options & OmitUnchangedText) == 0)
+                        {
+                            change = true;  // common, simple usage
+                        }
+                        else
+                        {
+                            // Find out first whether we are changing the text.
+                            change = src[i] != upper || numYpogegrammeni > 0;
+                            int i2 = i + 1;
+                            if ((data & HAS_EITHER_DIALYTIKA) != 0)
+                            {
+                                change |= i2 >= nextIndex || src[i2] != 0x308;
+                                ++i2;
+                            }
+                            if (addTonos)
+                            {
+                                change |= i2 >= nextIndex || src[i2] != 0x301;
+                                ++i2;
+                            }
+                            int oldLength = nextIndex - i;
+                            int newLength = (i2 - i) + numYpogegrammeni;
+                            change |= oldLength != newLength;
+                            if (change)
+                            {
+                                if (edits != null)
+                                {
+                                    edits.AddReplace(oldLength, newLength);
+                                }
+                            }
+                            else
+                            {
+                                if (edits != null)
+                                {
+                                    edits.AddUnchanged(oldLength);
+                                }
+                                // Write unchanged text?
+                                change = (options & OmitUnchangedText) == 0;
+                            }
+                        }
+
+                        if (change)
+                        {
+                            dest.Append((char)upper);
+                            if ((data & HAS_EITHER_DIALYTIKA) != 0)
+                            {
+                                dest.Append('\u0308');  // restore or add a dialytika
+                            }
+                            if (addTonos)
+                            {
+                                dest.Append('\u0301');
+                            }
+                            while (numYpogegrammeni > 0)
+                            {
+                                dest.Append('Ι');
+                                --numYpogegrammeni;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        c = UCaseProperties.Instance.ToFullUpper(c, null, IntPtr.Zero, ref dest, CaseLocale.Greek);
+                        AppendResult(c, ref dest, nextIndex - i, options, edits);
+                    }
+                    i = nextIndex;
+                    state = nextState;
+                }
+            }
         }
     }
 }

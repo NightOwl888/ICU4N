@@ -1,4 +1,5 @@
 ﻿using ICU4N.Impl;
+using ICU4N.Text;
 using J2N.Text;
 using System;
 using System.Collections;
@@ -1288,6 +1289,8 @@ namespace ICU4N.Globalization
         [SuppressMessage("Performance", "CA1802:Use literals where appropriate", Justification = "May change over time")]
         internal static readonly int CodeLimit = 178;
 
+        // ICU4N TODO: API - make TryGetCodesFromLocale() overload
+        // ICU4N TODO: API - return codes as ReadOnlySpan<int> so they can be put on the stack.
         private static int[] GetCodesFromLocale(UCultureInfo locale)
         {
             // Multi-script languages, equivalent to the LocaleScript data
@@ -1326,6 +1329,8 @@ namespace ICU4N.Globalization
         /// Helper function to find the code from locale.
         /// </summary>
         /// <param name="locale">The locale.</param>
+        // ICU4N TODO: API - make TryFindCodeFromLocale() overload
+        // ICU4N TODO: API - return codes as ReadOnlySpan<int> so they can be put on the stack.
         private static int[] FindCodeFromLocale(UCultureInfo locale)
         {
             int[] result = GetCodesFromLocale(locale);
@@ -1345,6 +1350,8 @@ namespace ICU4N.Globalization
         /// <param name="locale"><see cref="CultureInfo"/>.</param>
         /// <returns>The script codes array. null if the the code cannot be found.</returns>
         /// <stable>ICU 2.4</stable>
+        // ICU4N TODO: API - make TryGetCode() overload
+        // ICU4N TODO: API - return codes as ReadOnlySpan<int> so they can be put on the stack.
         public static int[] GetCode(CultureInfo locale)
         {
             return FindCodeFromLocale(locale.ToUCultureInfo());
@@ -1358,6 +1365,8 @@ namespace ICU4N.Globalization
         /// <param name="locale"><see cref="UCultureInfo"/>.</param>
         /// <returns>The script codes array. null if the the code cannot be found.</returns>
         /// <stable>ICU 3.0.</stable>
+        // ICU4N TODO: API - make TryGetCode() overload
+        // ICU4N TODO: API - return codes as ReadOnlySpan<int> so they can be put on the stack.
         public static int[] GetCode(UCultureInfo locale)
         {
             return FindCodeFromLocale(locale);
@@ -1375,6 +1384,8 @@ namespace ICU4N.Globalization
         /// <param name="nameOrAbbrOrLocale">Name of the script or ISO 15924 code or locale.</param>
         /// <returns>The script codes array. null if the the code cannot be found.</returns>
         /// <stable>ICU 2.4</stable>
+        // ICU4N TODO: API - make TryGetCode() overload
+        // ICU4N TODO: API - return codes as ReadOnlySpan<int> so they can be put on the stack.
         public static int[] GetCode(string nameOrAbbrOrLocale)
         {
             bool triedCode = false;
@@ -1412,6 +1423,8 @@ namespace ICU4N.Globalization
         /// <param name="nameOrAbbr">Name of the script or ISO 15924 code.</param>
         /// <returns>The script code value, or <see cref="UScript.InvalidCode"/> if the code cannot be found.</returns>
         /// <stable>ICU 54</stable>
+        // ICU4N TODO: API - make overload that accepts ReadOnlySpan<char>, if possible
+        // ICU4N TODO: API - make TryGetCodeFromName() overload
         public static int GetCodeFromName(string nameOrAbbr)
         {
             // ICU4N specific - using TryGetPropertyValueEnum rather than GetPropertyValueEnumNoThrow
@@ -1565,7 +1578,7 @@ namespace ICU4N.Globalization
         /// <param name="scriptCode">int script code.</param>
         /// <returns>Long script name as given in PropertyValueAliases.txt, or the 4-letter code.</returns>
         /// <exception cref="ArgumentException">If the script code is not valid.</exception>
-        /// <seealso cref="TryGetName(int, out string)"/>
+        /// <seealso cref="TryGetName(int, out ReadOnlySpan{Char})"/>
         /// <stable>ICU 2.4</stable>
         public static string GetName(int scriptCode)
         {
@@ -1583,8 +1596,8 @@ namespace ICU4N.Globalization
         /// <param name="result">Long script name as given in PropertyValueAliases.txt, or the 4-letter code.</param>
         /// <returns>true if the script code is valid, otherwise false.</returns>
         /// <seealso cref="GetName(int)"/>
-        /// <stable>ICU4N 60.1.0</stable>
-        public static bool TryGetName(int scriptCode, out string result)
+        /// <stable>ICU4N 60.1</stable>
+        public static bool TryGetName(int scriptCode, out ReadOnlySpan<char> result)
         {
             return UChar.TryGetPropertyValueName(UProperty.Script,
                     scriptCode,
@@ -1599,7 +1612,7 @@ namespace ICU4N.Globalization
         /// <param name="scriptCode">int script code</param>
         /// <returns>Short script name (4-letter code).</returns>
         /// <exception cref="ArgumentException">If the script code is not valid.</exception>
-        /// <seealso cref="TryGetShortName(int, out string)"/>
+        /// <seealso cref="TryGetShortName(int, out ReadOnlySpan{Char})"/>
         /// <stable>ICU 2.4</stable>
         public static string GetShortName(int scriptCode)
         {
@@ -1618,8 +1631,8 @@ namespace ICU4N.Globalization
         /// <returns>true if the name was retrieved, otherwise false.</returns>
         /// <exception cref="ArgumentException">If the script code is not valid.</exception>
         /// <seealso cref="GetShortName(int)"/>
-        /// <stable>ICU4N 60.1.0</stable>
-        public static bool TryGetShortName(int scriptCode, out string result)
+        /// <stable>ICU4N 60.1</stable>
+        public static bool TryGetShortName(int scriptCode, out ReadOnlySpan<char> result)
         {
             return UChar.TryGetPropertyValueName(UProperty.Script,
                     scriptCode,
@@ -1852,7 +1865,7 @@ namespace ICU4N.Globalization
 
         /// <summary>
         /// Returns the script sample character string.
-        /// This string normally consists of one code point but might be longer.
+        /// This string consists of one code point.
         /// The string is empty if the script is not encoded.
         /// </summary>
         /// <param name="script">Script code.</param>
@@ -1863,9 +1876,31 @@ namespace ICU4N.Globalization
             int sampleChar = ScriptMetadata.GetScriptProps(script) & 0x1fffff;
             if (sampleChar != 0)
             {
-                return new StringBuilder().AppendCodePoint(sampleChar).ToString();
+                return UTF16.ValueOf(sampleChar);
             }
             return "";
+        }
+
+        /// <summary>
+        /// Returns the script sample character string.
+        /// This string consists of one code point.
+        /// The string is empty if the script is not encoded.
+        /// </summary>
+        /// <param name="script">Script code.</param>
+        /// <param name="buffer">A buffer to write the result to, which will be
+        /// sliced to the correct size for the return value. Typically, <c>stackalloc char[2]</c>
+        /// since there will only be 1 code point.</param>
+        /// <returns>The sample character span, trimmed to the correct length. Note there may be
+        /// no sample available for a given <paramref name="script"/>, in which case the length is 0.</returns>
+        /// <stable>ICU 60.1</stable>
+        public static ReadOnlySpan<char> GetSampleSpan(int script, Span<char> buffer)
+        {
+            int sampleChar = ScriptMetadata.GetScriptProps(script) & 0x1fffff;
+            if (sampleChar != 0)
+            {
+                return UTF16.ValueOf(sampleChar, buffer);
+            }
+            return default;
         }
 
         /// <summary>

@@ -288,15 +288,18 @@ namespace ICU4N.Dev.Test
 
         // Utility Methods
 
-        protected static string Hex(char[] s)
+        protected static string Hex(ReadOnlySpan<char> s)
         {
-            StringBuffer result = new StringBuffer();
-            for (int i = 0; i < s.Length; ++i)
+            ValueStringBuilder result = new ValueStringBuilder(stackalloc char[32]);
+            try
             {
-                if (i != 0) result.Append(',');
-                result.Append(Hex(s[i]));
+                AppendHex(ref result, s);
+                return result.ToString();
             }
-            return result.ToString();
+            finally
+            {
+                result.Dispose();
+            }
         }
 
         protected static string Hex(byte[] s)
@@ -312,65 +315,69 @@ namespace ICU4N.Dev.Test
 
         protected static string Hex(char ch)
         {
-            StringBuffer result = new StringBuffer();
-            string foo = Convert.ToString(ch, 16).ToUpper();
-            for (int i = foo.Length; i < 4; ++i)
+            ValueStringBuilder result = new ValueStringBuilder(stackalloc char[32]);
+            try
             {
-                result.Append('0');
+                AppendHex(ref result, ch);
+                return result.ToString();
             }
-            return result + foo;
+            finally
+            {
+                result.Dispose();
+            }
+        }
+
+        internal static void AppendHex(ref ValueStringBuilder result, char ch)
+        {
+            ICU4N.Impl.Utility.AppendFormatHex(ref result, ch, 4);
         }
 
         protected static string Hex(int ch)
         {
-            StringBuffer result = new StringBuffer();
-            string foo = Convert.ToString(ch, 16).ToUpper();
-            for (int i = foo.Length; i < 4; ++i)
+            ValueStringBuilder result = new ValueStringBuilder(stackalloc char[32]);
+            try
             {
-                result.Append('0');
+                AppendHex(ref result, ch);
+                return result.ToString();
             }
-            return result + foo;
+            finally
+            {
+                result.Dispose();
+            }
+        }
+
+        internal static void AppendHex(ref ValueStringBuilder result, int ch)
+        {
+            ICU4N.Impl.Utility.AppendFormatHex(ref result, ch, 4);
         }
 
         protected static string Hex(string s)
         {
-            StringBuilder result = new StringBuilder();
-            for (int i = 0; i < s.Length; ++i)
+            ValueStringBuilder result = new ValueStringBuilder(stackalloc char[32]);
+            try
             {
-                if (i != 0)
-                    result.Append(',');
-                result.Append(Hex(s[i]));
+                AppendHex(ref result, s.AsSpan());
+                return result.ToString();
             }
-            return result.ToString();
+            finally
+            {
+                result.Dispose();
+            }
         }
 
-        protected static string Hex(StringBuffer s)
+        internal static void AppendHex(ref ValueStringBuilder result, ReadOnlySpan<char> s)
         {
-            StringBuilder result = new StringBuilder();
             for (int i = 0; i < s.Length; ++i)
             {
                 if (i != 0)
                     result.Append(',');
-                result.Append(Hex(s[i]));
+                AppendHex(ref result, s[i]);
             }
-            return result.ToString();
-        }
-
-        internal static string Hex(ICharSequence s)
-        {
-            StringBuilder result = new StringBuilder();
-            for (int i = 0; i < s.Length; ++i)
-            {
-                if (i != 0)
-                    result.Append(',');
-                result.Append(Hex(s[i]));
-            }
-            return result.ToString();
         }
 
         protected static string Prettify(string s)
         {
-            return Prettify(s.AsCharSequence());
+            return Prettify(s.AsSpan());
         }
 
         protected static string Prettify(StringBuffer s)
@@ -378,35 +385,80 @@ namespace ICU4N.Dev.Test
             return Prettify(s.AsCharSequence());
         }
 
-        internal static string Prettify(ICharSequence s)
+        protected static string Prettify(ICharSequence s)
         {
-            StringBuilder result = new StringBuilder();
-            int ch;
-            for (int i = 0; i < s.Length; i += Character.CharCount(ch))
+            ValueStringBuilder result = new ValueStringBuilder(stackalloc char[32]);
+            try
             {
-                ch = Character.CodePointAt(s, i);
-                if (ch > 0xfffff)
+                int ch;
+                for (int i = 0; i < s.Length; i += Character.CharCount(ch))
                 {
-                    result.Append("\\U00");
-                    result.Append(Hex(ch));
-                }
-                else if (ch > 0xffff)
-                {
-                    result.Append("\\U000");
-                    result.Append(Hex(ch));
-                }
-                else if (ch < 0x20 || 0x7e < ch)
-                {
-                    result.Append("\\u");
-                    result.Append(Hex(ch));
-                }
-                else
-                {
-                    result.Append((char)ch);
-                }
+                    ch = Character.CodePointAt(s, i);
+                    if (ch > 0xfffff)
+                    {
+                        result.Append("\\U00");
+                        AppendHex(ref result, ch);
+                    }
+                    else if (ch > 0xffff)
+                    {
+                        result.Append("\\U000");
+                        AppendHex(ref result, ch);
+                    }
+                    else if (ch < 0x20 || 0x7e < ch)
+                    {
+                        result.Append("\\u");
+                        AppendHex(ref result, ch);
+                    }
+                    else
+                    {
+                        result.Append((char)ch);
+                    }
 
+                }
+                return result.ToString();
             }
-            return result.ToString();
+            finally
+            {
+                result.Dispose();
+            }
+        }
+
+        protected static string Prettify(ReadOnlySpan<char> s)
+        {
+            ValueStringBuilder result = new ValueStringBuilder(stackalloc char[32]);
+            try
+            {
+                int ch;
+                for (int i = 0; i < s.Length; i += Character.CharCount(ch))
+                {
+                    ch = Character.CodePointAt(s, i);
+                    if (ch > 0xfffff)
+                    {
+                        result.Append("\\U00");
+                        AppendHex(ref result, ch);
+                    }
+                    else if (ch > 0xffff)
+                    {
+                        result.Append("\\U000");
+                        AppendHex(ref result, ch);
+                    }
+                    else if (ch < 0x20 || 0x7e < ch)
+                    {
+                        result.Append("\\u");
+                        AppendHex(ref result, ch);
+                    }
+                    else
+                    {
+                        result.Append((char)ch);
+                    }
+
+                }
+                return result.ToString();
+            }
+            finally
+            {
+                result.Dispose();
+            }
         }
 
         private static GregorianCalendar cal;

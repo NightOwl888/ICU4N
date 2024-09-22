@@ -1,21 +1,20 @@
-﻿#if FEATURE_SPAN
-
-using ICU4N.Globalization;
+﻿using ICU4N.Globalization;
 using ICU4N.Text;
 using System;
 using System.Runtime.CompilerServices;
 #nullable enable
 
-namespace ICU4N.Support.Text
+namespace ICU4N.Text
 {
+    // ICU4N TODO: Fix the below logic after updating IcuNumber to correctly return charsLength instead of charsWritten,
+    // since that will tell us exactly how much we need allocated to succeed and we will not have to resort to
+    // a heap allocation on the retry.
     internal ref partial struct ValueStringBuilder
     {
         private const int CharStackBufferSize = 32;
 
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal void AppendFormat(long value, string? format, UNumberFormatInfo info, int[]? numberGroupSizesOverride = null)
             => AppendFormat(value, format.AsSpan(), info, numberGroupSizesOverride);
 #endif
@@ -25,6 +24,7 @@ namespace ICU4N.Support.Text
             if (IcuNumber.TryFormatInt64(value, format, info, _chars.Slice(_pos), out int charsWritten, numberGroupSizesOverride))
             {
                 _pos += charsWritten;
+                UpdateMaxLength();
             }
             else
             {
@@ -39,6 +39,7 @@ namespace ICU4N.Support.Text
 
                     buffer.CopyTo(_chars.Slice(_pos));
                     _pos += charsWritten;
+                    UpdateMaxLength();
                 }
                 else
                 {
@@ -49,9 +50,7 @@ namespace ICU4N.Support.Text
 
 
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal void AppendFormat(double value, string? format, UNumberFormatInfo info, int[]? numberGroupSizesOverride = null)
             => AppendFormat(value, format.AsSpan(), info, numberGroupSizesOverride);
 #endif
@@ -61,6 +60,7 @@ namespace ICU4N.Support.Text
             if (IcuNumber.TryFormatDouble(value, format, info!, _chars.Slice(_pos), out int charsWritten, numberGroupSizesOverride))
             {
                 _pos += charsWritten;
+                UpdateMaxLength();
             }
             else
             {
@@ -75,6 +75,7 @@ namespace ICU4N.Support.Text
 
                     buffer.CopyTo(_chars.Slice(_pos));
                     _pos += charsWritten;
+                    UpdateMaxLength();
                 }
                 else
                 {
@@ -84,9 +85,7 @@ namespace ICU4N.Support.Text
         }
 
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal void InsertFormat(int index, long value, string? format, UNumberFormatInfo info, int[]? numberGroupSizesOverride = null)
             => InsertFormat(index, value, format.AsSpan(), info, numberGroupSizesOverride);
 #endif
@@ -106,6 +105,7 @@ namespace ICU4N.Support.Text
                 _chars.Slice(index, remaining).CopyTo(_chars.Slice(index + charsWritten));
                 buffer.Slice(0, charsWritten).CopyTo(_chars.Slice(index));
                 _pos += charsWritten;
+                UpdateMaxLength();
             }
             else
             {
@@ -114,9 +114,7 @@ namespace ICU4N.Support.Text
         }
 
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal void InsertFormat(int index, double value, string? format, UNumberFormatInfo info, int[]? numberGroupSizesOverride = null)
             => InsertFormat(index, value, format.AsSpan(), info, numberGroupSizesOverride);
 #endif
@@ -136,6 +134,7 @@ namespace ICU4N.Support.Text
                 _chars.Slice(index, remaining).CopyTo(_chars.Slice(index + charsWritten));
                 buffer.Slice(0, charsWritten).CopyTo(_chars.Slice(index));
                 _pos += charsWritten;
+                UpdateMaxLength();
             }
             else
             {
@@ -160,6 +159,7 @@ namespace ICU4N.Support.Text
                 _chars.Slice(index, remaining).CopyTo(_chars.Slice(index + sb.Length));
                 sb.AsSpan().CopyTo(_chars.Slice(index));
                 _pos += sb.Length;
+                UpdateMaxLength();
             }
             finally
             {
@@ -168,5 +168,3 @@ namespace ICU4N.Support.Text
         }
     }
 }
-
-#endif

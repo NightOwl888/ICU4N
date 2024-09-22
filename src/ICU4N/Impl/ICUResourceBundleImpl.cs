@@ -245,7 +245,7 @@ namespace ICU4N.Impl
             protected override UResourceBundle HandleGet(string resKey, IDictionary<string, string> aliasesVisited,
                                                 UResourceBundle requested)
             {
-                int i = ((ICUResourceBundleReader.Table)value).FindTableItem(wholeBundle.reader, resKey);
+                int i = ((ICUResourceBundleReader.Table)value).FindTableItem(wholeBundle.reader, resKey.AsSpan());
                 if (i < 0)
                 {
                     return null;
@@ -271,7 +271,7 @@ namespace ICU4N.Impl
                 // so that we know the expected object type,
                 // but those are final in java.util.ResourceBundle.
                 ICUResourceBundleReader reader = wholeBundle.reader;
-                int index = ((ICUResourceBundleReader.Table)value).FindTableItem(reader, key);
+                int index = ((ICUResourceBundleReader.Table)value).FindTableItem(reader, key.AsSpan());
                 if (index >= 0)
                 {
                     int res = value.GetContainerResource(reader, index);
@@ -313,7 +313,7 @@ namespace ICU4N.Impl
             internal virtual string FindString(string key)
             {
                 ICUResourceBundleReader reader = wholeBundle.reader;
-                int index = ((ICUResourceBundleReader.Table)value).FindTableItem(reader, key);
+                int index = ((ICUResourceBundleReader.Table)value).FindTableItem(reader, key.AsSpan());
                 if (index < 0)
                 {
                     return null;

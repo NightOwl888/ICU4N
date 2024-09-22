@@ -1,5 +1,6 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Support.Collections;
+using ICU4N.Text;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -194,11 +195,7 @@ namespace ICU4N.Impl
             else
             {
                 List<T> locales = new List<T>(visIDs.Count);
-#if FEATURE_SPAN
                 using var parser = new LocaleIDParser(stackalloc char[16], ReadOnlySpan<char>.Empty);
-#else
-                using var parser = new LocaleIDParser(string.Empty);
-#endif
                 foreach (string id in visIDs)
                 {
                     // Filter the culture type before allocating the object
@@ -284,6 +281,8 @@ namespace ICU4N.Impl
         private string currentID;
 
         public const int KindAny = -1;
+
+        private const int CharStackBufferSize = 32;
 
         /// <summary>
         /// Create a <see cref="LocaleKey"/> with canonical primary and fallback IDs.
@@ -401,18 +400,25 @@ namespace ICU4N.Impl
             string result = CurrentID;
             if (result != null)
             {
-                StringBuilder buf = new StringBuilder(); // default capacity 16 is usually good enough
-                if (kind != KindAny)
+                ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]); // default capacity 16 is usually good enough
+                try
                 {
-                    buf.Append(Prefix);
+                    if (kind != KindAny)
+                    {
+                        buf.Append(Prefix);
+                    }
+                    buf.Append('/');
+                    buf.Append(result);
+                    if (varstart != -1)
+                    {
+                        buf.Append(primaryID.AsSpan(varstart, primaryID.Length - varstart)); // ICU4N: Corrected 2nd Substring parameter
+                    }
+                    result = buf.ToString();
                 }
-                buf.Append('/');
-                buf.Append(result);
-                if (varstart != -1)
+                finally
                 {
-                    buf.Append(primaryID.Substring(varstart, primaryID.Length - varstart)); // ICU4N: Corrected 2nd Substring parameter
+                    buf.Dispose();
                 }
-                result = buf.ToString();
             }
             return result;
         }

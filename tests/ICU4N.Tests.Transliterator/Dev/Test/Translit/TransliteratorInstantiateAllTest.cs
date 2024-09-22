@@ -31,10 +31,10 @@ namespace ICU4N.Dev.Test.Translit
             {
                 t = Transliterator.GetInstance(testTransliteratorID);
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 Errln("FAIL: " + testTransliteratorID);
-                throw ex;
+                throw; // ICU4N: CA2200 Rethrow to preserve stack information
             }
 
             if (t != null)
@@ -46,11 +46,11 @@ namespace ICU4N.Dev.Test.Translit
                     rules = t.ToRules(true);
                     Transliterator.CreateFromRules("x", rules, Transliterator.Forward);
                 }
-                catch (ArgumentException ex2)
+                catch (ArgumentException)
                 {
                     Errln("FAIL: " + "ID" + ".toRules() => bad rules: " +
                           rules);
-                    throw ex2;
+                    throw; // ICU4N: CA2200 Rethrow to preserve stack information
                 }
             }
         }

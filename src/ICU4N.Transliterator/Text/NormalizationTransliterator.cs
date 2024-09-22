@@ -1,6 +1,8 @@
 ﻿using ICU4N.Impl;
+using ICU4N.Support.Text;
 using J2N;
 using J2N.Text;
+using System;
 using System.Collections.Concurrent;
 using System.Text;
 
@@ -41,7 +43,7 @@ namespace ICU4N.Text
                 => RegisterFactory("Any-NFC", new NfcTransliteratorFactory());
 
             public Transliterator GetInstance(string id)
-                => new NormalizationTransliterator("NFC", Normalizer2.GetNFCInstance());
+                => new NormalizationTransliterator("NFC", Normalizer2.NFCInstance);
         }
 
         private sealed class NfdTransliteratorFactory : ITransliteratorFactory
@@ -50,7 +52,7 @@ namespace ICU4N.Text
                 => RegisterFactory("Any-NFD", new NfdTransliteratorFactory());
 
             public Transliterator GetInstance(string id)
-                => new NormalizationTransliterator("NFD", Normalizer2.GetNFDInstance());
+                => new NormalizationTransliterator("NFD", Normalizer2.NFDInstance);
         }
 
         private sealed class NfkcTransliteratorFactory : ITransliteratorFactory
@@ -59,7 +61,7 @@ namespace ICU4N.Text
                 => RegisterFactory("Any-NFKC", new NfkcTransliteratorFactory());
 
             public Transliterator GetInstance(string id)
-                => new NormalizationTransliterator("NFKC", Normalizer2.GetNFKCInstance());
+                => new NormalizationTransliterator("NFKC", Normalizer2.NFKCInstance);
         }
 
         private sealed class NfkdTransliteratorFactory : ITransliteratorFactory
@@ -68,7 +70,7 @@ namespace ICU4N.Text
                 => RegisterFactory("Any-NFKD", new NfkdTransliteratorFactory());
 
             public Transliterator GetInstance(string id)
-                => new NormalizationTransliterator("NFKD", Normalizer2.GetNFKDInstance());
+                => new NormalizationTransliterator("NFKD", Normalizer2.NFKDInstance);
         }
 
         private sealed class FcdTransliteratorFactory : ITransliteratorFactory
@@ -77,7 +79,7 @@ namespace ICU4N.Text
                 => RegisterFactory("Any-FCD", new FcdTransliteratorFactory());
 
             public Transliterator GetInstance(string id)
-                => new NormalizationTransliterator("FCD", Norm2AllModes.GetFCDNormalizer2());
+                => new NormalizationTransliterator("FCD", Norm2AllModes.FCDNormalizer2);
         }
 
         private sealed class FccTransliteratorFactory : ITransliteratorFactory
@@ -86,7 +88,7 @@ namespace ICU4N.Text
                 => RegisterFactory("Any-FCC", new FccTransliteratorFactory());
 
             public Transliterator GetInstance(string id)
-                => new NormalizationTransliterator("FCC", Norm2AllModes.GetNFCInstance().Fcc);
+                => new NormalizationTransliterator("FCC", Norm2AllModes.NFCInstance.Fcc);
         }
 
         #endregion Factories
@@ -124,40 +126,48 @@ namespace ICU4N.Text
              * a bulk mode normalization could be used.
              * (For details, see the comment in the C++ version.)
              */
-            StringBuilder segment = new StringBuilder();
-            StringBuilder normalized = new StringBuilder();
-            int c = text.Char32At(start);
-            do
+            ValueStringBuilder normalized = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            ValueStringBuilder segment = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                int prev = start;
-                // Skip at least one character so we make progress.
-                // c holds the character at start.
-                segment.Length = 0;
+                int c = text.Char32At(start);
                 do
                 {
-                    segment.AppendCodePoint(c);
-                    start += Character.CharCount(c);
-                } while (start < limit && !norm2.HasBoundaryBefore(c = text.Char32At(start)));
-                if (start == limit && isIncremental && !norm2.HasBoundaryAfter(c))
-                {
-                    // stop in incremental mode when we reach the input limit
-                    // in case there are additional characters that could change the
-                    // normalization result
-                    start = prev;
-                    break;
-                }
-                norm2.Normalize(segment, normalized);
-                if (!UTF16Plus.Equal(segment, normalized))
-                {
-                    // replace the input chunk with its normalized form
-                    text.Replace(prev, start - prev, normalized.ToString()); // ICU4N: Corrected 2nd parameter
+                    int prev = start;
+                    // Skip at least one character so we make progress.
+                    // c holds the character at start.
+                    segment.Length = 0;
+                    do
+                    {
+                        segment.AppendCodePoint(c);
+                        start += Character.CharCount(c);
+                    } while (start < limit && !norm2.HasBoundaryBefore(c = text.Char32At(start)));
+                    if (start == limit && isIncremental && !norm2.HasBoundaryAfter(c))
+                    {
+                        // stop in incremental mode when we reach the input limit
+                        // in case there are additional characters that could change the
+                        // normalization result
+                        start = prev;
+                        break;
+                    }
+                    norm2.Normalize(segment.AsSpan(), ref normalized);
+                    if (!UTF16Plus.Equal(segment.AsSpan(), normalized.AsSpan()))
+                    {
+                        // replace the input chunk with its normalized form
+                        text.Replace(prev, start - prev, normalized.AsSpan()); // ICU4N: Corrected 2nd parameter
 
-                    // update all necessary indexes accordingly
-                    int delta = normalized.Length - (start - prev);
-                    start += delta;
-                    limit += delta;
-                }
-            } while (start < limit);
+                        // update all necessary indexes accordingly
+                        int delta = normalized.Length - (start - prev);
+                        start += delta;
+                        limit += delta;
+                    }
+                } while (start < limit);
+            }
+            finally
+            {
+                segment.Dispose();
+                normalized.Dispose();
+            }
 
             offsets.Start = start;
             offsets.ContextLimit += limit - offsets.Limit;

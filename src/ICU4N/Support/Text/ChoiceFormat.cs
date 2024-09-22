@@ -8,12 +8,15 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using StringBuffer = System.Text.StringBuilder;
+using System.Buffers;
 
 namespace ICU4N.Support.Text
 {
     // from Apache Harmony
     internal class ChoiceFormat : Formatter
     {
+        private const int CharStackBufferSize = 32;
+
         //private static readonly long serialVersionUID = 1795184449645032964L;
 
         private double[] choiceLimits;
@@ -61,71 +64,78 @@ namespace ICU4N.Support.Text
             double[] limits = new double[5];
             List<string> formats = new List<string>();
             int length = template.Length, limitCount = 0, index = 0;
-            StringBuffer buffer = new StringBuffer();
             NumberFormat format = NumberFormat.GetInstance(CultureInfo.InvariantCulture);
             ParsePosition position = new ParsePosition(0);
-            while (true)
+            ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                index = SkipWhitespace(template, index);
-                if (index >= length)
+                while (true)
                 {
+                    index = SkipWhitespace(template, index);
+                    if (index >= length)
+                    {
+                        if (limitCount == limits.Length)
+                        {
+                            choiceLimits = limits;
+                        }
+                        else
+                        {
+                            choiceLimits = new double[limitCount];
+                            System.Array.Copy(limits, 0, choiceLimits, 0, limitCount);
+                        }
+                        choiceFormats = new string[formats.Count];
+                        for (int i = 0; i < formats.Count; i++)
+                        {
+                            choiceFormats[i] = formats[i];
+                        }
+                        return;
+                    }
+                    position.Index = index;
+                    object value = format.Parse(template, position);
+
+                    index = SkipWhitespace(template, position.Index);
+                    if (position.ErrorIndex != -1 || index >= length)
+                    {
+                        // Fix Harmony 540
+                        choiceLimits = new double[0];
+                        choiceFormats = new string[0];
+                        return;
+                    }
+                    char ch = template[index++];
                     if (limitCount == limits.Length)
                     {
-                        choiceLimits = limits;
+                        double[] newLimits = new double[limitCount * 2];
+                        System.Array.Copy(limits, 0, newLimits, 0, limitCount);
+                        limits = newLimits;
                     }
-                    else
+                    double next;
+                    switch (ch)
                     {
-                        choiceLimits = new double[limitCount];
-                        System.Array.Copy(limits, 0, choiceLimits, 0, limitCount);
+                        case '#':
+                        case '\u2264':
+                            next = Convert.ToDouble(value, CultureInfo.InvariantCulture);
+                            break;
+                        case '<':
+                            next = NextDouble(Convert.ToDouble(value, CultureInfo.InvariantCulture));
+                            break;
+                        default:
+                            throw new ArgumentException(); // ICU4N TODO: Shouldn't this be FormatException in .NET?
                     }
-                    choiceFormats = new String[formats.Count];
-                    for (int i = 0; i < formats.Count; i++)
+                    if (limitCount > 0 && next <= limits[limitCount - 1])
                     {
-                        choiceFormats[i] = formats[i];
-                    }
-                    return;
-                }
-                position.Index = index;
-                object value = format.Parse(template, position);
-
-                index = SkipWhitespace(template, position.Index);
-                if (position.ErrorIndex != -1 || index >= length)
-                {
-                    // Fix Harmony 540
-                    choiceLimits = new double[0];
-                    choiceFormats = new string[0];
-                    return;
-                }
-                char ch = template[index++];
-                if (limitCount == limits.Length)
-                {
-                    double[] newLimits = new double[limitCount * 2];
-                    System.Array.Copy(limits, 0, newLimits, 0, limitCount);
-                    limits = newLimits;
-                }
-                double next;
-                switch (ch)
-                {
-                    case '#':
-                    case '\u2264':
-                        next = Convert.ToDouble(value);
-                        break;
-                    case '<':
-                        next = NextDouble(Convert.ToDouble(value));
-                        break;
-                    default:
                         throw new ArgumentException(); // ICU4N TODO: Shouldn't this be FormatException in .NET?
+                    }
+                    buffer.Length = 0;
+                    position.Index = (index);
+                    UpTo(template, position, ref buffer, '|');
+                    index = position.Index;
+                    limits[limitCount++] = next;
+                    formats.Add(buffer.AsSpan().ToString());
                 }
-                if (limitCount > 0 && next <= limits[limitCount - 1])
-                {
-                    throw new ArgumentException(); // ICU4N TODO: Shouldn't this be FormatException in .NET?
-                }
-                buffer.Length = (0);
-                position.Index = (index);
-                UpTo(template, position, buffer, '|');
-                index = position.Index;
-                limits[limitCount++] = next;
-                formats.Add(buffer.ToString());
+            }
+            finally
+            {
+                buffer.Dispose();
             }
         }
 
@@ -409,37 +419,65 @@ namespace ICU4N.Support.Text
         /// <returns>The pattern.</returns>
         public virtual string ToPattern()
         {
-            StringBuilder buffer = new StringBuilder();
-            for (int i = 0; i < choiceLimits.Length; i++)
+            using ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            char[] previousArray = null, limitArray = null;
+            try
             {
-                if (i != 0)
+                Span<char> previous = stackalloc char[CharStackBufferSize];
+                Span<char> limit = stackalloc char[CharStackBufferSize];
+
+                for (int i = 0; i < choiceLimits.Length; i++)
                 {
-                    buffer.Append('|');
+                    if (i != 0)
+                    {
+                        buffer.Append('|');
+                    }
+                    int previousLength = 0, limitLength= 0;
+                    while (!J2N.Numerics.Double.TryFormat(PreviousDouble(choiceLimits[i]), previous, out previousLength, provider: CultureInfo.InvariantCulture))
+                    {
+                        // rare
+                        int newLength = previous.Length * 2;
+                        var pool = ArrayPool<char>.Shared;
+                        pool.ReturnIfNotNull(previousArray);
+                        previous = previousArray = pool.Rent(newLength);
+                    }
+                    while (!J2N.Numerics.Double.TryFormat(choiceLimits[i], limit, out limitLength, provider: CultureInfo.InvariantCulture))
+                    {
+                        // rare
+                        int newLength = limit.Length * 2;
+                        var pool = ArrayPool<char>.Shared;
+                        pool.ReturnIfNotNull(limitArray);
+                        limit = limitArray = pool.Rent(newLength);
+                    }
+                    
+                    if (previousLength < limitLength)
+                    {
+                        buffer.Append(previous.Slice(0, previousLength));
+                        buffer.Append('<');
+                    }
+                    else
+                    {
+                        buffer.Append(limit.Slice(0, limitLength));
+                        buffer.Append('#');
+                    }
+                    bool quote = (choiceFormats[i].IndexOf('|') != -1);
+                    if (quote)
+                    {
+                        buffer.Append('\'');
+                    }
+                    buffer.Append(choiceFormats[i]);
+                    if (quote)
+                    {
+                        buffer.Append('\'');
+                    }
                 }
-                string previous = Number.ToString(PreviousDouble(choiceLimits[i]));
-                string limit = Number.ToString(choiceLimits[i]);
-                if (previous.Length < limit.Length)
-                {
-                    buffer.Append(previous);
-                    buffer.Append('<');
-                }
-                else
-                {
-                    buffer.Append(limit);
-                    buffer.Append('#');
-                }
-                bool quote = (choiceFormats[i].IndexOf('|') != -1);
-                if (quote)
-                {
-                    buffer.Append('\'');
-                }
-                buffer.Append(choiceFormats[i]);
-                if (quote)
-                {
-                    buffer.Append('\'');
-                }
+                return buffer.ToString();
             }
-            return buffer.ToString();
+            finally
+            {
+                ArrayPool<char>.Shared.ReturnIfNotNull(previousArray);
+                ArrayPool<char>.Shared.ReturnIfNotNull(limitArray);
+            }
         }
 
         //// From Format.java

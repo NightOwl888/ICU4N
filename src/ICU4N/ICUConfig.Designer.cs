@@ -10,7 +10,6 @@
 
 namespace ICU4N {
     using System;
-    using System.Reflection;
     
     
     /// <summary>
@@ -20,7 +19,7 @@ namespace ICU4N {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class ICUConfig {
@@ -40,11 +39,7 @@ namespace ICU4N {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ICU4N.ICUConfig", typeof(ICUConfig).GetTypeInfo().Assembly);
-#else
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ICU4N.ICUConfig", typeof(ICUConfig).Assembly);
-#endif
                     resourceMan = temp;
                 }
                 return resourceMan;

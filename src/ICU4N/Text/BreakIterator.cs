@@ -519,51 +519,21 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public virtual void SetText(string newText)
         {
-            SetText(new StringCharacterIterator(newText));
+            SetText(new ReadOnlyMemoryCharacterIterator(newText.AsMemory()));
         }
 
         /// <summary>
         /// Sets the iterator to analyze a new piece of text.  The new
-        /// piece of text is passed in as a <see cref="StringBuilder"/>, and the current
-        /// iteration position is reset to the beginning of the string.
-        /// (The old text is dropped.)
-        /// </summary>
-        /// <param name="newText">A <see cref="StringBuilder"/> containing the text to analyze with
-        /// this <see cref="BreakIterator"/>.</param>
-        /// <draft>ICU4N 60.1</draft>
-        // ICU4N specific
-        public virtual void SetText(StringBuilder newText)
-        {
-            SetText(new StringCharacterIterator(newText.ToString())); // ICU4N TODO: make a StringBuilderCharacterIterator
-        }
-
-        /// <summary>
-        /// Sets the iterator to analyze a new piece of text.  The new
-        /// piece of text is passed in as a <see cref="T:char[]"/>, and the current
-        /// iteration position is reset to the beginning of the string.
-        /// (The old text is dropped.)
-        /// </summary>
-        /// <param name="newText">A <see cref="T:char[]"/> containing the text to analyze with
-        /// this <see cref="BreakIterator"/>.</param>
-        /// <draft>ICU4N 60.1</draft>
-        // ICU4N specific
-        public virtual void SetText(char[] newText)
-        {
-            SetText(new StringCharacterIterator(new string(newText))); // ICU4N TODO: make a CharArrayCharacterIterator
-        }
-
-        /// <summary>
-        /// Sets the iterator to analyze a new piece of text.  The new
-        /// piece of text is passed in as a <see cref="ICharSequence"/>, and the current
+        /// piece of text is passed in as a <see cref="ReadOnlyMemory{Char}"/>, and the current
         /// iteration position is reset to the beginning of the text.
         /// (The old text is dropped.)
         /// </summary>
-        /// <param name="newText">A <see cref="ICharSequence"/> containing the text to analyze with
+        /// <param name="newText">A <see cref="ReadOnlyMemory{Char}"/> containing the text to analyze with
         /// this <see cref="BreakIterator"/>.</param>
         /// <draft>ICU 60</draft>
-        public virtual void SetText(ICharSequence newText)
+        public virtual void SetText(ReadOnlyMemory<char> newText)
         {
-            SetText(new CharSequenceCharacterIterator(newText));
+            SetText(new ReadOnlyMemoryCharacterIterator(newText));
         }
 
         /// <summary>

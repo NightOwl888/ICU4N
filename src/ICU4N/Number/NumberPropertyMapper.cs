@@ -2,6 +2,7 @@
 using ICU4N.Impl;
 using ICU4N.Text;
 using ICU4N.Util;
+using System;
 using System.Diagnostics;
 using static ICU4N.Numerics.NumberFormatter;
 using static ICU4N.Numerics.PatternStringParser;
@@ -487,6 +488,28 @@ namespace ICU4N.Numerics
                         || AffixUtils.ContainsType(negPrefixPattern, type)
                         || AffixUtils.ContainsType(negSuffixPattern, type);
             }
+
+            public ReadOnlySpan<char> AsSpan(AffixPatternProviderFlags flags) // ICU4N: Added so we don't need to rely on ICharSequence
+            {
+                bool prefix = (flags & AffixPatternProviderFlags.Prefix) != 0;
+                bool negative = (flags & AffixPatternProviderFlags.NegativeSubpattern) != 0;
+                if (prefix && negative)
+                {
+                    return negPrefixPattern.AsSpan();
+                }
+                else if (prefix)
+                {
+                    return posPrefixPattern.AsSpan();
+                }
+                else if (negative)
+                {
+                    return negSuffixPattern.AsSpan();
+                }
+                else
+                {
+                    return posSuffixPattern.AsSpan();
+                }
+            }
         }
 
         private class CurrencyPluralInfoAffixProvider : IAffixPatternProvider
@@ -523,6 +546,12 @@ namespace ICU4N.Numerics
             {
                 int pluralOrdinal = (int)(flags & AffixPatternProviderFlags.PluralMask);
                 return affixesByPlural[pluralOrdinal].Length(flags);
+            }
+
+            public virtual ReadOnlySpan<char> AsSpan(AffixPatternProviderFlags flags) // ICU4N: Added so we don't need to rely on ICharSequence
+            {
+                int pluralOrdinal = (int)(flags & AffixPatternProviderFlags.PluralMask);
+                return affixesByPlural[pluralOrdinal].AsSpan(flags);
             }
 
             public virtual bool PositiveHasPlusSign

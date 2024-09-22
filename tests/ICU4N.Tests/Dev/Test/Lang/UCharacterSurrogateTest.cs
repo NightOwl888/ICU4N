@@ -31,7 +31,7 @@ namespace ICU4N.Dev.Test.Lang
                 try
                 {
                     UnicodeBlock b = UnicodeBlock
-                            .ForName(names[i]);
+                            .GetInstance(names[i]);
                     Logln("found: " + b + " for name: " + names[i]);
                 }
                 catch (Exception e)
@@ -184,21 +184,22 @@ namespace ICU4N.Dev.Test.Lang
                 UChar.ToCodePoint(UChar.MinHighSurrogate,
                         UChar.MinLowSurrogate),
                 UChar.MinLowSurrogate,};
-            StringBuffer b = new StringBuffer(s);
+            //StringBuffer b = new StringBuffer(s);
+            ReadOnlySpan<char> sp = s.AsSpan();
             for (int i = 0; i < avalues.Length; ++i)
             {
                 if (UChar.CodePointAt(s, i) != avalues[i])
                     Errln("string at: " + i);
                 if (UChar.CodePointAt(c, i) != avalues[i])
                     Errln("chars at: " + i);
-                if (UChar.CodePointAt(b, i) != avalues[i])
+                if (UChar.CodePointAt(sp, i) != avalues[i])
                     Errln("stringbuffer at: " + i);
 
                 if (UChar.CodePointBefore(s, i + 1) != bvalues[i])
                     Errln("string before: " + i);
                 if (UChar.CodePointBefore(c, i + 1) != bvalues[i])
                     Errln("chars before: " + i);
-                if (UChar.CodePointBefore(b, i + 1) != bvalues[i])
+                if (UChar.CodePointBefore(sp, i + 1) != bvalues[i])
                     Errln("stringbuffer before: " + i);
             }
 
@@ -251,9 +252,10 @@ namespace ICU4N.Dev.Test.Lang
 
             internal void Test(String s, int start, int limit, int expected)
             {
-                int val1 = UChar.CodePointCount(s.ToCharArray(), start,
-                        limit);
-                int val2 = UChar.CodePointCount(s, start, limit);
+                int length = limit - start;
+                int val1 = UChar.CodePointCount(s.AsSpan(start,
+                        length));
+                int val2 = UChar.CodePointCount(s, start, length);
                 if (val1 != expected)
                 {
                     Errln("char[] " + Str(s, start, limit) + "(" + val1
@@ -274,7 +276,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 try
                 {
-                    UChar.CodePointCount(s, start, limit);
+                    UChar.CodePointCount(s, start, limit - start);
                     Errln("unexpected success " + Str(s, start, limit));
                 }
                 catch (Exception e)
@@ -302,9 +304,9 @@ namespace ICU4N.Dev.Test.Lang
 
             CodePointCountTest test = new CodePointCountTest();
             test.Fail(null, 0, 1, typeof(ArgumentNullException));
-            test.Fail("a", -1, 0, typeof(IndexOutOfRangeException));
-            test.Fail("a", 1, 2, typeof(IndexOutOfRangeException));
-            test.Fail("a", 1, 0, typeof(IndexOutOfRangeException));
+            test.Fail("a", -1, 0, typeof(ArgumentOutOfRangeException));
+            test.Fail("a", 1, 2, typeof(ArgumentOutOfRangeException));
+            test.Fail("a", 1, 0, typeof(ArgumentOutOfRangeException));
             test.Test("", 0, 0, 0);
             test.Test("\ud800", 0, 1, 1);
             test.Test("\udc00", 0, 1, 1);
@@ -452,18 +454,18 @@ namespace ICU4N.Dev.Test.Lang
 
             test.Fail((char[])null, 0, 1, 0, 1, typeof(ArgumentNullException));
             test.Fail((String)null, 0, 1, typeof(ArgumentNullException));
-            test.Fail("abc", -1, 0, typeof(IndexOutOfRangeException));
-            test.Fail("abc", 4, 0, typeof(IndexOutOfRangeException));
-            test.Fail("abc", 1, -2, typeof(IndexOutOfRangeException));
-            test.Fail("abc", 2, 2, typeof(IndexOutOfRangeException));
+            test.Fail("abc", -1, 0, typeof(ArgumentOutOfRangeException));
+            test.Fail("abc", 4, 0, typeof(ArgumentOutOfRangeException));
+            test.Fail("abc", 1, -2, typeof(ArgumentOutOfRangeException));
+            test.Fail("abc", 2, 2, typeof(ArgumentOutOfRangeException));
             char[] abc = "abc".ToCharArray();
-            test.Fail(abc, -1, 2, 0, 0, typeof(IndexOutOfRangeException));
-            test.Fail(abc, 2, 2, 3, 0, typeof(IndexOutOfRangeException));
-            test.Fail(abc, 1, -1, 0, 0, typeof(IndexOutOfRangeException));
-            test.Fail(abc, 1, 1, 2, -2, typeof(IndexOutOfRangeException));
-            test.Fail(abc, 1, 1, 1, 2, typeof(IndexOutOfRangeException));
-            test.Fail(abc, 1, 2, 1, 3, typeof(IndexOutOfRangeException));
-            test.Fail(abc, 0, 2, 2, -3, typeof(IndexOutOfRangeException));
+            test.Fail(abc, -1, 2, 0, 0, typeof(ArgumentOutOfRangeException));
+            test.Fail(abc, 2, 2, 3, 0, typeof(ArgumentOutOfRangeException));
+            test.Fail(abc, 1, -1, 0, 0, typeof(ArgumentOutOfRangeException));
+            test.Fail(abc, 1, 1, 2, -2, typeof(ArgumentOutOfRangeException));
+            test.Fail(abc, 1, 1, 1, 2, typeof(ArgumentOutOfRangeException));
+            test.Fail(abc, 1, 2, 1, 3, typeof(ArgumentOutOfRangeException));
+            test.Fail(abc, 0, 2, 2, -3, typeof(ArgumentOutOfRangeException));
             test.Test("", 0, 0, 0, 0, 0, false);
             test.Test("\ud800", 0, 1, 0, 1, 1, true);
             test.Test("\udc00", 0, 1, 0, 1, 1, true);

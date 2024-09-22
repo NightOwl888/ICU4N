@@ -3,6 +3,7 @@ using ICU4N.Text;
 using J2N;
 using J2N.Numerics;
 using J2N.Text;
+using System;
 using System.Diagnostics;
 
 namespace ICU4N.Impl.Coll
@@ -308,7 +309,7 @@ namespace ICU4N.Impl.Coll
         }
 
         public static int CompareUTF16(char[] table, char[] primaries, int options,
-                ICharSequence left, ICharSequence right, int startIndex)
+                ReadOnlySpan<char> left, ReadOnlySpan<char> right, int startIndex)
         {
             // This is a modified copy of CollationCompare.compareUpToQuaternary(),
             // optimized for common Latin text.
@@ -826,7 +827,7 @@ namespace ICU4N.Impl.Coll
         /// .NET returns a negative result (use the '~' operator) if sIndex is to be incremented.
         /// C++ modifies sIndex.
         /// </summary>
-        private static long NextPair(char[] table, int c, int ce, ICharSequence s16, int sIndex)
+        private static long NextPair(char[] table, int c, int ce, ReadOnlySpan<char> s16, int sIndex)
         {
             if (ce >= MIN_LONG || ce < CONTRACTION)
             {

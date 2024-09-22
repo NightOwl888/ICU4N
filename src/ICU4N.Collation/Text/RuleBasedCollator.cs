@@ -10,6 +10,7 @@ using J2N.Text;
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 
@@ -153,35 +154,42 @@ namespace ICU4N.Text
         /// <exception cref="Exception"/>
         private void InternalBuildTailoring(string rules)
         {
-            // ICU4N TODO: Seems like reflection is overkill here.
+            // ICU4N TODO: Seems like reflection is overkill here
 
             CollationTailoring @base = CollationRoot.Root;
-            // Most code using Collator does not need to build a Collator from rules.
-            // By using reflection, most code will not have a static dependency on the builder code.
-            // CollationBuilder builder = new CollationBuilder(base);
-            Assembly classLoader =
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-                GetType().GetTypeInfo().Assembly; // ClassLoaderUtil.getClassLoader(GetUnicodeCategory());
-#else
-                GetType().Assembly; // ClassLoaderUtil.getClassLoader(GetUnicodeCategory());
-#endif
-            CollationTailoring t;
-            try
-            {
-                Type builderClass = classLoader.GetType("ICU4N.Impl.Coll.CollationBuilder");
-                object builder = builderClass.GetConstructor(new Type[] { typeof(CollationTailoring) }).Invoke(new object[] { @base });
-                // builder.parseAndBuild(rules);
-                //Method parseAndBuild = builderClass.getMethod("parseAndBuild", String.class);
-                //            t = (CollationTailoring) parseAndBuild.invoke(builder, rules);
+            //            // Most code using Collator does not need to build a Collator from rules.
+            //            // By using reflection, most code will not have a static dependency on the builder code.
+            //            // CollationBuilder builder = new CollationBuilder(base);
+            //            Assembly classLoader =
+            //#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
+            //                GetType().GetTypeInfo().Assembly; // ClassLoaderUtil.getClassLoader(GetUnicodeCategory());
+            //#else
+            //                GetType().Assembly; // ClassLoaderUtil.getClassLoader(GetUnicodeCategory());
+            //#endif
+            //            CollationTailoring t;
+            //            try
+            //            {
+            //                Type builderClass = classLoader.GetType("ICU4N.Impl.Coll.CollationBuilder");
+            //                object builder = builderClass.GetConstructor(new Type[] { typeof(CollationTailoring) }).Invoke(new object[] { @base });
+            //                // builder.parseAndBuild(rules);
+            //                //Method parseAndBuild = builderClass.getMethod("parseAndBuild", String.class);
+            //                //            t = (CollationTailoring) parseAndBuild.invoke(builder, rules);
 
-                MethodInfo parseAndBuild = builderClass.GetMethod("ParseAndBuild", new Type[] { typeof(string) });
-                t = (CollationTailoring)parseAndBuild.Invoke(builder, new object[] { rules });
-            }
-            catch (TargetInvocationException e)
-            {
-                throw e.GetBaseException();
-            }
+            //                MethodInfo parseAndBuild = builderClass.GetMethod("ParseAndBuild", new Type[] { typeof(string) });
+            //                t = (CollationTailoring)parseAndBuild.Invoke(builder, new object[] { rules });
+            //            }
+            //            catch (TargetInvocationException e)
+            //            {
+            //#if FEATURE_EXCEPTIONDISPATCHINFO
+            //                ExceptionDispatchInfo.Capture(e.GetBaseException()).Throw();
+            //                return;
+            //#else
+            //                throw e.GetBaseException();
+            //#endif
+            //            }
 
+            CollationBuilder builder = new CollationBuilder(@base);
+            CollationTailoring t = builder.ParseAndBuild(rules);
 
             t.ActualCulture = null;
             AdoptTailoring(t);
@@ -757,13 +765,13 @@ namespace ICU4N.Text
             long ce1, ce2;
             if (settings.ReadOnly.DontCheckFCD)
             {
-                UTF16CollationIterator ci = new UTF16CollationIterator(data, numeric, varTop.AsCharSequence(), 0);
+                UTF16CollationIterator ci = new UTF16CollationIterator(data, numeric, varTop.AsMemory(), 0);
                 ce1 = ci.NextCE();
                 ce2 = ci.NextCE();
             }
             else
             {
-                FCDUTF16CollationIterator ci = new FCDUTF16CollationIterator(data, numeric, varTop.AsCharSequence(), 0);
+                FCDUTF16CollationIterator ci = new FCDUTF16CollationIterator(data, numeric, varTop.AsMemory(), 0);
                 ce1 = ci.NextCE();
                 ce2 = ci.NextCE();
             }
@@ -1064,7 +1072,7 @@ namespace ICU4N.Text
             }
         }
 
-        private CollationKey GetCollationKey(string source, CollationBuffer buffer)
+        private CollationKey GetCollationKey(string source, CollationBuffer buffer) // ICU4N TODO: API - Add ReadOnlyMemory overload?
         {
             // ICU4N Port Note: using the System.Globalization.SortKey was considered as an option, but
             // since its constructor is internal and using Reflection to set the internal
@@ -1074,7 +1082,7 @@ namespace ICU4N.Text
             // Although it could work, the ICU documentation clearly states that
             // "collation keys cannot be compared with other collator implementations",
             // so reusing SortKey would just be confusing.
-            buffer.RawCollationKey = GetRawCollationKey(source.AsCharSequence(), buffer.RawCollationKey, buffer);
+            buffer.RawCollationKey = GetRawCollationKey(source.AsMemory(), buffer.RawCollationKey, buffer);
             return new CollationKey(source, buffer.RawCollationKey);
         }
 
@@ -1092,7 +1100,7 @@ namespace ICU4N.Text
         /// <seealso cref="Compare(string, string)"/>
         /// <seealso cref="RawCollationKey"/>
         /// <stable>ICU 2.8</stable>
-        public override RawCollationKey GetRawCollationKey(string source, RawCollationKey key)
+        public override RawCollationKey GetRawCollationKey(string source, RawCollationKey key) // ICU4N TODO: API - Add ReadOnlyMemory overload?
         {
             if (source == null)
             {
@@ -1102,7 +1110,7 @@ namespace ICU4N.Text
             try
             {
                 buffer = GetCollationBuffer();
-                return GetRawCollationKey(source.AsCharSequence(), key, buffer);
+                return GetRawCollationKey(source.AsMemory(), key, buffer);
             }
             finally
             {
@@ -1153,7 +1161,7 @@ namespace ICU4N.Text
             public RawCollationKey Key => key_;
         }
 
-        private RawCollationKey GetRawCollationKey(ICharSequence source, RawCollationKey key, CollationBuffer buffer)
+        private RawCollationKey GetRawCollationKey(ReadOnlyMemory<char> source, RawCollationKey key, CollationBuffer buffer)
         {
             if (key == null)
             {
@@ -1169,12 +1177,12 @@ namespace ICU4N.Text
             return key;
         }
 
-        private int SimpleKeyLengthEstimate(ICharSequence source)
+        private int SimpleKeyLengthEstimate(ReadOnlyMemory<char> source)
         {
             return 2 * source.Length + 10;
         }
 
-        private void WriteSortKey(ICharSequence s, CollationKeyByteSink sink, CollationBuffer buffer)
+        private void WriteSortKey(ReadOnlyMemory<char> s, CollationKeyByteSink sink, CollationBuffer buffer)
         {
             bool numeric = settings.ReadOnly.IsNumeric;
             if (settings.ReadOnly.DontCheckFCD)
@@ -1195,30 +1203,39 @@ namespace ICU4N.Text
             }
             if (settings.ReadOnly.Strength == CollationStrength.Identical)
             {
-                WriteIdenticalLevel(s, sink);
+                WriteIdenticalLevel(s.Span, sink);
             }
             sink.Append(Collation.TerminatorByte);
         }
 
-        private void WriteIdenticalLevel(ICharSequence s, CollationKeyByteSink sink)
+        private void WriteIdenticalLevel(ReadOnlySpan<char> s, CollationKeyByteSink sink)
         {
             // NFD quick check
-            int nfdQCYesLimit = data.NfcImpl.Decompose(s, 0, s.Length, null);
+            int nfdQCYesLimit = data.NfcImpl.DecomposeQuickCheck(s); // ICU4N: Checked 3rd parameter
             sink.Append(Collation.LevelSeparatorByte);
             // Sync the ByteArrayWrapper size with the key length.
             sink.Key.Length = sink.NumberOfBytesAppended;
             int prev = 0;
             if (nfdQCYesLimit != 0)
             {
-                prev = BOCSU.WriteIdenticalLevelRun(prev, s, 0, nfdQCYesLimit, sink.Key);
+                prev = BOCSU.WriteIdenticalLevelRun(prev, s.Slice(0, nfdQCYesLimit), sink.Key);
             }
             // Is there non-NFD text?
             if (nfdQCYesLimit < s.Length)
             {
                 int destLengthEstimate = s.Length - nfdQCYesLimit;
-                StringBuilderCharSequence nfd = new StringBuilderCharSequence(new StringBuilder());
-                data.NfcImpl.Decompose(s, nfdQCYesLimit, s.Length, nfd.Value, destLengthEstimate);
-                BOCSU.WriteIdenticalLevelRun(prev, nfd, 0, nfd.Length, sink.Key);
+                ValueStringBuilder nfd = destLengthEstimate <= CharStackBufferSize
+                    ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                    : new ValueStringBuilder(destLengthEstimate);
+                try
+                {
+                    data.NfcImpl.Decompose(s.Slice(nfdQCYesLimit, s.Length - nfdQCYesLimit), ref nfd, destLengthEstimate); // ICU4N: Corrected 3rd parameter
+                    BOCSU.WriteIdenticalLevelRun(prev, nfd.AsSpan(), sink.Key);
+                }
+                finally
+                {
+                    nfd.Dispose();
+                }
             }
             // Sync the key with the buffer again which got bytes appended and may have been reallocated.
             sink.SetBufferAndAppended(sink.Key.Bytes, sink.Key.Length);
@@ -1230,7 +1247,7 @@ namespace ICU4N.Text
         /// <param name="str">The string.</param>
         /// <internal>For tests &amp; tools.</internal>
         [Obsolete("This API is ICU internal only.")]
-        internal long[] InternalGetCEs(ICharSequence str) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
+        internal long[] InternalGetCEs(ReadOnlyMemory<char> str) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             CollationBuffer buffer = null;
             try
@@ -1367,9 +1384,10 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public override int Compare(string source, string target)
         {
-#pragma warning disable 612, 618
-            return DoCompare(source.AsCharSequence(), target.AsCharSequence());
-#pragma warning restore 612, 618
+            if (source is null) return (target is null ? 0 : -1);
+            if (target is null) return 1;
+
+            return Compare(source.AsMemory(), target.AsMemory());
         }
 
         /// <summary>
@@ -1444,7 +1462,7 @@ namespace ICU4N.Text
         private class UTF16NFDIterator : NFDIterator
         {
             internal UTF16NFDIterator() { }
-            internal void SetText(ICharSequence seq, int start)
+            internal void SetText(ReadOnlyMemory<char> seq, int start)
             {
                 Reset();
                 s = seq;
@@ -1454,22 +1472,23 @@ namespace ICU4N.Text
             protected override int NextRawCodePoint()
             {
                 if (pos == s.Length) { return Collation.SentinelCodePoint; }
-                int c = Character.CodePointAt(s, pos);
+                int c = Character.CodePointAt(s.Span, pos);
                 pos += Character.CharCount(c);
                 return c;
             }
 
-            protected ICharSequence s;
+            protected ReadOnlyMemory<char> s;
             protected int pos;
         }
 
         private sealed class FCDUTF16NFDIterator : UTF16NFDIterator
         {
             internal FCDUTF16NFDIterator() { }
-            internal void SetText(Normalizer2Impl nfcImpl, ICharSequence seq, int start)
+            internal void SetText(Normalizer2Impl nfcImpl, ReadOnlyMemory<char> seq, int start)
             {
                 Reset();
-                int spanLimit = nfcImpl.MakeFCD(seq, start, seq.Length, null);
+                ReadOnlySpan<char> seqSpan = seq.Span;
+                int spanLimit = nfcImpl.MakeFCDQuickCheck(seqSpan.Slice(start, seq.Length - start)) + start; // ICU4N: Corrected 3rd parameter
                 if (spanLimit == seq.Length)
                 {
                     s = seq;
@@ -1477,23 +1496,35 @@ namespace ICU4N.Text
                 }
                 else
                 {
+                    int bufferSize = seq.Length - start;
                     if (str is null)
                     {
-                        str = new StringBuilderCharSequence(new StringBuilder());
+                        str = new OpenStringBuilder(bufferSize);
                     }
                     else
                     {
-                        str.Value.Length = 0;
+                        str.Length = 0;
                     }
-                    str.Value.Append(seq, start, spanLimit - start); // ICU4N: Corrected 3rd parameter
-                    ReorderingBuffer buffer = new ReorderingBuffer(nfcImpl, str.Value, seq.Length - start);
-                    nfcImpl.MakeFCD(seq, spanLimit, seq.Length, buffer);
-                    s = str;
+                    var sb = bufferSize <= CharStackBufferSize
+                        ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                        : new ValueStringBuilder(bufferSize);
+                    try
+                    {
+                        sb.Append(seqSpan.Slice(start, spanLimit - start)); // ICU4N: Corrected 3rd parameter
+                        ReorderingBuffer buffer = new ReorderingBuffer(nfcImpl, ref sb, bufferSize);
+                        nfcImpl.MakeFCD(seqSpan.Slice(spanLimit, seq.Length - spanLimit), ref buffer); // ICU4N: Corrected 3rd parameter
+                        str.Append(buffer.AsSpan());
+                    }
+                    finally
+                    {
+                        sb.Dispose();
+                    }
+                    s = str.AsMemory();
                     pos = 0;
                 }
             }
 
-            private StringBuilderCharSequence str;
+            private OpenStringBuilder str; // ICU4N: We need this reference to prevent it from going out of scope after SetText()
         }
 
         private static int CompareNFDIter(Normalizer2Impl nfcImpl, NFDIterator left, NFDIterator right)
@@ -1540,13 +1571,44 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Compares two <see cref="ICharSequence"/>s.
+        /// Compares the source text <see cref="ReadOnlyMemory{Char}"/> to the target text <see cref="ReadOnlyMemory{Char}"/>
+        /// according to the collation rules, strength and decomposition mode for this <see cref="RuleBasedCollator"/>.
+        /// Returns an <see cref="int"/> less than, equal to or greater than zero depending on whether the source
+        /// <see cref="ReadOnlyMemory{Char}"/> is less than, equal to or greater than the target <see cref="ReadOnlyMemory{Char}"/>.
+        /// See the <see cref="Collator"/> documentation for an example of use.
+        /// <para/>
+        /// General recommendation: <br/>
+        /// If comparison are to be done to the same string multiple times, it would be more efficient to generate
+        /// <see cref="CollationKey"/>s for the strings and use <see cref="CollationKey.CompareTo(CollationKey)"/> for the comparisons. If speed
+        /// performance is critical and object instantiation is to be reduced, further optimization may be achieved by
+        /// generating a simpler key of the form <see cref="RawCollationKey"/> and reusing this <see cref="RawCollationKey"/> object with the method
+        /// <see cref="RuleBasedCollator.GetRawCollationKey(string, RawCollationKey)"/>. Internal byte representation can be directly accessed via <see cref="RawCollationKey"/>
+        /// and stored for future use. Like <see cref="CollationKey"/>, <see cref="RawCollationKey"/> provides a method <see cref="RawCollationKey.CompareTo(ByteArrayWrapper)"/> for key
+        /// comparisons. If the each <see cref="string"/>s are compared to only once, using the method <see cref="RuleBasedCollator.Compare(string, string)"/>
+        /// will have a better performance.
+        /// </summary>
+        /// <param name="source">The source text <see cref="ReadOnlyMemory{Char}"/>.</param>
+        /// <param name="target">The target text <see cref="ReadOnlyMemory{Char}"/>.</param>
+        /// <returns>Returns an integer value. Value is less than zero if source is less than target, value is zero if source
+        /// and target are equal, value is greater than zero if source is greater than target.</returns>
+        /// <seealso cref="CollationKey"/>
+        /// <seealso cref="GetCollationKey(string)"/>
+        /// <stable>ICU 2.8</stable>
+        public override int Compare(ReadOnlyMemory<char> source, ReadOnlyMemory<char> target)
+        {
+            return DoCompare(source, target);
+        }
+
+        /// <summary>
+        /// Compares two <see cref="ReadOnlyMemory{Char}"/>s.
         /// </summary>
         /// <internal/>
-        [Obsolete("This API is ICU internal only.")]
-        internal override int DoCompare(ICharSequence left, ICharSequence right) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
+        //[Obsolete("This API is ICU internal only.")]
+        private int DoCompare(ReadOnlyMemory<char> left, ReadOnlyMemory<char> right)
         {
-            if (left == right)
+            var leftSpan = left.Span;
+            var rightSpan = right.Span;
+            if (leftSpan.Equals(rightSpan, StringComparison.Ordinal))
             {
                 return Collation.Equal;
             }
@@ -1561,7 +1623,7 @@ namespace ICU4N.Text
                     break;
                 }
                 else if (equalPrefixLength == right.Length ||
-                        left[equalPrefixLength] != right[equalPrefixLength])
+                        leftSpan[equalPrefixLength] != rightSpan[equalPrefixLength])
                 {
                     break;
                 }
@@ -1573,13 +1635,13 @@ namespace ICU4N.Text
             if (equalPrefixLength > 0)
             {
                 if ((equalPrefixLength != left.Length &&
-                            data.IsUnsafeBackward(left[equalPrefixLength], numeric)) ||
+                            data.IsUnsafeBackward(leftSpan[equalPrefixLength], numeric)) ||
                         (equalPrefixLength != right.Length &&
-                            data.IsUnsafeBackward(right[equalPrefixLength], numeric)))
+                            data.IsUnsafeBackward(rightSpan[equalPrefixLength], numeric)))
                 {
                     // Identical prefix: Back up to the start of a contraction or reordering sequence.
                     while (--equalPrefixLength > 0 &&
-                            data.IsUnsafeBackward(left[equalPrefixLength], numeric)) { }
+                            data.IsUnsafeBackward(leftSpan[equalPrefixLength], numeric)) { }
                 }
                 // Notes:
                 // - A longer string can compare equal to a prefix of it if only ignorables follow.
@@ -1594,14 +1656,14 @@ namespace ICU4N.Text
             int fastLatinOptions = roSettings.FastLatinOptions;
             if (fastLatinOptions >= 0 &&
                     (equalPrefixLength == left.Length ||
-                        left[equalPrefixLength] <= CollationFastLatin.LatinMax) &&
+                        leftSpan[equalPrefixLength] <= CollationFastLatin.LatinMax) &&
                     (equalPrefixLength == right.Length ||
-                        right[equalPrefixLength] <= CollationFastLatin.LatinMax))
+                        rightSpan[equalPrefixLength] <= CollationFastLatin.LatinMax))
             {
                 result = CollationFastLatin.CompareUTF16(data.FastLatinTable,
                                                           roSettings.FastLatinPrimaries,
                                                           fastLatinOptions,
-                                                          left, right, equalPrefixLength);
+                                                          leftSpan, rightSpan, equalPrefixLength);
             }
             else
             {

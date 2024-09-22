@@ -37,7 +37,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Util namespace
             return (string[])_languages.Clone();
         }
 
-#if FEATURE_SPAN && !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
         /// <summary>
         /// Returns a three-letter abbreviation for the provided country.  If the provided
         /// country is empty, returns the empty string.  Otherwise, returns
@@ -46,9 +46,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Util namespace
         /// <exception cref="System.Resources.MissingManifestResourceException">Throws <see cref="System.Resources.MissingManifestResourceException"/> if the
         /// three-letter country abbreviation is not available for this locale.</exception>
         /// <stable>ICU 3.0</stable>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static string GetThreeLetterISOCountryName(string country)
             => GetThreeLetterISOCountryName(country.AsSpan());
 #endif
@@ -61,13 +59,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Util namespace
         /// <exception cref="System.Resources.MissingManifestResourceException">Throws <see cref="System.Resources.MissingManifestResourceException"/> if the
         /// three-letter country abbreviation is not available for this locale.</exception>
         /// <stable>ICU 3.0</stable>
-        public static string GetThreeLetterISOCountryName(
-#if FEATURE_SPAN
-            ReadOnlySpan<char> country
-#else
-            string country
-#endif
-            ) // Renamed from GetISO3Country
+        public static string GetThreeLetterISOCountryName(ReadOnlySpan<char> country) // Renamed from GetISO3Country
         {
             int offset = FindIndex(_countries, country);
             if (offset >= 0)
@@ -85,7 +77,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Util namespace
             return "";
         }
 
-#if FEATURE_SPAN && !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
         /// <summary>
         /// Returns a three-letter abbreviation for the language.  If language is
         /// empty, returns the empty string.  Otherwise, returns
@@ -97,9 +89,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Util namespace
         /// <exception cref="System.Resources.MissingManifestResourceException">Throws <see cref="System.Resources.MissingManifestResourceException"/> if the
         /// three-letter language abbreviation is not available for this locale.</exception>
         /// <stable>ICU 3.0</stable>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static string GetThreeLetterISOLanguageName(string language)
             => GetThreeLetterISOLanguageName(language.AsSpan());
 #endif
@@ -115,13 +105,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Util namespace
         /// <exception cref="System.Resources.MissingManifestResourceException">Throws <see cref="System.Resources.MissingManifestResourceException"/> if the
         /// three-letter language abbreviation is not available for this locale.</exception>
         /// <stable>ICU 3.0</stable>
-        public static string GetThreeLetterISOLanguageName(
-#if FEATURE_SPAN
-            ReadOnlySpan<char> language
-#else
-            string language
-#endif
-            ) // ICU4N: Renamed from GetISO3Language
+        public static string GetThreeLetterISOLanguageName(ReadOnlySpan<char> language) // ICU4N: Renamed from GetISO3Language
         {
             int offset = FindIndex(_languages, language);
             if (offset >= 0)
@@ -139,21 +123,13 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Util namespace
             return "";
         }
 
-#if FEATURE_SPAN && !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static string ThreeToTwoLetterLanguage(string lang)
             => ThreeToTwoLetterLanguage(lang.AsSpan());
 #endif
 
-        public static string ThreeToTwoLetterLanguage(
-#if FEATURE_SPAN
-            ReadOnlySpan<char> lang
-#else
-            string lang
-#endif
-            )
+        public static string ThreeToTwoLetterLanguage(ReadOnlySpan<char> lang)
         {
             /* convert 3 character code to 2 character code if possible *CWB*/
             int offset = FindIndex(_languages3, lang);
@@ -171,21 +147,13 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Util namespace
             return null;
         }
 
-#if FEATURE_SPAN && !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static string ThreeToTwoLetterRegion(string region)
             => ThreeToTwoLetterRegion(region.AsSpan());
 #endif
 
-        public static string ThreeToTwoLetterRegion(
-#if FEATURE_SPAN
-            ReadOnlySpan<char> region
-#else
-            string region
-#endif
-            )
+        public static string ThreeToTwoLetterRegion(ReadOnlySpan<char> region)
         {
             /* convert 3 character code to 2 character code if possible *CWB*/
             int offset = FindIndex(_countries3, region);
@@ -207,21 +175,11 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Util namespace
         /// Linear search of the string array. The arrays are unfortunately ordered by the
         /// two-letter target code, not the three-letter search code, which seems backwards.
         /// </summary>
-        private static int FindIndex(string[] array,
-#if FEATURE_SPAN
-            ReadOnlySpan<char> target
-#else
-            string target
-#endif
-            )
+        private static int FindIndex(string[] array, ReadOnlySpan<char> target)
         {
             for (int i = 0; i < array.Length; i++)
             {
-#if FEATURE_SPAN
                 if (target.Equals(array[i], StringComparison.Ordinal))
-#else
-                if (target.Equals(array[i]))
-#endif
                 {
                     return i;
                 }
@@ -548,21 +506,13 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Util namespace
             "ANT", "BUR", "SCG", "FXX", "ROM", "SUN", "TMP", "YMD", "YUG", "ZAR",
         };
 
-#if FEATURE_SPAN && !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static string GetCurrentCountryID(string oldID)
             => GetCurrentCountryID(oldID.AsSpan());
 #endif
 
-        public static string GetCurrentCountryID(
-#if FEATURE_SPAN
-            ReadOnlySpan<char> oldID
-#else
-            string oldID
-#endif
-            )
+        public static string GetCurrentCountryID(ReadOnlySpan<char> oldID)
         {
             int offset = FindIndex(_deprecatedCountries, oldID);
             if (offset >= 0)
@@ -572,21 +522,13 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Util namespace
             return oldID.ToString();
         }
 
-#if FEATURE_SPAN && !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static string GetCurrentLanguageID(string oldID)
             => GetCurrentLanguageID(oldID.AsSpan());
 #endif
 
-        public static string GetCurrentLanguageID(
-#if FEATURE_SPAN
-            ReadOnlySpan<char> oldID
-#else
-            string oldID
-#endif
-            )
+        public static string GetCurrentLanguageID(ReadOnlySpan<char> oldID)
         {
             int offset = FindIndex(_obsoleteLanguages, oldID);
             if (offset >= 0)

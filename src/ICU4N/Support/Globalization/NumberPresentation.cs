@@ -92,7 +92,6 @@ namespace ICU4N.Globalization
             _ => throw new ArgumentOutOfRangeException(nameof(presentation), $"Not expected presentation value: {presentation}"),
         };
 
-#if FEATURE_SPAN
         /// <summary>
         /// Gets the selected <see cref="NumberFormatRules"/> for the current <paramref name="presentation"/>.
         /// </summary>
@@ -115,6 +114,5 @@ namespace ICU4N.Globalization
                 _ => throw new ArgumentOutOfRangeException(nameof(presentation), $"Not expected presentation value: {presentation}"),
             };
         }
-#endif
     }
 }

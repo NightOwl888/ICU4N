@@ -11,7 +11,7 @@ namespace ICU4N.Text
     /// </summary>
     /// <draft>ICU 59</draft>
     /// <provisional>This API might change or be removed in a future release.</provisional>
-    public sealed class Edits
+    public sealed class Edits // ICU4N TODO: API - change to a ref struct? This is only used on the stack, but need to analyze EditsEnumerator to see if we can move the array to the stack also. If not, we should at least get the array from the array pool.
     {
         // 0000uuuuuuuuuuuu records u+1 unchanged text units.
         internal const int MAX_UNCHANGED_LENGTH = 0x1000;

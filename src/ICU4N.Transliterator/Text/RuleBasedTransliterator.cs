@@ -439,6 +439,24 @@ namespace ICU4N.Text
             return data.RuleSet.ToRules(escapeUnprintable);
         }
 
+        /// <summary>
+        /// Return a representation of this transliterator as source rules.
+        /// These rules will produce an equivalent transliterator if used
+        /// to construct a new transliterator.
+        /// </summary>
+        /// <param name="escapeUnprintable">if TRUE then convert unprintable
+        /// character to their hex escape representations, \\uxxxx or
+        /// \\Uxxxxxxxx.  Unprintable characters are those other than
+        /// U+000A, U+0020..U+007E.</param>
+        /// <param name="destination">A <see cref="ValueStringBuilder"/> to append the rules to.</param>
+        /// <returns>Rules string.</returns>
+        /// <internal/>
+        //[Obsolete("This API is ICU internal only.")]
+        internal override void ToRules(bool escapeUnprintable, ref ValueStringBuilder destination)
+        {
+            data.RuleSet.ToRules(escapeUnprintable, ref destination);
+        }
+
         //    /**
         //     * Return the set of all characters that may be modified by this
         //     * Transliterator, ignoring the effect of our filter.

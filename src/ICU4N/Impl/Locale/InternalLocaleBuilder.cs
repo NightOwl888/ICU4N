@@ -1,26 +1,29 @@
-﻿using System;
+﻿using ICU4N.Support.Collections;
+using ICU4N.Text;
+using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using JCG = J2N.Collections.Generic;
+#nullable enable
 
 namespace ICU4N.Impl.Locale
 {
     public sealed class InternalLocaleBuilder
     {
-        private static readonly bool JDKIMPL = false;
+        private const int CharStackBufferSize = 32;
 
         private string _language = "";
         private string _script = "";
         private string _region = "";
         private string _variant = "";
 
-        private static readonly CaseInsensitiveChar PRIVUSE_KEY = new CaseInsensitiveChar(LanguageTag.Private_Use[0]);
+        private static readonly char PRIVUSE_KEY = LanguageTag.Private_Use[0];
 
-        private IDictionary<CaseInsensitiveChar, string> _extensions;
-        private ISet<CaseInsensitiveString> _uattributes;
-        private IDictionary<CaseInsensitiveString, string> _ukeywords;
-
+        private IDictionary<char, string?>? _extensions;
+        private ISet<string>? _uattributes;
+        private Dictionary<string, string>? _ukeywords;
 
         public InternalLocaleBuilder()
         {
@@ -106,9 +109,9 @@ namespace ICU4N.Impl.Locale
             // Use case insensitive string to prevent duplication
             if (_uattributes == null)
             {
-                _uattributes = new JCG.HashSet<CaseInsensitiveString>(4);
+                _uattributes = new JCG.HashSet<string>(4, AsciiStringComparer.OrdinalIgnoreCase);
             }
-            _uattributes.Add(new CaseInsensitiveString(attribute));
+            _uattributes.Add(attribute);
             return this;
         }
 
@@ -120,7 +123,7 @@ namespace ICU4N.Impl.Locale
             }
             if (_uattributes != null)
             {
-                _uattributes.Remove(new CaseInsensitiveString(attribute));
+                _uattributes.Remove(attribute);
             }
             return this;
         }
@@ -132,13 +135,12 @@ namespace ICU4N.Impl.Locale
                 throw new FormatException("Ill-formed Unicode locale keyword key: " + key);
             }
 
-            CaseInsensitiveString cikey = new CaseInsensitiveString(key);
             if (type == null)
             {
                 if (_ukeywords != null)
                 {
                     // null type is used for remove the key
-                    _ukeywords.Remove(cikey);
+                    _ukeywords.Remove(key);
                 }
             }
             else
@@ -148,10 +150,10 @@ namespace ICU4N.Impl.Locale
                     // normalize separator to "-"
                     string tp = type.Replace(BaseLocale.Separator, LanguageTag.Separator);
                     // validate
-                    StringTokenEnumerator itr = new StringTokenEnumerator(tp, LanguageTag.Separator);
+                    StringTokenEnumerator itr = new StringTokenEnumerator(tp.AsSpan(), LanguageTag.Separator);
                     while (itr.MoveNext())
                     {
-                        string s = itr.Current;
+                        ReadOnlySpan<char> s = itr.Current;
                         if (!UnicodeLocaleExtension.IsTypeSubtag(s))
                         {
                             throw new FormatException("Ill-formed Unicode locale keyword type: " + type /*, itr.CurrentStart*/);
@@ -160,14 +162,14 @@ namespace ICU4N.Impl.Locale
                 }
                 if (_ukeywords == null)
                 {
-                    _ukeywords = new Dictionary<CaseInsensitiveString, string>(4);
+                    _ukeywords = new Dictionary<string, string>(4, AsciiStringComparer.OrdinalIgnoreCase);
                 }
-                _ukeywords[cikey] = type;
+                _ukeywords[key] = type;
             }
             return this;
         }
 
-        public InternalLocaleBuilder SetExtension(char singleton, string value)
+        public InternalLocaleBuilder SetExtension(char singleton, string? value)
         {
             // validate key
             bool isBcpPrivateuse = LanguageTag.IsPrivateusePrefixChar(singleton);
@@ -177,11 +179,11 @@ namespace ICU4N.Impl.Locale
             }
 
             bool remove = (value == null || value.Length == 0);
-            CaseInsensitiveChar key = new CaseInsensitiveChar(singleton);
+            char key = singleton;
 
             if (remove)
             {
-                if (UnicodeLocaleExtension.IsSingletonChar(key.Value))
+                if (UnicodeLocaleExtension.IsSingletonChar(key))
                 {
                     // clear entire Unicode locale extension
                     if (_uattributes != null)
@@ -204,37 +206,50 @@ namespace ICU4N.Impl.Locale
             else
             {
                 // validate value
-                string val = value.Replace(BaseLocale.Separator, LanguageTag.Separator);
-                StringTokenEnumerator itr = new StringTokenEnumerator(val, LanguageTag.Separator);
-                while (itr.MoveNext())
+                int valueLength = value!.Length;
+                bool usePool = valueLength > CharStackBufferSize;
+                char[]? pooledArray = usePool ? ArrayPool<char>.Shared.Rent(valueLength) : null;
+                try
                 {
-                    string s = itr.Current;
-                    bool validSubtag;
-                    if (isBcpPrivateuse)
+                    Span<char> val = usePool ? pooledArray.AsSpan(valueLength) : stackalloc char[valueLength];
+                    value.AsSpan().CopyTo(val);
+                    val.Replace(BaseLocale.Separator, LanguageTag.Separator);
+
+                    StringTokenEnumerator itr = new StringTokenEnumerator(val, LanguageTag.Separator);
+                    while (itr.MoveNext())
                     {
-                        validSubtag = LanguageTag.IsPrivateuseSubtag(s);
+                        ReadOnlySpan<char> s = itr.Current;
+                        bool validSubtag;
+                        if (isBcpPrivateuse)
+                        {
+                            validSubtag = LanguageTag.IsPrivateuseSubtag(s);
+                        }
+                        else
+                        {
+                            validSubtag = LanguageTag.IsExtensionSubtag(s);
+                        }
+                        if (!validSubtag)
+                        {
+                            throw new FormatException($"Ill-formed extension value: {s.ToString()}" /*, itr.CurrentStart*/);
+                        }
+                    }
+
+                    if (UnicodeLocaleExtension.IsSingletonChar(key))
+                    {
+                        SetUnicodeLocaleExtension(val);
                     }
                     else
                     {
-                        validSubtag = LanguageTag.IsExtensionSubtag(s);
-                    }
-                    if (!validSubtag)
-                    {
-                        throw new FormatException("Ill-formed extension value: " + s /*, itr.CurrentStart*/);
+                        if (_extensions == null)
+                        {
+                            _extensions = new Dictionary<char, string?>(4, AsciiCharComparer.OrdinalIgnoreCase);
+                        }
+                        _extensions[key] = val.ToString();
                     }
                 }
-
-                if (UnicodeLocaleExtension.IsSingletonChar(key.Value))
+                finally
                 {
-                    SetUnicodeLocaleExtension(val);
-                }
-                else
-                {
-                    if (_extensions == null)
-                    {
-                        _extensions = new Dictionary<CaseInsensitiveChar, string>(4);
-                    }
-                    _extensions[key] = val;
+                    ArrayPool<char>.Shared.ReturnIfNotNull(pooledArray);
                 }
             }
             return this;
@@ -243,7 +258,7 @@ namespace ICU4N.Impl.Locale
         /// <summary>
         /// Set extension/private subtags in a single string representation
         /// </summary>
-        public InternalLocaleBuilder SetExtensions(string subtags)
+        public InternalLocaleBuilder SetExtensions(string? subtags)
         {
             if (subtags == null || subtags.Length == 0)
             {
@@ -251,10 +266,10 @@ namespace ICU4N.Impl.Locale
                 return this;
             }
             subtags = subtags.Replace(BaseLocale.Separator, LanguageTag.Separator);
-            StringTokenEnumerator itr = new StringTokenEnumerator(subtags, LanguageTag.Separator);
+            StringTokenEnumerator itr = new StringTokenEnumerator(subtags.AsSpan(), LanguageTag.Separator);
 
-            List<string> extensions = null;
-            string privateuse = null;
+            List<string>? extensions = null;
+            string? privateuse = null;
 
             int parsed = 0;
             int start;
@@ -262,115 +277,128 @@ namespace ICU4N.Impl.Locale
             // Move to first element
             itr.MoveNext();
 
-            // Make a list of extension subtags
-            while (!itr.IsDone)
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                string s = itr.Current;
-                if (LanguageTag.IsExtensionSingleton(s))
+                // Make a list of extension subtags
+                while (!itr.IsDone)
                 {
-                    start = itr.CurrentStart;
-                    string singleton = s;
-                    StringBuilder sb = new StringBuilder(singleton);
-
-                    itr.MoveNext();
-                    while (!itr.IsDone)
+                    ReadOnlySpan<char> s = itr.Current;
+                    if (LanguageTag.IsExtensionSingleton(s))
                     {
-                        s = itr.Current;
-                        if (LanguageTag.IsExtensionSubtag(s))
-                        {
-                            sb.Append(LanguageTag.Separator).Append(s);
-                            parsed = itr.CurrentEnd;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                        itr.MoveNext();
-                    }
-
-                    if (parsed < start)
-                    {
-                        throw new FormatException("Incomplete extension '" + singleton + "'"/*, start*/);
-                    }
-
-                    if (extensions == null)
-                    {
-                        extensions = new List<string>(4);
-                    }
-                    extensions.Add(sb.ToString());
-                }
-                else
-                {
-                    break;
-                }
-            }
-            if (!itr.IsDone)
-            {
-                string s = itr.Current;
-                if (LanguageTag.IsPrivateusePrefix(s))
-                {
-                    start = itr.CurrentStart;
-                    StringBuilder sb = new StringBuilder(s);
-
-                    itr.MoveNext();
-                    while (!itr.IsDone)
-                    {
-                        s = itr.Current;
-                        if (!LanguageTag.IsPrivateuseSubtag(s))
-                        {
-                            break;
-                        }
-                        sb.Append(LanguageTag.Separator).Append(s);
-                        parsed = itr.CurrentEnd;
+                        start = itr.Current.StartIndex;
+                        ReadOnlySpan<char> singleton = s;
+                        sb.Length = 0;
+                        sb.Append(singleton);
 
                         itr.MoveNext();
-                    }
-                    if (parsed <= start)
-                    {
-                        throw new FormatException("Incomplete privateuse:" + subtags.Substring(start) /*, start*/);
+                        while (!itr.IsDone)
+                        {
+                            s = itr.Current;
+                            if (LanguageTag.IsExtensionSubtag(s))
+                            {
+                                sb.Append(LanguageTag.Separator);
+                                sb.Append(s);
+                                parsed = itr.Current.StartIndex + s.Length;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                            itr.MoveNext();
+                        }
+
+                        if (parsed < start)
+                        {
+                            throw new FormatException($"Incomplete extension '{singleton.ToString()}'"/*, start*/);
+                        }
+
+                        if (extensions == null)
+                        {
+                            extensions = new List<string>(4);
+                        }
+                        extensions.Add(sb.AsSpan().ToString());
                     }
                     else
                     {
-                        privateuse = sb.ToString();
+                        break;
                     }
                 }
-            }
+                if (!itr.IsDone)
+                {
+                    ReadOnlySpan<char> s = itr.Current;
+                    if (LanguageTag.IsPrivateusePrefix(s))
+                    {
+                        start = itr.Current.StartIndex;
+                        sb.Length = 0;
+                        sb.Append(s);
 
-            if (!itr.IsDone)
+                        itr.MoveNext();
+                        while (!itr.IsDone)
+                        {
+                            s = itr.Current;
+                            if (!LanguageTag.IsPrivateuseSubtag(s))
+                            {
+                                break;
+                            }
+                            sb.Append(LanguageTag.Separator);
+                            sb.Append(s);
+                            parsed = itr.Current.StartIndex + s.Length;
+
+                            itr.MoveNext();
+                        }
+                        if (parsed <= start)
+                        {
+                            throw new FormatException("Incomplete privateuse:" + subtags.Substring(start) /*, start*/);
+                        }
+                        else
+                        {
+                            privateuse = sb.AsSpan().ToString();
+                        }
+                    }
+                }
+
+                if (!itr.IsDone)
+                {
+                    throw new FormatException("Ill-formed extension subtags:" + subtags.Substring(itr.Current.StartIndex)/*, itr.CurrentStart*/);
+                }
+
+                return SetExtensions(extensions, privateuse);
+            }
+            finally
             {
-                throw new FormatException("Ill-formed extension subtags:" + subtags.Substring(itr.CurrentStart)/*, itr.CurrentStart*/);
+                sb.Dispose();
             }
-
-            return SetExtensions(extensions, privateuse);
         }
 
         /// <summary>
         /// Set a list of BCP47 extensions and private use subtags.
         /// BCP47 extensions are already validated and well-formed, but may contain duplicates.
         /// </summary>
-        private InternalLocaleBuilder SetExtensions(IList<string> bcpExtensions, string privateuse)
+        private InternalLocaleBuilder SetExtensions(IList<string>? bcpExtensions, string? privateuse)
         {
             ClearExtensions();
 
             if (bcpExtensions != null && bcpExtensions.Count > 0)
             {
-                var processedExtensions = new JCG.HashSet<CaseInsensitiveChar>(bcpExtensions.Count);
+                var processedExtensions = new JCG.HashSet<char>(bcpExtensions.Count, AsciiCharComparer.OrdinalIgnoreCase);
                 foreach (string bcpExt in bcpExtensions)
                 {
-                    CaseInsensitiveChar key = new CaseInsensitiveChar(bcpExt[0]);
+                    //CaseInsensitiveChar key = new CaseInsensitiveChar(bcpExt[0]);
+                    char key = bcpExt[0];
                     // ignore duplicates
                     if (!processedExtensions.Contains(key))
                     {
                         // each extension string contains singleton, e.g. "a-abc-def"
-                        if (UnicodeLocaleExtension.IsSingletonChar(key.Value))
+                        if (UnicodeLocaleExtension.IsSingletonChar(key))
                         {
-                            SetUnicodeLocaleExtension(bcpExt.Substring(2));
+                            SetUnicodeLocaleExtension(bcpExt.AsSpan(2));
                         }
                         else
                         {
                             if (_extensions == null)
                             {
-                                _extensions = new Dictionary<CaseInsensitiveChar, string>(4);
+                                _extensions = new Dictionary<char, string?>(4, AsciiCharComparer.OrdinalIgnoreCase);
                             }
                             _extensions[key] = bcpExt.Substring(2);
                         }
@@ -382,9 +410,9 @@ namespace ICU4N.Impl.Locale
                 // privateuse string contains prefix, e.g. "x-abc-def"
                 if (_extensions == null)
                 {
-                    _extensions = new Dictionary<CaseInsensitiveChar, string>(1);
+                    _extensions = new Dictionary<char, string?>(1, AsciiCharComparer.OrdinalIgnoreCase);
                 }
-                _extensions[new CaseInsensitiveChar(privateuse[0])] = privateuse.Substring(2);
+                _extensions[privateuse[0]] = privateuse.Substring(2);
             }
 
             return this;
@@ -403,7 +431,7 @@ namespace ICU4N.Impl.Locale
             else
             {
                 string language = langtag.Language;
-                if (!language.Equals(LanguageTag.Undetermined))
+                if (!language.Equals(LanguageTag.Undetermined, StringComparison.Ordinal))
                 {
                     _language = language;
                 }
@@ -414,12 +442,21 @@ namespace ICU4N.Impl.Locale
             IList<string> bcpVariants = langtag.Variants;
             if (bcpVariants.Count > 0)
             {
-                StringBuilder var = new StringBuilder(bcpVariants[0]);
-                for (int i = 1; i < bcpVariants.Count; i++)
+                ValueStringBuilder var = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                try
                 {
-                    var.Append(BaseLocale.Separator).Append(bcpVariants[i]);
+                    var.Append(bcpVariants[0]);
+                    for (int i = 1; i < bcpVariants.Count; i++)
+                    {
+                        var.Append(BaseLocale.Separator);
+                        var.Append(bcpVariants[i]);
+                    }
+                    _variant = var.ToString();
                 }
-                _variant = var.ToString();
+                finally
+                {
+                    var.Dispose();
+                }
             }
 
             SetExtensions(langtag.Extensions, langtag.PrivateUse);
@@ -434,36 +471,35 @@ namespace ICU4N.Impl.Locale
             string region = @base.Region;
             string variant = @base.Variant;
 
+#if JDKIMPL
             // ICU4N TODO: Remove ?
-            if (JDKIMPL)
-            {
-                // Special backward compatibility support
+            // Special backward compatibility support
 
-                // Exception 1 - ja_JP_JP
-                if (language.Equals("ja") && region.Equals("JP") && variant.Equals("JP"))
-                {
-                    // When locale ja_JP_JP is created, ca-japanese is always there.
-                    // The builder ignores the variant "JP"
-                    Debug.Assert("japanese".Equals(extensions.GetUnicodeLocaleType("ca")));
-                    variant = "";
-                }
-                // Exception 2 - th_TH_TH
-                else if (language.Equals("th") && region.Equals("TH") && variant.Equals("TH"))
-                {
-                    // When locale th_TH_TH is created, nu-thai is always there.
-                    // The builder ignores the variant "TH"
-                    Debug.Assert("thai".Equals(extensions.GetUnicodeLocaleType("nu")));
-                    variant = "";
-                }
-                // Exception 3 - no_NO_NY
-                else if (language.Equals("no") && region.Equals("NO") && variant.Equals("NY")) // ICU4N TODO: Fix this handling for .NET (no-NO is not reliable across platforms)
-                {
-                    // no_NO_NY is a valid locale and used by Java 6 or older versions.
-                    // The build ignores the variant "NY" and change the language to "nn".
-                    language = "nn";
-                    variant = "";
-                }
+            // Exception 1 - ja_JP_JP
+            if (language.Equals("ja", StringComparison.Ordinal) && region.Equals("JP", StringComparison.Ordinal) && variant.Equals("JP", StringComparison.Ordinal))
+            {
+                // When locale ja_JP_JP is created, ca-japanese is always there.
+                // The builder ignores the variant "JP"
+                Debug.Assert("japanese".Equals(extensions?.GetUnicodeLocaleType("ca") ?? string.Empty));
+                variant = "";
             }
+            // Exception 2 - th_TH_TH
+            else if (language.Equals("th", StringComparison.Ordinal) && region.Equals("TH", StringComparison.Ordinal) && variant.Equals("TH", StringComparison.Ordinal))
+            {
+                // When locale th_TH_TH is created, nu-thai is always there.
+                // The builder ignores the variant "TH"
+                Debug.Assert("thai".Equals(extensions?.GetUnicodeLocaleType("nu") ?? string.Empty));
+                variant = "";
+            }
+            // Exception 3 - no_NO_NY
+            else if (language.Equals("no", StringComparison.Ordinal) && region.Equals("NO", StringComparison.Ordinal) && variant.Equals("NY", StringComparison.Ordinal)) // ICU4N TODO: Fix this handling for .NET (no-NO is not reliable across platforms)
+            {
+                // no_NO_NY is a valid locale and used by Java 6 or older versions.
+                // The build ignores the variant "NY" and change the language to "nn".
+                language = "nn";
+                variant = "";
+            }
+#endif
 
             // Validate base locale fields before updating internal state.
             // LocaleExtensions always store validated/canonicalized values,
@@ -480,7 +516,7 @@ namespace ICU4N.Impl.Locale
 
             if (region.Length > 0 && !LanguageTag.IsRegion(region))
             {
-                throw new FormatException("Ill-formed region: " + region); // ICU4N TODO: Port LocaleSyntaxException (instead of FormatException)
+                throw new FormatException("Ill-formed region: " + region); // ICU4N TODO: API - Port LocaleSyntaxException (instead of FormatException)
             }
 
             if (variant.Length > 0)
@@ -506,33 +542,33 @@ namespace ICU4N.Impl.Locale
                 // map extensions back to builder's internal format
                 foreach (char key in extKeys)
                 {
-                    Extension e = extensions.GetExtension(key);
+                    Extension e = extensions!.GetExtension(key);
                     if (e is UnicodeLocaleExtension ue)
                     {
                         foreach (string uatr in ue.UnicodeLocaleAttributes)
                         {
                             if (_uattributes == null)
                             {
-                                _uattributes = new JCG.HashSet<CaseInsensitiveString>(4);
+                                _uattributes = new JCG.HashSet<string>(4, AsciiStringComparer.OrdinalIgnoreCase);
                             }
-                            _uattributes.Add(new CaseInsensitiveString(uatr));
+                            _uattributes.Add(uatr);
                         }
                         foreach (string ukey in ue.UnicodeLocaleKeys)
                         {
                             if (_ukeywords == null)
                             {
-                                _ukeywords = new Dictionary<CaseInsensitiveString, string>(4);
+                                _ukeywords = new Dictionary<string, string>(4, AsciiStringComparer.OrdinalIgnoreCase);
                             }
-                            _ukeywords[new CaseInsensitiveString(ukey)] = ue.GetUnicodeLocaleType(ukey);
+                            _ukeywords[ukey] = ue.GetUnicodeLocaleType(ukey);
                         }
                     }
                     else
                     {
                         if (_extensions == null)
                         {
-                            _extensions = new Dictionary<CaseInsensitiveChar, string>(4);
+                            _extensions = new Dictionary<char, string?>(4, AsciiCharComparer.OrdinalIgnoreCase);
                         }
-                        _extensions[new CaseInsensitiveChar(key)] = e.Value;
+                        _extensions[key] = e.Value;
                     }
                 }
             }
@@ -577,33 +613,42 @@ namespace ICU4N.Impl.Locale
             // interpreted as Java variant.
             if (_extensions != null)
             {
-                string privuse;
-                if (_extensions.TryGetValue(PRIVUSE_KEY, out privuse) && privuse != null)
+                if (_extensions.TryGetValue(PRIVUSE_KEY, out string? privuse) && privuse != null)
                 {
-                    StringTokenEnumerator itr = new StringTokenEnumerator(privuse, LanguageTag.Separator);
+                    StringTokenEnumerator itr = new StringTokenEnumerator(privuse.AsSpan(), LanguageTag.Separator);
                     bool sawPrefix = false;
                     int privVarStart = -1;
                     while (itr.MoveNext())
                     {
                         if (sawPrefix)
                         {
-                            privVarStart = itr.CurrentStart;
+                            privVarStart = itr.Current.StartIndex;
                             break;
                         }
-                        if (AsciiUtil.CaseIgnoreMatch(itr.Current, LanguageTag.PrivateUse_Variant_Prefix))
+                        if (AsciiUtil.CaseIgnoreMatch(itr.Current, LanguageTag.PrivateUse_Variant_Prefix.AsSpan()))
                         {
                             sawPrefix = true;
                         }
                     }
                     if (privVarStart != -1)
                     {
-                        StringBuilder sb = new StringBuilder(variant);
-                        if (sb.Length != 0)
+                        ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                        try
                         {
-                            sb.Append(BaseLocale.Separator);
+                            sb.Append(variant);
+                            if (sb.Length != 0)
+                            {
+                                sb.Append(BaseLocale.Separator);
+                            }
+                            var privateuse = sb.AppendSpan(privuse.Length - privVarStart);
+                            privuse.AsSpan(privVarStart).CopyTo(privateuse);
+                            privateuse.Replace(LanguageTag.Separator, BaseLocale.Separator);
+                            variant = sb.ToString();
                         }
-                        sb.Append(privuse.Substring(privVarStart).Replace(LanguageTag.Separator, BaseLocale.Separator));
-                        variant = sb.ToString();
+                        finally
+                        {
+                            sb.Dispose();
+                        }
                     }
                 }
             }
@@ -627,9 +672,9 @@ namespace ICU4N.Impl.Locale
         /// Remove special private use subtag sequence identified by "lvariant"
         /// and return the rest. Only used by LocaleExtensions.
         /// </summary>
-        internal static string RemovePrivateuseVariant(string privuseVal)
+        internal static string? RemovePrivateuseVariant(string? privuseVal)
         {
-            StringTokenEnumerator itr = new StringTokenEnumerator(privuseVal, LanguageTag.Separator);
+            StringTokenEnumerator itr = new StringTokenEnumerator(privuseVal.AsSpan(), LanguageTag.Separator);
 
             // Note: privateuse value "abc-lvariant" is unchanged
             // because no subtags after "lvariant".
@@ -646,9 +691,9 @@ namespace ICU4N.Impl.Locale
                     sawPrivuseVar = true;
                     break;
                 }
-                if (AsciiUtil.CaseIgnoreMatch(itr.Current, LanguageTag.PrivateUse_Variant_Prefix))
+                if (AsciiUtil.CaseIgnoreMatch(itr.Current, LanguageTag.PrivateUse_Variant_Prefix.AsSpan()))
                 {
-                    prefixStart = itr.CurrentStart;
+                    prefixStart = itr.Current.StartIndex;
                 }
             }
             if (!sawPrivuseVar)
@@ -657,22 +702,22 @@ namespace ICU4N.Impl.Locale
             }
 
             Debug.Assert(prefixStart == 0 || prefixStart > 1);
-            return (prefixStart == 0) ? null : privuseVal.Substring(0, prefixStart - 1); // ICU4N: Checked 2nd parameter
+            return (prefixStart == 0) ? null : privuseVal!.Substring(0, prefixStart - 1); // ICU4N: Checked 2nd parameter
         }
 
         /// <summary>
         /// Check if the given variant subtags separated by the given
-        /// separator(s) are valid.
+        /// separator are valid.
         /// </summary>
-        private int CheckVariants(string variants, string sep)
+        private int CheckVariants(string variants, char sep)
         {
-            StringTokenEnumerator itr = new StringTokenEnumerator(variants, sep);
+            StringTokenEnumerator itr = new StringTokenEnumerator(variants.AsSpan(), sep);
             while (itr.MoveNext())
             {
-                string s = itr.Current;
+                ReadOnlySpan<char> s = itr.Current;
                 if (!LanguageTag.IsVariant(s))
                 {
-                    return itr.CurrentStart;
+                    return itr.Current.StartIndex;
                 }
             }
             return -1;
@@ -683,7 +728,7 @@ namespace ICU4N.Impl.Locale
         /// Duplicated attributes/keywords will be ignored.
         /// The input must be a valid extension subtags (excluding singleton).
         /// </summary>
-        private void SetUnicodeLocaleExtension(string subtags)
+        private void SetUnicodeLocaleExtension(ReadOnlySpan<char> subtags)
         {
             // wipe out existing attributes/keywords
             if (_uattributes != null)
@@ -706,13 +751,13 @@ namespace ICU4N.Impl.Locale
                 }
                 if (_uattributes == null)
                 {
-                    _uattributes = new JCG.HashSet<CaseInsensitiveString>(4);
+                    _uattributes = new JCG.HashSet<string>(4, AsciiStringComparer.OrdinalIgnoreCase);
                 }
-                _uattributes.Add(new CaseInsensitiveString(itr.Current));
+                _uattributes.Add(itr.Current.Text.ToString());
             }
 
             // parse keywords
-            CaseInsensitiveString key = null;
+            string? key = null;
             string type;
             int typeStart = -1;
             int typeEnd = -1;
@@ -724,36 +769,40 @@ namespace ICU4N.Impl.Locale
                     {
                         // next keyword - emit previous one
                         Debug.Assert(typeStart == -1 || typeEnd != -1);
-                        type = (typeStart == -1) ? "" : subtags.Substring(typeStart, typeEnd - typeStart); // ICU4N: Corrected 2nd parameter
+                        type = (typeStart == -1) ? "" : subtags.Slice(typeStart, typeEnd - typeStart).ToString(); // ICU4N: Corrected 2nd parameter
                         if (_ukeywords == null)
                         {
-                            _ukeywords = new Dictionary<CaseInsensitiveString, string>(4);
+                            _ukeywords = new Dictionary<string, string>(4, AsciiStringComparer.OrdinalIgnoreCase);
                         }
                         _ukeywords[key] = type;
 
                         // reset keyword info
-                        CaseInsensitiveString tmpKey = new CaseInsensitiveString(itr.Current);
-                        key = _ukeywords.ContainsKey(tmpKey) ? null : tmpKey;
+                        ReadOnlySpan<char> tmpKey = itr.Current;
+                        key = _ukeywords.ContainsKey(tmpKey) ? null : tmpKey.ToString();
                         typeStart = typeEnd = -1;
                     }
                     else
                     {
                         if (typeStart == -1)
                         {
-                            typeStart = itr.CurrentStart;
+                            typeStart = itr.Current.StartIndex;
                         }
-                        typeEnd = itr.CurrentEnd;
+                        typeEnd = itr.Current.StartIndex + itr.Current.Text.Length;
                     }
                 }
                 else if (UnicodeLocaleExtension.IsKey(itr.Current))
                 {
                     // 1. first keyword or
                     // 2. next keyword, but previous one was duplicate
-                    key = new CaseInsensitiveString(itr.Current);
-                    if (_ukeywords != null && _ukeywords.ContainsKey(key))
+
+                    if (_ukeywords != null && _ukeywords.ContainsKey(itr.Current))
                     {
                         // duplicate
                         key = null;
+                    }
+                    else
+                    {
+                        key = itr.Current.Text.ToString();
                     }
                 }
 
@@ -763,10 +812,10 @@ namespace ICU4N.Impl.Locale
                     {
                         // last keyword
                         Debug.Assert(typeStart == -1 || typeEnd != -1);
-                        type = (typeStart == -1) ? "" : subtags.Substring(typeStart, typeEnd - typeStart); // ICU4N: Corrected 2nd parameter
+                        type = (typeStart == -1) ? "" : subtags.Slice(typeStart, typeEnd - typeStart).ToString(); // ICU4N: Corrected 2nd parameter
                         if (_ukeywords == null)
                         {
-                            _ukeywords = new Dictionary<CaseInsensitiveString, string>(4);
+                            _ukeywords = new Dictionary<string, string>(4, AsciiStringComparer.OrdinalIgnoreCase);
                         }
                         _ukeywords[key] = type;
                     }
@@ -774,68 +823,6 @@ namespace ICU4N.Impl.Locale
                 }
 
                 itr.MoveNext();
-            }
-        }
-
-        internal class CaseInsensitiveString
-        {
-            private readonly string _s;
-            private readonly int _hash;
-
-            internal CaseInsensitiveString(string s)
-            {
-                _s = s;
-                _hash = AsciiUtil.ToLower(_s).GetHashCode(); // ICU4N specific - cache hash code, since this is an immutable object
-            }
-
-            public virtual string Value => _s;
-
-            public override int GetHashCode()
-            {
-                // ICU4N specific - cache hash code, since this is an immutable object
-                return _hash;
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (ReferenceEquals(this, obj))
-                    return true;
-
-                if (obj is CaseInsensitiveString other)
-                    return AsciiUtil.CaseIgnoreMatch(_s, other.Value);
-
-                return false;
-            }
-        }
-
-        internal class CaseInsensitiveChar
-        {
-            private readonly char _c;
-            private readonly int _hash;
-
-            internal CaseInsensitiveChar(char c)
-            {
-                _c = c;
-                _hash = AsciiUtil.ToLower(_c);// ICU4N specific - cache hash code, since this is an immutable object
-            }
-
-            public virtual char Value => _c;
-
-            public override int GetHashCode()
-            {
-                // ICU4N specific - cache hash code, since this is an immutable object
-                return _hash;
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (ReferenceEquals(this, obj))
-                    return true;
-
-                if (obj is CaseInsensitiveChar other)
-                    return _c == AsciiUtil.ToLower(other.Value);
-
-                return false;
             }
         }
     }
