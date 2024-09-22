@@ -389,7 +389,7 @@ namespace ICU4N.Text
             SpanCondition copySpan = spanCondition == SpanCondition.NotContained ? SpanCondition.Simple
                     : SpanCondition.NotContained;
             bool remove = replacement.Length == 0;
-            ValueStringBuilder result = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            using ValueStringBuilder result = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
             // TODO, we can optimize this to
             // avoid this allocation unless needed
 

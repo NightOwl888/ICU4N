@@ -718,10 +718,7 @@ namespace ICU4N.Text
                             norm2.Append(ref middle, prefix);
                         }
                         first.Delete(suffixStart, 0x7fffffff - suffixStart); // ICU4N: Corrected 2nd parameter of Delete
-                        unsafe
-                        {
-                            first.Append(new ReadOnlySpan<char>(middle.GetCharsPointer(), middle.Length));
-                        }
+                        first.Append(middle.AsSpan());
                     }
                     finally
                     {
@@ -756,10 +753,16 @@ namespace ICU4N.Text
             var buffer = length <= CharStackBufferSize
                 ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
                 : new ValueStringBuilder(length);
-
-            Normalize(source, ref buffer, SpanCondition.Simple);
-            charsLength = buffer.Length;
-            return buffer.TryCopyTo(destination, out _);
+            try
+            {
+                Normalize(source, ref buffer, SpanCondition.Simple);
+                charsLength = buffer.Length;
+                return buffer.TryCopyTo(destination, out _);
+            }
+            finally
+            {
+                buffer.Dispose();
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -781,11 +784,17 @@ namespace ICU4N.Text
             var buffer = length <= CharStackBufferSize
                 ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
                 : new ValueStringBuilder(length);
-
-            buffer.Append(first);
-            NormalizeSecondAndAppend(ref buffer, second, doNormalize);
-            charsLength = buffer.Length;
-            return buffer.TryCopyTo(destination, out _);
+            try
+            {
+                buffer.Append(first);
+                NormalizeSecondAndAppend(ref buffer, second, doNormalize);
+                charsLength = buffer.Length;
+                return buffer.TryCopyTo(destination, out _);
+            }
+            finally
+            {
+                buffer.Dispose();
+            }
         }
 
         private readonly Normalizer2 norm2;

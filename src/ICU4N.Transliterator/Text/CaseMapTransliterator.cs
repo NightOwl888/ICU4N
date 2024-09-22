@@ -46,6 +46,7 @@ namespace ICU4N.Text
                     return;
                 }
 
+                ValueStringBuilder replacementChars = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
                 UCaseContext csc = new UCaseContext();
                 GCHandle handle = GCHandle.Alloc(text, GCHandleType.Normal);
                 try
@@ -53,8 +54,6 @@ namespace ICU4N.Text
                     csc.p = GCHandle.ToIntPtr(handle);
                     csc.start = offsets.ContextStart;
                     csc.limit = offsets.ContextLimit;
-
-                    ValueStringBuilder replacementChars = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
 
                     int c;
                     int textPos, delta = 0, result;
@@ -112,6 +111,7 @@ namespace ICU4N.Text
                 finally
                 {
                     handle.Free(); // Release the handle so the GC can collect the IReplaceable instance
+                    replacementChars.Dispose();
                 }
             }
         }

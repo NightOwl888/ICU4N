@@ -1292,8 +1292,15 @@ namespace ICU4N.Impl
             {
                 // Hangul syllable: decompose algorithmically
                 ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[3]);
-                buffer.AppendHangulDecomposition(c);
-                return buffer.ToString();
+                try
+                {
+                    buffer.AppendHangulDecomposition(c);
+                    return buffer.ToString();
+                }
+                finally
+                {
+                    buffer.Dispose();
+                }
             }
             // c decomposes, get everything from the variable-length extra data
             int mapping = norm16 >> OFFSET_SHIFT;
@@ -1345,8 +1352,15 @@ namespace ICU4N.Impl
             {
                 // Hangul syllable: decompose algorithmically
                 ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[2]);
-                charsLength = buffer.AppendHangulDecomposition(c);
-                return buffer.TryCopyTo(destination, out _);
+                try
+                {
+                    charsLength = buffer.AppendHangulDecomposition(c);
+                    return buffer.TryCopyTo(destination, out _);
+                }
+                finally
+                {
+                    buffer.Dispose();
+                }
             }
             // c decomposes, get everything from the variable-length extra data
             int mapping = norm16 >> OFFSET_SHIFT;
@@ -1372,8 +1386,15 @@ namespace ICU4N.Impl
             {
                 // Hangul syllable: decompose algorithmically
                 ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[3]);
-                buffer.AppendHangulRawDecomposition(c);
-                return buffer.ToString();
+                try
+                {
+                    buffer.AppendHangulRawDecomposition(c);
+                    return buffer.ToString();
+                }
+                finally
+                {
+                    buffer.Dispose();
+                }
             }
             else if (IsDecompNoAlgorithmic(norm16))
             {
@@ -1396,7 +1417,7 @@ namespace ICU4N.Impl
                 else
                 {
                     // Copy the normal mapping and replace its first two code units with rm0.
-                    ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[mLength - 1]);
+                    using ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[mLength - 1]);
                     buffer.Append(rm0);
                     mapping += 1 + 2;  // skip over the firstUnit and the first two mapping code units
                     buffer.Append(extraData, mapping, mLength - 2); // (mapping + mLength - 2) - mapping == mLength - 2
@@ -1433,8 +1454,15 @@ namespace ICU4N.Impl
             {
                 // Hangul syllable: decompose algorithmically
                 ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[2]);
-                buffer.AppendHangulRawDecomposition(c);
-                buffer.TryCopyTo(destination, out charsLength);
+                try
+                {
+                    buffer.AppendHangulRawDecomposition(c);
+                    buffer.TryCopyTo(destination, out charsLength);
+                }
+                finally
+                {
+                    buffer.Dispose();
+                }
             }
             else if (IsDecompNoAlgorithmic(norm16))
             {
@@ -1460,7 +1488,7 @@ namespace ICU4N.Impl
                 else
                 {
                     // Copy the normal mapping and replace its first two code units with rm0.
-                    ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[mLength - 1]);
+                    using ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[mLength - 1]);
                     buffer.Append(rm0);
                     mapping += 1 + 2;  // skip over the firstUnit and the first two mapping code units
                     buffer.Append(extraData.AsSpan(mapping, mLength - 2));

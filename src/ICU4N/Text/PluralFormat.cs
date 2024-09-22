@@ -767,39 +767,46 @@ namespace ICU4N.Text
             // (not in nested arguments) with the formatted number-offset.
             char* stackPtr = stackalloc char[CharStackBufferSize];
             ValueStringBuilder result = new ValueStringBuilder(new Span<char>(stackPtr, CharStackBufferSize));
-            int prevIndex = msgPattern.GetPart(partIndex).Limit;
-            while (true)
+            try
             {
-                MessagePatternPart part = msgPattern.GetPart(++partIndex);
-                MessagePatternPartType type = part.Type;
-                int index = part.Index;
-                if (type == MessagePatternPartType.MsgLimit)
+                int prevIndex = msgPattern.GetPart(partIndex).Limit;
+                while (true)
                 {
-                    result.Append(pattern.AsSpan(prevIndex, index - prevIndex)); // ICU4N: Corrected 2nd arg
-                    break;
-                }
-                else if (type == MessagePatternPartType.ReplaceNumber ||
-                          // JDK compatibility mode: Remove SKIP_SYNTAX.
-                          (type == MessagePatternPartType.SkipSyntax && msgPattern.JdkAposMode))
-                {
-                    result.Append(pattern.AsSpan(prevIndex, index - prevIndex)); // ICU4N: Corrected 2nd arg
-                    if (type == MessagePatternPartType.ReplaceNumber)
+                    MessagePatternPart part = msgPattern.GetPart(++partIndex);
+                    MessagePatternPartType type = part.Type;
+                    int index = part.Index;
+                    if (type == MessagePatternPartType.MsgLimit)
                     {
-                        result.Append(numberString);
+                        result.Append(pattern.AsSpan(prevIndex, index - prevIndex)); // ICU4N: Corrected 2nd arg
+                        break;
                     }
-                    prevIndex = part.Limit;
+                    else if (type == MessagePatternPartType.ReplaceNumber ||
+                              // JDK compatibility mode: Remove SKIP_SYNTAX.
+                              (type == MessagePatternPartType.SkipSyntax && msgPattern.JdkAposMode))
+                    {
+                        result.Append(pattern.AsSpan(prevIndex, index - prevIndex)); // ICU4N: Corrected 2nd arg
+                        if (type == MessagePatternPartType.ReplaceNumber)
+                        {
+                            result.Append(numberString);
+                        }
+                        prevIndex = part.Limit;
+                    }
+                    else if (type == MessagePatternPartType.ArgStart)
+                    {
+                        result.Append(pattern.AsSpan(prevIndex, index - prevIndex)); // ICU4N: Corrected 2nd arg
+                        prevIndex = index;
+                        partIndex = msgPattern.GetLimitPartIndex(partIndex);
+                        index = msgPattern.GetPart(partIndex).Limit;
+                        MessagePattern.AppendReducedApostrophes(pattern, prevIndex, index, ref result);
+                        prevIndex = index;
+                    }
                 }
-                else if (type == MessagePatternPartType.ArgStart)
-                {
-                    result.Append(pattern.AsSpan(prevIndex, index - prevIndex)); // ICU4N: Corrected 2nd arg
-                    prevIndex = index;
-                    partIndex = msgPattern.GetLimitPartIndex(partIndex);
-                    index = msgPattern.GetPart(partIndex).Limit;
-                    MessagePattern.AppendReducedApostrophes(pattern, prevIndex, index, ref result);
-                    prevIndex = index;
-                }
+                return result.TryCopyTo(destination, out charsWritten);
             }
-            return result.TryCopyTo(destination, out charsWritten);
+            finally
+            {
+                result.Dispose();
+            }
         }
 
 #nullable restore

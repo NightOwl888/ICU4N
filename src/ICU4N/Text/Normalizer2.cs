@@ -232,14 +232,21 @@ namespace ICU4N.Text
             ValueStringBuilder sb = src.Length <= CharStackBufferSize
                 ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
                 : new ValueStringBuilder(src.Length);
-            if (spanLength != 0)
+            try
             {
-                sb.Append(src.AsSpan(0, spanLength - 0)); // ICU4N: Checked 2nd parameter math
-                NormalizeSecondAndAppend(ref sb, src.AsSpan(spanLength, src.Length - spanLength)); // ICU4N: Corrected 2nd substring parameter
+                if (spanLength != 0)
+                {
+                    sb.Append(src.AsSpan(0, spanLength - 0)); // ICU4N: Checked 2nd parameter math
+                    NormalizeSecondAndAppend(ref sb, src.AsSpan(spanLength, src.Length - spanLength)); // ICU4N: Corrected 2nd substring parameter
+                    return sb.ToString();
+                }
+                Normalize(src.AsSpan(), ref sb);
                 return sb.ToString();
             }
-            Normalize(src.AsSpan(), ref sb);
-            return sb.ToString();
+            finally
+            {
+                sb.Dispose();
+            }
         }
 
         /// <summary>
@@ -254,9 +261,15 @@ namespace ICU4N.Text
             ValueStringBuilder sb = src.Length <= CharStackBufferSize
                 ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
                 : new ValueStringBuilder(src.Length);
-
-            Normalize(src, ref sb);
-            return sb.ToString();
+            try
+            {
+                Normalize(src, ref sb);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
         }
 
         /// <summary>

@@ -141,28 +141,35 @@ namespace ICU4N.Dev.Test.StringPrep
             string s = Encoding.UTF8.GetString(src);
             int index = s.IndexOf(AT_SIGN);
             ValueStringBuilder @out = new ValueStringBuilder(stackalloc char[32]);
-            // ICU4N: Factored out UCharacterIterator
-            if (index > -1)
+            try
             {
-                /* special prefixes must not be followed by suffixes! */
-                ReadOnlySpan<char> prefix = s.AsSpan(0, index); // ICU4N: Checked 2nd parameter
-                int i = FindStringIndex(special_prefixes, prefix);
-                ReadOnlySpan<char> suffix = s.AsSpan(index + 1, s.Length - (index + 1)); // ICU4N: Corrected 2nd parameter
-
-                if (i > -1 && !suffix.IsEmpty)
+                // ICU4N: Factored out UCharacterIterator
+                if (index > -1)
                 {
-                    throw new StringPrepFormatException("Suffix following a special index", StringPrepErrorType.InvalidCharFound);
-                }
-                @out.Append(prep.nfsmxp.Prepare(prefix, StringPrepOptions.Default));
-                @out.Append(AT_SIGN); // add the delimiter
-                @out.Append(prep.nfsmxs.Prepare(suffix, StringPrepOptions.Default));
-            }
-            else
-            {
-                @out.Append(prep.nfsmxp.Prepare(s, StringPrepOptions.Default));
+                    /* special prefixes must not be followed by suffixes! */
+                    ReadOnlySpan<char> prefix = s.AsSpan(0, index); // ICU4N: Checked 2nd parameter
+                    int i = FindStringIndex(special_prefixes, prefix);
+                    ReadOnlySpan<char> suffix = s.AsSpan(index + 1, s.Length - (index + 1)); // ICU4N: Corrected 2nd parameter
 
+                    if (i > -1 && !suffix.IsEmpty)
+                    {
+                        throw new StringPrepFormatException("Suffix following a special index", StringPrepErrorType.InvalidCharFound);
+                    }
+                    @out.Append(prep.nfsmxp.Prepare(prefix, StringPrepOptions.Default));
+                    @out.Append(AT_SIGN); // add the delimiter
+                    @out.Append(prep.nfsmxs.Prepare(suffix, StringPrepOptions.Default));
+                }
+                else
+                {
+                    @out.Append(prep.nfsmxp.Prepare(s, StringPrepOptions.Default));
+
+                }
+                return Encoding.UTF8.GetBytes(@out.ToString());
             }
-            return Encoding.UTF8.GetBytes(@out.ToString());
+            finally
+            {
+                @out.Dispose();
+            }
         }
     }
 }

@@ -554,233 +554,247 @@ namespace ICU4N.Impl
                      ref IDNAInfo info)
         {
             ValueStringBuilder fromPunycode = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-            scoped Span<char> labelString;
-            int destLabelStart = labelStart;
-            int destLabelLength = labelLength;
-            bool wasPunycode;
-            if (labelLength >= 4 &&
-                dest[labelStart] == 'x' && dest[labelStart + 1] == 'n' &&
-                dest[labelStart + 2] == '-' && dest[labelStart + 3] == '-'
-            )
+            try
             {
-                // Label starts with "xn--", try to un-Punycode it.
-                wasPunycode = true;
-                if (!Punycode.TryDecode(dest.AsSpan(labelStart + 4, labelLength - 4), ref fromPunycode, null, out _)) // ICU4N: (labelStart + labelLength) - (labelStart + 4) == (labelLength - 4)
+                scoped Span<char> labelString;
+                int destLabelStart = labelStart;
+                int destLabelLength = labelLength;
+                bool wasPunycode;
+                if (labelLength >= 4 &&
+                    dest[labelStart] == 'x' && dest[labelStart + 1] == 'n' &&
+                    dest[labelStart + 2] == '-' && dest[labelStart + 3] == '-'
+                )
                 {
-#pragma warning disable 612, 618
-                    AddLabelError(ref info, IDNAErrors.Punycode);
-#pragma warning restore 612, 618
-                    return MarkBadACELabel(ref dest, labelStart, labelLength, toASCII, ref info);
-                }
-
-                // Check for NFC, and for characters that are not
-                // valid or deviation characters according to the normalizer.
-                // If there is something wrong, then the string will change.
-                // Note that the normalizer passes through non-LDH ASCII and deviation characters.
-                // Deviation characters are ok in Punycode even in transitional processing.
-                // In the code further below, if we find non-LDH ASCII and we have UIDNA_USE_STD3_RULES
-                // then we will set UIDNA_ERROR_INVALID_ACE_LABEL there too.
-                bool isValid = uts46Norm2.IsNormalized(fromPunycode.AsSpan());
-                if (!isValid)
-                {
-#pragma warning disable 612, 618
-                    AddLabelError(ref info, IDNAErrors.InvalidAceLabel);
-#pragma warning restore 612, 618
-                    return MarkBadACELabel(ref dest, labelStart, labelLength, toASCII, ref info);
-                }
-                labelString = fromPunycode.RawChars.Slice(0, fromPunycode.Length);
-                labelStart = 0;
-                labelLength = fromPunycode.Length;
-            }
-            else
-            {
-                wasPunycode = false;
-                labelString = dest.RawChars.Slice(0, dest.Length);
-            }
-            // Validity check
-            if (labelLength == 0)
-            {
-#pragma warning disable 612, 618
-                AddLabelError(ref info, IDNAErrors.EmptyLabel);
-                return ReplaceLabel(ref dest, destLabelStart, destLabelLength, labelString, labelLength);
-            }
-            // labelLength>0
-            if (labelLength >= 4 && labelString[labelStart + 2] == '-' && labelString[labelStart + 3] == '-')
-            {
-                // label starts with "??--"
-                AddLabelError(ref info, IDNAErrors.Hyphen_3_4);
-            }
-            if (labelString[labelStart] == '-')
-            {
-                // label starts with "-"
-                AddLabelError(ref info, IDNAErrors.LeadingHyphen);
-            }
-            if (labelString[labelStart + labelLength - 1] == '-')
-            {
-                // label ends with "-"
-                AddLabelError(ref info, IDNAErrors.TrailingHyphen);
-            }
-#pragma warning restore 612, 618
-            // If the label was not a Punycode label, then it was the result of
-            // mapping, normalization and label segmentation.
-            // If the label was in Punycode, then we mapped it again above
-            // and checked its validity.
-            // Now we handle the STD3 restriction to LDH characters (if set)
-            // and we look for U+FFFD which indicates disallowed characters
-            // in a non-Punycode label or U+FFFD itself in a Punycode label.
-            // We also check for dots which can come from the input to a single-label function.
-            // Ok to cast away const because we own the UnicodeString.
-            int i = labelStart;
-            int limit = labelStart + labelLength;
-            char oredChars = (char)0;
-            // If we enforce STD3 rules, then ASCII characters other than LDH and dot are disallowed.
-            bool disallowNonLDHDot = (options & UTS46Options.UseSTD3Rules) != 0;
-            do
-            {
-                char c = labelString[i];
-                if (c <= 0x7f)
-                {
-                    if (c == '.')
+                    // Label starts with "xn--", try to un-Punycode it.
+                    wasPunycode = true;
+                    if (!Punycode.TryDecode(dest.AsSpan(labelStart + 4, labelLength - 4), ref fromPunycode, null, out _)) // ICU4N: (labelStart + labelLength) - (labelStart + 4) == (labelLength - 4)
                     {
 #pragma warning disable 612, 618
-                        AddLabelError(ref info, IDNAErrors.LabelHasDot);
+                        AddLabelError(ref info, IDNAErrors.Punycode);
 #pragma warning restore 612, 618
-                        labelString[i] = '\ufffd';
+                        return MarkBadACELabel(ref dest, labelStart, labelLength, toASCII, ref info);
                     }
-                    else if (disallowNonLDHDot && asciiData[c] < 0)
+
+                    // Check for NFC, and for characters that are not
+                    // valid or deviation characters according to the normalizer.
+                    // If there is something wrong, then the string will change.
+                    // Note that the normalizer passes through non-LDH ASCII and deviation characters.
+                    // Deviation characters are ok in Punycode even in transitional processing.
+                    // In the code further below, if we find non-LDH ASCII and we have UIDNA_USE_STD3_RULES
+                    // then we will set UIDNA_ERROR_INVALID_ACE_LABEL there too.
+                    bool isValid = uts46Norm2.IsNormalized(fromPunycode.AsSpan());
+                    if (!isValid)
                     {
 #pragma warning disable 612, 618
-                        AddLabelError(ref info, IDNAErrors.Disallowed);
+                        AddLabelError(ref info, IDNAErrors.InvalidAceLabel);
 #pragma warning restore 612, 618
-                        labelString[i] = '\ufffd';
+                        return MarkBadACELabel(ref dest, labelStart, labelLength, toASCII, ref info);
+                    }
+                    labelString = fromPunycode.RawChars.Slice(0, fromPunycode.Length);
+                    labelStart = 0;
+                    labelLength = fromPunycode.Length;
+                }
+                else
+                {
+                    wasPunycode = false;
+                    labelString = dest.RawChars.Slice(0, dest.Length);
+                }
+                // Validity check
+                if (labelLength == 0)
+                {
+#pragma warning disable 612, 618
+                    AddLabelError(ref info, IDNAErrors.EmptyLabel);
+                    return ReplaceLabel(ref dest, destLabelStart, destLabelLength, labelString, labelLength);
+                }
+                // labelLength>0
+                if (labelLength >= 4 && labelString[labelStart + 2] == '-' && labelString[labelStart + 3] == '-')
+                {
+                    // label starts with "??--"
+                    AddLabelError(ref info, IDNAErrors.Hyphen_3_4);
+                }
+                if (labelString[labelStart] == '-')
+                {
+                    // label starts with "-"
+                    AddLabelError(ref info, IDNAErrors.LeadingHyphen);
+                }
+                if (labelString[labelStart + labelLength - 1] == '-')
+                {
+                    // label ends with "-"
+                    AddLabelError(ref info, IDNAErrors.TrailingHyphen);
+                }
+#pragma warning restore 612, 618
+                // If the label was not a Punycode label, then it was the result of
+                // mapping, normalization and label segmentation.
+                // If the label was in Punycode, then we mapped it again above
+                // and checked its validity.
+                // Now we handle the STD3 restriction to LDH characters (if set)
+                // and we look for U+FFFD which indicates disallowed characters
+                // in a non-Punycode label or U+FFFD itself in a Punycode label.
+                // We also check for dots which can come from the input to a single-label function.
+                // Ok to cast away const because we own the UnicodeString.
+                int i = labelStart;
+                int limit = labelStart + labelLength;
+                char oredChars = (char)0;
+                // If we enforce STD3 rules, then ASCII characters other than LDH and dot are disallowed.
+                bool disallowNonLDHDot = (options & UTS46Options.UseSTD3Rules) != 0;
+                do
+                {
+                    char c = labelString[i];
+                    if (c <= 0x7f)
+                    {
+                        if (c == '.')
+                        {
+#pragma warning disable 612, 618
+                            AddLabelError(ref info, IDNAErrors.LabelHasDot);
+#pragma warning restore 612, 618
+                            labelString[i] = '\ufffd';
+                        }
+                        else if (disallowNonLDHDot && asciiData[c] < 0)
+                        {
+#pragma warning disable 612, 618
+                            AddLabelError(ref info, IDNAErrors.Disallowed);
+#pragma warning restore 612, 618
+                            labelString[i] = '\ufffd';
+                        }
+                    }
+                    else
+                    {
+                        oredChars |= c;
+                        if (disallowNonLDHDot && IsNonASCIIDisallowedSTD3Valid(c))
+                        {
+#pragma warning disable 612, 618
+                            AddLabelError(ref info, IDNAErrors.Disallowed);
+#pragma warning restore 612, 618
+                            labelString[i] = '\ufffd';
+                        }
+                        else if (c == 0xfffd)
+                        {
+#pragma warning disable 612, 618
+                            AddLabelError(ref info, IDNAErrors.Disallowed);
+#pragma warning restore 612, 618
+                        }
+                    }
+                    ++i;
+                } while (i < limit);
+                // Check for a leading combining mark after other validity checks
+                // so that we don't report IDNA.Error.DISALLOWED for the U+FFFD from here.
+                int c2;
+                // "Unsafe" is ok because unpaired surrogates were mapped to U+FFFD.
+                c2 = Character.CodePointAt(labelString, labelStart);
+                if ((U_GET_GC_MASK(c2) & U_GC_M_MASK) != 0)
+                {
+#pragma warning disable 612, 618
+                    AddLabelError(ref info, IDNAErrors.LeadingCombiningMark);
+#pragma warning restore 612, 618
+                    labelString[labelStart] = '\ufffd';
+                    if (c2 > 0xffff)
+                    {
+                        if (MemoryHelper.AreSame<char>(labelString, dest.RawChars))
+                        {
+                            // Remove c's trail surrogate.
+                            dest.Remove(labelStart + 1, 1);
+                            --labelLength;
+                            --destLabelLength;
+                        }
+                        else
+                        {
+                            // Remove c's trail surrogate.
+                            fromPunycode.Remove(labelStart + 1, 1);
+                            --labelLength;
+                        }
+                    }
+                }
+#pragma warning disable 612, 618
+                if (!HasCertainLabelErrors(ref info, severeErrors))
+#pragma warning restore 612, 618
+                {
+                    // Do contextual checks only if we do not have U+FFFD from a severe error
+                    // because U+FFFD can make these checks fail.
+                    if ((options & UTS46Options.CheckBiDi) != 0 &&
+#pragma warning disable 612, 618
+                        (!IsBiDi(ref info) || IsOkBiDi(ref info)))
+#pragma warning restore 612, 618
+                    {
+                        CheckLabelBiDi(labelString.Slice(labelStart, labelLength), ref info);
+                    }
+                    if ((options & UTS46Options.CheckContextJ) != 0 && (oredChars & 0x200c) == 0x200c &&
+                        !IsLabelOkContextJ(labelString.Slice(labelStart, labelLength))
+                    )
+                    {
+#pragma warning disable 612, 618
+                        AddLabelError(ref info, IDNAErrors.ContextJ);
+#pragma warning restore 612, 618
+                    }
+                    if ((options & UTS46Options.CheckContextO) != 0 && oredChars >= 0xb7)
+                    {
+                        CheckLabelContextO(labelString.Slice(labelStart, labelLength), ref info);
+                    }
+                    if (toASCII)
+                    {
+                        if (wasPunycode)
+                        {
+                            // Leave a Punycode label unchanged if it has no severe errors.
+                            if (destLabelLength > 63)
+                            {
+#pragma warning disable 612, 618
+                                AddLabelError(ref info, IDNAErrors.LabelTooLong);
+#pragma warning restore 612, 618
+                            }
+                            return destLabelLength;
+                        }
+                        else if (oredChars >= 0x80)
+                        {
+                            // Contains non-ASCII characters.
+                            scoped ValueStringBuilder punycode = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                            try
+                            {
+                                if (!Punycode.TryEncode(labelString.Slice(labelStart, labelLength), ref punycode, null, out StringPrepErrorType errorType)) // ICU4N: (labelStart + labelLength) - labelStart == labelLength
+                                    throw new ICUException(new StringPrepFormatException(errorType.GetErrorMessage(), errorType)); // unexpected
+                                punycode.Insert(0, "xn--");
+                                if (punycode.Length > 63)
+                                {
+#pragma warning disable 612, 618
+                                    AddLabelError(ref info, IDNAErrors.LabelTooLong);
+#pragma warning restore 612, 618
+                                }
+                                return ReplaceLabel(ref dest, destLabelStart, destLabelLength,
+                                                    punycode.AsSpan(), punycode.Length);
+                            }
+                            finally
+                            {
+                                punycode.Dispose();
+                            }
+                        }
+                        else
+                        {
+                            // all-ASCII label
+                            if (labelLength > 63)
+                            {
+#pragma warning disable 612, 618
+                                AddLabelError(ref info, IDNAErrors.LabelTooLong);
+#pragma warning restore 612, 618
+                            }
+                        }
                     }
                 }
                 else
                 {
-                    oredChars |= c;
-                    if (disallowNonLDHDot && IsNonASCIIDisallowedSTD3Valid(c))
-                    {
-#pragma warning disable 612, 618
-                        AddLabelError(ref info, IDNAErrors.Disallowed);
-#pragma warning restore 612, 618
-                        labelString[i] = '\ufffd';
-                    }
-                    else if (c == 0xfffd)
-                    {
-#pragma warning disable 612, 618
-                        AddLabelError(ref info, IDNAErrors.Disallowed);
-#pragma warning restore 612, 618
-                    }
-                }
-                ++i;
-            } while (i < limit);
-            // Check for a leading combining mark after other validity checks
-            // so that we don't report IDNA.Error.DISALLOWED for the U+FFFD from here.
-            int c2;
-            // "Unsafe" is ok because unpaired surrogates were mapped to U+FFFD.
-            c2 = Character.CodePointAt(labelString, labelStart);
-            if ((U_GET_GC_MASK(c2) & U_GC_M_MASK) != 0)
-            {
-#pragma warning disable 612, 618
-                AddLabelError(ref info, IDNAErrors.LeadingCombiningMark);
-#pragma warning restore 612, 618
-                labelString[labelStart] = '\ufffd';
-                if (c2 > 0xffff)
-                {
-                    if (MemoryHelper.AreSame<char>(labelString, dest.RawChars))
-                    {
-                        // Remove c's trail surrogate.
-                        dest.Remove(labelStart + 1, 1);
-                        --labelLength;
-                        --destLabelLength;
-                    }
-                    else
-                    {
-                        // Remove c's trail surrogate.
-                        fromPunycode.Remove(labelStart + 1, 1);
-                        --labelLength;
-                    }
-                }
-            }
-#pragma warning disable 612, 618
-            if (!HasCertainLabelErrors(ref info, severeErrors))
-#pragma warning restore 612, 618
-            {
-                // Do contextual checks only if we do not have U+FFFD from a severe error
-                // because U+FFFD can make these checks fail.
-                if ((options & UTS46Options.CheckBiDi) != 0 &&
-#pragma warning disable 612, 618
-                    (!IsBiDi(ref info) || IsOkBiDi(ref info)))
-#pragma warning restore 612, 618
-                {
-                    CheckLabelBiDi(labelString.Slice(labelStart, labelLength), ref info);
-                }
-                if ((options & UTS46Options.CheckContextJ) != 0 && (oredChars & 0x200c) == 0x200c &&
-                    !IsLabelOkContextJ(labelString.Slice(labelStart, labelLength))
-                )
-                {
-#pragma warning disable 612, 618
-                    AddLabelError(ref info, IDNAErrors.ContextJ);
-#pragma warning restore 612, 618
-                }
-                if ((options & UTS46Options.CheckContextO) != 0 && oredChars >= 0xb7)
-                {
-                    CheckLabelContextO(labelString.Slice(labelStart, labelLength), ref info);
-                }
-                if (toASCII)
-                {
+                    // If a Punycode label has severe errors,
+                    // then leave it but make sure it does not look valid.
                     if (wasPunycode)
                     {
-                        // Leave a Punycode label unchanged if it has no severe errors.
-                        if (destLabelLength > 63)
-                        {
 #pragma warning disable 612, 618
-                            AddLabelError(ref info, IDNAErrors.LabelTooLong);
+                        AddLabelError(ref info, IDNAErrors.InvalidAceLabel);
 #pragma warning restore 612, 618
-                        }
-                        return destLabelLength;
-                    }
-                    else if (oredChars >= 0x80)
-                    {
-                        // Contains non-ASCII characters.
-                        ValueStringBuilder punycode = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-                        if (!Punycode.TryEncode(labelString.Slice(labelStart, labelLength), ref punycode, null, out StringPrepErrorType errorType)) // ICU4N: (labelStart + labelLength) - labelStart == labelLength
-                            throw new ICUException(new StringPrepFormatException(errorType.GetErrorMessage(), errorType)); // unexpected
-                        punycode.Insert(0, "xn--");
-                        if (punycode.Length > 63)
-                        {
-#pragma warning disable 612, 618
-                            AddLabelError(ref info, IDNAErrors.LabelTooLong);
-#pragma warning restore 612, 618
-                        }
-                        return ReplaceLabel(ref dest, destLabelStart, destLabelLength,
-                                            punycode.AsSpan(), punycode.Length);
-                    }
-                    else
-                    {
-                        // all-ASCII label
-                        if (labelLength > 63)
-                        {
-#pragma warning disable 612, 618
-                            AddLabelError(ref info, IDNAErrors.LabelTooLong);
-#pragma warning restore 612, 618
-                        }
+                        return MarkBadACELabel(ref dest, destLabelStart, destLabelLength, toASCII, ref info);
                     }
                 }
+                return ReplaceLabel(ref dest, destLabelStart, destLabelLength, labelString, labelLength);
             }
-            else
+            finally
             {
-                // If a Punycode label has severe errors,
-                // then leave it but make sure it does not look valid.
-                if (wasPunycode)
-                {
-#pragma warning disable 612, 618
-                    AddLabelError(ref info, IDNAErrors.InvalidAceLabel);
-#pragma warning restore 612, 618
-                    return MarkBadACELabel(ref dest, destLabelStart, destLabelLength, toASCII, ref info);
-                }
+                fromPunycode.Dispose();
             }
-            return ReplaceLabel(ref dest, destLabelStart, destLabelLength, labelString, labelLength);
         }
 
         private int MarkBadACELabel(ref ValueStringBuilder dest,

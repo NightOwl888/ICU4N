@@ -373,9 +373,16 @@ namespace ICU4N.Dev.Test.Lang
         {
             //String result = toTitle.Apply(locale, null, input, new StringBuilder(), null).ToString();
             var sb = new ValueStringBuilder(stackalloc char[32]);
-            toTitle.Apply(locale, null, input.AsMemory(), ref sb, null);
-            string result = sb.ToString();
-            assertEquals("toTitle(" + input + ')', output, result);
+            try
+            {
+                toTitle.Apply(locale, null, input.AsMemory(), ref sb, null);
+                string result = sb.ToString();
+                assertEquals("toTitle(" + input + ')', output, result);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
         }
 
         [Test]

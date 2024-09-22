@@ -3170,9 +3170,16 @@ namespace ICU4N
         {
             // TODO: Remove this function. Inline it where it is called in CLDR.
             var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-            TO_TITLE_WHOLE_STRING_NO_LOWERCASE.Apply(
-                locale.ToCultureInfo(), null, str.AsMemory(), ref sb, null);
-            return sb.ToString();
+            try
+            {
+                TO_TITLE_WHOLE_STRING_NO_LOWERCASE.Apply(
+                    locale.ToCultureInfo(), null, str.AsMemory(), ref sb, null);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
         }
 
         private static readonly TitleCaseMap TO_TITLE_WHOLE_STRING_NO_LOWERCASE =

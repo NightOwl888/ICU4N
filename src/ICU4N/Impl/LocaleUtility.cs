@@ -265,7 +265,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
         private static string? FallbackAsString(string name, char separator = '_')
         {
             // ICU4N: Using LocaleIDParser for more accurate results
-            var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], name);
+            using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], name);
             int bufferLength = name.Length + 5;
             Span<char> result = bufferLength <= CharStackBufferSize ? stackalloc char[bufferLength] : new char[bufferLength];
             int totalLength = 0, lastLength = 0;

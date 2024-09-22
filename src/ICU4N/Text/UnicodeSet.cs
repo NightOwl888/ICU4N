@@ -4966,39 +4966,45 @@ namespace ICU4N.Text
                 int n = RangeCount;
                 int result;
                 ValueStringBuilder full = new ValueStringBuilder(stackalloc char[8]);
-
-                for (int i = 0; i < n; ++i)
+                try
                 {
-                    int start = GetRangeStart(i);
-                    int end = GetRangeEnd(i);
-
-                    if ((attribute & Case) != 0)
+                    for (int i = 0; i < n; ++i)
                     {
-                        // full case closure
-                        for (int cp = start; cp <= end; ++cp)
+                        int start = GetRangeStart(i);
+                        int end = GetRangeEnd(i);
+
+                        if ((attribute & Case) != 0)
                         {
-                            csp.AddCaseClosure(cp, foldSet);
+                            // full case closure
+                            for (int cp = start; cp <= end; ++cp)
+                            {
+                                csp.AddCaseClosure(cp, foldSet);
+                            }
+                        }
+                        else
+                        {
+                            // add case mappings
+                            // (does not add long s for regular s, or Kelvin for k, for example)
+                            for (int cp = start; cp <= end; ++cp)
+                            {
+                                result = csp.ToFullLower(cp, null, IntPtr.Zero, ref full, CaseLocale.Root);
+                                AddCaseMapping(foldSet, result, ref full);
+
+                                result = csp.ToFullTitle(cp, null, IntPtr.Zero, ref full, CaseLocale.Root);
+                                AddCaseMapping(foldSet, result, ref full);
+
+                                result = csp.ToFullUpper(cp, null, IntPtr.Zero, ref full, CaseLocale.Root);
+                                AddCaseMapping(foldSet, result, ref full);
+
+                                result = csp.ToFullFolding(cp, ref full, 0);
+                                AddCaseMapping(foldSet, result, ref full);
+                            }
                         }
                     }
-                    else
-                    {
-                        // add case mappings
-                        // (does not add long s for regular s, or Kelvin for k, for example)
-                        for (int cp = start; cp <= end; ++cp)
-                        {
-                            result = csp.ToFullLower(cp, null, IntPtr.Zero, ref full, CaseLocale.Root);
-                            AddCaseMapping(foldSet, result, ref full);
-
-                            result = csp.ToFullTitle(cp, null, IntPtr.Zero, ref full, CaseLocale.Root);
-                            AddCaseMapping(foldSet, result, ref full);
-
-                            result = csp.ToFullUpper(cp, null, IntPtr.Zero, ref full, CaseLocale.Root);
-                            AddCaseMapping(foldSet, result, ref full);
-
-                            result = csp.ToFullFolding(cp, ref full, 0);
-                            AddCaseMapping(foldSet, result, ref full);
-                        }
-                    }
+                }
+                finally
+                {
+                    full.Dispose();
                 }
                 if (strings.Count > 0)
                 {

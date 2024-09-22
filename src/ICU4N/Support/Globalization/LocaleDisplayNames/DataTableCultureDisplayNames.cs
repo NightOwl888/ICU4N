@@ -342,77 +342,84 @@ namespace ICU4N.Globalization
             }
 
             ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-            if (hasScript)
+            try
             {
-                // first element, don't need appendWithSep
-                string result = GetScriptDisplayNameInContext(script, true);
-                if (result == null) { return null; }
-                buf.Append(result
-                        .Replace(formatOpenParen, formatReplaceOpenParen)
-                        .Replace(formatCloseParen, formatReplaceCloseParen));
-            }
-            if (hasCountry)
-            {
-                string result = GetRegionDisplayName(country, true);
-                if (result == null) { return null; }
-                AppendWithSep(result
-                        .Replace(formatOpenParen, formatReplaceOpenParen)
-                        .Replace(formatCloseParen, formatReplaceCloseParen), ref buf);
-            }
-            if (hasVariant)
-            {
-                string result = GetVariantDisplayName(variant, true);
-                if (result == null) { return null; }
-                AppendWithSep(result
-                        .Replace(formatOpenParen, formatReplaceOpenParen)
-                        .Replace(formatCloseParen, formatReplaceCloseParen), ref buf);
-            }
-
-            using (var pairs = locale.Keywords.GetEnumerator())
-            {
-                if (pairs != null)
+                if (hasScript)
                 {
-                    while (pairs.MoveNext())
+                    // first element, don't need appendWithSep
+                    string result = GetScriptDisplayNameInContext(script, true);
+                    if (result == null) { return null; }
+                    buf.Append(result
+                            .Replace(formatOpenParen, formatReplaceOpenParen)
+                            .Replace(formatCloseParen, formatReplaceCloseParen));
+                }
+                if (hasCountry)
+                {
+                    string result = GetRegionDisplayName(country, true);
+                    if (result == null) { return null; }
+                    AppendWithSep(result
+                            .Replace(formatOpenParen, formatReplaceOpenParen)
+                            .Replace(formatCloseParen, formatReplaceCloseParen), ref buf);
+                }
+                if (hasVariant)
+                {
+                    string result = GetVariantDisplayName(variant, true);
+                    if (result == null) { return null; }
+                    AppendWithSep(result
+                            .Replace(formatOpenParen, formatReplaceOpenParen)
+                            .Replace(formatCloseParen, formatReplaceCloseParen), ref buf);
+                }
+
+                using (var pairs = locale.Keywords.GetEnumerator())
+                {
+                    if (pairs != null)
                     {
-                        string key = pairs.Current.Key;
-                        string value = pairs.Current.Value; // locale.GetKeywordValue(key);
-                        string keyDisplayName = GetKeyDisplayName(key, true);
-                        if (keyDisplayName == null) { return null; }
-                        keyDisplayName = keyDisplayName
-                                .Replace(formatOpenParen, formatReplaceOpenParen)
-                                .Replace(formatCloseParen, formatReplaceCloseParen);
-                        string valueDisplayName = GetKeyValueDisplayName(key, value, true);
-                        if (valueDisplayName == null) { return null; }
-                        valueDisplayName = valueDisplayName
-                                .Replace(formatOpenParen, formatReplaceOpenParen)
-                                .Replace(formatCloseParen, formatReplaceCloseParen);
-                        if (!valueDisplayName.Equals(value))
+                        while (pairs.MoveNext())
                         {
-                            AppendWithSep(valueDisplayName, ref buf);
-                        }
-                        else if (!key.Equals(keyDisplayName))
-                        {
-                            string keyValue = SimpleFormatterImpl.FormatCompiledPattern(
-                                keyTypeFormat.AsSpan(), keyDisplayName, valueDisplayName);
-                            AppendWithSep(keyValue, ref buf);
-                        }
-                        else
-                        {
-                            AppendWithSep(keyDisplayName, ref buf);
-                            buf.Append('=');
-                            buf.Append(valueDisplayName);
+                            string key = pairs.Current.Key;
+                            string value = pairs.Current.Value; // locale.GetKeywordValue(key);
+                            string keyDisplayName = GetKeyDisplayName(key, true);
+                            if (keyDisplayName == null) { return null; }
+                            keyDisplayName = keyDisplayName
+                                    .Replace(formatOpenParen, formatReplaceOpenParen)
+                                    .Replace(formatCloseParen, formatReplaceCloseParen);
+                            string valueDisplayName = GetKeyValueDisplayName(key, value, true);
+                            if (valueDisplayName == null) { return null; }
+                            valueDisplayName = valueDisplayName
+                                    .Replace(formatOpenParen, formatReplaceOpenParen)
+                                    .Replace(formatCloseParen, formatReplaceCloseParen);
+                            if (!valueDisplayName.Equals(value))
+                            {
+                                AppendWithSep(valueDisplayName, ref buf);
+                            }
+                            else if (!key.Equals(keyDisplayName))
+                            {
+                                string keyValue = SimpleFormatterImpl.FormatCompiledPattern(
+                                    keyTypeFormat.AsSpan(), keyDisplayName, valueDisplayName);
+                                AppendWithSep(keyValue, ref buf);
+                            }
+                            else
+                            {
+                                AppendWithSep(keyDisplayName, ref buf);
+                                buf.Append('=');
+                                buf.Append(valueDisplayName);
+                            }
                         }
                     }
                 }
+
+                // ICU4N: Eliminated resultRemainder allocation by passing
+                // buf directly to FormatCompiledPattern
+
+                if (buf.Length > 0)
+                {
+                    resultName = SimpleFormatterImpl.FormatCompiledPattern(
+                        format.AsSpan(), resultName.AsSpan(), buf.AsSpan());
+                }
             }
-
-            // ICU4N: Eliminated resultRemainder allocation by passing
-            // buf directly to FormatCompiledPattern
-
-            if (buf.Length > 0)
+            finally
             {
-                resultName = SimpleFormatterImpl.FormatCompiledPattern(
-                    format.AsSpan(), resultName.AsSpan(), buf.AsSpan());
+                buf.Dispose();
             }
 
             return AdjustForUsageAndContext(CapitalizationContextUsage.Language, resultName);

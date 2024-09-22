@@ -543,13 +543,14 @@ namespace ICU4N.Impl
                 ValueStringBuilder replacementChars = length <= CharStackBufferSize
                     ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
                     : new ValueStringBuilder(length);
+                scoped ValueStringBuilder result = default;
                 try
                 {
                     Edits edits = new Edits();
                     ToLower(caseLocale, options | OmitUnchangedText, src, ref replacementChars, edits);
 
                     int newLength = length + edits.LengthDelta;
-                    ValueStringBuilder result = newLength <= CharStackBufferSize
+                    result = newLength <= CharStackBufferSize
                         ? new ValueStringBuilder(stackalloc char[newLength])
                         : new ValueStringBuilder(newLength);
                     ApplyEdits(src, replacementChars.AsSpan(), edits, ref result);
@@ -558,6 +559,7 @@ namespace ICU4N.Impl
                 finally
                 {
                     replacementChars.Dispose();
+                    result.Dispose();
                 }
             }
             else
@@ -565,8 +567,15 @@ namespace ICU4N.Impl
                 ValueStringBuilder result = length <= CharStackBufferSize
                     ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
                     : new ValueStringBuilder(length);
-                ToLower(caseLocale, options, src, ref result, null);
-                return result.ToString();
+                try
+                {
+                    ToLower(caseLocale, options, src, ref result, edits: null);
+                    return result.ToString();
+                }
+                finally
+                {
+                    result.Dispose();
+                }
             }
         }
 
@@ -701,13 +710,14 @@ namespace ICU4N.Impl
                 ValueStringBuilder replacementChars = length <= CharStackBufferSize
                     ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
                     : new ValueStringBuilder(length);
+                scoped ValueStringBuilder result = default;
                 try
                 {
                     Edits edits = new Edits();
                     ToUpper(caseLocale, options | OmitUnchangedText, src, ref replacementChars, edits);
 
                     int newLength = length + edits.LengthDelta;
-                    ValueStringBuilder result = newLength <= CharStackBufferSize
+                    result = newLength <= CharStackBufferSize
                         ? new ValueStringBuilder(stackalloc char[newLength])
                         : new ValueStringBuilder(newLength);
                     ApplyEdits(src, replacementChars.AsSpan(), edits, ref result);
@@ -716,6 +726,7 @@ namespace ICU4N.Impl
                 finally
                 {
                     replacementChars.Dispose();
+                    result.Dispose();
                 }
             }
             else
@@ -723,8 +734,15 @@ namespace ICU4N.Impl
                 ValueStringBuilder result = length <= CharStackBufferSize
                     ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
                     : new ValueStringBuilder(length);
-                ToUpper(caseLocale, options, src, ref result, null);
-                return result.ToString();
+                try
+                {
+                    ToUpper(caseLocale, options, src, ref result, edits: null);
+                    return result.ToString();
+                }
+                finally
+                {
+                    result.Dispose();
+                }
             }
         }
 
@@ -764,7 +782,7 @@ namespace ICU4N.Impl
                 else
                 {
 
-                    ToUpper(caseLocale, options, source, ref result, null);
+                    ToUpper(caseLocale, options, source, ref result, edits: null);
                     return result.FitsInitialBuffer(out charsLength);
                 }
             }
@@ -860,13 +878,14 @@ namespace ICU4N.Impl
                 ValueStringBuilder replacementChars = length <= CharStackBufferSize
                     ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
                     : new ValueStringBuilder(length);
+                scoped ValueStringBuilder result = default;
                 try
                 {
                     Edits edits = new Edits();
                     ToTitle(caseLocale, options | OmitUnchangedText, iter, src, ref replacementChars, edits);
 
                     int newLength = length + edits.LengthDelta;
-                    ValueStringBuilder result = newLength <= CharStackBufferSize
+                    result = newLength <= CharStackBufferSize
                         ? new ValueStringBuilder(stackalloc char[newLength])
                         : new ValueStringBuilder(newLength);
                     ApplyEdits(src, replacementChars.AsSpan(), edits, ref result);
@@ -875,6 +894,7 @@ namespace ICU4N.Impl
                 finally
                 {
                     replacementChars.Dispose();
+                    result.Dispose();
                 }
             }
             else
@@ -882,8 +902,15 @@ namespace ICU4N.Impl
                 ValueStringBuilder result = length <= CharStackBufferSize
                     ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
                     : new ValueStringBuilder(length);
-                ToTitle(caseLocale, options, iter, src, ref result, null);
-                return result.ToString();
+                try
+                {
+                    ToTitle(caseLocale, options, iter, src, ref result, edits: null);
+                    return result.ToString();
+                }
+                finally
+                {
+                    result.Dispose();
+                }
             }
         }
 
@@ -1021,13 +1048,14 @@ namespace ICU4N.Impl
                 ValueStringBuilder replacementChars = length <= CharStackBufferSize
                     ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
                     : new ValueStringBuilder(length);
+                scoped ValueStringBuilder result = default;
                 try
                 {
                     Edits edits = new Edits();
                     Fold(options | OmitUnchangedText, src, ref replacementChars, edits);
 
                     int newLength = length + edits.LengthDelta;
-                    ValueStringBuilder result = newLength <= CharStackBufferSize
+                    result = newLength <= CharStackBufferSize
                         ? new ValueStringBuilder(stackalloc char[newLength])
                         : new ValueStringBuilder(newLength);
                     ApplyEdits(src, replacementChars.AsSpan(), edits, ref result);
@@ -1036,6 +1064,7 @@ namespace ICU4N.Impl
                 finally
                 {
                     replacementChars.Dispose();
+                    result.Dispose();
                 }
             }
             else
@@ -1043,8 +1072,15 @@ namespace ICU4N.Impl
                 ValueStringBuilder result = length <= CharStackBufferSize
                     ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
                     : new ValueStringBuilder(length);
-                Fold(options, src, ref result, null);
-                return result.ToString();
+                try
+                {
+                    Fold(options, src, ref result, null);
+                    return result.ToString();
+                }
+                finally
+                {
+                    result.Dispose();
+                }
             }
         }
 

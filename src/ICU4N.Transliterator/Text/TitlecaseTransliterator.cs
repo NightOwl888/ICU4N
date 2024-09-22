@@ -108,6 +108,7 @@ namespace ICU4N.Text
                     // else case-ignorable: continue
                 }
 
+                ValueStringBuilder replacementChars = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
                 // Convert things after a cased character toLower; things
                 // after a uncased, non-case-ignorable character toTitle.  Case-ignorable
                 // characters are copied directly and do not change the mode.
@@ -118,8 +119,6 @@ namespace ICU4N.Text
                     csc.p = GCHandle.ToIntPtr(handle);
                     csc.start = offsets.ContextStart;
                     csc.limit = offsets.ContextLimit;
-
-                    ValueStringBuilder replacementChars = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
 
                     int textPos, delta = 0, result;
 
@@ -190,6 +189,7 @@ namespace ICU4N.Text
                 finally
                 {
                     handle.Free(); // Release the handle so the GC can collect the IReplaceable instance
+                    replacementChars.Dispose();
                 }
             }
         }
