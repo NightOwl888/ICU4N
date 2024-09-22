@@ -102,7 +102,7 @@
   -->
   
   <!-- ICU4N NOTE: To debug on Linux/macOS, the contents of the _artifacts/SatelliteAssemblies and the file _artifactsDirectory/fullLocaleNames.lst must be copied to the local _artifacts folder. These currently won't build on non-Windows platforms. -->
-  <Target Name="CreateIntermediateTargetsFile" BeforeTargets="DownloadICU4J" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)' And $([MSBuild]::IsOSPlatform('Windows')) ">
+  <Target Name="CreateIntermediateTargetsFile" BeforeTargets="DownloadICU4J" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)'">
 
     <PropertyGroup>
       <Major>$(PackageVersion.Split('.')[0])</Major>
@@ -119,7 +119,7 @@
     <None Include="$(SolutionDir)_artifacts/$(AssemblyName).targets" Pack="true" PackagePath="buildTransitive/$(AssemblyName).targets" />
   </ItemGroup>
 
-  <Target Name="DownloadICU4J" BeforeTargets="ExecICU4JResourceConverter" Returns="$(ICU4JJarFilePath)" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)' And $([MSBuild]::IsOSPlatform('Windows')) ">
+  <Target Name="DownloadICU4J" BeforeTargets="ExecICU4JResourceConverter" Returns="$(ICU4JJarFilePath)" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)'">
     
     <PropertyGroup>
       <Major>$(PackageVersion.Split('.')[0])</Major>
@@ -142,7 +142,7 @@
     <Error Condition=" '$(IsICU4JFileDownloaded)' != 'true' And !Exists('$(ICU4JJarFilePath)') " Text="The build cannot continue without $(ICU4JJarFilePath). Use Maven search (https://mvnrepository.com or https://search.maven.org/) to look for the file and download it manually to $(ICU4JJarFilePath). Alternatively, check the ICU Releases Page: https://github.com/unicode-org/icu/releases." />
   </Target>
     
-  <Target Name="ExecICU4JResourceConverter" AfterTargets="GenerateSatelliteAssemblies" BeforeTargets="GenerateOurSatelliteAssemblies" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)' And $([MSBuild]::IsOSPlatform('Windows')) ">
+  <Target Name="ExecICU4JResourceConverter" AfterTargets="GenerateSatelliteAssemblies" BeforeTargets="GenerateOurSatelliteAssemblies" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)'">
     
     <CheckWhetherResourcesRequireUpdate SourceFilePath="$(ICU4JJarFilePath)" DestinationPath="$(ICU4JResourcesDirectory)">
       <Output PropertyName="ResourcesRequireUpdate" TaskParameter="RequiresUpdate" />
@@ -156,7 +156,8 @@
     <RemoveDir Directories="$(ICU4JResourcesDirectory)" Condition=" '$(ResourcesRequireUpdate.ToLowerInvariant())' == 'true' " />
     
     <PropertyGroup>
-      <RunICU4JResourceConverterCommand>"$(ICU4JResourceConverterOutputDir)/ICU4JResourceConverter.exe"</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand Condition="$([MSBuild]::IsOSPlatform('Windows')) == 'true'">"$(ICU4JResourceConverterOutputDir)/ICU4JResourceConverter.exe"</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand Condition="$([MSBuild]::IsOSPlatform('Windows')) == 'false'">"$(ICU4JResourceConverterOutputDir)/ICU4JResourceConverter"</RunICU4JResourceConverterCommand>
       <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) "$(ICU4JJarFilePath)"</RunICU4JResourceConverterCommand>
       <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) -work "$(ICU4JWorkingDirectory)"</RunICU4JResourceConverterCommand>
       <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) -out "$(ICU4JResourcesDirectory)"</RunICU4JResourceConverterCommand>
@@ -165,7 +166,7 @@
     <Exec Command="$(RunICU4JResourceConverterCommand)" Condition=" '$(ResourcesRequireUpdate.ToLowerInvariant())' == 'true' " />
   </Target>
 
-  <Target Name="GenerateOurSatelliteAssemblies" AfterTargets="ExecICU4JResourceConverter" BeforeTargets="DeploySatelliteAssemblies" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)' And $([MSBuild]::IsOSPlatform('Windows')) ">
+  <Target Name="GenerateOurSatelliteAssemblies" AfterTargets="ExecICU4JResourceConverter" BeforeTargets="DeploySatelliteAssemblies" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)'">
 
     <PropertyGroup>
       <TemplateAssemblyFilePath>$(IntermediateOutputPath)$(TargetName)$(TargetExt)</TemplateAssemblyFilePath>
@@ -241,7 +242,7 @@
               Directory.CreateDirectory(directory);
           
               Log.LogMessage(MessageImportance.High, $"Generating Satellite Assembly for {Culture}");
-              var command = DotNetToolsDirectory + "al.exe";
+              var command = DotNetToolsDirectory + (Environment.OSVersion.Platform == PlatformID.Win32NT ? "al.exe" : "al");
               var sb = new StringBuilder();
               const string Space = " ";
               
