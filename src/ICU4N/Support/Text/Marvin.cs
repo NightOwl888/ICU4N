@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using ICU4N.Security.Cryptography;
 using J2N.Numerics;
 using System;
 using System.Diagnostics;
@@ -251,14 +252,13 @@ namespace ICU4N.Support.Text
             rp1 = p1;
         }
 
-        // ICU4N TODO: Use secure method to generate random seed...?
-        public static ulong DefaultSeed { get; } = (ulong)J2N.Time.NanoTime();
+        public static ulong DefaultSeed { get; } = (ulong)GenerateSeed();
 
-        //private static unsafe ulong GenerateSeed()
-        //{
-        //    ulong seed;
-        //    Interop.GetRandomBytes((byte*)&seed, sizeof(ulong));
-        //    return seed;
-        //}
+        private static unsafe ulong GenerateSeed()
+        {
+            ulong seed;
+            RandomHelpers.GetRandomBytes((byte*)&seed, sizeof(ulong));
+            return seed;
+        }
     }
 }
