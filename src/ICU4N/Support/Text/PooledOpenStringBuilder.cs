@@ -45,23 +45,6 @@ namespace ICU4N.Text
             this.arrayToReturnToPool = arrayToReturnToPool; // Null check in base class
         }
 
-        //private static char[] CreateAndPopulateBuffer(ReadOnlySpan<char> value)
-        //{
-        //    char[] buffer = arrayPool.Rent(RoundUpToPowerOf2(value.Length));
-        //    value.CopyTo(buffer);
-        //    return buffer;
-        //}
-
-        //private static char[] CreateAndPopulateBuffer(StringBuilder value)
-        //{
-        //    if (value is null)
-        //        throw new ArgumentNullException(nameof(value));
-
-        //    char[] buffer = arrayPool.Rent(RoundUpToPowerOf2(value.Length));
-        //    value.CopyTo(0, buffer, 0, value.Length);
-        //    return buffer;
-        //}
-
         protected override char[] ReplaceBuffer(ReadOnlySpan<char> value, int newCapacity)
         {
             // Make sure to let Rent throw an exception if the caller has a bug and the desired capacity is negative.

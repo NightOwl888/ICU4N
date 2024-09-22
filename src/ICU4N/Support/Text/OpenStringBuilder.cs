@@ -384,13 +384,6 @@ namespace ICU4N.Text
                 Math.Min((uint)_chars.Length * 2, ArrayMaxLength));
 
             _chars = ReplaceBuffer(_chars.AsSpan(0, _pos), RoundUpToPowerOf2(newCapacity));
-
-            //// Make sure to let Rent throw an exception if the caller has a bug and the desired capacity is negative.
-            //// This could also go negative if the actual required length wraps around.
-            //char[] temp = Allocate(RoundUpToPowerOf2(newCapacity));
-
-            //_chars.AsSpan(0, _pos).CopyTo(temp);
-            //_chars = temp;
         }
 
         protected virtual char[] ReplaceBuffer(ReadOnlySpan<char> value, int newCapacity)
