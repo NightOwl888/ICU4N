@@ -1562,7 +1562,7 @@ namespace ICU4N.Impl
         /// <param name="set">Set to check in.</param>
         /// <param name="ch">16 bit char to check.</param>
         /// <returns>true if codepoint is part of the set, false otherwise.</returns>
-        private static bool Contains(Span<int> set, char ch)
+        private static bool Contains(ReadOnlySpan<int> set, char ch)
         {
             return (set[ch.TripleShift(5)] & (1 << (ch & 0x1f))) != 0;
         }
@@ -1831,7 +1831,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="set">Set of 256 bit flags corresponding to a set of chars.</param>
         /// <param name="uset">USet to receive characters. Existing contents are deleted.</param>
-        private void Convert(int[] set, UnicodeSet uset)
+        private void Convert(ReadOnlySpan<int> set, UnicodeSet uset)
         {
             uset.Clear();
             if (!InitNameSetsLengths())
