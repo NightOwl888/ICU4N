@@ -866,11 +866,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 String filePath = "ICU4N.Dev.Test.Rbbi.break_rules." + fileName;
                 try
                 {
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-                    Assembly assembly = typeof(RBBIMonkeyImpl).GetTypeInfo().Assembly;
-#else
                     Assembly assembly = typeof(RBBIMonkeyImpl).Assembly;
-#endif
                     @is = assembly.GetManifestResourceStream(filePath);
                     if (@is == null)
                     {

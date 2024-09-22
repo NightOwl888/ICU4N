@@ -3992,12 +3992,7 @@ namespace ICU4N.Globalization
             TestFmwk.Logln("uloc_getCLDRVersion() returned: '" + cldrVersion + "'");
 
             // why isn't this public for tests somewhere?
-            Assembly testLoader =
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-                typeof(ICUResourceBundleTest).GetTypeInfo().Assembly;
-#else
-                typeof(ICUResourceBundleTest).Assembly;
-#endif
+            Assembly testLoader = typeof(ICUResourceBundleTest).Assembly;
             UResourceBundle bundle = UResourceBundle.GetBundleInstance("Dev/Data/TestData", UCultureInfo.InvariantCulture, testLoader);
 
             testExpect = VersionInfo.GetInstance(bundle.GetString("ExpectCLDRVersionAtLeast"));

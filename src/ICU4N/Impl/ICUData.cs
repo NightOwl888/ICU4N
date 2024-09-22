@@ -113,11 +113,7 @@ namespace ICU4N.Impl
 
         private static Stream GetStream(Type root, string resourceName, bool required)
         {
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-            Assembly assembly = root.GetTypeInfo().Assembly;
-#else
             Assembly assembly = root.Assembly;
-#endif
             return GetStream(assembly, resourceName, required);
         }
 
