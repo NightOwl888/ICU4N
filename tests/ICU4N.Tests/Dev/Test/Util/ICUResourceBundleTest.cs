@@ -15,12 +15,7 @@ namespace ICU4N.Dev.Test.Util
 {
     public sealed class ICUResourceBundleTest : TestFmwk
     {
-        private static readonly Assembly testLoader =
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-            typeof(ICUResourceBundleTest).GetTypeInfo().Assembly; //ICUResourceBundleTest.class.getClassLoader();
-#else
-            typeof(ICUResourceBundleTest).Assembly; //ICUResourceBundleTest.class.getClassLoader();
-#endif
+        private static readonly Assembly testLoader = typeof(ICUResourceBundleTest).Assembly; //ICUResourceBundleTest.class.getClassLoader();
 
         // ICU4N TODO: Finish implementation
         //        [Test]
@@ -905,11 +900,7 @@ namespace ICU4N.Dev.Test.Util
 
             Logln("Testing functional equivalents for calendar...");
 
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-            Assembly assembly = typeof(BreakIterator).GetTypeInfo().Assembly;
-#else
             Assembly assembly = typeof(BreakIterator).Assembly;
-#endif
             getFunctionalEquivalentTestCases(ICUData.IcuBaseName,
                                              //typeof(Calendar).GetTypeInfo().Assembly, // ICU4N TODO: If we ever port the Calendar type, we should reference it here
                                              assembly,

@@ -39,18 +39,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
 
             try
             {
-                CultureInfo culture = new CultureInfo(newName);
-
-#if FEATURE_CULTUREINFO_UNKNOWNLANGUAGE
-                // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
-                // to be created, but will be "unknown" languages. We need to manually
-                // ignore these.
-                if (culture.EnglishName.StartsWith("Unknown Language", StringComparison.Ordinal))
-                {
-                    return null;
-                }
-#endif
-                return culture;
+                return new CultureInfo(newName);
             }
             catch (CultureNotFoundException)
             {
@@ -175,15 +164,6 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
         //                return null;
         //            }
 
-        //#if FEATURE_CULTUREINFO_UNKNOWNLANGUAGE
-        //            // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
-        //            // to be created, but will be "unknown" languages. We need to manually
-        //            // ignore these.
-        //            if (loc.EnglishName.StartsWith("Unknown Language", StringComparison.Ordinal))
-        //            {
-        //                return CultureInfo.InvariantCulture;
-        //            }
-        //#endif
         //            // ICU4N: We use the original ICU fallback scheme rather than
         //            // simply using loc.Parent.
 
@@ -216,15 +196,6 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             if (CultureInfo.InvariantCulture.Equals(loc))
                 return null;
 
-#if FEATURE_CULTUREINFO_UNKNOWNLANGUAGE
-            // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
-            // to be created, but will be "unknown" languages. We need to manually
-            // ignore these.
-            if (loc.EnglishName.StartsWith("Unknown Language", StringComparison.Ordinal))
-            {
-                return null;
-            }
-#endif
             // ICU4N: We use the original ICU fallback scheme rather than
             // simply using loc.Parent.
             string? fallbackLocaleID = FallbackAsString(loc.Name, separator: '-');
@@ -246,16 +217,6 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
         {
             if (UCultureInfo.InvariantCulture.Equals(loc))
                 return null;
-
-#if FEATURE_CULTUREINFO_UNKNOWNLANGUAGE
-            // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
-            // to be created, but will be "unknown" languages. We need to manually
-            // ignore these.
-            if (loc.EnglishName.StartsWith("Unknown Language", StringComparison.Ordinal))
-            {
-                return null;
-            }
-#endif
 
             string? fallbackLocaleID = FallbackAsString(loc.Name);
             return string.IsNullOrEmpty(fallbackLocaleID) ? null : new UCultureInfo(fallbackLocaleID!);
@@ -340,16 +301,6 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
                 {
                     string newName = string.Join("-", segments.Take(i));
                     culture = new CultureInfo(newName);
-
-#if FEATURE_CULTUREINFO_UNKNOWNLANGUAGE
-                    // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
-                    // to be created, but will be "unknown" languages. We need to manually
-                    // ignore these.
-                    if (culture.EnglishName.StartsWith("Unknown Language", StringComparison.Ordinal))
-                    {
-                        continue;
-                    }
-#endif
                     break;
                 }
                 catch (CultureNotFoundException)

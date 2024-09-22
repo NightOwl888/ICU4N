@@ -2236,17 +2236,7 @@
 //                    //                    try
 //                    //                    {
 //                    //                        CultureInfo loc = aLocale.ToLocale();
-//                    //#if FEATURE_CULTUREINFO_UNKNOWNLANGUAGE
-//                    //                        // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
-//                    //                        // to be created, but will be "unknown" languages. We need to manually
-//                    //                        // ignore these.
-//                    //                        if (!loc.EnglishName.StartsWith("Unknown Language", StringComparison.Ordinal))
-//                    //                        {
-//                    //#endif
 //                    //                            parent = LocaleUtility.Fallback(loc);
-//                    //#if FEATURE_CULTUREINFO_UNKNOWNLANGUAGE
-//                    //                        }
-//                    //#endif
 //                    //                    }
 //                    //                    // ICU4N: In .NET Framework and .NET Standard 2.x+, unknown cultures throw a 
 //                    //                    // CultureNotFoundException.
@@ -4661,16 +4651,6 @@
 //                try
 //                {
 //                    CultureInfo culture = new CultureInfo(newName);
-
-//                    //#if FEATURE_CULTUREINFO_UNKNOWNLANGUAGE
-//                    //                    // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
-//                    //                    // to be created, but will be "unknown" languages. We need to manually
-//                    //                    // ignore these.
-//                    //                    if (culture.EnglishName.StartsWith("Unknown Language", StringComparison.Ordinal))
-//                    //                    {
-//                    //                        return null;
-//                    //                    }
-//                    //#endif
 //                    return culture;
 //                }
 //                catch (CultureNotFoundException)

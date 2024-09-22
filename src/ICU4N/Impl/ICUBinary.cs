@@ -346,11 +346,7 @@ namespace ICU4N.Impl
         {
             // ICU4N TODO: Fix path
             // Normally com.ibm.icu.impl.ICUBinary.dataPath.
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-            string dataPath = ICUConfig.Get(typeof(ICUBinary).GetTypeInfo().Name + "_DataPath");
-#else
             string dataPath = ICUConfig.Get(typeof(ICUBinary).Name + "_DataPath");
-#endif
             if (dataPath != null)
             {
                 AddDataFilesFromPath(dataPath, icuDataFiles);
@@ -588,11 +584,7 @@ namespace ICU4N.Impl
             }
             if (assembly == null)
             {
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-                assembly = typeof(ICUData).GetTypeInfo().Assembly;
-#else
                 assembly = typeof(ICUData).Assembly;
-#endif
             }
             if (resourceName == null)
             {

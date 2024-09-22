@@ -49,11 +49,7 @@ namespace ICU4N.Dev.Test.Rbbi
             Stream @is = null;
             try
             {
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-                Assembly assembly = typeof(RBBITestExtended).GetTypeInfo().Assembly;
-#else
                 Assembly assembly = typeof(RBBITestExtended).Assembly;
-#endif
                 @is = assembly.GetManifestResourceStream("ICU4N.Dev.Test.Rbbi.rbbitst.txt");
                 if (@is == null)
                 {
