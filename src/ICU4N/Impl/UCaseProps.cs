@@ -1599,8 +1599,6 @@ namespace ICU4N.Impl
             return c;
         }
 
-        // ICU4N specific - ToFullFolding(int c, IAppendable output, int options) moved to UCaseProps.generated.tt
-
         /* case folding ------------------------------------------------------------- */
 
         public int ToFullFolding(int c, IAppendable output, int options) // ICU4N TODO: API: Factor this out and use ValueStringBuilder to return a Span<T>

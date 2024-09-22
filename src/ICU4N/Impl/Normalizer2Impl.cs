@@ -67,8 +67,6 @@ namespace ICU4N.Impl
                 (c <= JamoLEnd || (JamoVBase <= c && c <= JamoVEnd) || JamoTBase < c);
         }
 
-        // ICU4N specific - Decompose(int c, IAppendable buffer) moved to Normalizer2Impl.generated.tt
-        // and renamed to AppendHangulDecomposition() (extension method)
         #region AppendHangulDecomposition(int, IAppendable)
         /// <summary>
         /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer
@@ -203,8 +201,6 @@ namespace ICU4N.Impl
             return buffer.Slice(0, charsLength);
         }
 
-        // ICU4N specific - GetRawDecomposition(int c, IAppendable buffer) moved to Normalizer2Impl.generated.tt
-        // and renamed to AppendHangulRawDecomposition() (extension method)
         #region AppendHangulRawDecomposition(int, IAppendable)
         /// <summary>
         /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer.

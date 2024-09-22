@@ -732,8 +732,6 @@ namespace ICU4N.Impl
             }
         }
 
-        // ICU4N specific - Hex(ICharSequence s) moved to Utility.generated.tt
-
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -763,10 +761,6 @@ namespace ICU4N.Impl
                 sb.Dispose();
             }
         }
-
-        // ICU4N specific - Hex(ICharSequence s, int width, ICharSequence separator, bool useCodePoints, 
-        //      StringBuilder result) moved to Utility.generated.tt
-
 
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
@@ -839,8 +833,6 @@ namespace ICU4N.Impl
                 }
             }
         }
-
-        // ICU4N specific - Hex(ICharSequence s, int width, ICharSequence separator) moved to Utility.generated.tt
 
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
@@ -1344,9 +1336,6 @@ namespace ICU4N.Impl
             //0x20 = 32 and 0x7E = 126
             return !(c >= 0x20 && c <= 0x7E);
         }
-
-        // ICU4N specific - EscapeUnprintable(IAppendable result, int c)
-        //    moved to Utility.generated.tt
 
         /// <summary>
         /// Escape unprintable characters using \uxxxx notation

@@ -84,8 +84,6 @@ namespace ICU4N.Text
             return new SimpleFilteredSentenceBreakIteratorBuilder();
         }
 
-        // ICU4N specific - moved SuppressBreakAfter and UnsuppressBreakAfter methods to FilteredBreakIteratorBuilder.generated.tt
-
         /// <summary>
         /// Suppress a certain string from being the end of a segment.
         /// For example, suppressing "Mr.", then segments ending in "Mr." will not be returned
