@@ -1,11 +1,8 @@
 ﻿using ICU4N.Impl;
-using ICU4N.Support.Collections;
 using ICU4N.Text;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Text;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Dev.Test.Translit
