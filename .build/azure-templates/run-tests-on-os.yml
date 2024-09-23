@@ -159,6 +159,22 @@ steps:
         foreach ($testBinary in $testBinaries) {
             $testName = [System.IO.Path]::GetFileNameWithoutExtension($testBinary.FullName)
     
+            $testResultDirectory = "$testResultsArtifactDirectory/$testOSName/$framework/$testPlatform/$testName"
+            if (!(Test-Path "$testResultDirectory")) {
+                New-Item "$testResultDirectory" -ItemType Directory -Force
+            }
+
+            # Test binaries are copied to a temp directory so locking behavior of other processes doesn't interfere with this test run.
+            # We do this serially before entering the parallel job.
+            $tempTestDirectory = "$tempDirectory/$framework/$testName"
+            if (!(Test-Path "$tempTestDirectory")) {
+                New-Item "$tempTestDirectory" -ItemType Directory -Force
+            }
+            $testTarget = "$tempTestDirectory/$($testBinary.Name)"
+            $sourceDirectory = $testBinary.Directory.FullName
+
+            Copy-Item -Path "$sourceDirectory/*" -Destination "$tempTestDirectory" -Recurse -Force
+
             if ($maximumParalellJobs -gt 1) {
                 # Pause if we have queued too many parallel jobs
                 $running = @(Get-Job | Where-Object { $_.State -eq 'Running' })
@@ -169,21 +185,6 @@ steps:
                     $running | Wait-Job -Any | Out-Null
                 }
             }
-            
-            $testResultDirectory = "$testResultsArtifactDirectory/$testOSName/$framework/$testPlatform/$testName"
-            if (!(Test-Path "$testResultDirectory")) {
-                New-Item "$testResultDirectory" -ItemType Directory -Force
-            }
-
-            # Test binaries are copied to a temp directory so locking behavior of other processes doesn't interfere with this test run
-            $tempTestDirectory = "$tempDirectory/$framework/$testName"
-            if (!(Test-Path "$tempTestDirectory")) {
-                New-Item "$tempTestDirectory" -ItemType Directory -Force
-            }
-            $testTarget = "$tempTestDirectory/$($testBinary.Name)"
-            $sourceDirectory = $testBinary.Directory.FullName
-
-            Copy-Item -Path "$sourceDirectory/*" -Destination "$tempTestDirectory" -Recurse -Force
 
             $testExpression = "dotnet test ""$testTarget"" --framework ""$framework"" --blame --no-build --no-restore" + `
                 " --logger:""console;verbosity=normal"" --logger:""trx;LogFileName=$testResultsFileName""" + `
