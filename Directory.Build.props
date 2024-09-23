@@ -60,6 +60,7 @@
     <TargetFrameworkSDKToolsDirectory Condition="Exists('$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.2 Tools\')">$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.2 Tools\</TargetFrameworkSDKToolsDirectory>
     <TargetFrameworkSDKToolsDirectory Condition="Exists('$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.7.2 Tools\')">$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.7.2 Tools\</TargetFrameworkSDKToolsDirectory>
     <TargetFrameworkSDKToolsDirectory Condition="Exists('$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools\')">$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools\</TargetFrameworkSDKToolsDirectory>
+    <TargetFrameworkSDKToolsDirectory Condition="$([MSBuild]::IsOSPlatform('Windows')) == 'false' And Exists('/Library/Frameworks/Mono.framework/Versions/Current/Commands')">/Library/Frameworks/Mono.framework/Versions/Current/Commands/</TargetFrameworkSDKToolsDirectory>
   </PropertyGroup>
 
   <PropertyGroup Label="Satellite Assemblies">

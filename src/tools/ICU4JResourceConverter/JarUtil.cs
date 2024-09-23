@@ -17,7 +17,7 @@ namespace JavaResourceConverter
         /// <summary>
         /// The location within the .jar file where the data can be found.
         /// </summary>
-        public const string DataPath = @"com\ibm\icu\impl\data";
+        public static readonly string DataPath = string.Join(Path.DirectorySeparatorChar, "com", "ibm", "icu", "impl", "data");
         public const string DataPrefix = "icudt";
         public const string DataSuffix = "b";
 
