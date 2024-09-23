@@ -335,6 +335,7 @@ stages:
         testTargetFrameworks: 'net47'
         vsTestPlatform: 'x64'
         testResultsArtifactName: '$(TestResultsArtifactName)'
+        maximumParallelJobs: 1 # Don't run tests in parallel because of file locking issues with satellite assemblies
         maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         dotNetSdkVersion: '$(DotNetSDKVersion)'
 
@@ -350,6 +351,7 @@ stages:
         testTargetFrameworks: 'net47'
         vsTestPlatform: 'x86'
         testResultsArtifactName: '$(TestResultsArtifactName)'
+        maximumParallelJobs: 1 # Don't run tests in parallel because of file locking issues with satellite assemblies
         maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         dotNetSdkVersion: '$(DotNetSDKVersion)'
 
