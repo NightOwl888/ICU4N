@@ -94,7 +94,7 @@ namespace ICU4N.Numerics.BigMath
                 else
                 {
                     long product = (((normA[j] & 0xffffffffL) << 32) + (normA[j - 1] & 0xffffffffL));
-                    long res = Division.DivideLongByInt(product, firstDivisorDigit);
+                    long res = Division.DivideInt64ByInt32(product, firstDivisorDigit);
                     guessDigit = (int)res; // the quotient of divideLongByInt
                     int rem = (int)(res >> 32); // the remainder of
                                                 // divideLongByInt
@@ -189,7 +189,7 @@ namespace ICU4N.Numerics.BigMath
         * @param divisor the divisor
         * @return remainder
         */
-        public static int DivideArrayByInt(int[] dest, int[] src, int srcLength, int divisor)
+        public static int DivideArrayByInt32(int[] dest, int[] src, int srcLength, int divisor)
         {
             long rem = 0;
             long bLong = divisor & 0xffffffffL;
@@ -249,14 +249,14 @@ namespace ICU4N.Numerics.BigMath
         * @param divisor the divisor
         * @return remainder
         */
-        public static int RemainderArrayByInt(int[] src, int srcLength, int divisor)
+        public static int RemainderArrayByInt32(int[] src, int srcLength, int divisor)
         {
             long result = 0;
 
             for (int i = srcLength - 1; i >= 0; i--)
             {
                 long temp = (result << 32) + (src[i] & 0xffffffffL);
-                long res = DivideLongByInt(temp, divisor);
+                long res = DivideInt64ByInt32(temp, divisor);
                 result = (int)(res >> 32);
             }
             return (int)result;
@@ -272,7 +272,7 @@ namespace ICU4N.Numerics.BigMath
         */
         public static int Remainder(BigInteger dividend, int divisor)
         {
-            return RemainderArrayByInt(dividend.Digits, dividend.numberLength, divisor);
+            return RemainderArrayByInt32(dividend.Digits, dividend.numberLength, divisor);
         }
 
         /**
@@ -284,7 +284,7 @@ namespace ICU4N.Numerics.BigMath
         * @return the long value containing the unsigned integer remainder in the
         *         left half and the unsigned integer quotient in the right half
         */
-        private static long DivideLongByInt(long a, int b)
+        private static long DivideInt64ByInt32(long a, int b)
         {
             long quot;
             long rem;
@@ -336,7 +336,7 @@ namespace ICU4N.Numerics.BigMath
         * 
         * @return an array of the form {@code [quotient, remainder]}.
         */
-        public static BigInteger[] DivideAndRemainderByInteger(BigInteger val, int divisor, int divisorSign)
+        public static BigInteger[] DivideAndRemainderByInt32(BigInteger val, int divisor, int divisorSign)
         {
             // res[0] is a quotient and res[1] is a remainder:
             int[] valDigits = val.Digits;
@@ -362,7 +362,7 @@ namespace ICU4N.Numerics.BigMath
             int[] quotientDigits = new int[quotientLength];
             int[] remainderDigits;
             remainderDigits = new int[] {
-                Division.DivideArrayByInt(
+                Division.DivideArrayByInt32(
                     quotientDigits,
                     valDigits,
                     valLen,

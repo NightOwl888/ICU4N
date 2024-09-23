@@ -696,7 +696,7 @@ namespace ICU4N.Impl
 
         /* compaction --------------------------------------------------------------- */
 
-        private bool EqualInt(int[] a, int s, int t, int length)
+        private bool EqualInt32(int[] a, int s, int t, int length)
         {
             for (int i = 0; i < length; i++)
             {
@@ -718,7 +718,7 @@ namespace ICU4N.Impl
 
             for (block = 0; block <= index2Length; ++block)
             {
-                if (EqualInt(index2, block, otherBlock, UTRIE2_INDEX_2_BLOCK_LENGTH))
+                if (EqualInt32(index2, block, otherBlock, UTRIE2_INDEX_2_BLOCK_LENGTH))
                 {
                     return block;
                 }
@@ -736,7 +736,7 @@ namespace ICU4N.Impl
 
             for (block = 0; block <= dataLength; block += UTRIE2_DATA_GRANULARITY)
             {
-                if (EqualInt(data, block, otherBlock, blockLength))
+                if (EqualInt32(data, block, otherBlock, blockLength))
                 {
                     return block;
                 }
@@ -911,7 +911,7 @@ namespace ICU4N.Impl
                 /* see if the beginning of this block can be overlapped with the end of the previous block */
                 /* look for maximum overlap (modulo granularity) with the previous, adjacent block */
                 for (overlap = blockLength - UTRIE2_DATA_GRANULARITY;
-                    overlap > 0 && !EqualInt(data, (newStart - overlap), start, overlap);
+                    overlap > 0 && !EqualInt32(data, (newStart - overlap), start, overlap);
                     overlap -= UTRIE2_DATA_GRANULARITY) { }
 
                 if (overlap > 0 || newStart < start)
@@ -1010,7 +1010,7 @@ namespace ICU4N.Impl
                 /* see if the beginning of this block can be overlapped with the end of the previous block */
                 /* look for maximum overlap with the previous, adjacent block */
                 for (overlap = UTRIE2_INDEX_2_BLOCK_LENGTH - 1;
-                    overlap > 0 && !EqualInt(index2, newStart - overlap, start, overlap);
+                    overlap > 0 && !EqualInt32(index2, newStart - overlap, start, overlap);
                     --overlap) { }
 
                 if (overlap > 0 || newStart < start)

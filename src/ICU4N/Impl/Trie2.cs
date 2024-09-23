@@ -364,7 +364,7 @@ namespace ICU4N.Impl
                 int hash = InitHash();
                 foreach (Trie2Range r in this)
                 {
-                    hash = HashInt(hash, r.GetHashCode());
+                    hash = HashInt32(hash, r.GetHashCode());
                 }
                 if (hash == 0)
                 {
@@ -1119,7 +1119,7 @@ namespace ICU4N.Impl
             return h;
         }
 
-        internal static int HashInt(int h, int i)
+        internal static int HashInt32(int h, int i)
         {
             h = Trie2.HashByte(h, i & 255);
             h = Trie2.HashByte(h, (i >> 8) & 255);
@@ -1165,7 +1165,7 @@ namespace ICU4N.Impl
             int h = Trie2.InitHash();
             h = Trie2.HashUChar32(h, StartCodePoint);
             h = Trie2.HashUChar32(h, EndCodePoint);
-            h = Trie2.HashInt(h, Value);
+            h = Trie2.HashInt32(h, Value);
             h = Trie2.HashByte(h, IsLeadSurrogate ? 1 : 0);
             return h;
         }

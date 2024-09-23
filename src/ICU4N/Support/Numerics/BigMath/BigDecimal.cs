@@ -973,12 +973,12 @@ namespace ICU4N.Numerics.BigMath
                 }
             }
             // To update all internal fields
-            _scale = ToIntScale(newScale);
+            _scale = ToInt32Scale(newScale);
             _precision = mcPrecision;
             SetUnscaledValue(integer);
         }
 
-        internal static int LongCompareTo(long value1, long value2)
+        internal static int Int64CompareTo(long value1, long value2)
         {
             return value1 > value2 ? 1 : (value1 < value2 ? -1 : 0);
         }
@@ -1006,7 +1006,7 @@ namespace ICU4N.Numerics.BigMath
             if (fraction != 0)
             {
                 // To check if the discarded fraction >= 0.5
-                compRem = LongCompareTo(Math.Abs(fraction) << 1, sizeOfFraction);
+                compRem = Int64CompareTo(Math.Abs(fraction) << 1, sizeOfFraction);
                 // To look if there is a carry
                 integer += RoundingBehavior(((int)integer) & 1, Math.Sign(fraction) * (5 + compRem),
                     mc.RoundingMode);
@@ -1018,7 +1018,7 @@ namespace ICU4N.Numerics.BigMath
                 }
             }
             // To update all internal fields
-            _scale = ToIntScale(newScale);
+            _scale = ToInt32Scale(newScale);
             _precision = mc.Precision;
             smallValue = integer;
             _bitLength = CalcBitLength(integer);
@@ -1137,7 +1137,7 @@ namespace ICU4N.Numerics.BigMath
         *             fit in {@code int} type
         * @see #scale
         */
-        internal static int ToIntScale(long longScale)
+        internal static int ToInt32Scale(long longScale)
         {
             if (longScale < int.MinValue)
                 // math.09=Overflow

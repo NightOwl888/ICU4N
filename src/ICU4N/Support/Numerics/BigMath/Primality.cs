@@ -244,7 +244,7 @@ namespace ICU4N.Numerics.BigMath
             // To check if 'n' is divisible by some prime of the table
             for (int j = 1; j < primes.Length; j++)
             {
-                if (Division.RemainderArrayByInt(n.Digits, n.numberLength, primes[j]) == 0)
+                if (Division.RemainderArrayByInt32(n.Digits, n.numberLength, primes[j]) == 0)
                 {
                     return false;
                 }

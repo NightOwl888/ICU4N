@@ -99,7 +99,7 @@ namespace ICU4N.Numerics.BigMath
                 {
                     // divide the array of digits by bigRadix and convert remainders
                     // to CharHelpers collecting them in the char array
-                    resDigit = Division.DivideArrayByInt(temp, temp, tempLen, bigRadix);
+                    resDigit = Division.DivideArrayByInt32(temp, temp, tempLen, bigRadix);
                     int previous = currentChar;
                     do
                     {

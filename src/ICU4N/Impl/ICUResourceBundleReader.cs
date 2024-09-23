@@ -269,7 +269,7 @@ namespace ICU4N.Impl
             // We need it so that we can read the key string bytes up front, for lookup performance.
 
             // read the variable-length indexes[] array
-            int indexes0 = GetIndexesInt(URES_INDEX_LENGTH);
+            int indexes0 = GetIndexesInt32(URES_INDEX_LENGTH);
             int indexLength = indexes0 & 0xff;
             if (indexLength <= URES_INDEX_MAX_TABLE_LENGTH)
             {
@@ -277,7 +277,7 @@ namespace ICU4N.Impl
             }
             int bundleTop;
             if (dataLength < ((1 + indexLength) << 2) ||
-                    dataLength < ((bundleTop = GetIndexesInt(URES_INDEX_BUNDLE_TOP)) << 2))
+                    dataLength < ((bundleTop = GetIndexesInt32(URES_INDEX_BUNDLE_TOP)) << 2))
             {
                 throw new ICUException("not enough bytes");
             }
@@ -295,7 +295,7 @@ namespace ICU4N.Impl
             {
                 // determine if this resource bundle falls back to a parent bundle
                 // along normal locale ID fallback
-                int att = GetIndexesInt(URES_INDEX_ATTRIBUTES);
+                int att = GetIndexesInt32(URES_INDEX_ATTRIBUTES);
                 noFallback = (att & URES_ATT_NO_FALLBACK) != 0;
                 isPoolBundle = (att & URES_ATT_IS_POOL_BUNDLE) != 0;
                 usesPoolBundle = (att & URES_ATT_USES_POOL_BUNDLE) != 0;
@@ -304,7 +304,7 @@ namespace ICU4N.Impl
             }
 
             int keysBottom = 1 + indexLength;
-            int keysTop = GetIndexesInt(URES_INDEX_KEYS_TOP);
+            int keysTop = GetIndexesInt32(URES_INDEX_KEYS_TOP);
             if (keysTop > keysBottom)
             {
                 // Deserialize the key strings up front.
@@ -329,7 +329,7 @@ namespace ICU4N.Impl
             // Read the array of 16-bit units.
             if (indexLength > URES_INDEX_16BIT_TOP)
             {
-                int _16BitTop = GetIndexesInt(URES_INDEX_16BIT_TOP);
+                int _16BitTop = GetIndexesInt32(URES_INDEX_16BIT_TOP);
                 if (_16BitTop > keysTop)
                 {
                     int num16BitUnits = (_16BitTop - keysTop) * 2;
@@ -350,7 +350,7 @@ namespace ICU4N.Impl
 
             if (indexLength > URES_INDEX_POOL_CHECKSUM)
             {
-                poolCheckSum = GetIndexesInt(URES_INDEX_POOL_CHECKSUM);
+                poolCheckSum = GetIndexesInt32(URES_INDEX_POOL_CHECKSUM);
             }
 
             if (!isPoolBundle || b16BitUnits.Length > 1)
@@ -362,7 +362,7 @@ namespace ICU4N.Impl
             bytes.Position = 0;
         }
 
-        private int GetIndexesInt(int i)
+        private int GetIndexesInt32(int i)
         {
             return bytes.GetInt32((1 + i) << 2);
         }

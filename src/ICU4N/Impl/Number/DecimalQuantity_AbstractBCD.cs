@@ -256,9 +256,9 @@ namespace ICU4N.Numerics
 
             return operand switch
             {
-                Operand.i => ToLong(),
-                Operand.f => ToFractionLong(true),
-                Operand.t => ToFractionLong(false),
+                Operand.i => ToInt64(),
+                Operand.f => ToFractionInt64(true),
+                Operand.t => ToFractionInt64(false),
                 Operand.v => FractionCount,
                 Operand.w => FractionCountWithoutTrailingZeros,
                 _ => Math.Abs(ToDouble()),
@@ -332,7 +332,7 @@ namespace ICU4N.Numerics
 
         public abstract int MaxRepresentableDigits { get; }
 
-        public void SetToInt(int n)
+        public void SetToInt32(int n)
         {
             SetBcdToZero();
             flags = 0;
@@ -343,24 +343,24 @@ namespace ICU4N.Numerics
             }
             if (n != 0)
             {
-                SetToIntImpl(n);
+                SetToInt32Impl(n);
                 Compact();
             }
         }
 
-        private void SetToIntImpl(int n)
+        private void SetToInt32Impl(int n)
         {
             if (n == int.MinValue)
             {
-                ReadLongToBcd(-(long)n);
+                ReadInt64ToBcd(-(long)n);
             }
             else
             {
-                ReadIntToBcd(n);
+                ReadInt32ToBcd(n);
             }
         }
 
-        public void SetToLong(long n)
+        public void SetToInt64(long n)
         {
             SetBcdToZero();
             flags = 0;
@@ -371,12 +371,12 @@ namespace ICU4N.Numerics
             }
             if (n != 0)
             {
-                SetToLongImpl(n);
+                SetToInt64Impl(n);
                 Compact();
             }
         }
 
-        private void SetToLongImpl(long n)
+        private void SetToInt64Impl(long n)
         {
             if (n == long.MinValue)
             {
@@ -384,11 +384,11 @@ namespace ICU4N.Numerics
             }
             else if (n <= int.MaxValue)
             {
-                ReadIntToBcd((int)n);
+                ReadInt32ToBcd((int)n);
             }
             else
             {
-                ReadLongToBcd(n);
+                ReadInt64ToBcd(n);
             }
         }
 
@@ -413,11 +413,11 @@ namespace ICU4N.Numerics
             int bitLength = n.BitLength;
             if (bitLength < 32)
             {
-                ReadIntToBcd(n.ToInt32());
+                ReadInt32ToBcd(n.ToInt32());
             }
             else if (bitLength < 64)
             {
-                ReadLongToBcd(n.ToInt64());
+                ReadInt64ToBcd(n.ToInt64());
             }
             else
             {
@@ -477,7 +477,7 @@ namespace ICU4N.Numerics
             // Not all integers can be represented exactly for exponent > 52
             if (exponent <= 52 && (long)n == n)
             {
-                SetToLongImpl((long)n);
+                SetToInt64Impl((long)n);
                 return;
             }
 
@@ -500,7 +500,7 @@ namespace ICU4N.Numerics
             long result = (long)Math.Ceiling(n); // ICU4N: Changed from Math.Round() to Math.Ceiling (ToPositiveInfinity equivalent, the Java default)
             if (result != 0)
             {
-                SetToLongImpl(result);
+                SetToInt64Impl(result);
                 scale -= fracLength;
             }
         }
@@ -526,14 +526,14 @@ namespace ICU4N.Numerics
                 // Case 1: Exponential notation.
                 Debug.Assert(dstr.IndexOf('.') == 1);
                 int expPos = dstr.IndexOf('E');
-                SetToLongImpl(long.Parse(StringHelper.Concat(dstr.AsSpan(0, 1), dstr.AsSpan(2, expPos - 2)), CultureInfo.InvariantCulture)); // ICU4N: Corrected 2nd arg.
+                SetToInt64Impl(long.Parse(StringHelper.Concat(dstr.AsSpan(0, 1), dstr.AsSpan(2, expPos - 2)), CultureInfo.InvariantCulture)); // ICU4N: Corrected 2nd arg.
                 scale += J2N.Numerics.Int32.Parse(dstr.AsSpan(expPos + 1), NumberStyle.Integer, CultureInfo.InvariantCulture) - (expPos - 1) + 1;
             }
             else if (dstr[0] == '0')
             {
                 // Case 2: Fraction-only number.
                 Debug.Assert(dstr.IndexOf('.') == 1);
-                SetToLongImpl(J2N.Numerics.Int64.Parse(dstr.AsSpan(2), NumberStyle.None, CultureInfo.InvariantCulture));
+                SetToInt64Impl(J2N.Numerics.Int64.Parse(dstr.AsSpan(2), NumberStyle.None, CultureInfo.InvariantCulture));
                 scale += 2 - dstr.Length;
             }
             else if (dstr[dstr.Length - 1] == '0')
@@ -543,14 +543,14 @@ namespace ICU4N.Numerics
                 // before the approximate double logic is performed.
                 Debug.Assert(dstr.IndexOf('.') == dstr.Length - 2);
                 Debug.Assert(dstr.Length - 2 <= 18);
-                SetToLongImpl(J2N.Numerics.Int64.Parse(dstr.AsSpan(0, dstr.Length - 2), NumberStyle.None, CultureInfo.InvariantCulture)); // ICU4N: Checked 2nd arg
+                SetToInt64Impl(J2N.Numerics.Int64.Parse(dstr.AsSpan(0, dstr.Length - 2), NumberStyle.None, CultureInfo.InvariantCulture)); // ICU4N: Checked 2nd arg
                                                                                                                              // no need to adjust scale
             }
             else
             {
                 // Case 4: Number with both a fraction and an integer.
                 int decimalPos = dstr.IndexOf('.');
-                SetToLongImpl(long.Parse(StringHelper.Concat(dstr.AsSpan(0, decimalPos), dstr.AsSpan(decimalPos + 1)), CultureInfo.InvariantCulture)); // ICU4N: Checked 2nd arg
+                SetToInt64Impl(long.Parse(StringHelper.Concat(dstr.AsSpan(0, decimalPos), dstr.AsSpan(decimalPos + 1)), CultureInfo.InvariantCulture)); // ICU4N: Checked 2nd arg
                 scale += decimalPos - dstr.Length + 1;
             }
 
@@ -608,7 +608,7 @@ namespace ICU4N.Numerics
          *
          * @return A double representation of the internal BCD.
          */
-        protected virtual long ToLong()
+        protected virtual long ToInt64()
         {
             long result = 0L;
             for (int magnitude = scale + precision - 1; magnitude >= 0; magnitude--)
@@ -623,7 +623,7 @@ namespace ICU4N.Numerics
          * For example, if we represent the number "1.20" (including optional and required digits), then
          * this function returns "20" if includeTrailingZeros is true or "2" if false.
          */
-        protected long ToFractionLong(bool includeTrailingZeros)
+        protected long ToFractionInt64(bool includeTrailingZeros)
         {
             long result = 0L;
             int magnitude = -1;
@@ -1034,7 +1034,7 @@ namespace ICU4N.Numerics
          *
          * @param n The value to consume.
          */
-        protected abstract void ReadIntToBcd(int input);
+        protected abstract void ReadInt32ToBcd(int input);
 
         /**
          * Sets the internal BCD state to represent the value in the given long. The long is guaranteed to
@@ -1042,7 +1042,7 @@ namespace ICU4N.Numerics
          *
          * @param n The value to consume.
          */
-        protected abstract void ReadLongToBcd(long input);
+        protected abstract void ReadInt64ToBcd(long input);
 
         /**
          * Sets the internal BCD state to represent the value in the given BigInteger. The BigInteger is
