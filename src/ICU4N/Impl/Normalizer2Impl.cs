@@ -843,16 +843,16 @@ namespace ICU4N.Impl
                 return version[0] == 3;
             }
         }
-        private static readonly IsAcceptable IS_ACCEPTABLE = new IsAcceptable();
-        private const int DATA_FORMAT = 0x4e726d32;  // "Nrm2"
+        private static readonly IsAcceptable isAcceptable = new IsAcceptable();
+        private const int DataFormat = 0x4e726d32;  // "Nrm2"
 
         public Normalizer2Impl Load(ByteBuffer bytes)
         {
             try
             {
-                dataVersion = ICUBinary.ReadHeaderAndDataVersion(bytes, DATA_FORMAT, IS_ACCEPTABLE);
+                dataVersion = ICUBinary.ReadHeaderAndDataVersion(bytes, DataFormat, isAcceptable);
                 int indexesLength = bytes.GetInt32() / 4;  // inIndexes[IX_NORM_TRIE_OFFSET]/4
-                if (indexesLength <= IX_MIN_LCCC_CP)
+                if (indexesLength <= IxMinLcccCp)
                 {
                     throw new ICUUncheckedIOException("Normalizer2 data: not enough indexes");
                 }
@@ -863,24 +863,24 @@ namespace ICU4N.Impl
                     inIndexes[i] = bytes.GetInt32();
                 }
 
-                minDecompNoCP = inIndexes[IX_MIN_DECOMP_NO_CP];
-                minCompNoMaybeCP = inIndexes[IX_MIN_COMP_NO_MAYBE_CP];
-                minLcccCP = inIndexes[IX_MIN_LCCC_CP];
+                minDecompNoCP = inIndexes[IxMinDecompNoCp];
+                minCompNoMaybeCP = inIndexes[IxMinCompNoMaybeCp];
+                minLcccCP = inIndexes[IxMinLcccCp];
 
-                minYesNo = inIndexes[IX_MIN_YES_NO];
-                minYesNoMappingsOnly = inIndexes[IX_MIN_YES_NO_MAPPINGS_ONLY];
-                minNoNo = inIndexes[IX_MIN_NO_NO];
-                minNoNoCompBoundaryBefore = inIndexes[IX_MIN_NO_NO_COMP_BOUNDARY_BEFORE];
-                minNoNoCompNoMaybeCC = inIndexes[IX_MIN_NO_NO_COMP_NO_MAYBE_CC];
-                minNoNoEmpty = inIndexes[IX_MIN_NO_NO_EMPTY];
-                limitNoNo = inIndexes[IX_LIMIT_NO_NO];
-                minMaybeYes = inIndexes[IX_MIN_MAYBE_YES];
+                minYesNo = inIndexes[IxMinYesNo];
+                minYesNoMappingsOnly = inIndexes[IxMinYesNoMappingsOnly];
+                minNoNo = inIndexes[IxMinNoNo];
+                minNoNoCompBoundaryBefore = inIndexes[IxMinNoNoCompBoundaryBefore];
+                minNoNoCompNoMaybeCC = inIndexes[IxMinNoNoCompNoMaybeCc];
+                minNoNoEmpty = inIndexes[IxMinNoNoEmpty];
+                limitNoNo = inIndexes[IxLimitNoNo];
+                minMaybeYes = inIndexes[IxMinMaybeYes];
                 Debug.Assert((minMaybeYes & 7) == 0);  // 8-aligned for noNoDelta bit fields
-                centerNoNoDelta = (minMaybeYes >> DELTA_SHIFT) - MAX_DELTA - 1;
+                centerNoNoDelta = (minMaybeYes >> DeltaShift) - MaxDelta - 1;
 
                 // Read the normTrie.
-                int offset = inIndexes[IX_NORM_TRIE_OFFSET];
-                int nextOffset = inIndexes[IX_EXTRA_DATA_OFFSET];
+                int offset = inIndexes[IxNormTrieOffset];
+                int nextOffset = inIndexes[IxExtraDataOffset];
                 normTrie = Trie2_16.CreateFromSerialized(bytes);
                 int trieLength = normTrie.SerializedLength;
                 if (trieLength > (nextOffset - offset))
@@ -891,12 +891,12 @@ namespace ICU4N.Impl
 
                 // Read the composition and mapping data.
                 offset = nextOffset;
-                nextOffset = inIndexes[IX_SMALL_FCD_OFFSET];
+                nextOffset = inIndexes[IxSmallFcdOffset];
                 int numChars = (nextOffset - offset) / 2;
                 if (numChars != 0)
                 {
                     maybeYesCompositions = ICUBinary.GetString(bytes, numChars, 0);
-                    extraData = maybeYesCompositions.Substring((MIN_NORMAL_MAYBE_YES - minMaybeYes) >> OFFSET_SHIFT);
+                    extraData = maybeYesCompositions.Substring((MinNormalMaybeYes - minMaybeYes) >> OffsetShift);
                 }
 
                 // smallFCD: new in formatVersion 2
@@ -919,7 +919,7 @@ namespace ICU4N.Impl
 
         private void EnumLcccRange(int start, int end, int norm16, UnicodeSet set)
         {
-            if (norm16 > MIN_NORMAL_MAYBE_YES && norm16 != JAMO_VT)
+            if (norm16 > MinNormalMaybeYes && norm16 != JamoVt)
             {
                 set.Add(start, end);
             }
@@ -934,7 +934,7 @@ namespace ICU4N.Impl
         {
             /* add the start code point to the USet */
             set.Add(start);
-            if (start != end && IsAlgorithmicNoNo(value) && (value & DELTA_TCCC_MASK) > DELTA_TCCC_1)
+            if (start != end && IsAlgorithmicNoNo(value) && (value & DeltaTcccMask) > DeltaTccc1)
             {
                 // Range of code points with same-norm16-value algorithmic decompositions.
                 // They might have different non-zero FCD16 values.
@@ -1004,7 +1004,7 @@ namespace ICU4N.Impl
         {
             public int Map(int input)
             {
-                return (int)(input & CANON_NOT_SEGMENT_STARTER);
+                return (int)(input & CanonNotSegmentStarter);
             }
         }
 
@@ -1057,15 +1057,15 @@ namespace ICU4N.Impl
                                 if (IsMaybeOrNonZeroCC(norm16))
                                 {
                                     // not a segment starter if it occurs in a decomposition or has cc!=0
-                                    newValue |= (int)CANON_NOT_SEGMENT_STARTER;
-                                    if (norm16 < MIN_NORMAL_MAYBE_YES)
+                                    newValue |= (int)CanonNotSegmentStarter;
+                                    if (norm16 < MinNormalMaybeYes)
                                     {
-                                        newValue |= CANON_HAS_COMPOSITIONS;
+                                        newValue |= CanonHasCompositions;
                                     }
                                 }
                                 else if (norm16 < minYesNo)
                                 {
-                                    newValue |= CANON_HAS_COMPOSITIONS;
+                                    newValue |= CanonHasCompositions;
                                 }
                                 else
                                 {
@@ -1084,14 +1084,14 @@ namespace ICU4N.Impl
                                     if (norm16_2 > minYesNo)
                                     {
                                         // c decomposes, get everything from the variable-length extra data
-                                        int mapping = norm16_2 >> OFFSET_SHIFT;
+                                        int mapping = norm16_2 >> OffsetShift;
                                         int firstUnit = extraData[mapping];
-                                        int length = firstUnit & MAPPING_LENGTH_MASK;
-                                        if ((firstUnit & MAPPING_HAS_CCC_LCCC_WORD) != 0)
+                                        int length = firstUnit & MappingLengthMask;
+                                        if ((firstUnit & MappingHasCccLcccWord) != 0)
                                         {
                                             if (c == c2 && (extraData[mapping - 1] & 0xff) != 0)
                                             {
-                                                newValue |= (int)CANON_NOT_SEGMENT_STARTER;  // original c has cc!=0
+                                                newValue |= (int)CanonNotSegmentStarter;  // original c has cc!=0
                                             }
                                         }
                                         // Skip empty mappings (no characters in the decomposition).
@@ -1111,9 +1111,9 @@ namespace ICU4N.Impl
                                                 {
                                                     c2 = extraData.CodePointAt(mapping);
                                                     int c2Value = newData.Get(c2);
-                                                    if ((c2Value & CANON_NOT_SEGMENT_STARTER) == 0)
+                                                    if ((c2Value & CanonNotSegmentStarter) == 0)
                                                     {
-                                                        newData.Set(c2, c2Value | (int)CANON_NOT_SEGMENT_STARTER);
+                                                        newData.Set(c2, c2Value | (int)CanonNotSegmentStarter);
                                                     }
                                                 }
                                             }
@@ -1143,7 +1143,7 @@ namespace ICU4N.Impl
 
         public int GetCompQuickCheck(int norm16)
         {
-            if (norm16 < minNoNo || MIN_YES_YES_WITH_CC <= norm16)
+            if (norm16 < minNoNo || MinYesYesWithCc <= norm16)
             {
                 return 1;  // yes
             }
@@ -1162,7 +1162,7 @@ namespace ICU4N.Impl
 
         public int GetCC(int norm16)
         {
-            if (norm16 >= MIN_NORMAL_MAYBE_YES)
+            if (norm16 >= MinNormalMaybeYes)
             {
                 return GetCCFromNormalYesOrMaybe(norm16);
             }
@@ -1174,11 +1174,11 @@ namespace ICU4N.Impl
         }
         public static int GetCCFromNormalYesOrMaybe(int norm16)
         {
-            return (norm16 >> OFFSET_SHIFT) & 0xff;
+            return (norm16 >> OffsetShift) & 0xff;
         }
         public static int GetCCFromYesOrMaybe(int norm16)
         {
-            return norm16 >= MIN_NORMAL_MAYBE_YES ? GetCCFromNormalYesOrMaybe(norm16) : 0;
+            return norm16 >= MinNormalMaybeYes ? GetCCFromNormalYesOrMaybe(norm16) : 0;
         }
         public int GetCCFromYesOrMaybeCP(int c)
         {
@@ -1218,7 +1218,7 @@ namespace ICU4N.Impl
             int norm16 = GetNorm16(c);
             if (norm16 >= limitNoNo)
             {
-                if (norm16 >= MIN_NORMAL_MAYBE_YES)
+                if (norm16 >= MinNormalMaybeYes)
                 {
                     // combining mark
                     norm16 = GetCCFromNormalYesOrMaybe(norm16);
@@ -1230,10 +1230,10 @@ namespace ICU4N.Impl
                 }
                 else
                 {  // isDecompNoAlgorithmic(norm16)
-                    int deltaTrailCC = norm16 & DELTA_TCCC_MASK;
-                    if (deltaTrailCC <= DELTA_TCCC_1)
+                    int deltaTrailCC = norm16 & DeltaTcccMask;
+                    if (deltaTrailCC <= DeltaTccc1)
                     {
-                        return deltaTrailCC >> OFFSET_SHIFT;
+                        return deltaTrailCC >> OffsetShift;
                     }
                     // Maps to an isCompYesAndZeroCC.
                     c = MapAlgorithmic(c, norm16);
@@ -1246,10 +1246,10 @@ namespace ICU4N.Impl
                 return 0;
             }
             // c decomposes, get everything from the variable-length extra data
-            int mapping = norm16 >> OFFSET_SHIFT;
+            int mapping = norm16 >> OffsetShift;
             int firstUnit = extraData[mapping];
             int fcd16 = firstUnit >> 8;  // tccc
-            if ((firstUnit & MAPPING_HAS_CCC_LCCC_WORD) != 0)
+            if ((firstUnit & MappingHasCccLcccWord) != 0)
             {
                 fcd16 |= extraData[mapping - 1] & 0xff00;  // lccc
             }
@@ -1303,8 +1303,8 @@ namespace ICU4N.Impl
                 }
             }
             // c decomposes, get everything from the variable-length extra data
-            int mapping = norm16 >> OFFSET_SHIFT;
-            int length = extraData[mapping++] & MAPPING_LENGTH_MASK;
+            int mapping = norm16 >> OffsetShift;
+            int length = extraData[mapping++] & MappingLengthMask;
             return extraData.Substring(mapping, length); // ICU4N: (mapping + length) - mapping == length
         }
 
@@ -1363,8 +1363,8 @@ namespace ICU4N.Impl
                 }
             }
             // c decomposes, get everything from the variable-length extra data
-            int mapping = norm16 >> OFFSET_SHIFT;
-            charsLength = extraData[mapping++] & MAPPING_LENGTH_MASK;
+            int mapping = norm16 >> OffsetShift;
+            charsLength = extraData[mapping++] & MappingLengthMask;
             return extraData.AsSpan(mapping, charsLength).TryCopyTo(destination); // ICU4N: (mapping + length) - mapping == length
         }
 
@@ -1401,16 +1401,16 @@ namespace ICU4N.Impl
                 return UTF16.ValueOf(MapAlgorithmic(c, norm16));
             }
             // c decomposes, get everything from the variable-length extra data
-            int mapping = norm16 >> OFFSET_SHIFT;
+            int mapping = norm16 >> OffsetShift;
             int firstUnit = extraData[mapping];
-            int mLength = firstUnit & MAPPING_LENGTH_MASK;  // length of normal mapping
-            if ((firstUnit & MAPPING_HAS_RAW_MAPPING) != 0)
+            int mLength = firstUnit & MappingLengthMask;  // length of normal mapping
+            if ((firstUnit & MappingHasRawMapping) != 0)
             {
                 // Read the raw mapping from before the firstUnit and before the optional ccc/lccc word.
                 // Bit 7=MAPPING_HAS_CCC_LCCC_WORD
                 int rawMapping = mapping - ((firstUnit >> 7) & 1) - 1;
                 char rm0 = extraData[rawMapping];
-                if (rm0 <= MAPPING_LENGTH_MASK)
+                if (rm0 <= MappingLengthMask)
                 {
                     return extraData.Substring(rawMapping - rm0, rm0); // ICU4N: (rawMapping - rm0) - rawMapping == rm0
                 }
@@ -1470,16 +1470,16 @@ namespace ICU4N.Impl
                 return true;
             }
             // c decomposes, get everything from the variable-length extra data
-            int mapping = norm16 >> OFFSET_SHIFT;
+            int mapping = norm16 >> OffsetShift;
             int firstUnit = extraData[mapping];
-            int mLength = firstUnit & MAPPING_LENGTH_MASK;  // length of normal mapping
-            if ((firstUnit & MAPPING_HAS_RAW_MAPPING) != 0)
+            int mLength = firstUnit & MappingLengthMask;  // length of normal mapping
+            if ((firstUnit & MappingHasRawMapping) != 0)
             {
                 // Read the raw mapping from before the firstUnit and before the optional ccc/lccc word.
                 // Bit 7=MAPPING_HAS_CCC_LCCC_WORD
                 int rawMapping = mapping - ((firstUnit >> 7) & 1) - 1;
                 char rm0 = extraData[rawMapping];
-                if (rm0 <= MAPPING_LENGTH_MASK)
+                if (rm0 <= MappingLengthMask)
                 {
                     //return extraData.Substring(rawMapping - rm0, rm0); // ICU4N: (rawMapping - rm0) - rawMapping == rm0
                     charsLength = rm0;
@@ -1526,14 +1526,14 @@ namespace ICU4N.Impl
         public bool GetCanonStartSet(int c, UnicodeSet set)
         {
             EnsureCanonIterData(); // ICU4N: Make this call automatically, so the user doesn't have to bother with it.
-            int canonValue = canonIterData.Get(c) & ~CANON_NOT_SEGMENT_STARTER;
+            int canonValue = canonIterData.Get(c) & ~CanonNotSegmentStarter;
             if (canonValue == 0)
             {
                 return false;
             }
             set.Clear();
-            int value = canonValue & CANON_VALUE_MASK;
-            if ((canonValue & CANON_HAS_SET) != 0)
+            int value = canonValue & CanonValueMask;
+            if ((canonValue & CanonHasSet) != 0)
             {
                 set.AddAll(canonStartSets[value]);
             }
@@ -1541,10 +1541,10 @@ namespace ICU4N.Impl
             {
                 set.Add(value);
             }
-            if ((canonValue & CANON_HAS_COMPOSITIONS) != 0)
+            if ((canonValue & CanonHasCompositions) != 0)
             {
                 int norm16 = GetNorm16(c);
-                if (norm16 == JAMO_L)
+                if (norm16 == JamoL)
                 {
                     int syllable = Hangul.HangulBase + (c - Hangul.JamoLBase) * Hangul.JamoVTCount;
                     set.Add(syllable, syllable + Hangul.JamoVTCount - 1);
@@ -1557,73 +1557,71 @@ namespace ICU4N.Impl
             return true;
         }
 
-        // ICU4N TODO: API - rename constants to follow .NET Conventions ?
-
         // Fixed norm16 values.
-        public const int MIN_YES_YES_WITH_CC = 0xfe02;
-        public const int JAMO_VT = 0xfe00;
-        public const int MIN_NORMAL_MAYBE_YES = 0xfc00;
-        public const int JAMO_L = 2;  // offset=1 hasCompBoundaryAfter=FALSE
-        public const int INERT = 1;  // offset=0 hasCompBoundaryAfter=TRUE
+        public const int MinYesYesWithCc = 0xfe02;
+        public const int JamoVt = 0xfe00;
+        public const int MinNormalMaybeYes = 0xfc00;
+        public const int JamoL = 2;  // offset=1 hasCompBoundaryAfter=FALSE
+        public const int Inert = 1;  // offset=0 hasCompBoundaryAfter=TRUE
 
         // norm16 bit 0 is comp-boundary-after.
-        public const int HAS_COMP_BOUNDARY_AFTER = 1;
-        public const int OFFSET_SHIFT = 1;
+        public const int HasCompBoundaryAfterValue = 1; // ICU4N-specific - added "Value" suffix to not conflict with method
+        public const int OffsetShift = 1;
 
         // For algorithmic one-way mappings, norm16 bits 2..1 indicate the
         // tccc (0, 1, >1) for quick FCC boundary-after tests.
-        public const int DELTA_TCCC_0 = 0;
-        public const int DELTA_TCCC_1 = 2;
-        public const int DELTA_TCCC_GT_1 = 4;
-        public const int DELTA_TCCC_MASK = 6;
-        public const int DELTA_SHIFT = 3;
+        public const int DeltaTccc0 = 0;
+        public const int DeltaTccc1 = 2;
+        public const int DeltaTcccGt1 = 4;
+        public const int DeltaTcccMask = 6;
+        public const int DeltaShift = 3;
 
-        public const int MAX_DELTA = 0x40;
+        public const int MaxDelta = 0x40;
 
         // Byte offsets from the start of the data, after the generic header.
-        public const int IX_NORM_TRIE_OFFSET = 0;
-        public const int IX_EXTRA_DATA_OFFSET = 1;
-        public const int IX_SMALL_FCD_OFFSET = 2;
-        public const int IX_RESERVED3_OFFSET = 3;
-        public const int IX_TOTAL_SIZE = 7;
+        public const int IxNormTrieOffset = 0;
+        public const int IxExtraDataOffset = 1;
+        public const int IxSmallFcdOffset = 2;
+        public const int IxReserved3Offset = 3;
+        public const int IxTotalSize = 7;
 
         // Code point thresholds for quick check codes.
-        public const int IX_MIN_DECOMP_NO_CP = 8;
-        public const int IX_MIN_COMP_NO_MAYBE_CP = 9;
+        public const int IxMinDecompNoCp = 8;
+        public const int IxMinCompNoMaybeCp = 9;
 
         // Norm16 value thresholds for quick check combinations and types of extra data.
 
         /// <summary>Mappings &amp; compositions in [minYesNo..minYesNoMappingsOnly[.</summary>
-        public const int IX_MIN_YES_NO = 10;
+        public const int IxMinYesNo = 10;
         /// <summary>Mappings are comp-normalized.</summary>
-        public const int IX_MIN_NO_NO = 11;
-        public const int IX_LIMIT_NO_NO = 12;
-        public const int IX_MIN_MAYBE_YES = 13;
+        public const int IxMinNoNo = 11;
+        public const int IxLimitNoNo = 12;
+        public const int IxMinMaybeYes = 13;
 
         /// <summary>Mappings only in [minYesNoMappingsOnly..minNoNo[.</summary>
-        public const int IX_MIN_YES_NO_MAPPINGS_ONLY = 14;
+        public const int IxMinYesNoMappingsOnly = 14;
         /// <summary>Mappings are not comp-normalized but have a comp boundary before.</summary>
-        public const int IX_MIN_NO_NO_COMP_BOUNDARY_BEFORE = 15;
+        public const int IxMinNoNoCompBoundaryBefore = 15;
         /// <summary>Mappings do not have a comp boundary before.</summary>
-        public const int IX_MIN_NO_NO_COMP_NO_MAYBE_CC = 16;
+        public const int IxMinNoNoCompNoMaybeCc = 16;
         /// <summary>Mappings to the empty string.</summary>
-        public const int IX_MIN_NO_NO_EMPTY = 17;
+        public const int IxMinNoNoEmpty = 17;
 
-        public const int IX_MIN_LCCC_CP = 18;
-        public const int IX_COUNT = 20;
+        public const int IxMinLcccCp = 18;
+        public const int IxCount = 20;
 
-        public const int MAPPING_HAS_CCC_LCCC_WORD = 0x80;
-        public const int MAPPING_HAS_RAW_MAPPING = 0x40;
+        public const int MappingHasCccLcccWord = 0x80;
+        public const int MappingHasRawMapping = 0x40;
         // unused bit 0x20;
-        public const int MAPPING_LENGTH_MASK = 0x1f;
+        public const int MappingLengthMask = 0x1f;
 
-        public const int COMP_1_LAST_TUPLE = 0x8000;
-        public const int COMP_1_TRIPLE = 1;
-        public const int COMP_1_TRAIL_LIMIT = 0x3400;
-        public const int COMP_1_TRAIL_MASK = 0x7ffe;
-        public const int COMP_1_TRAIL_SHIFT = 9;  // 10-1 for the "triple" bit
-        public const int COMP_2_TRAIL_SHIFT = 6;
-        public const int COMP_2_TRAIL_MASK = 0xffc0;
+        public const int Comp1LastTuple = 0x8000;
+        public const int Comp1Triple = 1;
+        public const int Comp1TrailLimit = 0x3400;
+        public const int Comp1TrailMask = 0x7ffe;
+        public const int Comp1TrailShift = 9;  // 10-1 for the "triple" bit
+        public const int Comp2TrailShift = 6;
+        public const int Comp2TrailMask = 0xffc0;
 
         // higher-level functionality ------------------------------------------ ***
 
@@ -1984,8 +1982,8 @@ namespace ICU4N.Impl
                             {
                                 buffer.Append(s.Slice(prevBoundary, prevSrc - prevBoundary)); // ICU4N: Corrected 3rd parameter
                             }
-                            int mapping = norm16 >> OFFSET_SHIFT;
-                            int length2 = extraData[mapping++] & MAPPING_LENGTH_MASK;
+                            int mapping = norm16 >> OffsetShift;
+                            int length2 = extraData[mapping++] & MappingLengthMask;
                             buffer.Append(extraData, mapping, length2); // ICU4N: Corrected 3rd parameter
                             prevBoundary = src;
                             continue;
@@ -2085,7 +2083,7 @@ namespace ICU4N.Impl
                     // No matching context, or may need to decompose surrounding text first:
                     // Fall through to the slow path.
                 }
-                else if (norm16 > JAMO_VT)
+                else if (norm16 > JamoVt)
                 {  // norm16 >= MIN_YES_YES_WITH_CC
                    // One or more combining marks that do not combine-back:
                    // Check for canonical order, copy unchanged if ok and
@@ -2117,7 +2115,7 @@ namespace ICU4N.Impl
                             int prevCC = cc;
                             c = Character.CodePointAt(s, src);
                             n16 = normTrie.Get(c);
-                            if (n16 >= MIN_YES_YES_WITH_CC)
+                            if (n16 >= MinYesYesWithCc)
                             {
                                 cc = GetCCFromNormalYesOrMaybe(n16);
                                 if (prevCC > cc)
@@ -2260,7 +2258,7 @@ namespace ICU4N.Impl
                 // or a "yesYes" with ccc!=0.
                 // It is not a Hangul syllable or Jamo L because those have "yes" properties.
 
-                int prevNorm16 = INERT;
+                int prevNorm16 = Inert;
                 if (prevBoundary != prevSrc)
                 {
                     prevBoundary = prevSrc;
@@ -2292,7 +2290,7 @@ namespace ICU4N.Impl
                         // the previous character which passed the quick check "yes && ccc==0" test.
                         for (; ; )
                         {
-                            if (norm16 < MIN_YES_YES_WITH_CC)
+                            if (norm16 < MinYesYesWithCc)
                             {
                                 if (!doSpan)
                                 {
@@ -2741,13 +2739,13 @@ namespace ICU4N.Impl
             }
             if (norm16 >= limitNoNo)
             {
-                return norm16 <= MIN_NORMAL_MAYBE_YES || norm16 == JAMO_VT;
+                return norm16 <= MinNormalMaybeYes || norm16 == JamoVt;
             }
             // c decomposes, get everything from the variable-length extra data
-            int mapping = norm16 >> OFFSET_SHIFT;
+            int mapping = norm16 >> OffsetShift;
             int firstUnit = extraData[mapping];
             // true if leadCC==0 (hasFCDBoundaryBefore())
-            return (firstUnit & MAPPING_HAS_CCC_LCCC_WORD) == 0 || (extraData[mapping - 1] & 0xff00) == 0;
+            return (firstUnit & MappingHasCccLcccWord) == 0 || (extraData[mapping - 1] & 0xff00) == 0;
         }
         public bool HasDecompBoundaryAfter(int c)
         {
@@ -2771,13 +2769,13 @@ namespace ICU4N.Impl
             {
                 if (IsMaybeOrNonZeroCC(norm16))
                 {
-                    return norm16 <= MIN_NORMAL_MAYBE_YES || norm16 == JAMO_VT;
+                    return norm16 <= MinNormalMaybeYes || norm16 == JamoVt;
                 }
                 // Maps to an isCompYesAndZeroCC.
-                return (norm16 & DELTA_TCCC_MASK) <= DELTA_TCCC_1;
+                return (norm16 & DeltaTcccMask) <= DeltaTccc1;
             }
             // c decomposes, get everything from the variable-length extra data
-            int mapping = norm16 >> OFFSET_SHIFT;
+            int mapping = norm16 >> OffsetShift;
             int firstUnit = extraData[mapping];
             // decomp after-boundary: same as hasFCDBoundaryAfter(),
             // fcd16<=1 || trailCC==0
@@ -2791,7 +2789,7 @@ namespace ICU4N.Impl
             }
             // if(trailCC==1) test leadCC==0, same as checking for before-boundary
             // true if leadCC==0 (hasFCDBoundaryBefore())
-            return (firstUnit & MAPPING_HAS_CCC_LCCC_WORD) == 0 || (extraData[mapping - 1] & 0xff00) == 0;
+            return (firstUnit & MappingHasCccLcccWord) == 0 || (extraData[mapping - 1] & 0xff00) == 0;
         }
         public bool IsDecompInert(int c) { return IsDecompYesAndZeroCC(GetNorm16(c)); }
 
@@ -2807,20 +2805,20 @@ namespace ICU4N.Impl
         {
             int norm16 = GetNorm16(c);
             return IsCompYesAndZeroCC(norm16) &&
-                (norm16 & HAS_COMP_BOUNDARY_AFTER) != 0 &&
-                (!onlyContiguous || IsInert(norm16) || extraData[norm16 >> OFFSET_SHIFT] <= 0x1ff);
+                (norm16 & HasCompBoundaryAfterValue) != 0 &&
+                (!onlyContiguous || IsInert(norm16) || extraData[norm16 >> OffsetShift] <= 0x1ff);
         }
 
         public bool HasFCDBoundaryBefore(int c) { return HasDecompBoundaryBefore(c); }
         public bool HasFCDBoundaryAfter(int c) { return HasDecompBoundaryAfter(c); }
         public bool IsFCDInert(int c) { return GetFCD16(c) <= 1; }
 
-        private bool IsMaybe(int norm16) { return minMaybeYes <= norm16 && norm16 <= JAMO_VT; }
+        private bool IsMaybe(int norm16) { return minMaybeYes <= norm16 && norm16 <= JamoVt; }
         private bool IsMaybeOrNonZeroCC(int norm16) { return norm16 >= minMaybeYes; }
-        private static bool IsInert(int norm16) { return norm16 == INERT; }
-        private static bool IsJamoL(int norm16) { return norm16 == JAMO_L; }
-        private static bool IsJamoVT(int norm16) { return norm16 == JAMO_VT; }
-        private int HangulLVT() { return minYesNoMappingsOnly | HAS_COMP_BOUNDARY_AFTER; }
+        private static bool IsInert(int norm16) { return norm16 == Inert; }
+        private static bool IsJamoL(int norm16) { return norm16 == JamoL; }
+        private static bool IsJamoVT(int norm16) { return norm16 == JamoVt; }
+        private int HangulLVT() { return minYesNoMappingsOnly | HasCompBoundaryAfterValue; }
         private bool IsHangulLV(int norm16) { return norm16 == minYesNo; }
         private bool IsHangulLVT(int norm16)
         {
@@ -2839,8 +2837,8 @@ namespace ICU4N.Impl
         private bool IsDecompYesAndZeroCC(int norm16)
         {
             return norm16 < minYesNo ||
-                   norm16 == JAMO_VT ||
-                   (minMaybeYes <= norm16 && norm16 <= MIN_NORMAL_MAYBE_YES);
+                   norm16 == JamoVt ||
+                   (minMaybeYes <= norm16 && norm16 <= MinNormalMaybeYes);
         }
         /// <summary>
         /// A little faster and simpler than <see cref="IsDecompYesAndZeroCC(int)"/> but does not include
@@ -2849,7 +2847,7 @@ namespace ICU4N.Impl
         /// </summary>
         private bool IsMostDecompYesAndZeroCC(int norm16)
         {
-            return norm16 < minYesNo || norm16 == MIN_NORMAL_MAYBE_YES || norm16 == JAMO_VT;
+            return norm16 < minYesNo || norm16 == MinNormalMaybeYes || norm16 == JamoVt;
         }
         private bool IsDecompNoAlgorithmic(int norm16) { return norm16 >= limitNoNo; }
 
@@ -2860,8 +2858,8 @@ namespace ICU4N.Impl
         // }
         private int GetCCFromNoNo(int norm16)
         {
-            int mapping = norm16 >> OFFSET_SHIFT;
-            if ((extraData[mapping] & MAPPING_HAS_CCC_LCCC_WORD) != 0)
+            int mapping = norm16 >> OffsetShift;
+            if ((extraData[mapping] & MappingHasCccLcccWord) != 0)
             {
                 return extraData[mapping - 1] & 0xff;
             }
@@ -2879,14 +2877,14 @@ namespace ICU4N.Impl
             else
             {
                 // For Hangul LVT we harmlessly fetch a firstUnit with tccc=0 here.
-                return extraData[norm16 >> OFFSET_SHIFT] >> 8;  // tccc from yesNo
+                return extraData[norm16 >> OffsetShift] >> 8;  // tccc from yesNo
             }
         }
 
         // Requires algorithmic-NoNo.
         private int MapAlgorithmic(int c, int norm16)
         {
-            return c + (norm16 >> DELTA_SHIFT) - centerNoNoDelta;
+            return c + (norm16 >> DeltaShift) - centerNoNoDelta;
         }
 
         // Requires minYesNo<norm16<limitNoNo.
@@ -2895,7 +2893,7 @@ namespace ICU4N.Impl
         /// <returns>Index into maybeYesCompositions, or -1.</returns>
         private int GetCompositionsListForDecompYes(int norm16)
         {
-            if (norm16 < JAMO_L || MIN_NORMAL_MAYBE_YES <= norm16)
+            if (norm16 < JamoL || MinNormalMaybeYes <= norm16)
             {
                 return -1;
             }
@@ -2906,25 +2904,25 @@ namespace ICU4N.Impl
                     // norm16<minMaybeYes: index into extraData which is a substring at
                     //     maybeYesCompositions[MIN_NORMAL_MAYBE_YES-minMaybeYes]
                     // same as (MIN_NORMAL_MAYBE_YES-minMaybeYes)+norm16
-                    norm16 += MIN_NORMAL_MAYBE_YES;  // for yesYes; if Jamo L: harmless empty list
+                    norm16 += MinNormalMaybeYes;  // for yesYes; if Jamo L: harmless empty list
                 }
-                return norm16 >> OFFSET_SHIFT;
+                return norm16 >> OffsetShift;
             }
         }
         /// <returns>Index into maybeYesCompositions.</returns>
         private int GetCompositionsListForComposite(int norm16)
         {
             // A composite has both mapping & compositions list.
-            int list = ((MIN_NORMAL_MAYBE_YES - minMaybeYes) + norm16) >> OFFSET_SHIFT;
+            int list = ((MinNormalMaybeYes - minMaybeYes) + norm16) >> OffsetShift;
             int firstUnit = maybeYesCompositions[list];
             return list +  // mapping in maybeYesCompositions
                 1 +  // +1 to skip the first unit with the mapping length
-                (firstUnit & MAPPING_LENGTH_MASK);  // + mapping length
+                (firstUnit & MappingLengthMask);  // + mapping length
         }
         private int GetCompositionsListForMaybe(int norm16)
         {
             // minMaybeYes<=norm16<MIN_NORMAL_MAYBE_YES
-            return (norm16 - minMaybeYes) >> OFFSET_SHIFT;
+            return (norm16 - minMaybeYes) >> OffsetShift;
         }
 
         /// <param name="norm16">Code point must have compositions.</param>
@@ -2995,12 +2993,12 @@ namespace ICU4N.Impl
             else
             {
                 // c decomposes, get everything from the variable-length extra data
-                int mapping = norm16 >> OFFSET_SHIFT;
+                int mapping = norm16 >> OffsetShift;
                 int firstUnit = extraData[mapping];
-                int length = firstUnit & MAPPING_LENGTH_MASK;
+                int length = firstUnit & MappingLengthMask;
                 int leadCC, trailCC;
                 trailCC = firstUnit >> 8;
-                if ((firstUnit & MAPPING_HAS_CCC_LCCC_WORD) != 0)
+                if ((firstUnit & MappingHasCccLcccWord) != 0)
                 {
                     leadCC = extraData[mapping - 1] >> 8;
                 }
@@ -3041,18 +3039,18 @@ namespace ICU4N.Impl
         private static int Combine(string compositions, int list, int trail)
         {
             int key1, firstUnit;
-            if (trail < COMP_1_TRAIL_LIMIT)
+            if (trail < Comp1TrailLimit)
             {
                 // trail character is 0..33FF
                 // result entry may have 2 or 3 units
                 key1 = (trail << 1);
                 while (key1 > (firstUnit = compositions[list]))
                 {
-                    list += 2 + (firstUnit & COMP_1_TRIPLE);
+                    list += 2 + (firstUnit & Comp1Triple);
                 }
-                if (key1 == (firstUnit & COMP_1_TRAIL_MASK))
+                if (key1 == (firstUnit & Comp1TrailMask))
                 {
-                    if ((firstUnit & COMP_1_TRIPLE) != 0)
+                    if ((firstUnit & Comp1Triple) != 0)
                     {
                         return (compositions[list + 1] << 16) | compositions[list + 2];
                     }
@@ -3066,20 +3064,20 @@ namespace ICU4N.Impl
             {
                 // trail character is 3400..10FFFF
                 // result entry has 3 units
-                key1 = COMP_1_TRAIL_LIMIT + (((trail >> COMP_1_TRAIL_SHIFT)) & ~COMP_1_TRIPLE);
-                int key2 = (trail << COMP_2_TRAIL_SHIFT) & 0xffff;
+                key1 = Comp1TrailLimit + (((trail >> Comp1TrailShift)) & ~Comp1Triple);
+                int key2 = (trail << Comp2TrailShift) & 0xffff;
                 int secondUnit;
                 for (; ; )
                 {
                     if (key1 > (firstUnit = compositions[list]))
                     {
-                        list += 2 + (firstUnit & COMP_1_TRIPLE);
+                        list += 2 + (firstUnit & Comp1Triple);
                     }
-                    else if (key1 == (firstUnit & COMP_1_TRAIL_MASK))
+                    else if (key1 == (firstUnit & Comp1TrailMask))
                     {
                         if (key2 > (secondUnit = compositions[list + 1]))
                         {
-                            if ((firstUnit & COMP_1_LAST_TUPLE) != 0)
+                            if ((firstUnit & Comp1LastTuple) != 0)
                             {
                                 break;
                             }
@@ -3088,9 +3086,9 @@ namespace ICU4N.Impl
                                 list += 3;
                             }
                         }
-                        else if (key2 == (secondUnit & COMP_2_TRAIL_MASK))
+                        else if (key2 == (secondUnit & Comp2TrailMask))
                         {
-                            return ((secondUnit & ~COMP_2_TRAIL_MASK) << 16) | compositions[list + 2];
+                            return ((secondUnit & ~Comp2TrailMask) << 16) | compositions[list + 2];
                         }
                         else
                         {
@@ -3114,14 +3112,14 @@ namespace ICU4N.Impl
             do
             {
                 firstUnit = maybeYesCompositions[list];
-                if ((firstUnit & COMP_1_TRIPLE) == 0)
+                if ((firstUnit & Comp1Triple) == 0)
                 {
                     compositeAndFwd = maybeYesCompositions[list + 1];
                     list += 2;
                 }
                 else
                 {
-                    compositeAndFwd = ((maybeYesCompositions[list + 1] & ~COMP_2_TRAIL_MASK) << 16) |
+                    compositeAndFwd = ((maybeYesCompositions[list + 1] & ~Comp2TrailMask) << 16) |
                                     maybeYesCompositions[list + 2];
                     list += 3;
                 }
@@ -3131,7 +3129,7 @@ namespace ICU4N.Impl
                     AddComposites(GetCompositionsListForComposite(GetNorm16(composite)), set);
                 }
                 set.Add(composite);
-            } while ((firstUnit & COMP_1_LAST_TUPLE) == 0);
+            } while ((firstUnit & Comp1LastTuple) == 0);
         }
 
         /// <summary>
@@ -3366,16 +3364,16 @@ namespace ICU4N.Impl
                 else
                 {
                     // 'a' has a compositions list in extraData
-                    list = ((MIN_NORMAL_MAYBE_YES - minMaybeYes) + norm16) >> OFFSET_SHIFT;
+                    list = ((MinNormalMaybeYes - minMaybeYes) + norm16) >> OffsetShift;
                     if (norm16 > minYesNo)
                     {  // composite 'a' has both mapping & compositions list
                         list +=  // mapping pointer
                             1 +  // +1 to skip the first unit with the mapping length
-                            (maybeYesCompositions[list] & MAPPING_LENGTH_MASK);  // + mapping length
+                            (maybeYesCompositions[list] & MappingLengthMask);  // + mapping length
                     }
                 }
             }
-            else if (norm16 < minMaybeYes || MIN_NORMAL_MAYBE_YES <= norm16)
+            else if (norm16 < minMaybeYes || MinNormalMaybeYes <= norm16)
             {
                 return -1;
             }
@@ -3412,7 +3410,7 @@ namespace ICU4N.Impl
 
         private bool Norm16HasCompBoundaryAfter(int norm16, bool onlyContiguous)
         {
-            return (norm16 & HAS_COMP_BOUNDARY_AFTER) != 0 &&
+            return (norm16 & HasCompBoundaryAfterValue) != 0 &&
                 (!onlyContiguous || IsTrailCC01ForCompBoundaryAfter(norm16));
         }
 
@@ -3425,7 +3423,7 @@ namespace ICU4N.Impl
         private bool IsTrailCC01ForCompBoundaryAfter(int norm16)
         {
             return IsInert(norm16) || (IsDecompNoAlgorithmic(norm16) ?
-                (norm16 & DELTA_TCCC_MASK) <= DELTA_TCCC_1 : extraData[norm16 >> OFFSET_SHIFT] <= 0x1ff);
+                (norm16 & DeltaTcccMask) <= DeltaTccc1 : extraData[norm16 >> OffsetShift] <= 0x1ff);
         }
 
         private int FindPreviousCompBoundary(ReadOnlySpan<char> s, int p, bool onlyContiguous)
@@ -3516,7 +3514,7 @@ namespace ICU4N.Impl
         private void AddToStartSet(Trie2Writable newData, int origin, int decompLead)
         {
             int canonValue = newData.Get(decompLead);
-            if ((canonValue & (CANON_HAS_SET | CANON_VALUE_MASK)) == 0 && origin != 0)
+            if ((canonValue & (CanonHasSet | CanonValueMask)) == 0 && origin != 0)
             {
                 // origin is the first character whose decomposition starts with
                 // the character for which we are setting the value.
@@ -3526,10 +3524,10 @@ namespace ICU4N.Impl
             {
                 // origin is not the first character, or it is U+0000.
                 UnicodeSet set;
-                if ((canonValue & CANON_HAS_SET) == 0)
+                if ((canonValue & CanonHasSet) == 0)
                 {
-                    int firstOrigin = canonValue & CANON_VALUE_MASK;
-                    canonValue = (canonValue & ~CANON_VALUE_MASK) | CANON_HAS_SET | canonStartSets.Count;
+                    int firstOrigin = canonValue & CanonValueMask;
+                    canonValue = (canonValue & ~CanonValueMask) | CanonHasSet | canonStartSets.Count;
                     newData.Set(decompLead, canonValue);
                     canonStartSets.Add(set = new UnicodeSet());
                     if (firstOrigin != 0)
@@ -3539,7 +3537,7 @@ namespace ICU4N.Impl
                 }
                 else
                 {
-                    set = canonStartSets[canonValue & CANON_VALUE_MASK];
+                    set = canonStartSets[canonValue & CanonValueMask];
                 }
                 set.Add(origin);
             }
@@ -3572,9 +3570,9 @@ namespace ICU4N.Impl
         private IList<UnicodeSet> canonStartSets;
 
         // bits in canonIterData
-        private const int CANON_NOT_SEGMENT_STARTER = unchecked((int)0x80000000);
-        private const int CANON_HAS_COMPOSITIONS = 0x40000000;
-        private const int CANON_HAS_SET = 0x200000;
-        private const int CANON_VALUE_MASK = 0x1fffff;
+        private const int CanonNotSegmentStarter = unchecked((int)0x80000000);
+        private const int CanonHasCompositions = 0x40000000;
+        private const int CanonHasSet = 0x200000;
+        private const int CanonValueMask = 0x1fffff;
     }
 }
