@@ -4,10 +4,8 @@
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
-    <TargetFrameworks Condition="$(VisualStudioVersion) &gt;= 16.10">net7.0;net6.0;</TargetFrameworks>
-    <TargetFrameworks>$(TargetFrameworks)netstandard2.0;net451;net40</TargetFrameworks>
-    
-    <DefineConstants Condition=" '$(TargetFramework)' == 'netstandard1.3' ">$(DefineConstants);LIBLOG_PORTABLE</DefineConstants>
+    <TargetFrameworks Condition="$(VisualStudioVersion) &gt;= 16.10">net8.0;net6.0</TargetFrameworks>
+    <TargetFrameworks>$(TargetFrameworks);netstandard2.0;net462;net451;net40</TargetFrameworks>
 
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     
@@ -41,7 +39,7 @@
     <PackageReference Include="J2N" Version="$(J2NPackageReferenceVersion)" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net7.0' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="$(MicrosoftExtensionsCachingMemoryPackageReferenceVersion)" />
   </ItemGroup>
 
@@ -50,6 +48,11 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="$(MicrosoftExtensionsCachingMemoryPackageReferenceVersion)" />
+    <PackageReference Include="System.Memory" Version="$(SystemMemoryPackageReferenceVersion)" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="$(MicrosoftExtensionsCachingMemoryPackageReferenceVersion)" />
     <PackageReference Include="System.Memory" Version="$(SystemMemoryPackageReferenceVersion)" />
   </ItemGroup>
@@ -70,7 +73,7 @@
   <PropertyGroup>
     <ICU4JResourceConverterDir>$(SolutionDir)src/tools/ICU4JResourceConverter</ICU4JResourceConverterDir>
     <ICU4JResourceConverterTargetFramework>net5.0</ICU4JResourceConverterTargetFramework>
-    <ICU4JResourceConverterTargetFramework Condition="'$(VisualStudioVersion)' &gt;= '16.10'">net7.0</ICU4JResourceConverterTargetFramework>
+    <ICU4JResourceConverterTargetFramework Condition="'$(VisualStudioVersion)' &gt;= '16.10'">net8.0</ICU4JResourceConverterTargetFramework>
     <ICU4JResourceConverterOutputDir>$(ICU4JResourceConverterDir)/bin/$(Configuration)/$(ICU4JResourceConverterTargetFramework)</ICU4JResourceConverterOutputDir>
 
     <ICU4JDownloadConfigFilePath>$(SolutionDir).build/icu4j-download-urls.txt</ICU4JDownloadConfigFilePath>

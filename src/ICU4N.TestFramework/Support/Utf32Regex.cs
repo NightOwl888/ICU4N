@@ -59,10 +59,12 @@ namespace ICU4N.Support
         }
 
 #if FEATURE_SERIALIZABLE
+#pragma warning disable SYSLIB0051 // .ctor(SerializationInfo, StreamingContext) is obsolete
         protected Utf32Regex(System.Runtime.Serialization.SerializationInfo serializationInfo, System.Runtime.Serialization.StreamingContext streamingContext)
             : base(serializationInfo, streamingContext)
         {
         }
+#pragma warning restore SYSLIB0051 // .ctor(SerializationInfo, StreamingContext) is obsolete
 #endif
 
         private static string ConvertUTF32Characters(string regexString)
