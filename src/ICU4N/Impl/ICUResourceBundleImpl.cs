@@ -39,9 +39,9 @@ namespace ICU4N.Impl
                 case UResourceType.Alias:
                     return GetAliasedResource(this, null, 0, _key, _resource, aliasesVisited, requested);
                 case UResourceType.Int32:
-                    return new ICUResourceBundleImpl.ResourceInt(this, _key, _resource);
+                    return new ICUResourceBundleImpl.ResourceInt32(this, _key, _resource);
                 case UResourceType.Int32Vector:
-                    return new ICUResourceBundleImpl.ResourceIntVector(this, _key, _resource);
+                    return new ICUResourceBundleImpl.ResourceInt32Vector(this, _key, _resource);
                 case UResourceType.Array:
                 case UResourceType.Array16:
                     return new ICUResourceBundleImpl.ResourceArray(this, _key, _resource);
@@ -74,7 +74,7 @@ namespace ICU4N.Impl
             {
             }
         }
-        private sealed class ResourceInt : ICUResourceBundleImpl // ICU4N TODO: API - rename ResourceInt32
+        private sealed class ResourceInt32 : ICUResourceBundleImpl
         {
             public override UResourceType Type => UResourceType.Int32;
 
@@ -87,7 +87,7 @@ namespace ICU4N.Impl
             {
                 return ICUResourceBundleReader.RES_GET_UINT(resource);
             }
-            internal ResourceInt(ICUResourceBundleImpl container, string key, int resource)
+            internal ResourceInt32(ICUResourceBundleImpl container, string key, int resource)
                     : base(container, key, resource)
             {
             }
@@ -118,7 +118,7 @@ namespace ICU4N.Impl
                 }
             }
         }
-        private sealed class ResourceIntVector : ICUResourceBundleImpl // ICU4N TODO: API Rename ResourceInt32Vector
+        private sealed class ResourceInt32Vector : ICUResourceBundleImpl
         {
             public override UResourceType Type => UResourceType.Int32Vector;
 
@@ -126,7 +126,7 @@ namespace ICU4N.Impl
             {
                 return wholeBundle.reader.GetInt32Vector(resource);
             }
-            internal ResourceIntVector(ICUResourceBundleImpl container, string key, int resource)
+            internal ResourceInt32Vector(ICUResourceBundleImpl container, string key, int resource)
                 : base(container, key, resource)
             {
             }

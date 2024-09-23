@@ -314,7 +314,7 @@ namespace ICU4N.Numerics.BigMath
                 if (substrStart == grabNumbersStart)
                     return ParsingStatus.Format_UnparsibleDigit;
 
-                newDigit = Multiplication.MultiplyByInt(digits, digitIndex, bigRadix);
+                newDigit = Multiplication.MultiplyByInt32(digits, digitIndex, bigRadix);
                 newDigit += Elementary.InplaceAdd(digits, digitIndex, bigRadixDigit);
                 digits[digitIndex++] = newDigit;
             }

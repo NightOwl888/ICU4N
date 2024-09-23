@@ -8,7 +8,7 @@ namespace ICU4N.Dev.Test.Collate
 {
     public class Counter<T> : IEnumerable<T>, IComparable<Counter<T>>
     {
-        readonly IDictionary<T, RWLong> map;
+        readonly IDictionary<T, RWInt64> map;
         readonly IComparer<T> comparer;
 
         public Counter()
@@ -21,27 +21,27 @@ namespace ICU4N.Dev.Test.Collate
             if (this.comparer != null)
             {
                 this.comparer = comparer;
-                map = new SortedDictionary<T, RWLong>(this.comparer);
+                map = new SortedDictionary<T, RWInt64>(this.comparer);
             }
             else
             {
                 //map = new LinkedHashMap<T, RWLong>();
-                map = new Dictionary<T, RWLong>();
+                map = new Dictionary<T, RWInt64>();
             }
         }
 
-        public sealed class RWLong : IComparable<RWLong>
+        public sealed class RWInt64 : IComparable<RWInt64>
         {
             // the uniqueCount ensures that two different RWIntegers will always be different
             static int uniqueCount;
             public long value;
             private readonly int forceUnique;
-            internal RWLong()
+            internal RWInt64()
             {
                 forceUnique = Interlocked.Increment(ref uniqueCount) - 1; // make thread-safe
             }
 
-            public int CompareTo(RWLong that)
+            public int CompareTo(RWInt64 that)
             {
                 if (that.value < value) return -1;
                 if (that.value > value) return 1;
@@ -57,8 +57,8 @@ namespace ICU4N.Dev.Test.Collate
 
         public Counter<T> Add(T obj, long countValue)
         {
-            if (!map.TryGetValue(obj, out RWLong count))
-                map[obj] = count = new RWLong();
+            if (!map.TryGetValue(obj, out RWInt64 count))
+                map[obj] = count = new RWInt64();
 
             count.value += countValue;
             return this;
@@ -71,7 +71,7 @@ namespace ICU4N.Dev.Test.Collate
 
         public long Get(T obj)
         {
-            return !map.TryGetValue(obj, out RWLong count) ? 0 : count.value;
+            return !map.TryGetValue(obj, out RWInt64 count) ? 0 : count.value;
         }
 
         public Counter<T> Clear()
@@ -94,10 +94,10 @@ namespace ICU4N.Dev.Test.Collate
 
         private class Entry
         {
-            internal RWLong count;
+            internal RWInt64 count;
             internal T value;
             internal int uniqueness;
-            public Entry(RWLong count, T value, int uniqueness)
+            public Entry(RWInt64 count, T value, int uniqueness)
             {
                 this.count = count;
                 this.value = value;
@@ -178,7 +178,7 @@ namespace ICU4N.Dev.Test.Collate
             return GetEnumerator();
         }
 
-        public IDictionary<T, RWLong> GetMap()
+        public IDictionary<T, RWInt64> GetMap()
         {
             return map; // older code was protecting map, but not the integer values.
         }

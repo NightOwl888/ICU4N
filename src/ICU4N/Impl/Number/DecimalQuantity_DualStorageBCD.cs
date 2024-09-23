@@ -42,12 +42,12 @@ namespace ICU4N.Numerics
 
         public DecimalQuantity_DualStorageBCD(long input)
         {
-            SetToLong(input);
+            SetToInt64(input);
         }
 
         public DecimalQuantity_DualStorageBCD(int input)
         {
-            SetToInt(input);
+            SetToInt32(input);
         }
 
         public DecimalQuantity_DualStorageBCD(double input)
@@ -74,11 +74,11 @@ namespace ICU4N.Numerics
         {
             if (number is Long)
             {
-                SetToLong(number.ToInt64());
+                SetToInt64(number.ToInt64());
             }
             else if (number is Integer)
             {
-                SetToInt(number.ToInt32());
+                SetToInt32(number.ToInt32());
             }
             else if (number is Double)
             {
@@ -210,7 +210,7 @@ namespace ICU4N.Numerics
             origDelta = 0;
         }
 
-        protected override void ReadIntToBcd(int n)
+        protected override void ReadInt32ToBcd(int n)
         {
             //assert n != 0;
             if (n == 0)
@@ -228,7 +228,7 @@ namespace ICU4N.Numerics
             precision = 16 - i;
         }
 
-        protected override void ReadLongToBcd(long n)
+        protected override void ReadInt64ToBcd(long n)
         {
             //assert n != 0;
             if (n == 0)

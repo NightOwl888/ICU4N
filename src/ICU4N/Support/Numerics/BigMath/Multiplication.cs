@@ -260,11 +260,11 @@ namespace ICU4N.Numerics.BigMath
 
             if (aLen == 1)
             {
-                resDigits[bLen] = MultiplyByInt(resDigits, bDigits, bLen, aDigits[0]);
+                resDigits[bLen] = MultiplyByInt32(resDigits, bDigits, bLen, aDigits[0]);
             }
             else if (bLen == 1)
             {
-                resDigits[aLen] = MultiplyByInt(resDigits, aDigits, aLen, bDigits[0]);
+                resDigits[aLen] = MultiplyByInt32(resDigits, aDigits, aLen, bDigits[0]);
             }
             else
             {
@@ -302,7 +302,7 @@ namespace ICU4N.Numerics.BigMath
         * @param factor the multiplier
         * @return the top digit of production
         */
-        private static int MultiplyByInt(int[] res, int[] a, int aSize, int factor)
+        private static int MultiplyByInt32(int[] res, int[] a, int aSize, int factor)
         {
             long carry = 0;
             for (int i = 0; i < aSize; i++)
@@ -322,9 +322,9 @@ namespace ICU4N.Numerics.BigMath
         * @param factor the multiplier
         * @return the top digit of production
         */
-        public static int MultiplyByInt(int[] a, int aSize, int factor)
+        public static int MultiplyByInt32(int[] a, int aSize, int factor)
         {
-            return MultiplyByInt(a, a, aSize, factor);
+            return MultiplyByInt32(a, a, aSize, factor);
         }
 
         /**
@@ -333,7 +333,7 @@ namespace ICU4N.Numerics.BigMath
         * @param factor a positive {@code int} number
         * @return {@code val * factor}
         */
-        public static BigInteger MultiplyByPositiveInt(BigInteger val, int factor)
+        public static BigInteger MultiplyByPositiveInt32(BigInteger val, int factor)
         {
             int resSign = val.Sign;
             if (resSign == 0)
@@ -356,7 +356,7 @@ namespace ICU4N.Numerics.BigMath
             int resLength = aNumberLength + 1;
             int[] resDigits = new int[resLength];
 
-            resDigits[aNumberLength] = MultiplyByInt(resDigits, aDigits, aNumberLength, factor);
+            resDigits[aNumberLength] = MultiplyByInt32(resDigits, aDigits, aNumberLength, factor);
             BigInteger result = new BigInteger(resSign, resLength, resDigits);
             result.CutOffLeadingZeroes();
             return result;
@@ -439,7 +439,7 @@ namespace ICU4N.Numerics.BigMath
         {
             // PRE: exp >= 0
             return ((exp < TenPows.Length)
-            ? MultiplyByPositiveInt(val, TenPows[(int)exp])
+            ? MultiplyByPositiveInt32(val, TenPows[(int)exp])
             : val * PowerOf10(exp));
         }
 
@@ -534,7 +534,7 @@ namespace ICU4N.Numerics.BigMath
             // PRE: exp >= 0
             if (exp < FivePows.Length)
             {
-                return MultiplyByPositiveInt(val, FivePows[exp]);
+                return MultiplyByPositiveInt32(val, FivePows[exp]);
             }
             else if (exp < BigFivePows.Length)
             {

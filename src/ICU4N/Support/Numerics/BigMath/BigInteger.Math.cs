@@ -497,7 +497,7 @@ namespace ICU4N.Numerics.BigMath
             int[] divisorDigits = divisor.digits;
             if (divisorLen == 1)
             {
-                var values = Division.DivideAndRemainderByInteger(dividend, divisorDigits[0], divisorSign);
+                var values = Division.DivideAndRemainderByInt32(dividend, divisorDigits[0], divisorSign);
                 remainder = values[1];
                 return values[0];
             }
@@ -585,7 +585,7 @@ namespace ICU4N.Numerics.BigMath
             int resSign = ((thisSign == divisorSign) ? 1 : -1);
             if (divisorLen == 1)
             {
-                Division.DivideArrayByInt(resDigits, dividend.digits, thisLen,
+                Division.DivideArrayByInt32(resDigits, dividend.digits, thisLen,
                     divisor.digits[0]);
             }
             else
@@ -635,7 +635,7 @@ namespace ICU4N.Numerics.BigMath
             int[] resDigits = new int[resLength];
             if (resLength == 1)
             {
-                resDigits[0] = Division.RemainderArrayByInt(dividend.digits, thisLen,
+                resDigits[0] = Division.RemainderArrayByInt32(dividend.digits, thisLen,
                     divisor.digits[0]);
             }
             else
