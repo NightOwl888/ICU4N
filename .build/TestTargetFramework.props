@@ -5,6 +5,7 @@
     Note that the main libraries are multi-targeted, so this has no effect on how they are compiled,
     this setting only affects the test projects. -->
     <!--<TargetFramework>net47</TargetFramework>-->
+    <!--<TargetFramework>net472</TargetFramework>-->
     <!--<TargetFramework>net48</TargetFramework>-->
     <!--<TargetFramework>netcoreapp2.0</TargetFramework>-->
     <!--<TargetFramework>net5.0</TargetFramework>-->
@@ -22,18 +23,20 @@
       net8.0            | net8.0
       net6.0            | net6.0
       net5.0            | netstandard2.0
-      net48             | net451
+      net48             | net462
+      net472            | net451
       net47             | net40
 
     -->
     <TargetFrameworks Condition="'$(TestAllTargetFrameworks)' == 'true' And '$(VisualStudioVersion)' &gt;= '16.10'">net8.0;net6.0</TargetFrameworks>
-    <TargetFrameworks Condition="'$(TestAllTargetFrameworks)' == 'true'">$(TargetFrameworks);net5.0;net48;net47</TargetFrameworks>
+    <TargetFrameworks Condition="'$(TestAllTargetFrameworks)' == 'true'">$(TargetFrameworks);net5.0;net48;net472;net47</TargetFrameworks>
     <TargetFramework Condition=" '$(TargetFrameworks)' != '' "></TargetFramework>
 
   </PropertyGroup>
 
   <PropertyGroup Label="Mismatched Target Framework (to override the target framework under test)">
     <SetTargetFramework></SetTargetFramework>
+    <SetTargetFramework Condition=" '$(TargetFramework)' == 'net472' ">TargetFramework=net451</SetTargetFramework>
     <SetTargetFramework Condition=" '$(TargetFramework)' == 'net47' ">TargetFramework=net40</SetTargetFramework>
   </PropertyGroup>
   

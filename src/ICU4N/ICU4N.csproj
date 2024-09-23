@@ -5,7 +5,7 @@
 
   <PropertyGroup>
     <TargetFrameworks Condition="$(VisualStudioVersion) &gt;= 16.10">net8.0;net6.0</TargetFrameworks>
-    <TargetFrameworks>$(TargetFrameworks);netstandard2.0;net451;net40</TargetFrameworks>
+    <TargetFrameworks>$(TargetFrameworks);netstandard2.0;net462;net451;net40</TargetFrameworks>
 
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     
@@ -48,6 +48,11 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="$(MicrosoftExtensionsCachingMemoryPackageReferenceVersion)" />
+    <PackageReference Include="System.Memory" Version="$(SystemMemoryPackageReferenceVersion)" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="$(MicrosoftExtensionsCachingMemoryPackageReferenceVersion)" />
     <PackageReference Include="System.Memory" Version="$(SystemMemoryPackageReferenceVersion)" />
   </ItemGroup>

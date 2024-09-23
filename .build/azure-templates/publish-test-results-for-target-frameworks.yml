@@ -66,6 +66,16 @@ steps:
 
 - template: publish-test-results.yml
   parameters:
+    framework: 'net472'
+    testProjectName: '${{ parameters.testProjectName }}'
+    osName: '${{ parameters.osName }}'
+    testPlatform: '${{ parameters.testPlatform }}'
+    testResultsFormat: '${{ parameters.testResultsFormat }}'
+    testResultsArtifactName: '${{ parameters.testResultsArtifactName }}'
+    testResultsFileName: '${{ parameters.testResultsFileName }}'
+
+- template: publish-test-results.yml
+  parameters:
     framework: 'net47'
     testProjectName: '${{ parameters.testProjectName }}'
     osName: '${{ parameters.osName }}'
