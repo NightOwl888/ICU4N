@@ -843,14 +843,14 @@ namespace ICU4N.Impl
                 return version[0] == 3;
             }
         }
-        private static readonly IsAcceptable isAcceptable = new IsAcceptable();
-        private const int DataFormat = 0x4e726d32;  // "Nrm2"
+        private static readonly IsAcceptable IS_ACCEPTABLE = new IsAcceptable();
+        private const int DATA_FORMAT = 0x4e726d32;  // "Nrm2"
 
         public Normalizer2Impl Load(ByteBuffer bytes)
         {
             try
             {
-                dataVersion = ICUBinary.ReadHeaderAndDataVersion(bytes, DataFormat, isAcceptable);
+                dataVersion = ICUBinary.ReadHeaderAndDataVersion(bytes, DATA_FORMAT, IS_ACCEPTABLE);
                 int indexesLength = bytes.GetInt32() / 4;  // inIndexes[IX_NORM_TRIE_OFFSET]/4
                 if (indexesLength <= IxMinLcccCp)
                 {
@@ -1004,7 +1004,7 @@ namespace ICU4N.Impl
         {
             public int Map(int input)
             {
-                return (int)(input & CanonNotSegmentStarter);
+                return (int)(input & CANON_NOT_SEGMENT_STARTER);
             }
         }
 
@@ -1057,15 +1057,15 @@ namespace ICU4N.Impl
                                 if (IsMaybeOrNonZeroCC(norm16))
                                 {
                                     // not a segment starter if it occurs in a decomposition or has cc!=0
-                                    newValue |= (int)CanonNotSegmentStarter;
+                                    newValue |= (int)CANON_NOT_SEGMENT_STARTER;
                                     if (norm16 < MinNormalMaybeYes)
                                     {
-                                        newValue |= CanonHasCompositions;
+                                        newValue |= CANON_HAS_COMPOSITIONS;
                                     }
                                 }
                                 else if (norm16 < minYesNo)
                                 {
-                                    newValue |= CanonHasCompositions;
+                                    newValue |= CANON_HAS_COMPOSITIONS;
                                 }
                                 else
                                 {
@@ -1091,7 +1091,7 @@ namespace ICU4N.Impl
                                         {
                                             if (c == c2 && (extraData[mapping - 1] & 0xff) != 0)
                                             {
-                                                newValue |= (int)CanonNotSegmentStarter;  // original c has cc!=0
+                                                newValue |= (int)CANON_NOT_SEGMENT_STARTER;  // original c has cc!=0
                                             }
                                         }
                                         // Skip empty mappings (no characters in the decomposition).
@@ -1111,9 +1111,9 @@ namespace ICU4N.Impl
                                                 {
                                                     c2 = extraData.CodePointAt(mapping);
                                                     int c2Value = newData.Get(c2);
-                                                    if ((c2Value & CanonNotSegmentStarter) == 0)
+                                                    if ((c2Value & CANON_NOT_SEGMENT_STARTER) == 0)
                                                     {
-                                                        newData.Set(c2, c2Value | (int)CanonNotSegmentStarter);
+                                                        newData.Set(c2, c2Value | (int)CANON_NOT_SEGMENT_STARTER);
                                                     }
                                                 }
                                             }
@@ -1526,14 +1526,14 @@ namespace ICU4N.Impl
         public bool GetCanonStartSet(int c, UnicodeSet set)
         {
             EnsureCanonIterData(); // ICU4N: Make this call automatically, so the user doesn't have to bother with it.
-            int canonValue = canonIterData.Get(c) & ~CanonNotSegmentStarter;
+            int canonValue = canonIterData.Get(c) & ~CANON_NOT_SEGMENT_STARTER;
             if (canonValue == 0)
             {
                 return false;
             }
             set.Clear();
-            int value = canonValue & CanonValueMask;
-            if ((canonValue & CanonHasSet) != 0)
+            int value = canonValue & CANON_VALUE_MASK;
+            if ((canonValue & CANON_HAS_SET) != 0)
             {
                 set.AddAll(canonStartSets[value]);
             }
@@ -1541,7 +1541,7 @@ namespace ICU4N.Impl
             {
                 set.Add(value);
             }
-            if ((canonValue & CanonHasCompositions) != 0)
+            if ((canonValue & CANON_HAS_COMPOSITIONS) != 0)
             {
                 int norm16 = GetNorm16(c);
                 if (norm16 == JamoL)
@@ -3514,7 +3514,7 @@ namespace ICU4N.Impl
         private void AddToStartSet(Trie2Writable newData, int origin, int decompLead)
         {
             int canonValue = newData.Get(decompLead);
-            if ((canonValue & (CanonHasSet | CanonValueMask)) == 0 && origin != 0)
+            if ((canonValue & (CANON_HAS_SET | CANON_VALUE_MASK)) == 0 && origin != 0)
             {
                 // origin is the first character whose decomposition starts with
                 // the character for which we are setting the value.
@@ -3524,10 +3524,10 @@ namespace ICU4N.Impl
             {
                 // origin is not the first character, or it is U+0000.
                 UnicodeSet set;
-                if ((canonValue & CanonHasSet) == 0)
+                if ((canonValue & CANON_HAS_SET) == 0)
                 {
-                    int firstOrigin = canonValue & CanonValueMask;
-                    canonValue = (canonValue & ~CanonValueMask) | CanonHasSet | canonStartSets.Count;
+                    int firstOrigin = canonValue & CANON_VALUE_MASK;
+                    canonValue = (canonValue & ~CANON_VALUE_MASK) | CANON_HAS_SET | canonStartSets.Count;
                     newData.Set(decompLead, canonValue);
                     canonStartSets.Add(set = new UnicodeSet());
                     if (firstOrigin != 0)
@@ -3537,7 +3537,7 @@ namespace ICU4N.Impl
                 }
                 else
                 {
-                    set = canonStartSets[canonValue & CanonValueMask];
+                    set = canonStartSets[canonValue & CANON_VALUE_MASK];
                 }
                 set.Add(origin);
             }
@@ -3570,9 +3570,9 @@ namespace ICU4N.Impl
         private IList<UnicodeSet> canonStartSets;
 
         // bits in canonIterData
-        private const int CanonNotSegmentStarter = unchecked((int)0x80000000);
-        private const int CanonHasCompositions = 0x40000000;
-        private const int CanonHasSet = 0x200000;
-        private const int CanonValueMask = 0x1fffff;
+        private const int CANON_NOT_SEGMENT_STARTER = unchecked((int)0x80000000);
+        private const int CANON_HAS_COMPOSITIONS = 0x40000000;
+        private const int CANON_HAS_SET = 0x200000;
+        private const int CANON_VALUE_MASK = 0x1fffff;
     }
 }
