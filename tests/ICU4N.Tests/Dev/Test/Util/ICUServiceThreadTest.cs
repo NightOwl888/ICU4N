@@ -505,7 +505,7 @@ namespace ICU4N.Dev.Test.Util
             RegisterFactories(service, fc);
 
             IServiceFactory[] factories = (IServiceFactory[])fc.ToArray();
-            var comp = new AnonymousComparer<object>(compare: (lhs, rhs) =>
+            var comp = Comparer<object>.Create(comparison: (lhs, rhs) =>
             {
                 return lhs.ToString().CompareToOrdinal(rhs.ToString());
             });

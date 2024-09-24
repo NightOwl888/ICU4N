@@ -474,7 +474,7 @@ namespace ICU4N.Dev.Test.Util
             // list the display names in reverse order
             {
                 Logln("display names in reverse order: " +
-                    service.GetDisplayNames(new UCultureInfo("en_US"), new AnonymousComparer<object>(compare: (lhs, rhs) =>
+                    service.GetDisplayNames(new UCultureInfo("en_US"), Comparer<object>.Create(comparison: (lhs, rhs) =>
                     {
                         return -StringComparer.OrdinalIgnoreCase.Compare((string)lhs, (string)rhs);
                     })));
@@ -888,7 +888,7 @@ namespace ICU4N.Dev.Test.Util
             // hmmm, the default toString function doesn't print in sorted order for TreeMap
             {
                 var map = service.GetDisplayNames(new UCultureInfo("en_US"),
-                    new AnonymousComparer<object>(compare: (lhs, rhs) =>
+                    Comparer<object>.Create(comparison: (lhs, rhs) =>
                     {
                         return -StringComparer.OrdinalIgnoreCase.Compare((string)lhs, (string)rhs);
                     }),
