@@ -105,7 +105,7 @@ namespace ICU4N.Impl
         private sealed class SoftValue : CacheValue<TValue>
         {
             private SoftReference<TValue> reference;
-            private readonly ReaderWriterLockSlim syncLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
+            private readonly ReaderWriterLockSlim syncLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion); // ICU4N: No need to dispose because there are no unmanaged resources
             private readonly Func<TValue> createValue;
             private static readonly TimeSpan SlidingExpiration = new TimeSpan(hours: 0, minutes: 5, seconds: 0);
 
@@ -113,11 +113,6 @@ namespace ICU4N.Impl
             {
                 this.createValue = createValue ?? throw new ArgumentNullException(nameof(createValue));
                 this.reference = CreateReference(initialValue);
-            }
-
-            ~SoftValue() // ICU4N specific - Added finalizer
-            {
-                syncLock?.Dispose();
             }
 
             private SoftReference<TValue> CreateReference(TValue value)
