@@ -14,4 +14,9 @@
     <None Include="$(ICU4NSatelliteAssemblyOutputDir)/**/*.resources.dll" Pack="true" PackagePath="lib/netstandard1.0" Visible="false" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Reference NETStandard.Library for .NET Standard 1.0, but avoid including it as a transitive dependency -->
+    <PackageReference Update="NETStandard.Library" Version="$(NETStandardLibrary10PackageReferenceVersion)" PrivateAssets="All" />
+  </ItemGroup>
+
 </Project>
