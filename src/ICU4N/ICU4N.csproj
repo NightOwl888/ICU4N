@@ -10,6 +10,8 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     
     <SatelliteAssemblyTargetFramework>netstandard2.0</SatelliteAssemblyTargetFramework>
+    <IsNetStandard10Compatible>true</IsNetStandard10Compatible>
+    <IsNetStandard10Compatible Condition="'$(TargetFramework)' == 'net40'">false</IsNetStandard10Compatible>
   </PropertyGroup>
 
   <PropertyGroup Label="NuGet Package Settings">
@@ -33,6 +35,17 @@
     <InternalsVisibleTo Include="ICU4N.Tests" />
     <InternalsVisibleTo Include="ICU4N.Tests.Collation" />
     <InternalsVisibleTo Include="ICU4N.Tests.Transliterator" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(IsNetStandard10Compatible)' == 'true'">
+    <ProjectReference Include="..\ICU4N.Resources\ICU4N.Resources.csproj">
+      <!--<ExcludeAssets>compile;runtime</ExcludeAssets>-->
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(IsNetStandard10Compatible)' != 'true'">
+    <ProjectReference Include="..\ICU4N.Resources.NETFramework4.0\ICU4N.Resources.NETFramework4.0.csproj">
+      <!--<ExcludeAssets>compile;runtime</ExcludeAssets>-->
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>

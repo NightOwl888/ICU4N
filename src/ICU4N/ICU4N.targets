@@ -30,9 +30,9 @@
     </PropertyGroup>
   </Target>
   
-  <ItemGroup Condition=" '$(ICU4NResourcesPackageIsReferenced)' == 'false' And '$(IncludeICU4NResources.ToLowerInvariant())' == 'true' And '$(ICU4NDataExists.ToLowerInvariant())' == 'false' ">
+  <!--<ItemGroup Condition=" '$(ICU4NResourcesPackageIsReferenced)' == 'false' And '$(IncludeICU4NResources.ToLowerInvariant())' == 'true' And '$(ICU4NDataExists.ToLowerInvariant())' == 'false' ">
     <PackageReference Include="$(ICU4NResourcesPackageName)" Version="$(ICU4NPackageVersion)" PrivateAssets="all" />
-  </ItemGroup>
+  </ItemGroup>-->
 
   <Target Name="CheckICU4NResourcesPackagesConfig" BeforeTargets="BeforeCompile" Condition=" '$(RestoreProjectStyle)' != 'PackageReference' ">
     <PropertyGroup>
