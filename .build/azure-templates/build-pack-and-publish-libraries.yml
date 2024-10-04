@@ -61,7 +61,7 @@ steps:
     command: custom
     projects: '${{ parameters.solutionFilesConvention }}'
     custom: pack
-    arguments: '--configuration ${{ parameters.buildConfiguration }} --output "$(Build.ArtifactStagingDirectory)/${{ parameters.nugetArtifactName }}" --no-build --verbosity normal /p:PackageVersion="${{ parameters.packageVersion }}"'
+    arguments: '--configuration ${{ parameters.buildConfiguration }} --output "$(Build.ArtifactStagingDirectory)/${{ parameters.nugetArtifactName }}" --no-build --verbosity normal /p:PackageVersion="${{ parameters.packageVersion }}" /p:ReferenceICUResources=true'
 
   # Copy the .pdb files as build artifacts, which will later be used
   # to push to the Azure Artifacts symbol server.

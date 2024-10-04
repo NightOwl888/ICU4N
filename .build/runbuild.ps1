@@ -113,7 +113,8 @@ task Pack -depends Compile -description "This task creates the NuGet packages" {
             --no-build `
             --no-restore `
             /p:PackageVersion="$localPackageVersion" `
-            /p:SkipGitVersioning=true
+            /p:SkipGitVersioning=true `
+            /p:ReferenceICUResources=true
     }
 }
 
