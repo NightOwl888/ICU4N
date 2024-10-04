@@ -74,15 +74,15 @@ stages:
       parameters:
         sdkVersion: '$(DotNetSDKVersion)'
 
-    - bash: |
-        cd 'C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin'
-        dir
-      displayName: 'Check for .NET Framework SDKs'
+#    - bash: |
+#        cd 'C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin'
+#        dir
+#      displayName: 'Check for .NET Framework SDKs'
 
-    - pwsh: |
-        cd 'C:\hostedtoolcache\windows\dotnet\sdk'
-        dir -r  | Where-Object {$_.PsIsContainer -eq $false} | % { $_.FullName }
-      displayName: 'Check for .NET Core SDKs'
+#    - pwsh: |
+#        cd 'C:\hostedtoolcache\windows\dotnet\sdk'
+#        dir -r  | Where-Object {$_.PsIsContainer -eq $false} | % { $_.FullName }
+#      displayName: 'Check for .NET Core SDKs'
     
     - template: '.build/azure-templates/gitversioning-increment-and-persist-versions.yml'
       parameters:
