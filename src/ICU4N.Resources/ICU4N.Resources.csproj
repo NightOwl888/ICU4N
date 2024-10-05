@@ -7,10 +7,11 @@
 
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <IncludeSymbols>false</IncludeSymbols>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  
+    <NoWarn Condition="'$(PackResourceStubs)' == 'true'" Label="Some target frameworks declared in the dependencies group of the nuspec and lib/ref folder do not have exact matches in the other location.">NU5128</NoWarn>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(PackResourceStubs)' != 'true'">
     <None Include="$(ICU4NSatelliteAssemblyOutputDir)/**/*.resources.dll" Pack="true" PackagePath="lib/netstandard1.0" Visible="false" />
   </ItemGroup>
 
