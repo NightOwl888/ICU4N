@@ -3,7 +3,6 @@ using ICU4N.Logging;
 using ICU4N.Reflection;
 using ICU4N.Resources;
 using ICU4N.Support;
-using ICU4N.Support.Globalization;
 using ICU4N.Util;
 using J2N;
 using System;

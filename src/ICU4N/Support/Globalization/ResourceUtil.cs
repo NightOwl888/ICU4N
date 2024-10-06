@@ -1,4 +1,4 @@
-﻿namespace ICU4N.Support.Globalization
+﻿namespace ICU4N.Globalization
 {
     internal static class ResourceUtil
     {

@@ -1,7 +1,6 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Reflection;
 using ICU4N.Resources;
-using ICU4N.Support.Globalization;
 using ICU4N.Util;
 using J2N;
 using J2N.Collections.Generic.Extensions;
@@ -14,7 +13,6 @@ using System.Linq;
 using System.Reflection;
 using System.Resources;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using JCG = J2N.Collections.Generic;
