@@ -39,10 +39,10 @@
   
   <!-- ICU4N TODO: Add version constraints conforming with ICU versioning rules for resources -->
   <ItemGroup Condition="'$(ReferenceICUResources.ToLowerInvariant())' == 'true' And '$(IsNetStandard10Compatible.ToLowerInvariant())' == 'true'">
-    <PackageReference Include="ICU4N.Resources" Version="[$(PackageVersion)]"/>
+    <PackageReference Include="ICU4N.Resources" Version="$(PackageVersion)"/>
   </ItemGroup>
   <ItemGroup Condition="'$(ReferenceICUResources.ToLowerInvariant())' == 'true' And '$(IsNetStandard10Compatible.ToLowerInvariant())' != 'true'">
-    <PackageReference Include="ICU4N.Resources.NETFramework4.0" Version="[$(PackageVersion)]"/>
+    <PackageReference Include="ICU4N.Resources.NETFramework4.0" Version="$(PackageVersion)"/>
   </ItemGroup>
 
   <ItemGroup>
