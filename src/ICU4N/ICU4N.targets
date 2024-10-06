@@ -1,10 +1,6 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <SatelliteResourceLanguages>agq;zgh-MA</SatelliteResourceLanguages>
-  </PropertyGroup>
-  
-  <PropertyGroup>
     <!-- Set to false to never automatically reference the ICU4N.Resources NuGet package -->
     <IncludeICU4NResources Condition=" '$(IncludeICU4NResources)' == '' ">true</IncludeICU4NResources>
 
