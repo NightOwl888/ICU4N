@@ -1,0 +1,23 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <ICU4NResourcesDLLName>ICU4N.resources.dll</ICU4NResourcesDLLName>
+    <ICU4NResourcesDirectory>$(MSBuildThisFileDirectory)lib/netstandard1.0</ICU4NResourcesDirectory>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <ICU4NLocale Include="$([System.IO.Directory]::GetDirectories('$(ICU4NResourcesDirectory)'))" />
+
+    <!-- This groups each locale together along with its nested files and root path -->
+    <FolderInLocale Include="@(ICU4NLocale)">
+      <Culture>%(Identity)</Culture>
+      <Files>$([System.IO.Directory]::GetFiles('%(EmbeddedResourcesPaths.Identity)'))</Files>
+    </FolderInLocale>
+  </ItemGroup>
+
+  <Target Name="DebugICU4NPaths" AfterTargets="AfterBuild">
+    <Message Text="BuildTransitive AfterBuild executing..." Importance="high"/>
+    <Message Text="Culture found: %(FolderInLocale.Culture)" Importance="high"/>
+  </Target>
+  
+</Project>

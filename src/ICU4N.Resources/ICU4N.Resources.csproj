@@ -13,6 +13,7 @@
 
   <ItemGroup Condition="'$(PackResourceStubs)' != 'true'">
     <None Include="$(ICU4NSatelliteAssemblyOutputDir)/**/*.resources.dll" Pack="true" PackagePath="lib/netstandard1.0" Visible="false" />
+    <None Include="ICU4N.Resources.targets" Pack="true" PackagePath="buildTransitive/$(AssemblyName).targets" />
   </ItemGroup>
 
   <ItemGroup>
