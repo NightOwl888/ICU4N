@@ -7,14 +7,14 @@
     _ICU4NResourcesSourcesDirectory - The directory in the package where the ICU4N.resources.dll files will be copied from. It usually includes a target framework, such as lib/netstandard2.0 or lib/net40.
     _ICU4NNewtonsoftJsonTargetFramework - The target framework of Newtonsoft.Json to use from the version specified in _ICU4NNewtonsoftJsonPackageVersion. Note that this build does not support dependencies, so it is important to select a target framework that has no dependencies defined.
   -->
-  
+
   <PropertyGroup Label="ICU4N properties">
     <_ICU4NResourcesPackageRootDirectory>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)../'))</_ICU4NResourcesPackageRootDirectory>
     <_ICU4NResourcesDirectory>$([System.IO.Path]::GetFullPath('$(_ICU4NResourcesPackageRootDirectory)$(_ICU4NResourcesSourcesDirectory)'))</_ICU4NResourcesDirectory>
     <_ICU4NResourcesVersion>$([System.IO.Path]::GetFileName('$(_ICU4NResourcesPackageRootDirectory.TrimEnd('/').TrimEnd('\'))'))</_ICU4NResourcesVersion>
     <_ICU4NTargetDepsJsonFileName>$(AssemblyName).deps.json</_ICU4NTargetDepsJsonFileName>
   </PropertyGroup>
-  
+
   <PropertyGroup Label="Newtonsoft.Json properties">
     <_ICU4NNewtonsoftJsonPackageVersion>13.0.3</_ICU4NNewtonsoftJsonPackageVersion>
   </PropertyGroup>
@@ -26,7 +26,7 @@
   <ItemGroup>
     <_ICU4NResourceFiles Include="$(_ICU4NResourcesDirectory)/**/*.resources.dll" Exclude="$(_ICU4NResourcesDirectory)/ICU4N.resources.dll" />
   </ItemGroup>
-  
+
   <!-- Target to copy files and update .deps.json only if files don't exist in the output folder -->
   <UsingTask TaskName="ICU4NPatchMSBuildResourceCopy" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildBinPath)/Microsoft.Build.Tasks.Core.dll">
     <ParameterGroup>
@@ -64,52 +64,63 @@
         
         string targetDepsJsonFile = $"{OutputPath}{TargetDepsJsonFileName}";
         
-        Log.LogMessage(MessageImportance.Normal, $"targetDepsJsonFile: {targetDepsJsonFile}");
-        
         // Check if .deps.json file exists
-        if (!File.Exists(targetDepsJsonFile))
-        {
-            Log.LogMessage(MessageImportance.Normal, "Skipping copy: .deps.json file not found.");
-            return true;
-        }
-
-        // Parse the .deps.json file
-        var depsJson = JObject.Parse(File.ReadAllText(targetDepsJsonFile));
-
-        // Check if "targets" section exists
-        if (depsJson["targets"] == null)
-        {
-            Log.LogMessage(MessageImportance.Normal, "Skipping copy: 'targets' section missing from .deps.json.");
-            return true;
-        }
-
+        bool depsJsonExists = File.Exists(targetDepsJsonFile);
+        
+        Log.LogMessage(MessageImportance.Normal, $"targetDepsJsonFile: {targetDepsJsonFile}, Exists: {depsJsonExists}");
+        
+        JObject depsJson;
+        
         // Construct the key in the .deps.json file based on target framework
         string targetFrameworkKey = $"{TargetFrameworkIdentifier},Version={TargetFrameworkVersion}";
-
-        // Check if the targetFrameworkKey exists under "targets"
-        if (depsJson["targets"][targetFrameworkKey] == null)
-        {
-            Log.LogMessage(MessageImportance.Normal, $"Skipping copy: '{targetFrameworkKey}' section missing from .deps.json.");
-            return true;
-        }
-
-        // Check if the packageKey exists under the targetFrameworkKey
         string packageKey = $"{ResourcesPackageId}/{ResourcesPackageVersion}";
-        if (depsJson["targets"][targetFrameworkKey][packageKey] == null)
-        {
-            Log.LogMessage(MessageImportance.Normal, $"Skipping copy: '{packageKey}' section missing from .deps.json.");
-            return true;
-        }
 
-        // Check if "resources" section exists under the packageKey
-        if (depsJson["targets"][targetFrameworkKey][packageKey]["resources"] == null)
+        // Skip copying in cases where the .deps.json file exists and it doesn't contain the "targets" section containing the "resources" section.
+        // In projects other than .NET Core, there is no .deps.json file, so we will always do the copy even if the resources are not required
+        // (such as when building a class library). This is the convention that was followed for .NET Framework projects.
+        if (depsJsonExists)
         {
-            Log.LogMessage(MessageImportance.Normal, "Skipping copy: 'resources' section missing from .deps.json.");
-            return true;
-        }
+            // Parse the .deps.json file
+            depsJson = JObject.Parse(File.ReadAllText(targetDepsJsonFile));
 
-        // If we reach this point, all checks have passed, and we proceed with the copy operation.
-        Log.LogMessage(MessageImportance.High, "Proceeding with resource copy and JSON update.");
+            // Check if "targets" section exists
+            if (depsJson["targets"] == null)
+            {
+                Log.LogMessage(MessageImportance.Normal, "Skipping copy: 'targets' section missing from .deps.json.");
+                return true;
+            }
+
+            // Check if the targetFrameworkKey exists under "targets"
+            if (depsJson["targets"][targetFrameworkKey] == null)
+            {
+                Log.LogMessage(MessageImportance.Normal, $"Skipping copy: '{targetFrameworkKey}' section missing from .deps.json.");
+                return true;
+            }
+
+            // Check if the packageKey exists under the targetFrameworkKey
+            if (depsJson["targets"][targetFrameworkKey][packageKey] == null)
+            {
+                Log.LogMessage(MessageImportance.Normal, $"Skipping copy: '{packageKey}' section missing from .deps.json.");
+                return true;
+            }
+
+            // Check if "resources" section exists under the packageKey
+            if (depsJson["targets"][targetFrameworkKey][packageKey]["resources"] == null)
+            {
+                Log.LogMessage(MessageImportance.Normal, "Skipping copy: 'resources' section missing from .deps.json.");
+                return true;
+            }
+            
+            // If we reach this point, all checks have passed, and we proceed with the copy operation.
+            Log.LogMessage(MessageImportance.High, "Proceeding with resource copy and JSON update.");
+        }
+        else
+        {
+            depsJson = new JObject(); // Initialize to empty
+        
+            // If we reach this point, all checks have passed, and we proceed with the copy operation.
+            Log.LogMessage(MessageImportance.High, "Proceeding with resource copy.");
+        }
 
         bool jsonUpdated = false;
 
@@ -142,17 +153,19 @@
                 Directory.CreateDirectory(Path.GetDirectoryName(destinationFile));
                 File.Copy(filePath, destinationFile, overwrite: true);
 
-
-                // Update the .deps.json if not already updated for this culture
-                var resources = depsJson["targets"][targetFrameworkKey][packageKey]["resources"]
-                            as JObject;
-                            
-                string packageResourcePath = $"{ResourcesSourcesDirectory}/{culture}/{fileName}";
-                            
-                if (!resources.ContainsKey(packageResourcePath))
+                if (depsJsonExists)
                 {
-                    resources[packageResourcePath] = new JObject { ["locale"] = culture };
-                    jsonUpdated = true;
+                    // Update the .deps.json if not already updated for this culture
+                    var resources = depsJson["targets"][targetFrameworkKey][packageKey]["resources"]
+                                as JObject;
+                                
+                    string packageResourcePath = $"{ResourcesSourcesDirectory}/{culture}/{fileName}";
+                                
+                    if (!resources.ContainsKey(packageResourcePath))
+                    {
+                        resources[packageResourcePath] = new JObject { ["locale"] = culture };
+                        jsonUpdated = true;
+                    }
                 }
             }
         }
@@ -196,7 +209,7 @@
       SatelliteResourceLanguages="$(SatelliteResourceLanguages)"
     />
   </Target>
-  
+
   <Target Name="ICU4NPatchSatelliteAssemblyCopyDuringPublish" AfterTargets="Publish">
     <ICU4NPatchMSBuildResourceCopy
       OutputPath="$(PublishDir)"
@@ -210,5 +223,5 @@
       SatelliteResourceLanguages="$(SatelliteResourceLanguages)"
     />
   </Target>
-  
+
 </Project>
