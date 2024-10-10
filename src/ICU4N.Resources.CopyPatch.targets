@@ -13,8 +13,6 @@
     <_ICU4NResourcesDirectory>$([System.IO.Path]::GetFullPath('$(_ICU4NResourcesPackageRootDirectory)$(_ICU4NResourcesSourcesDirectory)'))</_ICU4NResourcesDirectory>
     <_ICU4NResourcesVersion>$([System.IO.Path]::GetFileName('$(_ICU4NResourcesPackageRootDirectory.TrimEnd('/').TrimEnd('\'))'))</_ICU4NResourcesVersion>
     <_ICU4NTargetDepsJsonFileName>$(AssemblyName).deps.json</_ICU4NTargetDepsJsonFileName>
-    <_ICU4NCopyDuringBuild>true</_ICU4NCopyDuringBuild>
-    <_ICU4NCopyDuringBuild Condition="('$(TargetFrameworkIdentifier)' == '.NETCoreApp' Or '$(TargetFrameworkIdentifier)' == '.NETStandard') And '$(OutputType)' == 'Library'">false</_ICU4NCopyDuringBuild>
   </PropertyGroup>
 
   <PropertyGroup Label="Newtonsoft.Json properties">
@@ -198,7 +196,7 @@
   <!-- NOTE: These targets must be independent of each other because MSBuild only runs a
       target once and both of these may be required to run in the same publish operation. -->
 
-  <Target Name="ICU4NPatchSatelliteAssemblyCopyDuringBuild" AfterTargets="AfterBuild" Condition="'$(_ICU4NCopyDuringBuild)' == 'true'">
+  <Target Name="ICU4NPatchSatelliteAssemblyCopyDuringBuild" AfterTargets="AfterBuild">
     <ICU4NPatchMSBuildResourceCopy
       OutputPath="$(OutputPath)"
       TargetDepsJsonFileName="$(_ICU4NTargetDepsJsonFileName)"
