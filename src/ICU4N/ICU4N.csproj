@@ -10,8 +10,8 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     
     <SatelliteAssemblyTargetFramework>netstandard2.0</SatelliteAssemblyTargetFramework>
-    <IsNetStandard10Compatible>true</IsNetStandard10Compatible>
-    <IsNetStandard10Compatible Condition="'$(TargetFramework)' == 'net40'">false</IsNetStandard10Compatible>
+    <IsNetStandard20Compatible>true</IsNetStandard20Compatible>
+    <IsNetStandard20Compatible Condition="$(TargetFramework.StartsWith('net40')) Or $(TargetFramework.StartsWith('net45')) Or '$(TargetFramework)' == 'net46' Or '$(TargetFramework)' == 'net461'">false</IsNetStandard20Compatible>
   </PropertyGroup>
 
   <PropertyGroup Label="NuGet Package Settings">
@@ -38,10 +38,10 @@
   </ItemGroup>
   
   <!-- ICU4N TODO: Add version constraints conforming with ICU versioning rules for resources -->
-  <ItemGroup Condition="'$(ReferenceICUResources.ToLowerInvariant())' == 'true' And '$(IsNetStandard10Compatible.ToLowerInvariant())' == 'true'">
+  <ItemGroup Condition="'$(ReferenceICUResources.ToLowerInvariant())' == 'true' And '$(IsNetStandard20Compatible.ToLowerInvariant())' == 'true'">
     <PackageReference Include="ICU4N.Resources" Version="$(PackageVersion)"/>
   </ItemGroup>
-  <ItemGroup Condition="'$(ReferenceICUResources.ToLowerInvariant())' == 'true' And '$(IsNetStandard10Compatible.ToLowerInvariant())' != 'true'">
+  <ItemGroup Condition="'$(ReferenceICUResources.ToLowerInvariant())' == 'true' And '$(IsNetStandard20Compatible.ToLowerInvariant())' != 'true'">
     <PackageReference Include="ICU4N.Resources.NETFramework4.0" Version="$(PackageVersion)"/>
   </ItemGroup>
 

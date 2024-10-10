@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.0</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
 
     <Description>Full data for ICU4N. This package is a transient dependency of ICU4N and does not necessarily need to be installed explicitly.</Description>
 
@@ -12,13 +12,13 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(PackResourceStubs)' != 'true'">
-    <None Include="$(ICU4NSatelliteAssemblyOutputDir)/**/*.resources.dll" Pack="true" PackagePath="lib/netstandard1.0" Visible="false" />
+    <None Include="$(ICU4NSatelliteAssemblyOutputDir)/**/*.resources.dll" Pack="true" PackagePath="lib/netstandard2.0" Visible="false" />
     <None Include="ICU4N.Resources.targets" Pack="true" PackagePath="buildTransitive/$(AssemblyName).targets" />
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Reference NETStandard.Library for .NET Standard 1.0, but avoid including it as a transitive dependency -->
-    <PackageReference Update="NETStandard.Library" Version="$(NETStandardLibrary10PackageReferenceVersion)" PrivateAssets="All" />
+    <!-- Reference NETStandard.Library for .NET Standard 2.0, but avoid including it as a transitive dependency -->
+    <PackageReference Update="NETStandard.Library" Version="$(NETStandardLibrary20PackageReferenceVersion)" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>
