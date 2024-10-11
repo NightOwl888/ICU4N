@@ -4537,53 +4537,6 @@ namespace ICU4N.Globalization
             assertEquals($"ToCultureInfo() with {fullName}", culture, new UCultureInfo(fullName).ToCultureInfo());
         }
 
-#if NET6_0_OR_GREATER
-
-        [Test]
-        public void TestNeutralCultures()
-        {
-            var locales = UCultureInfo.GetCultures(UCultureTypes.NeutralCultures);
-            var cultures = CultureInfo.GetCultures(CultureTypes.NeutralCultures);
-
-            //string icuNeutralCultureListPath = @"F:\Temp\ICU4N\icu-neutral-cultures.txt";
-            //string dotnetNeutralCultureListPath = @"F:\Temp\ICU4N\dotnet-neutral-cultures.txt";
-            string dotnetNeutralCultureConvertedListPath = @"F:\Temp\ICU4N\dotnet-neutral-cultures-converted.txt";
-
-            //using var icuCultureWriter = new System.IO.StreamWriter(icuNeutralCultureListPath, append: false, System.Text.Encoding.UTF8);
-            //foreach (var locale in locales)
-            //{
-            //    icuCultureWriter.WriteLine(locale.Name.Replace("_", "-"));
-            //}
-
-            //using var dotnetCultureWriter = new System.IO.StreamWriter(dotnetNeutralCultureListPath, append: false, System.Text.Encoding.UTF8);
-            //foreach (var culture in cultures)
-            //{
-            //    dotnetCultureWriter.WriteLine(culture.Name);
-            //}
-
-            //var allLocales = UCultureInfo.GetCultures(UCultureTypes.AllCultures);
-            //var localesSetRaw = new HashSet<string>(locales.Select(l => l.Name));
-            //var localesSet = new HashSet<string>(locales.Select(l => l.Name.Replace("_", "-")));
-            
-            //var neutralSet = new SortedSet<string>();
-
-            //foreach (var locale in allLocales)
-            //{
-            //    string neutral = GetDotNetNeutralCultureName(locale.Name.AsSpan());
-            //    neutralSet.Add(neutral);
-            //}
-
-            //using var dotnetCultureWriter = new System.IO.StreamWriter(dotnetNeutralCultureConvertedListPath, append: false, System.Text.Encoding.UTF8);
-            //foreach (var culture in cultures)
-            //{
-            //    dotnetCultureWriter.WriteLine(culture.Name);
-            //}
-        }
-
-        
-
-#endif
-
         [Test]
         [Ignore("Run this to find gaps in cultures between platforms")]
         // ICU4N specific - make sure all ICU cultures will convert to .NET cultures without exceptions
