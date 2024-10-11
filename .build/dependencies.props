@@ -16,6 +16,8 @@
     <NUnit3TestAdapterPackageReferenceVersion>4.6.0</NUnit3TestAdapterPackageReferenceVersion>
     <SystemBuffersPackageReferenceVersion>4.5.1</SystemBuffersPackageReferenceVersion>
     <SystemMemoryPackageReferenceVersion>4.5.5</SystemMemoryPackageReferenceVersion>
+    <SystemReflectionMetadataPackageReferenceVersion>6.0.1</SystemReflectionMetadataPackageReferenceVersion>
+    <SystemReflectionMetadataPackageReferenceVersion Condition=" '$(TargetFramework)' == 'net451' ">1.8.1</SystemReflectionMetadataPackageReferenceVersion>
     <SystemRuntimeCompilerServicesUnsafePackageReferenceVersion>6.0.0</SystemRuntimeCompilerServicesUnsafePackageReferenceVersion>
     <SystemRuntimeCompilerServicesUnsafePackageReferenceVersion Condition=" '$(TargetFramework)' == 'net451' ">4.7.1</SystemRuntimeCompilerServicesUnsafePackageReferenceVersion>
   </PropertyGroup>
