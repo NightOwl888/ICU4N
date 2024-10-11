@@ -92,6 +92,8 @@
     <ICU4JDownloadConfigFilePath>$(SolutionDir).build/icu4j-download-urls.txt</ICU4JDownloadConfigFilePath>
     <ICU4JWorkingDirectory>$(ArtifactsDir)/icu4j-temp</ICU4JWorkingDirectory>
     <ICU4JResourcesDirectory>$(ICU4JWorkingDirectory)/icu4j-transformed</ICU4JResourcesDirectory>
+    <!-- These are .rsp files that contain the options and paths of the files to embed, since they can exceed the length allowed by the Process class. -->
+    <ICU4JResponseFileDirectory>$(ICU4JWorkingDirectory)/icu4j-embed</ICU4JResponseFileDirectory>
   </PropertyGroup>
 
   <ItemGroup Label="Specifies generated sattelite assemblies should be copied to the output folder (and dependent projects as well)">
@@ -203,10 +205,10 @@
 
     <!-- Make invariant resources -->
     <!--<AL EmbedResources="@(EmbeddedResources)" TargetType="library" TemplateFile="$(TemplateAssemblyFilePath)" Culture="" KeyFile="$(AssemblyOriginatorKeyFile)" OutputAssembly="$(ICU4NSatelliteAssemblyOutputDir)/$(AssemblyName).resources.dll" />-->
-    <LinkAssemblies DotNetToolsDirectory="$(TargetFrameworkSDKToolsDirectory)" EmbedResources="@(EmbeddedResources)" Culture="" TemplateFile="$(TemplateAssemblyFilePath)" KeyFile="$(AssemblyOriginatorKeyFile)" OutputAssembly="$(ICU4NSatelliteAssemblyOutputDir)/$(AssemblyName).resources.dll" />
+    <LinkAssemblies DotNetToolsDirectory="$(TargetFrameworkSDKToolsDirectory)" EmbedResources="@(EmbeddedResources)" Culture="" TemplateFile="$(TemplateAssemblyFilePath)" KeyFile="$(AssemblyOriginatorKeyFile)" OutputAssembly="$(ICU4NSatelliteAssemblyOutputDir)/$(AssemblyName).resources.dll" EmbedResponseFile="$(ICU4JResponseFileDirectory)/embed.rsp" />
     
     <!-- Make localized resources -->
-    <LinkAssemblies DotNetToolsDirectory="$(TargetFrameworkSDKToolsDirectory)" EmbedResources="@(FolderInLocale->'%(Files)')" Culture="%(FolderInLocale.Culture)" TemplateFile="$(TemplateAssemblyFilePath)" KeyFile="$(AssemblyOriginatorKeyFile)" OutputAssembly="$(ICU4NSatelliteAssemblyOutputDir)/%(FolderInLocale.Culture)/$(AssemblyName).resources.dll" />
+    <LinkAssemblies DotNetToolsDirectory="$(TargetFrameworkSDKToolsDirectory)" EmbedResources="@(FolderInLocale->'%(Files)')" Culture="%(FolderInLocale.Culture)" TemplateFile="$(TemplateAssemblyFilePath)" KeyFile="$(AssemblyOriginatorKeyFile)" OutputAssembly="$(ICU4NSatelliteAssemblyOutputDir)/%(FolderInLocale.Culture)/$(AssemblyName).resources.dll" EmbedResponseFile="$(ICU4JResponseFileDirectory)/%(FolderInLocale.Culture)-embed.rsp" />
 
   </Target>
 
@@ -219,6 +221,7 @@
       <OutputAssembly ParameterType="System.String" Required="true" />
       <TemplateFile ParameterType="System.String" Required="true" />
       <KeyFile ParameterType="System.String" />
+      <EmbedResponseFile ParameterType="System.String" Required="true" />
     </ParameterGroup>
     <Task>
       <Using Namespace="System" />
@@ -256,7 +259,20 @@
               if (Directory.Exists(directory))
                   Directory.Delete(directory, recursive: true);
               Directory.CreateDirectory(directory);
-          
+              
+              // Write the response file with the -embed options
+              var responseDirectory = Path.GetDirectoryName(EmbedResponseFile);
+              Directory.CreateDirectory(responseDirectory);
+              
+              using (var writer = new StreamWriter(EmbedResponseFile, append: false, Encoding.UTF8))
+              {
+                  foreach (string file in embeddedResourceFiles)
+                  {
+                      writer.Write("-embed:");
+                      writer.WriteLine(file);
+                  }
+              }
+              
               Log.LogMessage(MessageImportance.High, $"Generating Satellite Assembly for {Culture}");
               var command = DotNetToolsDirectory + (Environment.OSVersion.Platform == PlatformID.Win32NT ? "al.exe" : "al");
               var sb = new StringBuilder();
@@ -277,14 +293,14 @@
                   sb.Append(Space);
                   sb.Append($"-keyfile:{KeyFile}");
               }
-              foreach (var file in embeddedResourceFiles)
-              {
-                  sb.Append(Space);
-                  sb.Append($"-embed:{file}");
-              }
+              // Using a response file allows us to stay under the command length limit of 32768 chars
+              sb.Append(Space);
+              sb.Append('@');
+              sb.Append(EmbedResponseFile);
+              
               var args = sb.ToString();
-              //Log.LogMessage(MessageImportance.High, "Command: " + command);
-              //Log.LogMessage(MessageImportance.High, "Args: " + args);
+              //Log.LogMessage(MessageImportance.High, $"Command: {command}");
+              //Log.LogMessage(MessageImportance.High, $"Args: {args}");
               using Process p = new Process();
               p.StartInfo.UseShellExecute = false;
               //p.StartInfo.RedirectStandardOutput = true;
