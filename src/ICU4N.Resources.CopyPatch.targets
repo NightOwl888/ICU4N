@@ -1,11 +1,22 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <!-- 
+    ===========================================================================================================================================================
+    This is a patch for MSBuild to copy satellite assemblies to the build and/or publish output directory. It is required to be buildTransitive
+    because there are many .NET SDKs that are broken in this way. If you customize the resources for your build, be sure to include this patch
+    so locales with 3-letter language codes will be distributed with your application or consumers of your application on NuGet.
+    
     Required properties to be defined before importing:
     
-    _ICU4NResourcesPackageId - Package Id of the current NuGet project (the one containing the satellite assemblies to be copied)
-    _ICU4NResourcesSourcesDirectory - The directory in the package where the ICU4N.resources.dll files will be copied from. It usually includes a target framework, such as lib/netstandard2.0 or lib/net40.
-    _ICU4NNewtonsoftJsonTargetFramework - The target framework of Newtonsoft.Json to use from the version specified in _ICU4NNewtonsoftJsonPackageVersion. Note that this build does not support dependencies, so it is important to select a target framework that has no dependencies defined.
+    _ICU4NResourcesPackageId -                Package Id of the current NuGet project (the one containing the satellite assemblies to be copied)
+    
+    _ICU4NResourcesSourcesDirectory -         The directory in the package where the ICU4N.resources.dll files will be copied from.
+                                              It usually includes a target framework, such as lib/netstandard2.0 or lib/net40.
+    
+    _ICU4NNewtonsoftJsonTargetFramework -     The target framework of Newtonsoft.Json to use from the version specified in _ICU4NNewtonsoftJsonPackageVersion.
+                                              Note that this build does not support dependencies, so it is important to select a target framework of
+                                              Newtonsoft.Json that has no dependencies defined or provide them in your build.
+    ===========================================================================================================================================================
   -->
 
   <PropertyGroup Label="ICU4N properties">
