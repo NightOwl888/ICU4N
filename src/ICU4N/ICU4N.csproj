@@ -120,23 +120,6 @@
   -->
   
   <!-- ICU4N NOTE: To debug on Linux/macOS, the contents of the _artifacts/SatelliteAssemblies and the file _artifactsDirectory/fullLocaleNames.lst must be copied to the local _artifacts folder. These currently won't build on non-Windows platforms. -->
-  <Target Name="CreateIntermediateTargetsFile" BeforeTargets="DownloadICU4J" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)'">
-
-    <PropertyGroup>
-      <Major>$(PackageVersion.Split('.')[0])</Major>
-      <ICUDataFolderName>$(ICUDataPrefix)$(Major)$(ICUDataEndian)</ICUDataFolderName>
-    </PropertyGroup>
-
-    <!-- NOTE: This will include the current ICU4N version number. If the party packing the assembly switches to a different version of ICU4N, the .targets
-      file will track the version of ICU4N that is referenced. -->
-    <ReplaceFileText InputFilename="$(AssemblyName).targets" OutputFilename="$(ArtifactsDir)/$(AssemblyName).targets" MatchExpression="\$version\$" ReplacementText="$(PackageVersion)" />
-    <ReplaceFileText InputFilename="$(ArtifactsDir)/$(AssemblyName).targets" OutputFilename="$(ArtifactsDir)/$(AssemblyName).targets" MatchExpression="\$icuDataFolderName\$" ReplacementText="$(ICUDataFolderName)" />
-  </Target>
-
-  <ItemGroup>
-    <None Include="$(SolutionDir)_artifacts/$(AssemblyName).targets" Pack="true" PackagePath="buildTransitive/$(AssemblyName).targets" />
-  </ItemGroup>
-
   <Target Name="DownloadICU4J" BeforeTargets="ExecICU4JResourceConverter" Returns="$(ICU4JJarFilePath)" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)'">
     
     <PropertyGroup>
