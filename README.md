@@ -72,9 +72,9 @@ For class libraries that are deployed in public systems such as NuGet, it is rec
 
 ### Filtering Satellite Assemblies
 
-ICU4N contains more than 750 cultures which use more than 18MB of disk space. If you are publishing an application and wish to reduce the distribution size of your application, ICU4N supports the [SatelliteResourceLanguages](https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#satelliteresourcelanguages). Although ICU provides support for both specific and neutral cultures at runtime, the satellite assemblies are packaged as .NET *neutral culture* packages to eliminate issues with ICU locale names that .NET doesn't recognize. All *specific cultures* (such as `en-GB` or `fr-CA`) are packaged in the satellite assembly with the corresponding *neutral culture* (in this case `en` and `fr` respectively).
+ICU4N contains more than 750 cultures which use more than 18MB of disk space. If you are publishing an application and wish to reduce the distribution size of your application, ICU4N supports the [SatelliteResourceLanguages](https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#satelliteresourcelanguages) property. Although ICU provides support for both specific and neutral cultures at runtime, the satellite assemblies are packaged as [.NET *neutral culture*](https://learn.microsoft.com/en-us/dotnet/api/system.globalization.culturetypes?view=net-8.0) packages to eliminate issues with ICU locale names that .NET doesn't recognize. All *specific cultures* (such as `en-GB` or `fr-CA`) are packaged in the satellite assembly with the corresponding *neutral culture* (in this case `en` and `fr` respectively).
 
-There are 4 special cases where locale names and culture names differ between ICU4N locale names and the satellite assembly names. For these locales, the .NET culture name must be used to filter the satellite assemblies even though the ICU locale name can be specified to the `UCultureInfo` class.
+There are 4 special cases where locale names and culture names differ between ICU4N locale names and the satellite assembly names. For these locales, the .NET culture name must be used to filter the satellite assemblies even though the ICU locale name can be specified in the constructor of the `UCultureInfo` class.
 
 | Language Name             | ICU4N Locale Name | .NET Culture Name |
 | :------------------------ | :---------------- | :---------------- |
@@ -121,7 +121,7 @@ Reducing resource data is an advanced topic. See the [ICU Data](https://unicode-
 
 Resources will be detected automatically if they are in the `/data/` directory. Note that including the versioned subdirectory (such as `icudt60b`) is required.
 
-When including custom resource data with ICU4N, be sure to exclude the resources from ICU4N.Resources as described in [Excluding ICU4N.Resources](excluding-ICU4N.Resources).
+When including custom resource data with ICU4N, be sure to exclude the ICU4N.Resources assets from the build as described in [Excluding ICU4N.Resources](excluding-ICU4N.Resources).
 
 ## Building and Testing
 
