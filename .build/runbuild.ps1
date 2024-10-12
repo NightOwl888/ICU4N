@@ -259,12 +259,12 @@ function Normalize-FileSystemSlashes([string]$path) {
 function DeleteCachedNuGetPackage([string]$packageId, [string]$version) {
     # The user may have overridden the default .nuget package directory location using NUGET_PACKAGES env variable.
     [string]$nugetCacheDir = $env:NUGET_PACKAGES
-    if (!(Test-Path $nugetCacheDir)) {
-        $nugetCacheDir = Join-Path $env:USERPROFILE "\.nuget\packages"
+    if ([string]::IsNullOrEmpty($nugetCacheDir)) {
+        $nugetCacheDir = "~/.nuget/packages"
     }
     
     # Define the NuGet package cache directory
-    $cacheDir = Join-Path $nugetCacheDir "\$packageId\$version"
+    $cacheDir = Join-Path $nugetCacheDir "/$packageId/$version"
 
     Write-Host $cacheDir
 
