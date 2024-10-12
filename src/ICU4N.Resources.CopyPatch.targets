@@ -154,12 +154,12 @@
             // Determine the target output path
             string destinationFile = Path.Combine(OutputPath, culture, fileName);
 
-            Log.LogMessage(MessageImportance.Low, "Checking file: " + destinationFile);
+            Log.LogMessage(MessageImportance.Low, $"Checking for the existence of '{destinationFile}'.");
 
             // Copy the file if it doesn't already exist
             if (!File.Exists(destinationFile))
             {
-                Log.LogMessage(MessageImportance.Normal, "Copying file: " + destinationFile);
+                Log.LogMessage(MessageImportance.Normal, $"Copying file from '{filePath}' to '{destinationFile}'.");
 
                 Directory.CreateDirectory(Path.GetDirectoryName(destinationFile));
                 File.Copy(filePath, destinationFile, overwrite: true);
@@ -184,7 +184,7 @@
         // Write the .deps.json file only once if there were updates
         if (jsonUpdated)
         {
-            Log.LogMessage(MessageImportance.Normal, "Updating JSON file: " + targetDepsJsonFile);
+            Log.LogMessage(MessageImportance.Normal, $"Updating '{targetDepsJsonFile}' with additional dependencies.");
             
             // Retrieve the resources JObject
             var resources = depsJson["targets"][targetFrameworkKey][packageKey]["resources"] as JObject;
