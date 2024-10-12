@@ -102,9 +102,6 @@ namespace JavaResourceConverter
 
             Directory.CreateDirectory(outDirectoryName);
             File.Copy(filePath, outFilePath, overwrite: true);
-            //using var input = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
-            //using var output = new FileStream(outFilePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite | FileShare.Delete);
-            //input.CopyTo(output);
         }
 
         public static void TransformInvariantFeature(string filePath, string featureName, string outputDirectory)
@@ -115,9 +112,6 @@ namespace JavaResourceConverter
 
             Directory.CreateDirectory(outputDirectory);
             File.Copy(filePath, outFilePath, overwrite: true);
-            //using var input = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
-            //using var output = new FileStream(outFilePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite | FileShare.Delete);
-            //input.CopyTo(output);
         }
 
         private static string GetFeatureFileName(string featureName, string fileName)
@@ -181,8 +175,6 @@ namespace JavaResourceConverter
             }
             // Write the last name without a newline
             writer.Write(files[files.Count - 1]);
-            //foreach (var file in files)
-            //    writer.WriteLine(file);
             writer.Flush();
         }
 
