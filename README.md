@@ -54,7 +54,7 @@ There are 2 ways to deploy resources with ICU4N.
 
 1. Using Satellite Assemblies
 
-   This is the default and recommended way to use ICU4N resources. Using satellite assemblies to manage resources allows you to include/exclude specific *cultures*.
+   This is the default and recommended way to use ICU4N resources. Using satellite assemblies to manage resources allows you to include specific neutral *cultures* or include them all by default.
 
 2. Using Resource Files
 
@@ -64,28 +64,54 @@ There are 2 ways to deploy resources with ICU4N.
 
 ### Default Satellite Assemblies
 
-By default, ICU4N includes a transitive dependency on [ICU4N.Resources](https://www.nuget.org/packages/ICU4N.Resources/), which includes satellite assemblies for all features and languages. For most projects, this should suffice.
+By default, ICU4N includes a dependency on [ICU4N.Resources](https://www.nuget.org/packages/ICU4N.Resources/), which includes satellite assemblies for all features and languages. For most projects, this should suffice.
 
-It is recommended to use the default set of data for class libraries that are deployed via NuGet to be shared, and to only consider using custom subsets of data for executable projects. This gives every consumer of a shared library a chance to customize the ICU resource data.
+For class libraries that are deployed in public systems such as NuGet, it is recommended to use the default set of resource data (the full set) to allow end users to utilize built in features of the .NET SDK to exclude resources that don't apply to them.
 
-> **NOTE:** For SDK-Style projects that target `net40` or `net403`, the transitive dependency is on [ICU4N.Resources.NETFramework4.0](https://www.nuget.org/packages/ICU4N.Resources.NETFramework4.0/). This package contains exactly the same files as [ICU4N.Resources](https://www.nuget.org/packages/ICU4N.Resources/) and only exists to work around the fact that NuGet doesn't support a single target framework to deploy satellite assemblies to targets below `net45` as well as targets that support `netstandard1.0` (which supports `net45` and higher).
+> **NOTE:** For projects that target .NET Framwork prior to version `net462`, the dependency is on [ICU4N.Resources.NETFramework4.0](https://www.nuget.org/packages/ICU4N.Resources.NETFramework4.0/) instead. This package contains exactly the same files as [ICU4N.Resources](https://www.nuget.org/packages/ICU4N.Resources/) and only exists to work around the fact that NuGet doesn't support a single target framework to deploy satellite assemblies to targets below `net45` as well as targets that support `netstandard2.0` (which supports `net462` and higher).
+
+### Filtering Satellite Assemblies
+
+ICU4N contains more than 750 cultures which use more than 18MB of disk space. If you are publishing an application and wish to reduce the distribution size of your application, ICU4N supports the [SatelliteResourceLanguages](https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#satelliteresourcelanguages). Although ICU provides support for both specific and neutral cultures at runtime, the satellite assemblies are packaged as .NET *neutral culture* packages to eliminate issues with ICU locale names that .NET doesn't recognize. All *specific cultures* (such as `en-GB` or `fr-CA`) are packaged in the satellite assembly with the corresponding *neutral culture* (in this case `en` and `fr` respectively).
+
+There are 4 special cases where locale names and culture names differ between ICU4N locale names and the satellite assembly names. For these locales, the .NET culture name must be used to filter the satellite assemblies even though the ICU locale name can be specified to the `UCultureInfo` class.
+
+| Language Name             | ICU4N Locale Name | .NET Culture Name |
+| :------------------------ | :---------------- | :---------------- |
+| Quechua                   | qu                | quz               |
+| Cantonese                 | yue               | zh                |
+| Cantonese (Simplified)    | yue-Hans          | zh-Hans           |
+| Cantonese (Traditional)   | yue-Hant          | zh-Hant           |
+
+#### Example
+
+Using the `SatelliteResourceLanguages` property to *only* include the languages English, Spanish, and French in your distribution.
+
+```xml
+<PropertyGroup>
+  <SatelliteResourceLanguages>en;es;fr</SatelliteResourceLanguages>
+</PropertyGroup>
+```
+
+This will enable ICU4N to support all variants of these languages for all ICU features and exclude the resources for any other language from the distribution.
+
+> **NOTE:** `SatelliteResourceLanguages` applies to *all* resources for dependencies of your project, not just those in ICU4N.Resources. If another library includes support for a *specific culture* and you want to use it in your application, you should include that specific culture name in `SatelliteResourceLanguages` even though it does not specifically apply to ICU4N.
 
 ### Custom Satellite Assemblies
 
-ICU4N contains more than 750 cultures which use more than 20MB of disk space.
+In addition to filtering out cultures, ICU4N supports adding new cultures by compiling and packaging a new set of satellite assemblies to deploy with your application. The tools to do this are still a work in progress and there is not yet an official procedure for compiling custom satellite assemblies. You must follow the same naming conventions for resource files for ICU4N to discover any new files that are added, but do note these are still in flux and may change from one release of ICU4N to the next. The version of resources used must **exactly match** the version of ICU4N. Unfortunately, Microsoft's documentation on creating custom satellite assemblies is extremely out-of-date so it is recommended to use an LLM such as ChatGPT to get some direction on how to accomplish this using the .NET SDK rather than the old way of using al.exe.
 
-It is possible to reduce the distribution size by excluding cultures that you don't intend to support. To ship a subset of satellite assemblies, there are 2 options:
+#### Excluding ICU4N.Resources
 
-- **Option 1:** Re-package a Subset of Satellite Assemblies - Currently, there is no built-in support. The recommended way is to download the matching version of [ICU4N.Resources](https://www.nuget.org/packages/ICU4N.Resources/), use a zip utility to unzip the package, and create a NuGet package with a custom name using the subset of satellite assemblies desired.
-- **Option 2:** Change your build script to delete the `<culture name>/ICU4N.resources.dll` files *after* the build and *before* packing and/or publishing them.
+To replace the satellite assemblies that are shipped with ICU4N, use the [`ExcludeAssets` feature of MSBuild](https://learn.microsoft.com/en-us/nuget/consume-packages/package-references-in-project-files#controlling-dependency-assets) to exclude the default set of satellite assemblies from the build.
 
-The satellite assemblies are located in folders named like `<culture name>/ICU4N.resources.dll`.
+```xml
+    <PackageReference Include="ICU4N.Resources"
+                      Version="<the specific version of ICU4N.Resources>"
+                      ExcludeAssets="all" />
+```
 
-> **IMPORTANT:** The neutral culture satellite assembly files contain shared resource data for all of the specific cultures. If you include one or more specific cultures, such as `fr-CA/ICU4N.resources.dll`, you must also include the neutral culture `fr/ICU4N.resources.dll`.
-
-> **IMPORTANT:** There is a common satellite assembly named `ICU4N.resources.dll` that sits in the assembly directory. This file must always be included for ICU4N to function when using satellite assemblies.
-
-When including custom resource data with ICU4N, be sure to exclude the transitive dependencies from ICU4N as described in [Removing the default Transitive Dependency on ICU4N.Resources](removing-the-default-transitive-dependency-on-ICU4N.Resources).
+> **NOTE:** At the time of this writing, all versions of MSBuild have a bug where satellite assemblies that use 3-letter language codes are not copied to the build and/or publish output. ICU4N.Resources includes a patch in the `ICU4N.Resources.CopyPatch.targets` file. It is recommended that you use a NuGet package and include this file along with a `.targets` file named `$(PackageId).targets` that includes `ICU4N.Resources.CopyPatch.targets` and the properties it requires in its `buildTransitive` folder.
 
 ### Custom Resource Files
 
@@ -95,27 +121,7 @@ Reducing resource data is an advanced topic. See the [ICU Data](https://unicode-
 
 Resources will be detected automatically if they are in the `/data/` directory. Note that including the versioned subdirectory (such as `icudt60b`) is required.
 
-When including custom resource data with ICU4N, be sure to exclude the transitive dependencies from ICU4N as described in [Removing the default Transitive Dependency on ICU4N.Resources](removing-the-default-transitive-dependency-on-ICU4N.Resources).
-
-### Removing the default Transitive Dependency on ICU4N.Resources
-
-To deploy custom resources via NuGet with your project, you must remove the transitive dependency on the [ICU4N.Resources](https://www.nuget.org/packages/ICU4N.Resources/) package so the full set of resources isn't accidentally deployed to projects that consume yours. This can be done using the [ExcludeAssets](https://learn.microsoft.com/en-us/nuget/consume-packages/package-references-in-project-files#controlling-dependency-assets) flag called `buildTransitive`.
-
-```xml
-<ItemGroup>
-    <PackageReference Include="ICU4N" Version="60.1.0-alpha.401" ExcludeAssets="buildTransitive" />
-</ItemGroup>
-```
-
-### Legacy Non-SDK-Style Projects
-
-For projects that are using a .NET SDK lower than .NET 5.0 and/or are using a non-SDK style project (i.e. a project that specifies ToolsVersion="4.0" or lower in the `<Project>` element) support for resources is not automatic. You must manually add a package reference to one of:
-
-- **Option 1:** [ICU4N.Resources](https://www.nuget.org/packages/ICU4N.Resources/)
-- **Option 2:** [ICU4N.Resources.NETFramework4.0](https://www.nuget.org/packages/ICU4N.Resources.NETFramework4.0/)
-- **Option 3:** A custom NuGet package with a subset of resources.
-
-The ability for consuming projects to minimize resource files beyond the set of resources specified by the original package author for non-SDK style projects is not supported.
+When including custom resource data with ICU4N, be sure to exclude the resources from ICU4N.Resources as described in [Excluding ICU4N.Resources](excluding-ICU4N.Resources).
 
 ## Building and Testing
 
