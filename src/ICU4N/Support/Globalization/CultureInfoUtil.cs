@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace ICU4N.Support.Globalization
 {
-    public static class CultureInfoUtil
+    public static class CultureInfoUtil // ICU4N TODO: API - Not sure we even need this, much less need to have it public
     {
 #if !FEATURE_CULTUREINFO_GETCULTURES
 

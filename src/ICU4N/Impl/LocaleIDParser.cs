@@ -791,6 +791,30 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             }
         }
 
+        // ICU4N: Parse only the neutral culture part of locale. This only gets the language and (optional) script.
+        // This is the same logic as LocaleID.IsNeutralCulture.
+        internal void ParseNeutralCulture(char separator = UNDERSCORE)
+        {
+            Reset();
+            ParseLanguage();
+            ParseScript(separator);
+
+            // catch unwanted trailing underscore or hyphen after language if there was no script
+            int len = buffer.Length;
+            if (len > 0 && (buffer[len - 1] == UNDERSCORE || buffer[len - 1] == HYPHEN))
+            {
+                buffer.Length--;
+            }
+        }
+
+        // ICU4N: Get only the neutral culture part of locale. This only gets the language and (optional) script.
+        // This is the same logic as LocaleID.IsNeutralCulture.
+        internal ReadOnlySpan<char> GetNeutralCultureAsSpan(char separator = UNDERSCORE)
+        {
+            ParseNeutralCulture(separator);
+            return AsSpan(0);
+        }
+
         private void RemoveLeadingSeparator(char separator = UNDERSCORE)
         {
             int len = buffer.Length;

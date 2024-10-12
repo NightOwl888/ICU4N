@@ -10,6 +10,8 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     
     <SatelliteAssemblyTargetFramework>netstandard2.0</SatelliteAssemblyTargetFramework>
+    <IsNetStandard20Compatible>true</IsNetStandard20Compatible>
+    <IsNetStandard20Compatible Condition="$(TargetFramework.StartsWith('net40')) Or $(TargetFramework.StartsWith('net45')) Or '$(TargetFramework)' == 'net46' Or '$(TargetFramework)' == 'net461'">false</IsNetStandard20Compatible>
   </PropertyGroup>
 
   <PropertyGroup Label="NuGet Package Settings">
@@ -34,6 +36,15 @@
     <InternalsVisibleTo Include="ICU4N.Tests.Collation" />
     <InternalsVisibleTo Include="ICU4N.Tests.Transliterator" />
   </ItemGroup>
+  
+  <!-- ICU4N: Using version constraints conforming with ICU versioning rules for resources, which don't allow them to differ from the version of the binaries. -->
+  <!-- ICU4N TODO: This is the safest approach for version constraints, but need to check the ICU docs to see if this is how these are actually supposed to work. -->
+  <ItemGroup Condition="'$(ReferenceICUResources.ToLowerInvariant())' == 'true' And '$(IsNetStandard20Compatible.ToLowerInvariant())' == 'true'">
+    <PackageReference Include="ICU4N.Resources" Version="[$(PackageVersion)]"/>
+  </ItemGroup>
+  <ItemGroup Condition="'$(ReferenceICUResources.ToLowerInvariant())' == 'true' And '$(IsNetStandard20Compatible.ToLowerInvariant())' != 'true'">
+    <PackageReference Include="ICU4N.Resources.NETFramework4.0" Version="[$(PackageVersion)]"/>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="J2N" Version="$(J2NPackageReferenceVersion)" />
@@ -50,16 +61,19 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="$(MicrosoftExtensionsCachingMemoryPackageReferenceVersion)" />
     <PackageReference Include="System.Memory" Version="$(SystemMemoryPackageReferenceVersion)" />
+    <PackageReference Include="System.Reflection.Metadata" Version="$(SystemReflectionMetadataPackageReferenceVersion)" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="$(MicrosoftExtensionsCachingMemoryPackageReferenceVersion)" />
     <PackageReference Include="System.Memory" Version="$(SystemMemoryPackageReferenceVersion)" />
+    <PackageReference Include="System.Reflection.Metadata" Version="$(SystemReflectionMetadataPackageReferenceVersion)" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net451' ">
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="$(MicrosoftExtensionsCachingMemoryPackageReferenceVersion)" />
     <PackageReference Include="System.Memory" Version="$(SystemMemoryPackageReferenceVersion)" />
+    <PackageReference Include="System.Reflection.Metadata" Version="$(SystemReflectionMetadataPackageReferenceVersion)" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">
@@ -79,6 +93,8 @@
     <ICU4JDownloadConfigFilePath>$(SolutionDir).build/icu4j-download-urls.txt</ICU4JDownloadConfigFilePath>
     <ICU4JWorkingDirectory>$(ArtifactsDir)/icu4j-temp</ICU4JWorkingDirectory>
     <ICU4JResourcesDirectory>$(ICU4JWorkingDirectory)/icu4j-transformed</ICU4JResourcesDirectory>
+    <!-- These are .rsp files that contain the options and paths of the files to embed, since they can exceed the length allowed by the Process class. -->
+    <ICU4JResponseFileDirectory>$(ICU4JWorkingDirectory)/icu4j-embed</ICU4JResponseFileDirectory>
   </PropertyGroup>
 
   <ItemGroup Label="Specifies generated sattelite assemblies should be copied to the output folder (and dependent projects as well)">
@@ -105,23 +121,6 @@
   -->
   
   <!-- ICU4N NOTE: To debug on Linux/macOS, the contents of the _artifacts/SatelliteAssemblies and the file _artifactsDirectory/fullLocaleNames.lst must be copied to the local _artifacts folder. These currently won't build on non-Windows platforms. -->
-  <Target Name="CreateIntermediateTargetsFile" BeforeTargets="DownloadICU4J" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)'">
-
-    <PropertyGroup>
-      <Major>$(PackageVersion.Split('.')[0])</Major>
-      <ICUDataFolderName>$(ICUDataPrefix)$(Major)$(ICUDataEndian)</ICUDataFolderName>
-    </PropertyGroup>
-
-    <!-- NOTE: This will include the current ICU4N version number. If the party packing the assembly switches to a different version of ICU4N, the .targets
-      file will track the version of ICU4N that is referenced. -->
-    <ReplaceFileText InputFilename="$(AssemblyName).targets" OutputFilename="$(ArtifactsDir)/$(AssemblyName).targets" MatchExpression="\$version\$" ReplacementText="$(PackageVersion)" />
-    <ReplaceFileText InputFilename="$(ArtifactsDir)/$(AssemblyName).targets" OutputFilename="$(ArtifactsDir)/$(AssemblyName).targets" MatchExpression="\$icuDataFolderName\$" ReplacementText="$(ICUDataFolderName)" />
-  </Target>
-
-  <ItemGroup>
-    <None Include="$(SolutionDir)_artifacts/$(AssemblyName).targets" Pack="true" PackagePath="buildTransitive/$(AssemblyName).targets" />
-  </ItemGroup>
-
   <Target Name="DownloadICU4J" BeforeTargets="ExecICU4JResourceConverter" Returns="$(ICU4JJarFilePath)" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)'">
     
     <PropertyGroup>
@@ -190,10 +189,10 @@
 
     <!-- Make invariant resources -->
     <!--<AL EmbedResources="@(EmbeddedResources)" TargetType="library" TemplateFile="$(TemplateAssemblyFilePath)" Culture="" KeyFile="$(AssemblyOriginatorKeyFile)" OutputAssembly="$(ICU4NSatelliteAssemblyOutputDir)/$(AssemblyName).resources.dll" />-->
-    <LinkAssemblies DotNetToolsDirectory="$(TargetFrameworkSDKToolsDirectory)" EmbedResources="@(EmbeddedResources)" Culture="" TemplateFile="$(TemplateAssemblyFilePath)" KeyFile="$(AssemblyOriginatorKeyFile)" OutputAssembly="$(ICU4NSatelliteAssemblyOutputDir)/$(AssemblyName).resources.dll" />
+    <LinkAssemblies DotNetToolsDirectory="$(TargetFrameworkSDKToolsDirectory)" EmbedResources="@(EmbeddedResources)" Culture="" TemplateFile="$(TemplateAssemblyFilePath)" KeyFile="$(AssemblyOriginatorKeyFile)" OutputAssembly="$(ICU4NSatelliteAssemblyOutputDir)/$(AssemblyName).resources.dll" EmbedResponseFile="$(ICU4JResponseFileDirectory)/embed.rsp" />
     
     <!-- Make localized resources -->
-    <LinkAssemblies DotNetToolsDirectory="$(TargetFrameworkSDKToolsDirectory)" EmbedResources="@(FolderInLocale->'%(Files)')" Culture="%(FolderInLocale.Culture)" TemplateFile="$(TemplateAssemblyFilePath)" KeyFile="$(AssemblyOriginatorKeyFile)" OutputAssembly="$(ICU4NSatelliteAssemblyOutputDir)/%(FolderInLocale.Culture)/$(AssemblyName).resources.dll" />
+    <LinkAssemblies DotNetToolsDirectory="$(TargetFrameworkSDKToolsDirectory)" EmbedResources="@(FolderInLocale->'%(Files)')" Culture="%(FolderInLocale.Culture)" TemplateFile="$(TemplateAssemblyFilePath)" KeyFile="$(AssemblyOriginatorKeyFile)" OutputAssembly="$(ICU4NSatelliteAssemblyOutputDir)/%(FolderInLocale.Culture)/$(AssemblyName).resources.dll" EmbedResponseFile="$(ICU4JResponseFileDirectory)/%(FolderInLocale.Culture)-embed.rsp" />
 
   </Target>
 
@@ -206,6 +205,7 @@
       <OutputAssembly ParameterType="System.String" Required="true" />
       <TemplateFile ParameterType="System.String" Required="true" />
       <KeyFile ParameterType="System.String" />
+      <EmbedResponseFile ParameterType="System.String" Required="true" />
     </ParameterGroup>
     <Task>
       <Using Namespace="System" />
@@ -243,7 +243,20 @@
               if (Directory.Exists(directory))
                   Directory.Delete(directory, recursive: true);
               Directory.CreateDirectory(directory);
-          
+              
+              // Write the response file with the -embed options
+              var responseDirectory = Path.GetDirectoryName(EmbedResponseFile);
+              Directory.CreateDirectory(responseDirectory);
+              
+              using (var writer = new StreamWriter(EmbedResponseFile, append: false, Encoding.UTF8))
+              {
+                  foreach (string file in embeddedResourceFiles)
+                  {
+                      writer.Write("-embed:");
+                      writer.WriteLine(file);
+                  }
+              }
+              
               Log.LogMessage(MessageImportance.High, $"Generating Satellite Assembly for {Culture}");
               var command = DotNetToolsDirectory + (Environment.OSVersion.Platform == PlatformID.Win32NT ? "al.exe" : "al");
               var sb = new StringBuilder();
@@ -264,14 +277,14 @@
                   sb.Append(Space);
                   sb.Append($"-keyfile:{KeyFile}");
               }
-              foreach (var file in embeddedResourceFiles)
-              {
-                  sb.Append(Space);
-                  sb.Append($"-embed:{file}");
-              }
+              // Using a response file allows us to stay under the command length limit of 32768 chars
+              sb.Append(Space);
+              sb.Append('@');
+              sb.Append(EmbedResponseFile);
+              
               var args = sb.ToString();
-              //Log.LogMessage(MessageImportance.High, "Command: " + command);
-              //Log.LogMessage(MessageImportance.High, "Args: " + args);
+              //Log.LogMessage(MessageImportance.High, $"Command: {command}");
+              //Log.LogMessage(MessageImportance.High, $"Args: {args}");
               using Process p = new Process();
               p.StartInfo.UseShellExecute = false;
               //p.StartInfo.RedirectStandardOutput = true;

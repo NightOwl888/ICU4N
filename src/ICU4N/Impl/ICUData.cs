@@ -3,7 +3,6 @@ using ICU4N.Logging;
 using ICU4N.Reflection;
 using ICU4N.Resources;
 using ICU4N.Support;
-using ICU4N.Support.Globalization;
 using ICU4N.Util;
 using J2N;
 using System;
@@ -140,8 +139,8 @@ namespace ICU4N.Impl
         /// </summary>
         internal static Stream GetStream(Assembly loader, string localeID, string resourceName, bool required)
         {
-            string cultureName = localeID == "root" || localeID == "any" ? string.Empty : localeID.Replace('_', '-');
-            //var culture = string.IsNullOrWhiteSpace(cultureName) ? CultureInfo.InvariantCulture : new ResourceCultureInfo(cultureName);
+            // ICU4N: Map the locale to a valid .NET culture name so .NET doesn't complain about it being incompatible.
+            string cultureName = ResourceUtil.GetDotNetNeutralCultureName(localeID.AsSpan());
 
             Stream i = null;
             Assembly satelliteAssembly;

@@ -37,6 +37,7 @@
   <!-- Features in .NET Core 3.x, .NET 5.x, .NET 6.x, .NET 7.x, and .NET 8.x -->
   <PropertyGroup Condition=" $(TargetFramework.StartsWith('netcoreapp3.')) Or $(TargetFramework.StartsWith('net5.')) Or $(TargetFramework.StartsWith('net6.')) Or $(TargetFramework.StartsWith('net7.')) Or $(TargetFramework.StartsWith('net8.')) ">
 
+    <DefineConstants>$(DefineConstants);FEATURE_MEMORYEXTENSIONS_CONTAINS_T</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_MEMORYEXTENSIONS_LASTINDEXOF_COMPARISONTYPE</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_MEMORYEXTENSIONS_TRIM_SPAN_MEMORY_READONLYMEMORY</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_RUNE</DefineConstants>
@@ -92,6 +93,7 @@
     <DefineConstants>$(DefineConstants);FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_MICROSOFT_EXTENSIONS_CACHING</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_REGEX_MATCHTIMEOUT</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_SYSTEM_REFLECTION_METADATA</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_TASK_ASYNC_AWAIT</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_TASK_RUN</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_TYPE_GETCUSTOMATTRIBUTE_GENERIC</DefineConstants>
@@ -185,29 +187,6 @@
     </PropertyGroup>
     <Message Text="$(OutputTargetFrameworks)" Importance="high"/>
   </Target>
-
-  <UsingTask TaskName="ReplaceFileText" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildBinPath)\Microsoft.Build.Tasks.Core.dll">
-    <ParameterGroup>
-      <InputFilename ParameterType="System.String" Required="true" />
-      <OutputFilename ParameterType="System.String" Required="true" />
-      <MatchExpression ParameterType="System.String" Required="true" />
-      <ReplacementText ParameterType="System.String" Required="true" />
-    </ParameterGroup>
-    <Task>
-      <Using Namespace="System" />
-      <Using Namespace="System.IO" />
-      <Using Namespace="System.Text.RegularExpressions" />
-      <Code Type="Fragment" Language="cs">
-        <![CDATA[
-            Directory.CreateDirectory(Path.GetDirectoryName(OutputFilename));
-            File.WriteAllText(
-                OutputFilename,
-                Regex.Replace(File.ReadAllText(InputFilename), MatchExpression, ReplacementText)
-                );
-          ]]>
-      </Code>
-    </Task>
-  </UsingTask>
 
   <!-- Global PackageReferences -->
 

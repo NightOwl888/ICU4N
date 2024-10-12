@@ -92,7 +92,9 @@ namespace JavaResourceConverter
             // ICU4N TODO: We may need some special cases here to fallback to if the locale name doesn't comply with RFC1766: https://datatracker.ietf.org/doc/rfc1766/
             // Should special cases exist, we need to catch that situation and pack them in the corresponding neutral language.
             // We also need to create a manifest of these special cases to give ICU4N a speedy way to decide where to look.
-            string dotnetLocaleName = GetDotNetLocaleName(icuLocaleName);
+
+            // ICU4N: Map the locale to a valid .NET culture name so .NET doesn't complain about it being incompatible.
+            string dotnetLocaleName = ICU4N.Globalization.ResourceUtil.GetDotNetNeutralCultureName(icuLocaleName);
 
             string outFileName = GetFeatureFileName(featureName, fileName);
             string outDirectoryName = Path.Combine(outputDirectory, dotnetLocaleName);
@@ -100,9 +102,6 @@ namespace JavaResourceConverter
 
             Directory.CreateDirectory(outDirectoryName);
             File.Copy(filePath, outFilePath, overwrite: true);
-            //using var input = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
-            //using var output = new FileStream(outFilePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite | FileShare.Delete);
-            //input.CopyTo(output);
         }
 
         public static void TransformInvariantFeature(string filePath, string featureName, string outputDirectory)
@@ -113,9 +112,6 @@ namespace JavaResourceConverter
 
             Directory.CreateDirectory(outputDirectory);
             File.Copy(filePath, outFilePath, overwrite: true);
-            //using var input = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
-            //using var output = new FileStream(outFilePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite | FileShare.Delete);
-            //input.CopyTo(output);
         }
 
         private static string GetFeatureFileName(string featureName, string fileName)
@@ -150,14 +146,6 @@ namespace JavaResourceConverter
         //    writer.AddResource(featureName, stream); // TODO: Should we just use "data" or "resource", since it is the only one in the file?
         //}
 
-        public static string GetDotNetLocaleName(string baseName)
-        {
-            if (baseName == "root") return string.Empty;
-
-            using var parser = new LocaleIDParser(stackalloc char[32], baseName);
-            return parser.GetName();
-        }
-
         /// <summary>
         /// Loads the list of locale names that are supported for a given feature.
         /// </summary>
@@ -187,8 +175,6 @@ namespace JavaResourceConverter
             }
             // Write the last name without a newline
             writer.Write(files[files.Count - 1]);
-            //foreach (var file in files)
-            //    writer.WriteLine(file);
             writer.Flush();
         }
 

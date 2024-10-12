@@ -1,0 +1,14 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup Label="ICU4N properties">
+    <_ICU4NResourcesPackageId>ICU4N.Resources</_ICU4NResourcesPackageId>
+    <_ICU4NResourcesSourcesDirectory>lib/netstandard2.0</_ICU4NResourcesSourcesDirectory>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Newtonsoft.Json properties">
+    <_ICU4NNewtonsoftJsonTargetFramework>netstandard2.0</_ICU4NNewtonsoftJsonTargetFramework>
+  </PropertyGroup>
+
+  <Import Project="ICU4N.Resources.CopyPatch.targets"/>
+  
+</Project>

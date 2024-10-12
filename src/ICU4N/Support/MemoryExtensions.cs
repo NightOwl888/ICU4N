@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using SCG = System.Collections.Generic;
 #nullable enable
 
 namespace ICU4N
@@ -15,6 +16,28 @@ namespace ICU4N
     /// </summary>
     internal static partial class MemoryExtensions
     {
+#if !FEATURE_MEMORYEXTENSIONS_CONTAINS_T
+        /// <summary>
+        /// Searches for the specified value and returns true if found. If not found, returns false. Values are compared using IEquatable{T}.Equals(T).
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="span">The span to search.</param>
+        /// <param name="value">The value to search for.</param>
+        public static bool Contains<T>(this ReadOnlySpan<T> span, T value) where T : IEquatable<T>
+        {
+            SCG.EqualityComparer<T> comparer = SCG.EqualityComparer<T>.Default;
+
+            foreach (T item in span)
+            {
+                if (comparer.Equals(item, value))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+#endif
+
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
 
         /// <summary>

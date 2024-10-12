@@ -1,6 +1,6 @@
-﻿namespace ICU4N.Support.Globalization
+﻿namespace ICU4N.Globalization
 {
-    internal static class ResourceUtil
+    internal static partial class ResourceUtil
     {
         /// <summary>
         /// Change from JDK-style resource path (/data/icudt60b/brkitr) to .NET style (data.brkitr).

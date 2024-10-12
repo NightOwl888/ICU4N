@@ -1,7 +1,7 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Reflection;
 using ICU4N.Resources;
-using ICU4N.Support.Globalization;
+using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
 using J2N.Collections.Generic.Extensions;
@@ -12,9 +12,12 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+#if FEATURE_SYSTEM_REFLECTION_METADATA
+using System.Reflection.Metadata;
+using System.Reflection.PortableExecutable;
+#endif
 using System.Resources;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using JCG = J2N.Collections.Generic;
@@ -24,6 +27,8 @@ namespace ICU4N.Impl
 {
     public class ICUResourceBundle : UResourceBundle
     {
+        private const int CharStackBufferSize = 64;
+
         /// <summary>
         /// The path to the .NET Framework 4+ GAC where we will find .resources.dll files.
         /// </summary>
@@ -806,13 +811,20 @@ namespace ICU4N.Impl
             string satelliteAssemblyName = $"{assemblyName}.resources";
             string satelliteAssemblyDLLName = $"{satelliteAssemblyName}.dll";
 
-            var cultureNames = new HashSet<string>();
-
             foreach (var file in new DirectoryInfo(PlatformDetection.BaseDirectory).GetFiles(satelliteAssemblyDLLName, SearchOption.AllDirectories))
             {
-                string cultureName = file.Directory.Name;
-                if (LooksLikeACultureName(cultureName))
-                    cultureNames.Add(cultureName);
+                if (LooksLikeACultureName(file.Directory.Name.AsSpan()))
+                {
+#if FEATURE_SYSTEM_REFLECTION_METADATA
+                    AddLocaleIDsFromAssemblyPath(file.FullName, baseName, set);
+#else
+                    Assembly satelliteAssembly;
+                    if ((satelliteAssembly = ICUData.GetSatelliteAssemblyOrDefault(assembly, file.Directory.Name)) != null)
+                    {
+                        AppendLocaleIDsFromAssembly(satelliteAssembly, baseName, set);
+                    }
+#endif
+                }
             }
 
             // Check the Global Assembly Cache (for .NET 4+ only)
@@ -826,80 +838,125 @@ namespace ICU4N.Impl
                 {
                     foreach (var file in new DirectoryInfo(globalAssemblyCacheResourcePath).GetFiles(satelliteAssemblyDLLName, SearchOption.AllDirectories))
                     {
-                        string assemblyDetails = file.Directory.Name;
-                        string[] parts = assemblyDetails.Split('_');
-                        string cultureName = parts[2]; // 3rd segment of the folder is the culture name. Neutral resources have an empty string.
-
+                        var enumerator = file.Directory.Name.AsTokens('_');
+                        enumerator.MoveNext();
+                        enumerator.MoveNext();
+                        if (!IsMatchingVersion(assemblyNameObj.Version, enumerator.Current.Text.ToString()))
+                            continue;
+                        enumerator.MoveNext();
+                        ReadOnlySpan<char> cultureName = enumerator.Current; // 3rd segment of the folder is the culture name. Neutral resources have an empty string.
                         if (LooksLikeACultureName(cultureName))
-                            cultureNames.Add(cultureName);
+                        {
+#if FEATURE_SYSTEM_REFLECTION_METADATA
+                            AddLocaleIDsFromAssemblyPath(file.FullName, baseName, set);
+#else
+                            Assembly satelliteAssembly;
+                            if ((satelliteAssembly = ICUData.GetSatelliteAssemblyOrDefault(assembly, cultureName.ToString())) != null)
+                            {
+                                AppendLocaleIDsFromAssembly(satelliteAssembly, baseName, set);
+                            }
+#endif
+                        }
                     }
                 }
             }
+        }
 
-            Assembly satelliteAssembly;
-#if DEBUG
-            var dotNetCultures = new HashSet<string>(CultureInfo.GetCultures(CultureTypes.NeutralCultures | CultureTypes.SpecificCultures).Select(c => c.Name));
-#endif
+#if FEATURE_SYSTEM_REFLECTION_METADATA
+        // Gets the root locale IDs (for the UCultureInfo.GetCultures() feature, not specific features).
+        // In general, this is for satellite assemblies, but can find root cultures in any assembly.
+        private static void AddLocaleIDsFromAssemblyPath(string assemblyPath, string baseName, ISet<string> set)
+        {
+            var prefix = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            AppendFilePrefixFromBaseName(baseName.AsSpan(), ref prefix);
 
-            foreach (var cultureName in cultureNames)
+            using var stream = new FileStream(assemblyPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using var peReader = new PEReader(stream);
+            var reader = peReader.GetMetadataReader();
+
+            foreach (var resourceHandle in reader.ManifestResources)
             {
-                // ICU4N TODO: For .NET Core 3+, there is a better way with AssemblyLoadContext that allows us to
-                // unload the assembly again https://docs.microsoft.com/en-us/dotnet/standard/assembly/unloadability
-                // We need to target .NET Core 3 (or higher), to pull it off.
+                var resource = reader.GetManifestResource(resourceHandle);
+                var name = reader.GetString(resource.Name).AsSpan();
 
-                // ICU4N TODO: For .NET Framework, we can unload the assemblies by loading them into a temporary domain.
-                // This works in most cases, but certain domains trip up due to scropt codes. Still, if we load
-                // and unload the majority of them and fall back on ICUData.GetSatelliteAssemblyOrDefault, it should be more
-                // efficient than using ICUData.GetSatelliteAssemblyOrDefault alone.
-                //
-                // We require a cultureName -> assembly path Dictionary to use this approach, though. And the same will
-                // likely apply to the .NET Core 3+ unloading approach.
-                //
-                //            AppDomain dom = AppDomain.CreateDomain("getCultures");
-                //            AssemblyName satelliteAssemblyNamer = new AssemblyName();
-                //            foreach (var kvp in cultureMap)
-                //            {
-                //                satelliteAssemblyNamer.CodeBase = kvp.Value;
-                //                var satellite = dom.Load(satelliteAssemblyNamer);
+                if (IsMatchingLocaleFile(name, prefix.AsSpan(), ".res".AsSpan(), out ReadOnlySpan<char> locale))
+                    set.Add(locale.ToString());
+            }
+        }
+#else
+        private static void AppendLocaleIDsFromAssembly(Assembly assembly, string baseName, ISet<string> set)
+        {
+            var prefix = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            AppendFilePrefixFromBaseName(baseName.AsSpan(), ref prefix);
 
-                //                string localeID = kvp.Key.Replace('-', '_');
-                //                if (EmbeddedResourceFileExists(satellite, baseName, localeID))
-                //                    set.Add(localeID);
-                //            }
-                //            AppDomain.Unload(dom);
-
-#if DEBUG
-                // ICU4N TODO: The cultures that contain this string make the debugger bomb when they are loaded
-                // (although the tests pass). So, to allow debugging for now, we simply are excluding these cultures.
-                // We need to revisit this to make all of the tests pass in debug mode.
-                //if (cultureName.Contains("--"))
-                if (!dotNetCultures.Contains(cultureName))
-                {
-                    continue;
-                }
+            // Iterate through embedded resources
+            foreach (string resourceName in assembly.GetManifestResourceNames())
+            {
+                if (IsMatchingLocaleFile(resourceName.AsSpan(), prefix.AsSpan(), ".res".AsSpan(), out ReadOnlySpan<char> locale))
+                    set.Add(locale.ToString());
+            }
+        }
 #endif
 
-                if ((satelliteAssembly = ICUData.GetSatelliteAssemblyOrDefault(assembly, cultureName)) != null)
+        private static readonly char[] PathSeparatorChars = { '/', '\\', '.' };
+
+        // ICU4N TODO: API - consolidate this with ResourceUtil.ConvertResourceName(), as it is the same logic
+        internal static void AppendFilePrefixFromBaseName(ReadOnlySpan<char> baseName, ref ValueStringBuilder destination)
+        {
+            // Remove the PackageName (such as "/icudt60b")
+            // Normalize delimiters to '.'
+            foreach (ReadOnlySpan<char> segment in baseName.AsTokens(PathSeparatorChars))
+            {
+                if (!segment.Equals(ICUData.PackageName, StringComparison.Ordinal))
                 {
-                    string localeID = cultureName.Replace('-', '_');
-                    if (EmbeddedResourceFileExists(satelliteAssembly, baseName, localeID))
-                        set.Add(localeID);
+                    destination.Append(segment);
+                    destination.Append('.');
                 }
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool EmbeddedResourceFileExists(Assembly assembly, string baseName, string localeID)
+        // suffix is typically ".res"
+        internal static bool IsMatchingLocaleFile(ReadOnlySpan<char> fileName, ReadOnlySpan<char> prefix, ReadOnlySpan<char> suffix, out ReadOnlySpan<char> locale)
         {
-            var icuPath = Path.Combine(baseName, string.Concat(localeID, ".res"));
+            locale = default;
 
-            // We just run a quick check to see if the file is in the resource
-            return assembly.GetManifestResourceInfo(ResourceUtil.ConvertResourceName(icuPath)) != null;
+            if (!fileName.StartsWith(prefix, StringComparison.Ordinal) || !fileName.EndsWith(suffix, StringComparison.Ordinal))
+                return false;
+
+            int startLocaleIndex = prefix.Length;
+            int endLocaleIndex = fileName.Length - suffix.Length;
+            locale = fileName.Slice(prefix.Length, endLocaleIndex - startLocaleIndex);
+            return !locale.Contains('.'); // locale won't have a '.' delimiter in it.
         }
 
+#nullable enable
+        private static bool IsMatchingVersion(Version? assemblyVersion, string satelliteAssemblyVersion)
+        {
+            Version? satAssemblyVersion = null;
+            try
+            {
+                satAssemblyVersion = new Version(satelliteAssemblyVersion);
+            }
+            catch
+            {
+                return false;
+            }
+            if (assemblyVersion != null)
+            {
+                if (!assemblyVersion.Equals(satAssemblyVersion))
+                    return false;
+            }
+            else
+            {
+                return false;
+            }
+            return true;
+        }
+#nullable restore
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool LooksLikeACultureName(string cultureName)
-                => (cultureName.Length > 1 && cultureName.Length <= 3) || cultureName.IndexOf('-') >= 2;
+        private static bool LooksLikeACultureName(ReadOnlySpan<char> cultureName)
+            => (cultureName.Length > 1 && cultureName.Length <= 3) || cultureName.IndexOf('-') >= 2;
 
         private static ISet<string> CreateFullLocaleNameSet(string baseName, Assembly assembly)
         {

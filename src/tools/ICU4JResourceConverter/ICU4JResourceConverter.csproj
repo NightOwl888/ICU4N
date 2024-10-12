@@ -11,14 +11,23 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <Compile Include="..\..\ICU4N\Impl\LocaleIDParser.cs" Link="Shared\LocaleIDParser.cs" />
-    <Compile Include="..\..\ICU4N\Impl\LocaleIDs.cs" Link="Shared\LocaleIDs.cs" />
-    <Compile Include="..\..\ICU4N\Impl\Locale\AsciiUtil.cs" Link="Shared\AsciiUtil.cs" />
-    <Compile Include="..\..\ICU4N\Support\ArrayPoolExtensions.cs" Link="Shared\ArrayPoolExtensions.cs" />
-    <Compile Include="..\..\ICU4N\Support\Collections\DictionaryExtensions.cs" Link="Shared\DictionaryExtensions.cs" />
-    <Compile Include="..\..\ICU4N\Support\Globalization\LocaleID.cs" Link="Shared\LocaleID.cs" />
-    <Compile Include="..\..\ICU4N\Support\Text\ValueStringBuilder.cs" Link="Shared\ValueStringBuilder.cs" />
-    <Compile Include="..\..\ICU4N\Support\Text\ValueStringBuilder.CharSequence.cs" Link="Shared\ValueStringBuilder.CharSequence.cs" />
+    <Compile Include="..\..\ICU4N\Impl\LocaleIDParser.cs" Link="Shared\Impl\LocaleIDParser.cs" />
+    <Compile Include="..\..\ICU4N\Impl\LocaleIDs.cs" Link="Shared\Impl\LocaleIDs.cs" />
+    <Compile Include="..\..\ICU4N\Impl\Locale\AsciiUtil.cs" Link="Shared\Impl\Locale\AsciiUtil.cs" />
+    <Compile Include="..\..\ICU4N\Impl\Locale\AsciiUtil.HashCode.cs" Link="Shared\Impl\Locale\AsciiUtil.HashCode.cs" />
+    <Compile Include="..\..\ICU4N\Impl\Locale\AsciiCaseInsensitiveKey.cs" Link="Shared\Impl\Locale\AsciiCaseInsensitiveKey.cs" />
+    <Compile Include="..\..\ICU4N\Impl\Locale\AsciiStringComparer.cs" Link="Shared\Impl\Locale\AsciiStringComparer.cs" />
+    <Compile Include="..\..\ICU4N\Support\ArrayPoolExtensions.cs" Link="Shared\Support\ArrayPoolExtensions.cs" />
+    <Compile Include="..\..\ICU4N\Support\Collections\DictionaryExtensions.cs" Link="Shared\Support\Collections\DictionaryExtensions.cs" />
+    <Compile Include="..\..\ICU4N\Support\Collections\DictionaryExtensions.Memory.cs" Link="Shared\Support\Collections\DictionaryExtensions.Memory.cs" />
+    <Compile Include="..\..\ICU4N\Support\Globalization\LocaleID.cs" Link="Shared\Support\Globalization\LocaleID.cs" />
+    <Compile Include="..\..\ICU4N\Support\Globalization\ResourceUtil.SatelliteAssemblies.cs" Link="Shared\Support\Globalization\ResourceUtil.SatelliteAssemblies.cs" />
+    <Compile Include="..\..\ICU4N\Support\Security\Cryptography\RandomHelpers.cs" Link="Shared\Support\Security\Cryptography\RandomHelpers.cs" />
+    <Compile Include="..\..\ICU4N\Support\Text\ValueStringBuilder.cs" Link="Shared\Support\Text\ValueStringBuilder.cs" />
+    <Compile Include="..\..\ICU4N\Support\Text\ValueStringBuilder.CharSequence.cs" Link="Shared\Support\Text\ValueStringBuilder.CharSequence.cs" />
+    <Compile Include="..\..\ICU4N\Support\Text\Marvin.cs" Link="Shared\Support\Text\Marvin.cs" />
+    <Compile Include="..\..\ICU4N\Support\Text\StringHelper.cs" Link="Shared\Support\Text\StringHelper.cs" />
+    <Compile Include="..\..\ICU4N\Support\Text\Utf16Utility.cs" Link="Shared\Support\Text\Utf16Utility.cs" />
   </ItemGroup>
 
   <ItemGroup>

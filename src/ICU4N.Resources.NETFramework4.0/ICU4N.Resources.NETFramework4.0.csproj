@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net40</TargetFramework>
@@ -7,12 +7,15 @@
 
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <IncludeSymbols>false</IncludeSymbols>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RootNamespace>ICU4N.Resources.NETFramework40</RootNamespace>
+
+    <NoWarn Condition="'$(PackResourceStubs)' == 'true'" Label="Some target frameworks declared in the dependencies group of the nuspec and lib/ref folder do not have exact matches in the other location.">NU5128</NoWarn>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(PackResourceStubs)' != 'true'">
     <None Include="$(ICU4NSatelliteAssemblyOutputDir)/**/*.resources.dll" Pack="true" PackagePath="lib/net40" Visible="false" />
+    <None Include="ICU4N.Resources.NETFramework4.0.targets" Pack="true" PackagePath="buildTransitive/$(PackageId).targets" />
+    <None Include="../ICU4N.Resources.CopyPatch.targets" Pack="true" PackagePath="buildTransitive/ICU4N.Resources.CopyPatch.targets" />
   </ItemGroup>
 
 </Project>

@@ -33,22 +33,13 @@ namespace ICU4N.Support.Resources
             LoadManifest(assembly, "data.translit.fullLocaleNames.lst", translitCultures);
         }
 
-        // ICU4N TODO: Move special case converter to common location
-        public static string GetDotNetLocaleName(string baseName)
-        {
-            if (baseName == "root") return string.Empty;
-
-            using var parser = new LocaleIDParser(stackalloc char[32], baseName);
-            return parser.GetName();
-        }
-
         public static void LoadManifest(Assembly assembly, string manifestName, IList<string> result)
         {
             using var locales = assembly.GetManifestResourceStream(manifestName);
             string line;
             using var reader = new StreamReader(locales);
             while ((line = reader.ReadLine()) != null)
-                result.Add(GetDotNetLocaleName(line.Trim()));
+                result.Add(line.Trim());
         }
 
         public static IEnumerable<TestCaseData> LocaleCultures
@@ -110,9 +101,9 @@ namespace ICU4N.Support.Resources
 
         [Test]
         [TestCaseSource("LocaleCultures")]
-        public void TestLoadLocaleAssemblies(string culture)
+        public void TestLoadLocaleAssemblies(string locale)
         {
-            var assembly = typeof(ICU4N.ICUConfig).Assembly.GetSatelliteAssembly(new ResourceCultureInfo(culture));
+            var assembly = typeof(ICU4N.ICUConfig).Assembly.GetSatelliteAssembly(new ResourceCultureInfo(ResourceUtil.GetDotNetNeutralCultureName(locale.AsSpan())));
             assertNotNull(string.Empty, assembly);
         }
 
