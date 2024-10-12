@@ -78,7 +78,7 @@
         // Check if .deps.json file exists
         bool depsJsonExists = File.Exists(targetDepsJsonFile);
         
-        Log.LogMessage(MessageImportance.Normal, $"targetDepsJsonFile: {targetDepsJsonFile}, Exists: {depsJsonExists}");
+        Log.LogMessage(MessageImportance.Low, $"targetDepsJsonFile: {targetDepsJsonFile}, Exists: {depsJsonExists}");
         
         JObject depsJson;
         
@@ -97,40 +97,40 @@
             // Check if "targets" section exists
             if (depsJson["targets"] == null)
             {
-                Log.LogMessage(MessageImportance.Normal, "Skipping copy: 'targets' section missing from .deps.json.");
+                Log.LogMessage(MessageImportance.Low, "Skipping copy: 'targets' section missing from .deps.json.");
                 return true;
             }
 
             // Check if the targetFrameworkKey exists under "targets"
             if (depsJson["targets"][targetFrameworkKey] == null)
             {
-                Log.LogMessage(MessageImportance.Normal, $"Skipping copy: '{targetFrameworkKey}' section missing from .deps.json.");
+                Log.LogMessage(MessageImportance.Low, $"Skipping copy: '{targetFrameworkKey}' section missing from .deps.json.");
                 return true;
             }
 
             // Check if the packageKey exists under the targetFrameworkKey
             if (depsJson["targets"][targetFrameworkKey][packageKey] == null)
             {
-                Log.LogMessage(MessageImportance.Normal, $"Skipping copy: '{packageKey}' section missing from .deps.json.");
+                Log.LogMessage(MessageImportance.Low, $"Skipping copy: '{packageKey}' section missing from .deps.json.");
                 return true;
             }
 
             // Check if "resources" section exists under the packageKey
             if (depsJson["targets"][targetFrameworkKey][packageKey]["resources"] == null)
             {
-                Log.LogMessage(MessageImportance.Normal, "Skipping copy: 'resources' section missing from .deps.json.");
+                Log.LogMessage(MessageImportance.Low, "Skipping copy: 'resources' section missing from .deps.json.");
                 return true;
             }
             
             // If we reach this point, all checks have passed, and we proceed with the copy operation.
-            Log.LogMessage(MessageImportance.High, "Proceeding with resource copy and JSON update.");
+            Log.LogMessage(MessageImportance.Normal, "Proceeding with resource copy and JSON update.");
         }
         else
         {
             depsJson = new JObject(); // Initialize to empty
         
             // If we reach this point, all checks have passed, and we proceed with the copy operation.
-            Log.LogMessage(MessageImportance.High, "Proceeding with resource copy.");
+            Log.LogMessage(MessageImportance.Normal, "Proceeding with resource copy.");
         }
 
         bool jsonUpdated = false;
@@ -145,7 +145,7 @@
             // If SatelliteResourceLanguages is specified, skip non-matching cultures
             if (satelliteLanguages != null && !satelliteLanguages.Contains(culture, StringComparer.OrdinalIgnoreCase))
             {
-                Log.LogMessage(MessageImportance.Normal, $"Skipping culture '{culture}' as it is not in SatelliteResourceLanguages.");
+                Log.LogMessage(MessageImportance.Low, $"Skipping culture '{culture}' as it is not in SatelliteResourceLanguages.");
                 continue;
             }
             
@@ -154,12 +154,12 @@
             // Determine the target output path
             string destinationFile = Path.Combine(OutputPath, culture, fileName);
 
-            Log.LogMessage(MessageImportance.Normal, "Checking file: " + destinationFile);
+            Log.LogMessage(MessageImportance.Low, "Checking file: " + destinationFile);
 
             // Copy the file if it doesn't already exist
             if (!File.Exists(destinationFile))
             {
-                Log.LogMessage(MessageImportance.High, "Copying file: " + destinationFile);
+                Log.LogMessage(MessageImportance.Normal, "Copying file: " + destinationFile);
 
                 Directory.CreateDirectory(Path.GetDirectoryName(destinationFile));
                 File.Copy(filePath, destinationFile, overwrite: true);
@@ -184,7 +184,7 @@
         // Write the .deps.json file only once if there were updates
         if (jsonUpdated)
         {
-            Log.LogMessage(MessageImportance.High, "Updating JSON file: " + targetDepsJsonFile);
+            Log.LogMessage(MessageImportance.Normal, "Updating JSON file: " + targetDepsJsonFile);
             
             // Retrieve the resources JObject
             var resources = depsJson["targets"][targetFrameworkKey][packageKey]["resources"] as JObject;
