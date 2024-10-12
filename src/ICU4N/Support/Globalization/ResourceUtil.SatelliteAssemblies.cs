@@ -7,11 +7,14 @@ namespace ICU4N.Globalization
 {
     internal static partial class ResourceUtil
     {
+        // Special cases for locales that .NET either doesn't recognize, or has remapped (probably for legacy reasons with NLS)
         private static readonly Dictionary<string, string> NeutralCultureSubstitutions = new Dictionary<string, string>(AsciiStringComparer.Ordinal)
         {
-            ["yue"] = "zh",
-            ["yue-Hans"] = "zh-Hans",
-            ["yue-Hant"] = "zh-Hant",
+            // ICU baseLocale       .NET culture
+            ["qu"]                  = "quz",
+            ["yue"]                 = "zh",
+            ["yue-Hans"]            = "zh-Hans",
+            ["yue-Hant"]            = "zh-Hant",
         };
 
         public static string GetDotNetNeutralCultureName(ReadOnlySpan<char> icuBaseName)
