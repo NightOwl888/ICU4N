@@ -18,4 +18,10 @@
     <None Include="../ICU4N.Resources.CopyPatch.targets" Pack="true" PackagePath="buildTransitive/ICU4N.Resources.CopyPatch.targets" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <_ICU4NNewtonsoftJsonTargetFramework>$(TargetFramework)</_ICU4NNewtonsoftJsonTargetFramework>
+  </PropertyGroup>
+
+  <Import Project="../ICU4N.Resources.PackJsonSerializer.targets" Condition="'$(PackResourceStubs)' != 'true'" />
+  
 </Project>

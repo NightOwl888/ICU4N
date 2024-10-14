@@ -22,4 +22,10 @@
     <PackageReference Update="NETStandard.Library" Version="$(NETStandardLibrary20PackageReferenceVersion)" PrivateAssets="All" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <_ICU4NNewtonsoftJsonTargetFramework>$(TargetFramework)</_ICU4NNewtonsoftJsonTargetFramework>
+  </PropertyGroup>
+
+  <Import Project="../ICU4N.Resources.PackJsonSerializer.targets" Condition="'$(PackResourceStubs)' != 'true'" />
+
 </Project>
