@@ -1,0 +1,65 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- 
+    ===========================================================================================================================================================
+    
+    This will:
+    
+    1. Restore Newtonsoft.Json from NuGet.
+    2. When you pack your project, it will automatically include the Newtonsoft.Json.dll file in your package along with its (MIT) license file.
+    3. NOT include the PackageReference to Newtonsoft.Json with your package, not even as a private asset. This ensures we won't have any transitive
+       dependency conflicts with Newtonsoft.Json, but does make the package size a bit larger.
+    
+    The DLL is put in a known location so the ICU4N.Resources.CopyPatch.targets file can utilize it for updating the .deps.json file in the build
+    or publish output.
+    
+    It supports the following optional properties to be defined before importing:
+    
+    _ICU4NNewtonsoftJsonPackageVersion -      The NuGet package version of Newtonsoft.Json to include.
+    
+    _ICU4NNewtonsoftJsonTargetFramework -     The target framework of Newtonsoft.Json to use from the version specified in _ICU4NNewtonsoftJsonPackageVersion.
+                                              Note that ICU4N.Resources.CopyPatch.targets does not support dependencies, so it is important to select a target
+                                              framework of Newtonsoft.Json that has no dependencies defined or provide them in your build.
+    ===========================================================================================================================================================
+  -->
+  
+  <PropertyGroup Label="Newtonsoft.Json properties">
+    <_ICU4NNewtonsoftJsonTargetFramework Condition="'$(_ICU4NNewtonsoftJsonTargetFramework)' == ''">netstandard2.0</_ICU4NNewtonsoftJsonTargetFramework>
+    <!-- NOTE: We don't want to risk this package getting a dependency in the future, so we pin it to a specific version here. -->
+    <_ICU4NNewtonsoftJsonPackageVersion Condition="'$(_ICU4NNewtonsoftJsonPackageVersion)' == ''">13.0.3</_ICU4NNewtonsoftJsonPackageVersion>
+  
+    <NoWarn Label="The assembly is not inside of the 'lib' folder and hence it won't be addd as a reference when the package is installed in the project.">$(NoWarn);NU5100</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(NugetPackageRoot)/newtonsoft.json/$(_ICU4NNewtonsoftJsonPackageVersion)/lib/$(_ICU4NNewtonsoftJsonTargetFramework)/Newtonsoft.Json.dll">
+      <Pack>true</Pack>
+      <PackagePath>buildTransitive/newtonsoft.json/$(_ICU4NNewtonsoftJsonTargetFramework)/Newtonsoft.Json.dll</PackagePath>
+      <Visible>false</Visible>
+    </None>
+    <None Include="$(NugetPackageRoot)/newtonsoft.json/$(_ICU4NNewtonsoftJsonPackageVersion)/LICENSE.md">
+      <Pack>true</Pack>
+      <PackagePath>buildTransitive/newtonsoft.json/$(_ICU4NNewtonsoftJsonTargetFramework)/LICENSE.md</PackagePath>
+      <Visible>false</Visible>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(IsPackaging)' != 'true' And '$(PkgNewtonsoft_Json)' == ''">
+    <PackageReference Include="Newtonsoft.Json" Version="$(_ICU4NNewtonsoftJsonPackageVersion)" PrivateAssets="All" />
+  </ItemGroup>
+
+  <Target Name="BeforePacking" BeforeTargets="Pack">
+    <PropertyGroup>
+      <IsPackaging>true</IsPackaging>
+    </PropertyGroup>
+    <Message Text="Packaging $(PackageId) without Newtonsoft.Json PackageReference..." Importance="high" />
+  </Target>
+
+  <Target Name="AfterPacking" AfterTargets="Pack">
+    <PropertyGroup>
+      <IsPackaging>false</IsPackaging>
+    </PropertyGroup>
+    <Message Text="Finished packaging $(PackageId)." Importance="high" />
+  </Target>
+
+</Project>

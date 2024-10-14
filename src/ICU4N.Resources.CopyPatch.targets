@@ -6,6 +6,13 @@
     because there are many .NET SDKs that are broken in this way. If you customize the resources for your build, be sure to include this patch
     so locales with 3-letter language codes will be distributed with your application or consumers of your application on NuGet.
     
+    To use this patch, the project you are packing must import the ICU4N.Resources.PackJsonSerializer.targets file.
+    
+    <Import Project="ICU4N.Resources.PackJsonSerializer.targets"/>
+    
+    This file will copy the appropriate Newtonsoft.Json.dll file into your NuGet package along with its (MIT) license file. It is only used to
+    update the .deps.json file after copying any missing ICU4N.resources.dll files into the output directory to ensure the build output is consistent.
+    
     Required properties to be defined before importing:
     
     _ICU4NResourcesPackageId -                Package Id of the current NuGet project (the one containing the satellite assemblies to be copied)
@@ -26,14 +33,6 @@
     <_ICU4NTargetDepsJsonFileName>$(AssemblyName).deps.json</_ICU4NTargetDepsJsonFileName>
   </PropertyGroup>
 
-  <PropertyGroup Label="Newtonsoft.Json properties">
-    <_ICU4NNewtonsoftJsonPackageVersion Condition="'$(_ICU4NNewtonsoftJsonPackageVersion)' == ''">13.0.3</_ICU4NNewtonsoftJsonPackageVersion>
-  </PropertyGroup>
-
-  <ItemGroup Condition=" '$(PkgNewtonsoft_Json)' == '' ">
-    <PackageReference Include="Newtonsoft.Json" Version="$(_ICU4NNewtonsoftJsonPackageVersion)" PrivateAssets="All" />
-  </ItemGroup>
-
   <ItemGroup>
     <_ICU4NResourceFiles Include="$(_ICU4NResourcesDirectory)/**/*.resources.dll" Exclude="$(_ICU4NResourcesDirectory)/ICU4N.resources.dll" />
   </ItemGroup>
@@ -53,7 +52,7 @@
       <SatelliteResourceLanguages ParameterType="System.String" Required="false" />
     </ParameterGroup>
     <Task>
-      <Reference Include="$(NugetPackageRoot)/newtonsoft.json/$(_ICU4NNewtonsoftJsonPackageVersion)/lib/$(_ICU4NNewtonsoftJsonTargetFramework)/Newtonsoft.Json.dll" />
+      <Reference Include="$(_ICU4NResourcesPackageRootDirectory)/buildTransitive/newtonsoft.json/$(_ICU4NNewtonsoftJsonTargetFramework)/Newtonsoft.Json.dll" />
       <Using Namespace="System" />
       <Using Namespace="System.Collections.Generic" />
       <Using Namespace="System.IO" />
