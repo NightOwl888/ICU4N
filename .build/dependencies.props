@@ -2,7 +2,7 @@
   <PropertyGroup Label="NuGet Package Reference Versions">
     <IKVMMavenSdkPackageReferenceVersion>1.2.0</IKVMMavenSdkPackageReferenceVersion>
     <J2NPackageReferenceVersion>2.1.0-alpha-0103</J2NPackageReferenceVersion>
-    <MicrosoftExtensionsCachingMemoryPackageReferenceVersion>6.0.0</MicrosoftExtensionsCachingMemoryPackageReferenceVersion>
+    <MicrosoftExtensionsCachingMemoryPackageReferenceVersion>6.0.2</MicrosoftExtensionsCachingMemoryPackageReferenceVersion>
     <MicrosoftExtensionsCachingMemoryPackageReferenceVersion Condition=" '$(TargetFramework)' == 'net451' ">1.1.2</MicrosoftExtensionsCachingMemoryPackageReferenceVersion>
     <MicrosoftNETFrameworkReferenceAssembliesPackageReferenceVersion>1.0.3</MicrosoftNETFrameworkReferenceAssembliesPackageReferenceVersion>
     <MicrosoftNETTestSdkPackageReferenceVersion>17.11.0</MicrosoftNETTestSdkPackageReferenceVersion>
