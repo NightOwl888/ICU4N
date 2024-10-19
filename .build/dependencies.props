@@ -15,10 +15,12 @@
     <NUnit3TestAdapterPackageReferenceVersion>4.6.0</NUnit3TestAdapterPackageReferenceVersion>
     <SystemBuffersPackageReferenceVersion>4.5.1</SystemBuffersPackageReferenceVersion>
     <SystemMemoryPackageReferenceVersion>4.5.5</SystemMemoryPackageReferenceVersion>
+    <SystemNetHttpPackageReferenceVersion>4.3.4</SystemNetHttpPackageReferenceVersion>
     <SystemReflectionMetadataPackageReferenceVersion>6.0.1</SystemReflectionMetadataPackageReferenceVersion>
     <SystemReflectionMetadataPackageReferenceVersion Condition=" '$(TargetFramework)' == 'net451' ">1.8.1</SystemReflectionMetadataPackageReferenceVersion>
     <SystemRuntimeCompilerServicesUnsafePackageReferenceVersion>6.0.0</SystemRuntimeCompilerServicesUnsafePackageReferenceVersion>
     <SystemRuntimeCompilerServicesUnsafePackageReferenceVersion Condition=" '$(TargetFramework)' == 'net451' ">4.7.1</SystemRuntimeCompilerServicesUnsafePackageReferenceVersion>
+    <SystemTextRegularExpressionsPackageReferenceVersion>4.3.1</SystemTextRegularExpressionsPackageReferenceVersion>
   </PropertyGroup>
   <PropertyGroup Label=".NET Tool Package Versions">
     <DotNetT4PackageVersion>3.0.0-preview-0027-g2711105671</DotNetT4PackageVersion>

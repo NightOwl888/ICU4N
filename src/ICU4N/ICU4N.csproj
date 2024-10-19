@@ -73,7 +73,11 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'net451' ">
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="$(MicrosoftExtensionsCachingMemoryPackageReferenceVersion)" />
     <PackageReference Include="System.Memory" Version="$(SystemMemoryPackageReferenceVersion)" />
+    <!-- NOTE: This is a transitive dependency, but the version of System.Net.Http that Microsoft.Extensions.Caching.Memory references is vulnerable, and there is no upgrade path for Microsoft.Extensions.Caching.Memory on net451. So, we are upgrading it here for the end users. -->
+    <PackageReference Include="System.Net.Http" Version="$(SystemNetHttpPackageReferenceVersion)" />
     <PackageReference Include="System.Reflection.Metadata" Version="$(SystemReflectionMetadataPackageReferenceVersion)" />
+    <!-- NOTE: This is a transitive dependency, but it the version that is being resolved is vulnerable, so we are upgrading it here for the end users. -->
+    <PackageReference Include="System.Text.RegularExpressions" Version="$(SystemTextRegularExpressionsPackageReferenceVersion)" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">
