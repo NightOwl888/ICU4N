@@ -84,7 +84,7 @@ namespace ICU4N.Numerics.BigMath
                 {
                     res = a + b;
                     valueLo = (int)res;
-                    valueHi = (int)res.TripleShift(32);
+                    valueHi = (int)(res >>> 32);
                     return ((valueHi == 0)
                                 ? new BigInteger(op1Sign, valueLo)
                                 : new BigInteger(op1Sign, 2, new int[] {

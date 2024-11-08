@@ -3,7 +3,6 @@ using ICU4N.Support.Collections;
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
-using J2N.Numerics;
 using J2N.Text;
 using System;
 using System.Collections.Generic;
@@ -351,7 +350,7 @@ namespace ICU4N.Impl.Coll
             // A mapping can be completely ignorable.
             if (ce0 == 0) { return ce1 == 0; }
             // We do not support an ignorable ce0 unless it is completely ignorable.
-            long p0 = ce0.TripleShift(32);
+            long p0 = ce0 >>> 32;
             if (p0 == 0) { return false; }
             // We only support primaries up to the Latin script.
             if (p0 > lastLatinPrimary) { return false; }
@@ -371,11 +370,11 @@ namespace ICU4N.Impl.Coll
                 // or a short-primary CE is followed by a secondary CE.
                 // This is so that we can test the first primary and use the same mask for both,
                 // and determine for both whether they are variable.
-                long p1 = ce1.TripleShift(32);
+                long p1 = ce1 >>> 32;
                 if (p1 == 0 ? p0 < firstShortPrimary : !InSameGroup(p0, p1)) { return false; }
                 int lower32_1 = (int)ce1;
                 // No tertiary CEs.
-                if ((lower32_1.TripleShift(16)) == 0) { return false; }
+                if ((lower32_1 >>> 16) == 0) { return false; }
                 // We support non-common secondary and case weights
                 // only for secondary CEs or together with short primaries.
                 if (p1 != 0 && p1 < firstShortPrimary)
@@ -472,7 +471,7 @@ namespace ICU4N.Impl.Coll
 
         private void AddUniqueCE(long ce)
         {
-            if (ce == 0 || (ce.TripleShift(32)) == Collation.NO_CE_PRIMARY) { return; }
+            if (ce == 0 || (ce >>> 32) == Collation.NO_CE_PRIMARY) { return; }
             ce &= ~(long)Collation.CaseMask;  // blank out case bits
             int i = BinarySearch(uniqueCEs, uniqueCEs.Count, ce);
             if (i < 0)
@@ -495,7 +494,7 @@ namespace ICU4N.Impl.Coll
             int group = 0;
             long lastGroupPrimary = lastSpecialPrimaries[group];
             // The lowest unique CE must be at least a secondary CE.
-            Debug.Assert((((int)uniqueCEs[0]).TripleShift(16)) != 0);
+            Debug.Assert(((int)uniqueCEs[0] >>> 16) != 0);
             long prevPrimary = 0;
             int prevSecondary = 0;
             int pri = 0;
@@ -506,7 +505,7 @@ namespace ICU4N.Impl.Coll
                 long ce = uniqueCEs[i];
                 // Note: At least one of the p/s/t weights changes from one unique CE to the next.
                 // (uniqueCEs does not store case bits.)
-                long p = ce.TripleShift(32);
+                long p = ce >>> 32;
                 if (p != prevPrimary)
                 {
                     while (p > lastGroupPrimary)
@@ -571,7 +570,7 @@ namespace ICU4N.Impl.Coll
                     ter = CollationFastLatin.COMMON_TER;
                 }
                 int lower32 = (int)ce;
-                int s = lower32.TripleShift(16);
+                int s = lower32 >>> 16;
                 if (s != prevSecondary)
                 {
                     if (pri == 0)
@@ -680,7 +679,7 @@ namespace ICU4N.Impl.Coll
                 long ce = charCEs[i][0];
                 if (IsContractionCharCE(ce)) { continue; }  // defer contraction
                 int miniCE = EncodeTwoCEs(ce, charCEs[i][1]);
-                if ((miniCE.TripleShift(16)) > 0)
+                if ((miniCE >>> 16) > 0)
                 {   // if ((unsigned)miniCE > 0xffff)
                     // Note: There is a chance that this new expansion is the same as a previous one,
                     // and if so, then we could reuse the other expansion.
@@ -728,7 +727,7 @@ namespace ICU4N.Impl.Coll
                     {
                         result.Append((char)(x | (uint)(1 << CollationFastLatin.CONTR_LENGTH_SHIFT)));
                     }
-                    else if ((miniCE.TripleShift(16)) == 0)
+                    else if ((miniCE >>> 16) == 0)
                     {  // if ((unsigned)miniCE <= 0xffff)
                         result.Append((char)(x | (uint)(2 << CollationFastLatin.CONTR_LENGTH_SHIFT)));
                         result.Append((char)miniCE);
@@ -789,7 +788,7 @@ namespace ICU4N.Impl.Coll
             {
                 return CollationFastLatin.BAIL_OUT;
             }
-            Debug.Assert((first.TripleShift(32)) != Collation.NO_CE_PRIMARY);
+            Debug.Assert((first >>> 32) != Collation.NO_CE_PRIMARY);
 
             int miniCE = GetMiniCE(first);
             if (miniCE == CollationFastLatin.BAIL_OUT) { return miniCE; }
@@ -833,7 +832,7 @@ namespace ICU4N.Impl.Coll
 
         private static bool IsContractionCharCE(long ce)
         {
-            return (ce.TripleShift(32)) == Collation.NO_CE_PRIMARY && ce != Collation.NoCE;
+            return (ce >>> 32) == Collation.NO_CE_PRIMARY && ce != Collation.NoCE;
         }
 
         // space, punct, symbol, currency (not digit)

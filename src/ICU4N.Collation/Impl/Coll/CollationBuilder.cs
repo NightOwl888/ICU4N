@@ -2,7 +2,6 @@
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
-using J2N.Numerics;
 using J2N.Text;
 using System;
 using System.Buffers;
@@ -452,7 +451,7 @@ namespace ICU4N.Impl.Coll
                     else
                     {
                         Debug.Assert(strength == CollationStrength.Primary);
-                        long p = ce.TripleShift( 32);
+                        long p = ce >>> 32;
                         int pIndex = rootElements.FindPrimary(p);
                         bool isCompressible = baseData.IsCompressiblePrimary(p);
                         p = rootElements.GetPrimaryAfter(p, pIndex, isCompressible);
@@ -557,7 +556,7 @@ namespace ICU4N.Impl.Coll
                     int index = FindOrInsertNodeForCEs(strength);
                     Debug.Assert(cesLength > 0);
                     long ce = ces[cesLength - 1];
-                    if (strength == CollationStrength.Primary && !IsTempCE(ce) && (ce.TripleShift(32)) == 0)
+                    if (strength == CollationStrength.Primary && !IsTempCE(ce) && (ce >>> 32) == 0)
                     {
                         // There is no primary gap between ignorables and the space-first-primary.
                         throw new NotSupportedException(
@@ -645,7 +644,7 @@ namespace ICU4N.Impl.Coll
             }
 
             // root CE
-            if ((int)(ce.TripleShift(56)) == Collation.UNASSIGNED_IMPLICIT_BYTE)
+            if ((int)(ce >>> 56) == Collation.UNASSIGNED_IMPLICIT_BYTE)
             {
                 throw new NotSupportedException(
                         "tailoring relative to an unassigned code point not supported");
@@ -655,17 +654,17 @@ namespace ICU4N.Impl.Coll
 
         private int FindOrInsertNodeForRootCE(long ce, CollationStrength strength)
         {
-            Debug.Assert((int)(ce.TripleShift(56)) != Collation.UNASSIGNED_IMPLICIT_BYTE);
+            Debug.Assert((int)(ce >>> 56) != Collation.UNASSIGNED_IMPLICIT_BYTE);
 
             // Find or insert the node for each of the root CE's weights,
             // down to the requested level/strength.
             // Root CEs must have common=zero quaternary weights (for which we never insert any nodes).
             Debug.Assert((ce & 0xc0) == 0);
-            int index = FindOrInsertNodeForPrimary(ce.TripleShift(32));
+            int index = FindOrInsertNodeForPrimary(ce >>> 32);
             if (strength >= CollationStrength.Secondary)
             {
                 int lower32 = (int)ce;
-                index = FindOrInsertWeakNode(index, lower32.TripleShift(16), CollationStrength.Secondary);
+                index = FindOrInsertWeakNode(index, lower32 >>> 16, CollationStrength.Secondary);
                 if (strength >= CollationStrength.Tertiary)
                 {
                     index = FindOrInsertWeakNode(index, lower32 & Collation.OnlyTertiaryMask,
@@ -691,7 +690,7 @@ namespace ICU4N.Impl.Coll
             {
                 int i = (int)(((long)start + (long)limit) / 2);
                 long node = nodes[rootPrimaryIndexes[i]];
-                long nodePrimary = node.TripleShift( 32);  // weight32FromNode(node)
+                long nodePrimary = node >>> 32;  // weight32FromNode(node)
                 if (p == nodePrimary)
                 {
                     return i;
@@ -928,7 +927,7 @@ namespace ICU4N.Impl.Coll
                 for (int i = 0; i < baseCEsLength; ++i)
                 {
                     long ce = baseCEs.GetCE(i);
-                    if ((ce.TripleShift(32)) != 0)
+                    if ((ce >>> 32) != 0)
                     {
                         ++numBasePrimaries;
                         int c = ((int)ce >> 14) & 3;
@@ -964,8 +963,7 @@ namespace ICU4N.Impl.Coll
                 if (strength == CollationStrength.Primary)
                 {
                     ce |= (cases & 3) << 14;
-                    //cases >>>= 2;
-                    cases = cases.TripleShift(2);
+                    cases >>>= 2;
                 }
                 else if (strength == CollationStrength.Tertiary)
                 {
@@ -1322,7 +1320,7 @@ namespace ICU4N.Impl.Coll
         {
             if (w != 0)
             {
-                while ((w & 0xff) == 0) { w = w.TripleShift(8); /*w >>>= 8;*/ }
+                while ((w & 0xff) == 0) { w >>>= 8; }
             }
             return w;
         }
@@ -1671,7 +1669,7 @@ namespace ICU4N.Impl.Coll
         }
         private static bool IsTempCE(long ce)
         {
-            int sec = ((int)ce).TripleShift(24);
+            int sec = ((int)ce) >>> 24;
             return 6 <= sec && sec <= 0x45;
         }
 
@@ -1741,7 +1739,7 @@ namespace ICU4N.Impl.Coll
 
         private static long Weight32FromNode(long node)
         {
-            return node.TripleShift(32);
+            return node >>> 32;
         }
         private static int Weight16FromNode(long node)
         {

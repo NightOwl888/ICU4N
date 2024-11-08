@@ -3,7 +3,6 @@ using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
 using J2N.IO;
-using J2N.Numerics;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -495,7 +494,7 @@ namespace ICU4N.Impl
                 new AnonymousIntProperty(this, UPropertySource.PropertiesVectorsTrie, getValue: (c) =>
                     {  // HANGUL_SYLLABLE_TYPE
                         /* see comments on gcbToHst[] above */
-                        int gcb = (GetAdditional(c, 2) & GCB_MASK).TripleShift(GCB_SHIFT);
+                        int gcb = (GetAdditional(c, 2) & GCB_MASK) >>> GCB_SHIFT;
                         if (gcb < gcbToHst.Length)
                         {
                             return gcbToHst[gcb];
@@ -607,11 +606,11 @@ namespace ICU4N.Impl
             internal virtual int GetValue(int c)
             {
                 // systematic, directly stored properties
-                return (outerInstance.GetAdditional(c, column) & mask).TripleShift(shift);
+                return (outerInstance.GetAdditional(c, column) & mask) >>> shift;
             }
             internal virtual int GetMaxValue(UProperty which)
             {
-                return (outerInstance.GetMaxValues(column) & mask).TripleShift(shift);
+                return (outerInstance.GetMaxValues(column) & mask) >>> shift;
             }
         }
 

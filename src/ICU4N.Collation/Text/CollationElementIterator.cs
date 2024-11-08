@@ -2,7 +2,6 @@
 using ICU4N.Impl.Coll;
 using ICU4N.Support.Text;
 using J2N;
-using J2N.Numerics;
 using J2N.Text;
 using System;
 using System.Collections.Generic;
@@ -142,7 +141,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public static int PrimaryOrder(int ce)
         {
-            return (ce.TripleShift(16)) & 0xffff;
+            return (ce >>> 16) & 0xffff;
         }
 
         /// <summary>
@@ -154,7 +153,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public static int SecondaryOrder(int ce)
         {
-            return (ce.TripleShift(8)) & 0xff;
+            return (ce >>> 8) & 0xff;
         }
 
         /// <summary>
@@ -360,7 +359,7 @@ namespace ICU4N.Text
                 return NullOrder;
             }
             // Turn the 64-bit CE into two old-style 32-bit CEs, without quaternary bits.
-            long p = ce.TripleShift(32);
+            long p = ce >>> 32;
             int lower32 = (int)ce;
             int firstHalf = GetFirstHalf(p, lower32);
             int secondHalf = GetSecondHalf(p, lower32);
@@ -431,7 +430,7 @@ namespace ICU4N.Text
                 return NullOrder;
             }
             // Turn the 64-bit CE into two old-style 32-bit CEs, without quaternary bits.
-            long p = ce.TripleShift(32);
+            long p = ce >>> 32;
             int lower32 = (int)ce;
             int firstHalf = GetFirstHalf(p, lower32);
             int secondHalf = GetSecondHalf(p, lower32);
@@ -658,7 +657,7 @@ namespace ICU4N.Text
                 }
                 // last "half" of the last CE
                 long ce = ces[start + length - 1];
-                long p = ce.TripleShift(32);
+                long p = ce >>> 32;
                 int lower32 = (int)ce;
                 int lastHalf = GetSecondHalf(p, lower32);
                 if (lastHalf == 0)

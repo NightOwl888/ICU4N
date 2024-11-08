@@ -2,7 +2,6 @@
 using J2N;
 using J2N.Collections;
 using J2N.IO;
-using J2N.Numerics;
 using System;
 using System.IO;
 
@@ -263,7 +262,7 @@ namespace ICU4N.Impl
             // write 16-bit index values shifted right by INDEX_SHIFT_ 
             for (int i = 0; i < m_indexLength_; i++)
             {
-                index[i] = (char)(m_index_[i].TripleShift(IndexShift));
+                index[i] = (char)(m_index_[i] >>> IndexShift);
             }
             // write 32-bit data values
             System.Array.Copy(m_data_, 0, data, 0, m_dataLength_);
@@ -375,7 +374,7 @@ namespace ICU4N.Impl
                 /* write 16-bit index values shifted right by UTRIE_INDEX_SHIFT, after adding indexLength */
                 for (int i = 0; i < m_indexLength_; i++)
                 {
-                    int v = (m_index_[i] + m_indexLength_).TripleShift(Trie.IndexStage2Shift);
+                    int v = (m_index_[i] + m_indexLength_) >>> Trie.IndexStage2Shift;
                     dos.WriteChar(v);
                 }
 
@@ -391,7 +390,7 @@ namespace ICU4N.Impl
                 /* write 16-bit index values shifted right by UTRIE_INDEX_SHIFT */
                 for (int i = 0; i < m_indexLength_; i++)
                 {
-                    int v = (m_index_[i]).TripleShift(Trie.IndexStage2Shift);
+                    int v = m_index_[i] >>> Trie.IndexStage2Shift;
                     dos.WriteChar(v);
                 }
 
@@ -621,7 +620,7 @@ namespace ICU4N.Impl
                 // newStart: index where the current block is to be moved
                 //           (right after current end of already-compacted data)
                 // skip blocks that are not used 
-                if (m_map_[start.TripleShift(Shift)] < 0)
+                if (m_map_[start >>> Shift] < 0)
                 {
                     // advance start to the next block 
                     start += DataBlockLength;
@@ -637,7 +636,7 @@ namespace ICU4N.Impl
                     {
                         // found an identical block, set the other block's index 
                         // value for the current block
-                        m_map_[start.TripleShift(Shift)] = i;
+                        m_map_[start >>> Shift] = i;
                         // advance start to the next block
                         start += DataBlockLength;
                         // leave newStart with the previous block!
@@ -660,7 +659,7 @@ namespace ICU4N.Impl
                 if (i > 0)
                 {
                     // some overlap
-                    m_map_[start.TripleShift(Shift)] = newStart - i;
+                    m_map_[start >>> Shift] = newStart - i;
                     // move the non-overlapping indexes to their new positions
                     start += i;
                     for (i = DataBlockLength - i; i > 0; --i)
@@ -671,7 +670,7 @@ namespace ICU4N.Impl
                 else if (newStart < start)
                 {
                     // no overlap, just move the indexes to their new positions
-                    m_map_[start.TripleShift(Shift)] = newStart;
+                    m_map_[start >>> Shift] = newStart;
                     for (i = DataBlockLength; i > 0; --i)
                     {
                         m_data_[newStart++] = m_data_[start++];
@@ -679,7 +678,7 @@ namespace ICU4N.Impl
                 }
                 else
                 { // no overlap && newStart==start
-                    m_map_[start.TripleShift(Shift)] = start;
+                    m_map_[start >>> Shift] = start;
                     newStart += DataBlockLength;
                     start = newStart;
                 }
@@ -687,7 +686,7 @@ namespace ICU4N.Impl
             // now adjust the index (stage 1) table
             for (i = 0; i < m_indexLength_; ++i)
             {
-                m_index_[i] = m_map_[Math.Abs(m_index_[i]).TripleShift(Shift)];
+                m_index_[i] = m_map_[Math.Abs(m_index_[i]) >>> Shift];
             }
             m_dataLength_ = newStart;
         }

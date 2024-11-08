@@ -2666,7 +2666,7 @@ namespace ICU4N.Text
         private static int InternalCompare(scoped ReadOnlySpan<char> s1, scoped ReadOnlySpan<char> s2, int options, int normOptions)
         {
 //#pragma warning disable 612, 618
-//            int normOptions = options.TripleShift(COMPARE_NORM_OPTIONS_SHIFT);
+//            int normOptions = options >>> COMPARE_NORM_OPTIONS_SHIFT;
 //#pragma warning restore 612, 618
             options |= COMPARE_EQUIV;
 

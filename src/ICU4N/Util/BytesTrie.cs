@@ -1,6 +1,5 @@
 ﻿using J2N;
 using J2N.IO;
-using J2N.Numerics;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -271,7 +270,7 @@ namespace ICU4N.Util
                 int length = (int)top;
                 pos = (int)(top >> 32);
                 entry_.TruncateString(length & 0xffff);
-                length = length.TripleShift(16);
+                length >>>= 16;
                 if (length > 1)
                 {
                     pos = BranchNext(pos, length);
@@ -1204,7 +1203,7 @@ namespace ICU4N.Util
                     {
                         return 0;
                     }
-                    pos = (int)uniqueValue.TripleShift(33);
+                    pos = (int)(uniqueValue >>> 33);
                 }
                 else if (node < kMinValueLead)
                 {

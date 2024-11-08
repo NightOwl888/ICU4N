@@ -3,7 +3,6 @@ using ICU4N.Text;
 using ICU4N.Util;
 using J2N.Collections.Generic.Extensions;
 using J2N.IO;
-using J2N.Numerics;
 using System.Diagnostics;
 
 namespace ICU4N.Impl.Coll
@@ -332,7 +331,7 @@ namespace ICU4N.Impl.Coll
                     throw new ICUException("Common sec/ter weights in base data differ from the hardcoded value");
                 }
                 long secTerBoundaries = data.RootElements[CollationRootElements.IX_SEC_TER_BOUNDARIES];
-                if ((secTerBoundaries.TripleShift(24)) < CollationKeys.SEC_COMMON_HIGH)
+                if ((secTerBoundaries >>> 24) < CollationKeys.SEC_COMMON_HIGH)
                 {
                     // [fixed last secondary common byte] is too low,
                     // and secondary weights would collide with compressed common secondaries.

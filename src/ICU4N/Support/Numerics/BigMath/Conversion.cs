@@ -15,7 +15,6 @@
 
 using ICU4N.Support.Numerics.BigMath;
 using J2N;
-using J2N.Numerics;
 using System;
 using System.Globalization;
 using System.Text;
@@ -483,8 +482,8 @@ namespace ICU4N.Numerics.BigMath
                 * Make the dividend positive shifting it right by 1 bit then get
                 * the quotient an remainder and correct them properly
                 */
-                long aPos = a.TripleShift(1);
-                long bPos = (1000000000L).TripleShift(1);
+                long aPos = a >>> 1;
+                const long bPos = 1000000000L >>> 1;
                 quot = aPos / bPos;
                 rem = aPos % bPos;
                 // double the remainder and add 1 if 'a' is odd

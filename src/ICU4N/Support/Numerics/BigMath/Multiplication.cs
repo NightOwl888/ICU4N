@@ -14,7 +14,6 @@
 //    limitations under the License.
 
 using ICU4N.Support.Numerics.BigMath;
-using J2N.Numerics;
 using System;
 
 namespace ICU4N.Numerics.BigMath
@@ -239,7 +238,7 @@ namespace ICU4N.Numerics.BigMath
             {
                 long val = UnsignedMultAddAdd(a.Digits[0], b.Digits[0], 0, 0);
                 int valueLo = (int)val;
-                int valueHi = (int)val.TripleShift(32);
+                int valueHi = (int)(val >>> 32);
                 return ((valueHi == 0)
                 ? new BigInteger(resSign, valueLo)
                 : new BigInteger(resSign, 2, new int[] { valueLo, valueHi }));
@@ -288,7 +287,7 @@ namespace ICU4N.Numerics.BigMath
                 {
                     carry = UnsignedMultAddAdd(aI, b[j], t[i + j], (int)carry);
                     t[i + j] = (int)carry;
-                    carry = carry.TripleShift(32);
+                    carry >>>= 32;
                 }
                 t[i + bLen] = (int)carry;
             }
@@ -309,7 +308,7 @@ namespace ICU4N.Numerics.BigMath
             {
                 carry = UnsignedMultAddAdd(a[i], factor, (int)carry, 0);
                 res[i] = (int)carry;
-                carry = carry.TripleShift(32);
+                carry >>>= 32;
             }
             return (int)carry;
         }
@@ -347,7 +346,7 @@ namespace ICU4N.Numerics.BigMath
             {
                 long res = UnsignedMultAddAdd(aDigits[0], factor, 0, 0);
                 int resLo = (int)res;
-                int resHi = (int)res.TripleShift(32);
+                int resHi = (int)(res >>> 32);
                 return ((resHi == 0)
                 ? new BigInteger(resSign, resLo)
                 : new BigInteger(resSign, 2, new int[] { resLo, resHi }));
@@ -407,7 +406,7 @@ namespace ICU4N.Numerics.BigMath
                 {
                     carry = UnsignedMultAddAdd(a[i], a[j], res[i + j], (int)carry);
                     res[i + j] = (int)carry;
-                    carry = carry.TripleShift(32);
+                    carry >>>= 32;
                 }
                 res[i + aLen] = (int)carry;
             }
@@ -419,11 +418,11 @@ namespace ICU4N.Numerics.BigMath
             {
                 carry = UnsignedMultAddAdd(a[i], a[i], res[index], (int)carry);
                 res[index] = (int)carry;
-                carry = carry.TripleShift(32);
+                carry >>>= 32;
                 index++;
                 carry += res[index] & 0xFFFFFFFFL;
                 res[index] = (int)carry;
-                carry = carry.TripleShift(32);
+                carry >>>= 32;
             }
             return res;
         }

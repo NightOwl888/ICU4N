@@ -1,7 +1,6 @@
 ﻿using ICU4N.Text;
 using J2N;
 using J2N.Collections;
-using J2N.Numerics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -175,7 +174,7 @@ namespace ICU4N.Impl.Coll
                 }
                 else
                 {
-                    Debug.Assert(table[codesAndRanges[firstSplitByteRangeIndex].TripleShift(24)] == 0);
+                    Debug.Assert(table[codesAndRanges[firstSplitByteRangeIndex] >>> 24] == 0);
                     minHighNoReorder = codesAndRanges[rangesLimit - 1] & 0xffff0000L;
                     SetReorderRanges(codesAndRanges, firstSplitByteRangeIndex,
                             rangesLimit - firstSplitByteRangeIndex);
@@ -217,7 +216,7 @@ namespace ICU4N.Impl.Coll
             for (int i = 0; i < rangesLength; ++i)
             {
                 int pair = ranges[i];
-                int limit1 = pair.TripleShift(24);
+                int limit1 = pair >>> 24;
                 while (b < limit1)
                 {
                     table[b] = (byte)(b + pair);
@@ -315,7 +314,7 @@ namespace ICU4N.Impl.Coll
 
         public long Reorder(long p)
         {
-            byte b = reorderTable[(int)p.TripleShift(24)];
+            byte b = reorderTable[(int)p >>> 24];
             if (b != 0 || p <= Collation.NO_CE_PRIMARY)
             {
                 return ((b & 0xffL) << 24) | (p & 0xffffff);

@@ -1,5 +1,4 @@
 ﻿using J2N;
-using J2N.Numerics;
 using System.Diagnostics;
 
 namespace ICU4N.Impl.Coll
@@ -268,7 +267,7 @@ namespace ICU4N.Impl.Coll
             {
                 index = FindPrimary(p) + 1;
                 previousSec = Collation.BEFORE_WEIGHT16;
-                sec = ((int)GetFirstSecTerForPrimary(index)).TripleShift(16);
+                sec = (int)GetFirstSecTerForPrimary(index) >>> 16;
             }
             Debug.Assert(s >= sec);
             while (s > sec)

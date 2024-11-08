@@ -2,7 +2,6 @@
 using ICU4N.Util;
 using J2N.IO;
 using J2N.IO.MemoryMappedFiles;
-using J2N.Numerics;
 using J2N.Text;
 using System;
 using System.Collections.Generic;
@@ -159,7 +158,7 @@ namespace ICU4N.Impl
                 int limit = count;
                 while (start < limit)
                 {
-                    int mid = (start + limit).TripleShift(1);
+                    int mid = (start + limit) >>> 1;
                     int nameOffset = GetNameOffset(bytes, mid);
                     // Skip "icudt54b/".
                     nameOffset += ICUData.PackageName.Length + 1;
@@ -910,7 +909,7 @@ namespace ICU4N.Impl
         public static VersionInfo GetVersionInfoFromCompactInt32(int version) // ICU4N specific - Renamed from GetVersionInfoFromCompactInt
         {
             return VersionInfo.GetInstance(
-                    (version.TripleShift(24)), (version >> 16) & 0xff, (version >> 8) & 0xff, version & 0xff);
+                    (version >>> 24), (version >> 16) & 0xff, (version >> 8) & 0xff, version & 0xff);
         }
 
         /// <summary>

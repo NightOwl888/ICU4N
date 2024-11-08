@@ -1,7 +1,6 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Text;
 using J2N;
-using J2N.Numerics;
 using J2N.Text;
 using System;
 using System.Diagnostics;
@@ -442,10 +441,8 @@ namespace ICU4N.Impl.Coll
                     return (leftPrimary < rightPrimary) ? Collation.Less : Collation.Greater;
                 }
                 if (leftPair == EOS) { break; }
-                //leftPair >>>= 16;
-                //rightPair >>>= 16;
-                leftPair = leftPair.TripleShift(16);
-                rightPair = rightPair.TripleShift(16);
+                leftPair >>>= 16;
+                rightPair >>>= 16;
             }
             // In the following, we need to re-fetch each character because we did not buffer the CEs,
             // but we know that the string is well-formed and
@@ -562,10 +559,8 @@ namespace ICU4N.Impl.Coll
                         return (leftSecondary < rightSecondary) ? Collation.Less : Collation.Greater;
                     }
                     if (leftPair == EOS) { break; }
-                    //leftPair >>>= 16;
-                    //rightPair >>>= 16;
-                    leftPair = leftPair.TripleShift(16);
-                    rightPair = rightPair.TripleShift(16);
+                    leftPair >>>= 16;
+                    rightPair >>>= 16;
                 }
             }
 
@@ -640,10 +635,8 @@ namespace ICU4N.Impl.Coll
                         }
                     }
                     if (leftPair == EOS) { break; }
-                    //leftPair >>>= 16;
-                    //rightPair >>>= 16;
-                    leftPair = leftPair.TripleShift(16);
-                    rightPair = rightPair.TripleShift(16);
+                    leftPair >>>= 16;
+                    rightPair >>>= 16;
                 }
             }
             if (CollationSettings.GetStrength(options) <= CollationStrength.Secondary) { return Collation.Equal; }
@@ -726,10 +719,8 @@ namespace ICU4N.Impl.Coll
                     return (leftTertiary < rightTertiary) ? Collation.Less : Collation.Greater;
                 }
                 if (leftPair == EOS) { break; }
-                //leftPair >>>= 16;
-                //rightPair >>>= 16;
-                leftPair = leftPair.TripleShift(16);
-                rightPair = rightPair.TripleShift(16);
+                leftPair >>>= 16;
+                rightPair >>>= 16;
             }
             if (CollationSettings.GetStrength(options) <= CollationStrength.Tertiary) { return Collation.Equal; }
 
@@ -794,10 +785,8 @@ namespace ICU4N.Impl.Coll
                     return (leftQuaternary < rightQuaternary) ? Collation.Less : Collation.Greater;
                 }
                 if (leftPair == EOS) { break; }
-                //leftPair >>>= 16;
-                //rightPair >>>= 16;
-                leftPair = leftPair.TripleShift(16);
-                rightPair = rightPair.TripleShift(16);
+                leftPair >>>= 16;
+                rightPair >>>= 16;
             }
             return Collation.Equal;
         }

@@ -5,7 +5,6 @@ using ICU4N.Support;
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
-using J2N.Numerics;
 using J2N.Text;
 using NUnit.Framework;
 using System;
@@ -337,7 +336,7 @@ namespace ICU4N.Dev.Test.Collate
                                 + ") has non-common sec/ter weights: 0x" + Utility.Hex(ce & 0xffffffffL, 8));
                         continue;
                     }
-                    long primary = ce.TripleShift(32);
+                    long primary = ce >>> 32;
                     if (!(primary > prevPrimary) && inOrder.Contains(c) && inOrder.Contains(prev))
                     {
                         Errln("CE(U+" + Utility.Hex(c) + ")=0x" + Utility.Hex(primary)
@@ -697,16 +696,16 @@ namespace ICU4N.Dev.Test.Collate
 
         private static bool IsValidCE(CollationRootElements re, CollationData data, long p, long s, long ctq)
         {
-            long p1 = p.TripleShift(24);
-            long p2 = (p.TripleShift(16)) & 0xff;
-            long p3 = (p.TripleShift(8)) & 0xff;
+            long p1 = p >>> 24;
+            long p2 = (p >>> 16) & 0xff;
+            long p3 = (p >>> 8) & 0xff;
             long p4 = p & 0xff;
-            long s1 = s.TripleShift(8);
+            long s1 = s >>> 8;
             long s2 = s & 0xff;
             // ctq = Case, Tertiary, Quaternary
-            long c = (ctq & Collation.CaseMask).TripleShift(14);
+            long c = (ctq & Collation.CaseMask) >>> 14;
             long t = ctq & Collation.OnlyTertiaryMask;
-            long t1 = t.TripleShift(8);
+            long t1 = t >>> 8;
             long t2 = t & 0xff;
             long q = ctq & Collation.QuaternaryMask;
             // No leading zero bytes.
@@ -811,9 +810,9 @@ namespace ICU4N.Dev.Test.Collate
 
         private static bool IsValidCE(CollationRootElements re, CollationData data, long ce)
         {
-            long p = ce.TripleShift(32);
+            long p = ce >>> 32;
             long secTer = ce & 0xffffffffL;
-            return IsValidCE(re, data, p, secTer.TripleShift(16), secTer & 0xffff);
+            return IsValidCE(re, data, p, secTer >>> 16, secTer & 0xffff);
         }
 
         private class RootElementsIterator
@@ -959,7 +958,7 @@ namespace ICU4N.Dev.Test.Collate
                     Errln("CollationRootElements CE has non-zero case and/or quaternary bits: "
                             + "0x" + Utility.Hex(pri, 8) + " 0x" + Utility.Hex(secTer, 8));
                 }
-                long sec = secTer.TripleShift(16);
+                long sec = secTer >>> 16;
                 long ter = secTer & Collation.OnlyTertiaryMask;
                 long ctq = ter;
                 if (pri == 0 && sec == 0 && ter != 0)

@@ -2,7 +2,6 @@
 using ICU4N.Util;
 using J2N;
 using J2N.Collections.Generic.Extensions;
-using J2N.Numerics;
 using J2N.Text;
 using System;
 using System.Collections;
@@ -1191,7 +1190,7 @@ namespace ICU4N.Text
             for (int i = 0; i < ces.Length; ++i)
             {
                 long ce = ces[i];
-                long p = ce.TripleShift(32);
+                long p = ce >>> 32;
                 if (p > variableTop)
                 {
                     // not primary ignorable

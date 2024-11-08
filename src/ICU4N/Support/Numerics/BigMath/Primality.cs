@@ -211,7 +211,7 @@ namespace ICU4N.Numerics.BigMath
                 // To fix to the correct bitLength
                 // n.digits[last] |= 0x80000000;
                 n.Digits[last] |= int.MinValue;
-                n.Digits[last] = n.Digits[last].TripleShift(shiftCount);
+                n.Digits[last] >>>= shiftCount;
                 // To create an odd number
                 n.Digits[0] |= 1;
             } while (!IsProbablePrime(n, certainty));

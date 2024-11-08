@@ -2,7 +2,6 @@
 using ICU4N.Impl;
 using ICU4N.Support.Collections;
 using J2N.Collections.Generic;
-using J2N.Numerics;
 using System;
 using System.Collections.Generic;
 using JCG = J2N.Collections.Generic;
@@ -997,11 +996,11 @@ namespace ICU4N.Text
             //      Annoying because they really want to be ints, not shorts.
             //
             // RBBIStateTable.fNumStates
-            table[RBBIDataWrapper.NUMSTATES] = (short)(numStates.TripleShift(16));
+            table[RBBIDataWrapper.NUMSTATES] = (short)(numStates >>> 16);
             table[RBBIDataWrapper.NUMSTATES + 1] = (short)(numStates & 0x0000ffff);
 
             // RBBIStateTable.fRowLen
-            table[RBBIDataWrapper.ROWLEN] = (short)(rowLen.TripleShift(16));
+            table[RBBIDataWrapper.ROWLEN] = (short)(rowLen >>> 16);
             table[RBBIDataWrapper.ROWLEN + 1] = (short)(rowLen & 0x0000ffff);
 
             // RBBIStateTable.fFlags
@@ -1014,7 +1013,7 @@ namespace ICU4N.Text
             {
                 flags |= RBBIDataWrapper.RBBI_BOF_REQUIRED;
             }
-            table[RBBIDataWrapper.FLAGS] = (short)(flags.TripleShift(16));
+            table[RBBIDataWrapper.FLAGS] = (short)(flags >>> 16);
             table[RBBIDataWrapper.FLAGS + 1] = (short)(flags & 0x0000ffff);
 
             int numCharCategories = fRB.fSetBuilder.NumCharCategories;

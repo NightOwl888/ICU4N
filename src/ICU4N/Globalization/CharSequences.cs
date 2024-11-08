@@ -1,5 +1,4 @@
 ﻿using J2N;
-using J2N.Numerics;
 using System;
 #nullable enable
 
@@ -209,7 +208,7 @@ namespace ICU4N.Globalization
                 return stringLength - 1;
             }
             // non BMP
-            char lead = (char)((offset.TripleShift(10)) + Character.MinHighSurrogate);
+            char lead = (char)((offset >>> 10) + Character.MinHighSurrogate);
             int result = firstChar - lead;
             if (result != 0)
             {
@@ -259,7 +258,7 @@ namespace ICU4N.Globalization
                 return stringLength - 1;
             }
             // non BMP
-            char lead = (char)((offset.TripleShift(10)) + Character.MinHighSurrogate);
+            char lead = (char)((offset >>> 10) + Character.MinHighSurrogate);
             int result = firstChar - lead;
             if (result != 0)
             {

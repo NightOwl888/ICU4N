@@ -5,7 +5,6 @@ using ICU4N.Support.Text;
 using ICU4N.Util;
 using J2N;
 using J2N.Collections;
-using J2N.Numerics;
 using J2N.Text;
 using System;
 using System.Diagnostics;
@@ -774,7 +773,7 @@ namespace ICU4N.Text
             {
                 throw new ArgumentException("Variable top argument string must map to exactly one collation element");
             }
-            InternalSetVariableTop(ce1.TripleShift(32));
+            InternalSetVariableTop(ce1 >>> 32);
             return (int)settings.ReadOnly.VariableTop;
         }
 
@@ -1799,7 +1798,7 @@ namespace ICU4N.Text
             int version = tailoring.Version;
             int rtVersion = VersionInfo.CollationRuntimeVersion.Major;
             return VersionInfo.GetInstance(
-                    (version.TripleShift(24)) + (rtVersion << 4) + (rtVersion >> 4),
+                    (version >>> 24) + (rtVersion << 4) + (rtVersion >> 4),
                     ((version >> 16) & 0xff), ((version >> 8) & 0xff), (version & 0xff));
         }
 

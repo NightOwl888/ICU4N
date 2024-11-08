@@ -1,5 +1,4 @@
 ﻿using ICU4N.Text;
-using J2N.Numerics;
 using System;
 using System.Diagnostics;
 
@@ -203,7 +202,7 @@ namespace ICU4N.Globalization
             {
                 while (lo < hi)
                 {
-                    int mid = (lo + hi).TripleShift(1);
+                    int mid = (lo + hi) >>> 1;
                     long ruleBaseValue = rules[mid].BaseValue;
                     if (ruleBaseValue == number)
                     {

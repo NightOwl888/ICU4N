@@ -2,7 +2,6 @@
 using ICU4N.Support.Text;
 using ICU4N.Util;
 using J2N;
-using J2N.Numerics;
 using System;
 using System.Configuration;
 using System.Diagnostics;
@@ -1089,8 +1088,8 @@ namespace ICU4N.Text
                 return CE_NO_MATCH;
             }
 
-            long targCEshifted = targCE.TripleShift(32);
-            long patCEshifted = patCE.TripleShift(32);
+            long targCEshifted = targCE >>> 32;
+            long patCEshifted = patCE >>> 32;
             long mask;
 
             mask = 0xFFFF0000L;
@@ -1294,7 +1293,7 @@ namespace ICU4N.Text
                         // As long as the next CE has primary weight of 0,
                         // it is part of the last target element matched by the pattern;
                         // make sure it can be part of a match with the last patCE
-                        if ((((nextCEI.CE).TripleShift(32)) & 0xFFFF0000L) == 0)
+                        if (((nextCEI.CE >>> 32) & 0xFFFF0000L) == 0)
                         {
                             int ceMatch = CompareCE64s(nextCEI.CE, patCE, search_.elementComparisonType_);
                             if (ceMatch == CE_NO_MATCH || ceMatch == CE_SKIP_PATN)
@@ -1353,7 +1352,7 @@ namespace ICU4N.Text
                 // * the match limit is a normalization boundary
                 bool allowMidclusterMatch =
                                 m_breakIterator == null &&
-                                (((nextCEI.CE).TripleShift(32)) & 0xFFFF0000L) != 0 &&
+                                ((nextCEI.CE >>> 32) & 0xFFFF0000L) != 0 &&
                                 maxLimit >= lastCEI.HighIndex && nextCEI.HighIndex > maxLimit &&
                                 (nfd_.HasBoundaryBefore(CodePointAt(m_targetText, maxLimit)) ||
                                         nfd_.HasBoundaryAfter(CodePointBefore(m_targetText, maxLimit)));
@@ -1654,7 +1653,7 @@ namespace ICU4N.Text
                     // * the match limit is a normalization boundary
                     bool allowMidclusterMatch =
                                     m_breakIterator == null &&
-                                    (((nextCEI.CE).TripleShift(32)) & 0xFFFF0000L) != 0 &&
+                                    ((nextCEI.CE >>> 32) & 0xFFFF0000L) != 0 &&
                                     maxLimit >= lastCEI.HighIndex && nextCEI.HighIndex > maxLimit &&
                                     (nfd_.HasBoundaryBefore(CodePointAt(m_targetText, maxLimit)) ||
                                             nfd_.HasBoundaryAfter(CodePointBefore(m_targetText, maxLimit)));

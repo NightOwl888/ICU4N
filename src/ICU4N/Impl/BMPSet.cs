@@ -1,6 +1,5 @@
 ﻿using ICU4N.Text;
 using J2N;
-using J2N.Numerics;
 using System;
 using System.Diagnostics;
 
@@ -648,7 +647,7 @@ namespace ICU4N.Impl
             // invariant: c < list[hi]
             for (; ; )
             {
-                int i = (lo + hi).TripleShift(1);
+                int i = (lo + hi) >>> 1;
                 if (i == lo)
                 {
                     break; // Found!

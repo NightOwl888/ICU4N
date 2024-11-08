@@ -1,5 +1,4 @@
 ﻿using ICU4N.Text;
-using J2N.Numerics;
 using J2N.Text;
 using System;
 using System.Diagnostics;
@@ -229,17 +228,17 @@ namespace ICU4N.Numerics
 
         internal static int GetType(long tag)
         {
-            return (int)((tag.TripleShift(32)) & 0xf);
+            return (int)((tag >>> 32) & 0xf);
         }
 
         internal static int GetState(long tag)
         {
-            return (int)((tag.TripleShift(36)) & 0xf);
+            return (int)((tag >>> 36) & 0xf);
         }
 
         internal static int GetCodePoint(long tag)
         {
-            return (int)(tag.TripleShift(40));
+            return (int)(tag >>> 40);
         }
     }
 }

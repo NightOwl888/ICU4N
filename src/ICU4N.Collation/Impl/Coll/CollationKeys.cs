@@ -1,6 +1,5 @@
 ﻿using ICU4N.Text;
 using J2N;
-using J2N.Numerics;
 using System.Diagnostics;
 
 namespace ICU4N.Impl.Coll
@@ -176,7 +175,7 @@ namespace ICU4N.Impl.Coll
             internal void AppendWeight16(int w)
             {
                 Debug.Assert((w & 0xffff) != 0);
-                byte b0 = (byte)(w.TripleShift(8));
+                byte b0 = (byte)(w >>> 8);
                 byte b1 = (byte)w;
                 int appendLength = (b1 == 0) ? 1 : 2;
                 if ((len + appendLength) <= buffer.Length || EnsureCapacity(appendLength))
@@ -192,7 +191,7 @@ namespace ICU4N.Impl.Coll
             internal void AppendWeight32(long w)
             {
                 Debug.Assert(w != 0);
-                byte[] bytes = new byte[] { (byte) (w.TripleShift( 24)), (byte) (w.TripleShift(16)), (byte) (w.TripleShift( 8)),
+                byte[] bytes = new byte[] { (byte) (w >>> 24), (byte) (w >>> 16), (byte) (w >>> 8),
                     (byte) w };
                 int appendLength = (bytes[1] == 0) ? 1 : (bytes[2] == 0) ? 2 : (bytes[3] == 0) ? 3 : 4;
                 if ((len + appendLength) <= buffer.Length || EnsureCapacity(appendLength))
@@ -216,7 +215,7 @@ namespace ICU4N.Impl.Coll
             internal void AppendReverseWeight16(int w)
             {
                 Debug.Assert((w & 0xffff) != 0);
-                byte b0 = (byte)(w.TripleShift(8));
+                byte b0 = (byte)(w >>> 8);
                 byte b1 = (byte)w;
                 int appendLength = (b1 == 0) ? 1 : 2;
                 if ((len + appendLength) <= buffer.Length || EnsureCapacity(appendLength))
@@ -394,7 +393,7 @@ namespace ICU4N.Impl.Coll
                 // No need to keep all CEs in the buffer when we write a sort key.
                 iter.ClearCEsIfNoneRemaining();
                 long ce = iter.NextCE();
-                long p = ce.TripleShift(32);
+                long p = ce >>> 32;
                 if (p < variableTop && p > Collation.MergeSeparatorPrimary)
                 {
                     // Variable CE, shift it to quaternary level.
@@ -419,7 +418,7 @@ namespace ICU4N.Impl.Coll
                             {
                                 p = settings.Reorder(p);
                             }
-                            if (((int)p.TripleShift(24)) >= QUAT_SHIFTED_LIMIT_BYTE)
+                            if ((int)(p >>> 24) >= QUAT_SHIFTED_LIMIT_BYTE)
                             {
                                 // Prevent shifted primary lead bytes from
                                 // overlapping with the common compression range.
@@ -430,7 +429,7 @@ namespace ICU4N.Impl.Coll
                         do
                         {
                             ce = iter.NextCE();
-                            p = ce.TripleShift(32);
+                            p = ce >>> 32;
                         } while (p == 0);
                     } while (p < variableTop && p > Collation.MergeSeparatorPrimary);
                 }
@@ -441,13 +440,13 @@ namespace ICU4N.Impl.Coll
                 if (p > Collation.NO_CE_PRIMARY && (levels & Collation.PRIMARY_LEVEL_FLAG) != 0)
                 {
                     // Test the un-reordered primary for compressibility.
-                    bool isCompressible = compressibleBytes[(int)p.TripleShift(24)];
+                    bool isCompressible = compressibleBytes[(int)(p >>> 24)];
                     if (settings.HasReordering)
                     {
                         p = settings.Reorder(p);
                     }
-                    int p1 = (int)p.TripleShift(24);
-                    if (!isCompressible || p1 != ((int)prevReorderedPrimary.TripleShift(24)))
+                    int p1 = (int)(p >>> 24);
+                    if (!isCompressible || p1 != ((int)(prevReorderedPrimary >>> 24)))
                     {
                         if (prevReorderedPrimary != 0)
                         {
@@ -475,11 +474,11 @@ namespace ICU4N.Impl.Coll
                             prevReorderedPrimary = 0;
                         }
                     }
-                    byte p2 = (byte)(p.TripleShift(16));
+                    byte p2 = (byte)(p >>> 16);
                     if (p2 != 0)
                     {
                         p234[0] = p2;
-                        p234[1] = (byte)(p.TripleShift(8));
+                        p234[1] = (byte)(p >>> 8);
                         p234[2] = (byte)p;
                         sink.Append(p234, (p234[1] == 0) ? 1 : (p234[2] == 0) ? 2 : 3);
                     }
@@ -504,7 +503,7 @@ namespace ICU4N.Impl.Coll
 
                 if ((levels & Collation.SECONDARY_LEVEL_FLAG) != 0)
                 {
-                    int s = lower32.TripleShift(16);  // 16 bits
+                    int s = lower32 >>> 16;  // 16 bits
                     if (s == 0)
                     {
                         // secondary ignorable
@@ -595,7 +594,7 @@ namespace ICU4N.Impl.Coll
                 if ((levels & Collation.CASE_LEVEL_FLAG) != 0)
                 {
                     if ((CollationSettings.GetStrength(options) == (int)CollationStrength.Primary) ? p == 0
-                            : (lower32.TripleShift(16)) == 0)
+                            : (lower32 >>> 16) == 0)
                     {
                         // Primary+caseLevel: Ignore case level weights of primary ignorables.
                         // Otherwise: Ignore case level weights of secondary ignorables.
@@ -603,7 +602,7 @@ namespace ICU4N.Impl.Coll
                     }
                     else
                     {
-                        int c = (lower32.TripleShift(8)) & 0xff; // case bits & tertiary lead byte
+                        int c = (lower32 >>> 8) & 0xff; // case bits & tertiary lead byte
                         Debug.Assert((c & 0xc0) != 0xc0);
                         if ((c & 0xc0) == 0 && c > Collation.LevelSeparatorByte)
                         {
@@ -641,7 +640,7 @@ namespace ICU4N.Impl.Coll
                                 }
                                 if (c > Collation.LevelSeparatorByte)
                                 {
-                                    c = (CASE_LOWER_FIRST_COMMON_HIGH + (c.TripleShift(6))) << 4; // 14 or 15
+                                    c = (CASE_LOWER_FIRST_COMMON_HIGH + (c >>> 6)) << 4; // 14 or 15
                                 }
                             }
                             else
@@ -663,7 +662,7 @@ namespace ICU4N.Impl.Coll
                                 }
                                 if (c > Collation.LevelSeparatorByte)
                                 {
-                                    c = (CASE_UPPER_FIRST_COMMON_LOW - (c.TripleShift(6))) << 4; // 2 or 1
+                                    c = (CASE_UPPER_FIRST_COMMON_LOW - (c >>> 6)) << 4; // 2 or 1
                                 }
                             }
                             // c is a separator byte 01,
@@ -760,7 +759,7 @@ namespace ICU4N.Impl.Coll
                         {
                             // Keep separators unchanged.
                         }
-                        else if ((lower32.TripleShift(16)) != 0)
+                        else if ((lower32 >>> 16) != 0)
                         {
                             // Invert case bits of primary & secondary CEs.
                             t ^= 0xc000;
@@ -829,7 +828,7 @@ namespace ICU4N.Impl.Coll
                         }
                         else
                         {
-                            q = 0xfc + ((q.TripleShift(6)) & 3);
+                            q = 0xfc + ((q >>> 6) & 3);
                         }
                         if (commonQuaternaries != 0)
                         {
@@ -855,7 +854,7 @@ namespace ICU4N.Impl.Coll
                     }
                 }
 
-                if ((lower32.TripleShift(24)) == Collation.LevelSeparatorByte)
+                if ((lower32 >>> 24) == Collation.LevelSeparatorByte)
                 {
                     break;
                 } // ce == NO_CE

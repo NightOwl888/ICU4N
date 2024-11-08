@@ -3,7 +3,6 @@ using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
 using J2N.IO;
-using J2N.Numerics;
 using System.IO;
 
 namespace ICU4N.Impl
@@ -358,7 +357,7 @@ namespace ICU4N.Impl
         }
         private static int GetMirrorIndex(int m)
         {
-            return m.TripleShift(MIRROR_INDEX_SHIFT);
+            return m >>> MIRROR_INDEX_SHIFT;
         }
 
         /// <summary>

@@ -666,7 +666,7 @@ namespace ICU4N.Text
             {
                 while (lo < hi)
                 {
-                    int mid = (lo + hi).TripleShift(1);
+                    int mid = (lo + hi) >>> 1;
                     long ruleBaseValue = rules[mid].BaseValue;
                     if (ruleBaseValue == number)
                     {
