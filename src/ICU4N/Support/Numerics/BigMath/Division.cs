@@ -128,7 +128,7 @@ namespace ICU4N.Numerics.BigMath
                             * long in the next step
                             */
                             //if (Utils.NumberOfLeadingZeros((int)Utils.URShift(longR, 32)) < 32)
-                            if (((int)longR.TripleShift(32)).LeadingZeroCount() < 32)
+                            if (((int)(longR >>> 32)).LeadingZeroCount() < 32)
                                 rOverflowed = true;
                             else
                                 rem = (int)longR;
@@ -156,7 +156,7 @@ namespace ICU4N.Numerics.BigMath
                             carry += (normA[j - normBLength + k] & 0xffffffffL)
                                      + (normB[k] & 0xffffffffL);
                             normA[j - normBLength + k] = (int)carry;
-                            carry = carry.TripleShift(32);
+                            carry >>>= 32;
                         }
                     }
                 }
@@ -209,8 +209,8 @@ namespace ICU4N.Numerics.BigMath
                     * make the dividend positive shifting it right by 1 bit then
                     * get the quotient an remainder and correct them properly
                     */
-                    long aPos = temp.TripleShift(1);
-                    long bPos = divisor.TripleShift(1);
+                    long aPos = temp >>> 1;
+                    long bPos = divisor >>> 1;
                     quot = aPos / bPos;
                     rem = aPos % bPos;
                     // double the remainder and add 1 if a is odd
@@ -301,8 +301,8 @@ namespace ICU4N.Numerics.BigMath
                 * Make the dividend positive shifting it right by 1 bit then get
                 * the quotient an remainder and correct them properly
                 */
-                long aPos = a.TripleShift(1);
-                long bPos = b.TripleShift(1);
+                long aPos = a >>> 1;
+                long bPos = b >>> 1;
                 quot = aPos / bPos;
                 rem = aPos % bPos;
                 // double the remainder and add 1 if a is odd
@@ -399,7 +399,7 @@ namespace ICU4N.Numerics.BigMath
                 carry1 = (a[start + i] & 0xffffffffL) - (carry0 & 0xffffffffL) + carry1;
                 a[start + i] = (int)carry1;
                 carry1 >>= 32; // -1 or 0
-                carry0 = carry0.TripleShift(32);
+                carry0 >>>= 32;
             }
 
             carry1 = (a[start + bLen] & 0xffffffffL) - carry0 + carry1;
@@ -501,20 +501,20 @@ namespace ICU4N.Numerics.BigMath
             int pow2Count = Math.Min(lsb1, lsb2);
 
             if (lsb1 != 0)
-                op1 = op1.TripleShift(lsb1);
+                op1 >>>= lsb1;
             if (lsb2 != 0)
-                op2 = op2.TripleShift(lsb2);
+                op2 >>>= lsb2;
             do
             {
                 if (op1 >= op2)
                 {
                     op1 -= op2;
-                    op1 = op1.TripleShift(op1.TrailingZeroCount());
+                    op1 >>>= op1.TrailingZeroCount();
                 }
                 else
                 {
                     op2 -= op1;
-                    op2 = op2.TripleShift(op2.TrailingZeroCount());
+                    op2 >>>= op2.TrailingZeroCount();
                 }
             } while (op1 != 0);
             return (op2 << pow2Count);
@@ -978,12 +978,12 @@ namespace ICU4N.Numerics.BigMath
                 {
                     innnerCarry = Multiplication.UnsignedMultAddAdd(m, modulusDigits[j], res[i + j], (int)innnerCarry);
                     res[i + j] = (int)innnerCarry;
-                    innnerCarry = innnerCarry.TripleShift(32);
+                    innnerCarry >>>= 32;
                 }
 
                 outerCarry += (res[i + modulusLen] & 0xFFFFFFFFL) + innnerCarry;
                 res[i + modulusLen] = (int)outerCarry;
-                outerCarry = outerCarry.TripleShift(32);
+                outerCarry >>>= 32;
             }
 
             res[modulusLen << 1] = (int)outerCarry;
@@ -1093,7 +1093,7 @@ namespace ICU4N.Numerics.BigMath
                 return;
             leadingZeros = 32 - (n & 31);
             x.numberLength = fd + 1;
-            x.Digits[fd] &= (leadingZeros < 32) ? (-1).TripleShift(leadingZeros) : 0;
+            x.Digits[fd] &= (leadingZeros < 32) ? -1 >>> leadingZeros : 0;
             x.CutOffLeadingZeroes();
         }
     }

@@ -549,7 +549,7 @@ namespace ICU4N.Numerics.BigMath
                 // -1076 <= exponent - bias <= -1023 
                 // To discard '- exponent + 1' bits
                 bits = tempBits >> 1;
-                tempBits = bits & ((-1L).TripleShift(63 + exponent));
+                tempBits = bits & (-1L >>> (63 + exponent));
                 bits >>= (-exponent);
 
                 // To test if after discard bits, a new carry is generated

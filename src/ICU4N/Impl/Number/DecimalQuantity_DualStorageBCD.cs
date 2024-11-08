@@ -118,7 +118,7 @@ namespace ICU4N.Numerics
             else
             {
                 if (position < 0 || position >= 16) return 0;
-                return (byte)((bcdLong.TripleShift(position * 4)) & 0xf);
+                return (byte)((bcdLong >>> (position * 4)) & 0xf);
             }
         }
 
@@ -188,8 +188,7 @@ namespace ICU4N.Numerics
             }
             else
             {
-                //bcdLong >>>= (numDigits * 4);
-                bcdLong = bcdLong.TripleShift(numDigits * 4);
+                bcdLong >>>= (numDigits * 4);
             }
             scale += numDigits;
             precision -= numDigits;
@@ -220,10 +219,10 @@ namespace ICU4N.Numerics
             int i = 16;
             for (; n != 0; n /= 10, i--)
             {
-                result = (result.TripleShift(4)) + (((long)n % 10) << 60);
+                result = (result >>> 4) + (((long)n % 10) << 60);
             }
             Debug.Assert(!usingBytes);
-            bcdLong = result.TripleShift(i * 4);
+            bcdLong = result >>> (i * 4);
             scale = 0;
             precision = 16 - i;
         }
@@ -251,11 +250,11 @@ namespace ICU4N.Numerics
                 int i = 16;
                 for (; n != 0L; n /= 10L, i--)
                 {
-                    result = (result.TripleShift(4)) + ((n % 10) << 60);
+                    result = (result >>> 4) + ((n % 10) << 60);
                 }
                 Debug.Assert(i >= 0);
                 Debug.Assert(!usingBytes);
-                bcdLong = result.TripleShift(i * 4);
+                bcdLong = result >>> (i * 4);
                 scale = 0;
                 precision = 16 - i;
             }
@@ -351,8 +350,7 @@ namespace ICU4N.Numerics
 
                 // Compact the number (remove trailing zeros)
                 int delta = bcdLong.TrailingZeroCount() / 4;
-                //bcdLong >>>= delta * 4;
-                bcdLong = bcdLong.TripleShift(delta * 4);
+                bcdLong >>>= delta * 4;
                 scale += delta;
 
                 // Compute precision
@@ -405,8 +403,7 @@ namespace ICU4N.Numerics
                 for (int i = 0; i < precision; i++)
                 {
                     bcdBytes[i] = (byte)(bcdLong & 0xf);
-                    //bcdLong >>>= 4;
-                    bcdLong = bcdLong.TripleShift(4);
+                    bcdLong >>>= 4;
                 }
                 Debug.Assert(usingBytes);
             }

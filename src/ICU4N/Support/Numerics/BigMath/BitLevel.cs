@@ -190,7 +190,7 @@ namespace ICU4N.Numerics.BigMath
                 result[result.Length - 1] = 0;
                 for (int i = result.Length - 1; i > intCount; i--)
                 {
-                    result[i] |= source[i - intCount - 1].TripleShift(rightShiftCount);
+                    result[i] |= source[i - intCount - 1] >>> rightShiftCount;
                     result[i - 1] = source[i - intCount - 1] << count;
                 }
             }
@@ -220,7 +220,7 @@ namespace ICU4N.Numerics.BigMath
             {
                 int val = source[i];
                 result[i] = (val << 1) | carry;
-                carry = val.TripleShift(31);
+                carry = val >>> 31;
             }
             if (carry != 0)
             {
@@ -345,10 +345,10 @@ namespace ICU4N.Numerics.BigMath
                 allZero &= (source[i] << leftShiftCount) == 0;
                 for (i = 0; i < resultLen - 1; i++)
                 {
-                    result[i] = source[i + intCount].TripleShift(count) |
+                    result[i] = (source[i + intCount] >>> count) |
                                 (source[i + intCount + 1] << leftShiftCount);
                 }
-                result[i] = source[i + intCount].TripleShift(count);
+                result[i] = source[i + intCount] >>> count;
                 i++;
             }
 

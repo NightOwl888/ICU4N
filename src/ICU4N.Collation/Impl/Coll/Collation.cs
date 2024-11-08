@@ -1,5 +1,4 @@
 ﻿using J2N;
-using J2N.Numerics;
 using System.Diagnostics;
 
 namespace ICU4N.Impl.Coll
@@ -419,7 +418,7 @@ namespace ICU4N.Impl.Coll
         /// </summary>
         internal static int IndexFromCE32(int ce32)
         {
-            return ce32.TripleShift( 13);
+            return ce32 >>> 13;
         }
 
         /// <summary>
@@ -613,7 +612,7 @@ namespace ICU4N.Impl.Coll
         /// </summary>
         internal static long GetThreeBytePrimaryForOffsetData(int c, long dataCE)
         {
-            long p = dataCE.TripleShift( 32);  // three-byte primary pppppp00
+            long p = dataCE >>> 32;  // three-byte primary pppppp00
             int lower32 = (int)dataCE;  // base code point b & step s: bbbbbbss (bit 7: isCompressible)
             int offset = (c - (lower32 >> 8)) * (lower32 & 0x7f);  // delta * increment
             bool isCompressible = (lower32 & 0x80) != 0;

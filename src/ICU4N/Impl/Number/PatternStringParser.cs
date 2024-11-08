@@ -2,7 +2,6 @@
 using ICU4N.Numerics;
 using ICU4N.Numerics.BigMath;
 using J2N;
-using J2N.Numerics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -128,7 +127,7 @@ namespace ICU4N.Numerics
                 {
                     long endpoints = GetEndpoints(flags);
                     int left = (int)(endpoints & 0xffffffff);
-                    int right = (int)(endpoints.TripleShift(32));
+                    int right = (int)(endpoints >>> 32);
                     if (index < 0 || index >= right - left)
                     {
                         throw new IndexOutOfRangeException();
@@ -146,7 +145,7 @@ namespace ICU4N.Numerics
             public static int GetLengthFromEndpoints(long endpoints)
             {
                 int left = (int)(endpoints & 0xffffffff);
-                int right = (int)(endpoints.TripleShift(32));
+                int right = (int)(endpoints >>> 32);
                 return right - left;
             }
 
@@ -154,7 +153,7 @@ namespace ICU4N.Numerics
             {
                 long endpoints = GetEndpoints(flags);
                 int left = (int)(endpoints & 0xffffffff);
-                int right = (int)(endpoints.TripleShift(32));
+                int right = (int)(endpoints >>> 32);
                 if (left == right)
                 {
                     return "";
@@ -166,7 +165,7 @@ namespace ICU4N.Numerics
             {
                 long endpoints = GetEndpoints(flags);
                 int left = (int)(endpoints & 0xffffffff);
-                int right = (int)(endpoints.TripleShift(32));
+                int right = (int)(endpoints >>> 32);
                 if (left == right)
                 {
                     return ReadOnlySpan<char>.Empty;
@@ -532,8 +531,8 @@ namespace ICU4N.Numerics
 
             // Disallow patterns with a trailing ',' or with two ',' next to each other
             short grouping1 = (short)(result.groupingSizes & 0xffff);
-            short grouping2 = (short)((result.groupingSizes.TripleShift(16)) & 0xffff);
-            short grouping3 = (short)((result.groupingSizes.TripleShift(32)) & 0xffff);
+            short grouping2 = (short)((result.groupingSizes >>> 16) & 0xffff);
+            short grouping3 = (short)((result.groupingSizes >>> 32) & 0xffff);
             if (grouping1 == 0 && grouping2 != -1)
             {
                 throw state.ToParseException("Trailing grouping separator is invalid");
@@ -670,8 +669,8 @@ namespace ICU4N.Numerics
 
             // Grouping settings
             short grouping1 = (short)(positive.groupingSizes & 0xffff);
-            short grouping2 = (short)((positive.groupingSizes.TripleShift(16)) & 0xffff);
-            short grouping3 = (short)((positive.groupingSizes.TripleShift(32)) & 0xffff);
+            short grouping2 = (short)((positive.groupingSizes >>> 16) & 0xffff);
+            short grouping3 = (short)((positive.groupingSizes >>> 32) & 0xffff);
             if (grouping2 != -1)
             {
                 properties.GroupingSize = grouping1;

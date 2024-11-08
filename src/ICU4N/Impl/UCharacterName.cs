@@ -3,7 +3,6 @@ using ICU4N.Text;
 using J2N;
 using J2N.Globalization;
 using J2N.IO;
-using J2N.Numerics;
 using J2N.Text;
 using System;
 using System.Buffers;
@@ -1552,7 +1551,7 @@ namespace ICU4N.Impl
         /// <param name="ch">16 bit char to add.</param>
         private static void Add(Span<int> set, char ch)
         {
-            set[ch.TripleShift(5)] |= 1 << (ch & 0x1f);
+            set[ch >>> 5] |= 1 << (ch & 0x1f);
         }
 
         /// <summary>
@@ -1564,7 +1563,7 @@ namespace ICU4N.Impl
         /// <returns>true if codepoint is part of the set, false otherwise.</returns>
         private static bool Contains(ReadOnlySpan<int> set, char ch)
         {
-            return (set[ch.TripleShift(5)] & (1 << (ch & 0x1f))) != 0;
+            return (set[ch >>> 5] & (1 << (ch & 0x1f))) != 0;
         }
 
         /// <summary>

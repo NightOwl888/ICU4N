@@ -2,7 +2,6 @@
 using ICU4N.Support.Text;
 using ICU4N.Text;
 using J2N;
-using J2N.Numerics;
 using J2N.Text;
 using System;
 using System.Collections;
@@ -163,7 +162,7 @@ namespace ICU4N.Util
                 int length = (int)top;
                 pos = (int)(top >> 32);
                 str_.Length = (length & 0xffff);
-                length = length.TripleShift(16);
+                length >>>= 16;
                 if (length > 1)
                 {
                     pos = BranchNext(pos, length);
@@ -1211,7 +1210,7 @@ namespace ICU4N.Util
                     {
                         return 0;
                     }
-                    pos = (int)(uniqueValue.TripleShift(33));
+                    pos = (int)(uniqueValue >>> 33);
                     node = chars[pos++];
                 }
                 else if (node < kMinValueLead)

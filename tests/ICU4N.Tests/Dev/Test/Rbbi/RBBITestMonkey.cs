@@ -1965,7 +1965,7 @@ namespace ICU4N.Dev.Test.Rbbi
         private static int m_rand()
         {
             m_seed = m_seed * 1103515245 + 12345;
-            return (m_seed.TripleShift(16)) % 32768;
+            return (m_seed >>> 16) % 32768;
         }
 
         // Helper function for formatting error output.

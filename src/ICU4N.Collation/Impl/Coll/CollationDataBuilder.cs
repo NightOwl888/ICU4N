@@ -3,7 +3,6 @@ using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
 using J2N.Collections;
-using J2N.Numerics;
 using J2N.Text;
 using System;
 using System.Buffers;
@@ -101,7 +100,7 @@ namespace ICU4N.Impl.Coll
 
         internal bool IsCompressiblePrimary(long p)
         {
-            return IsCompressibleLeadByte(((int)p).TripleShift(24));
+            return IsCompressibleLeadByte((int)p >>> 24);
         }
 
         /// <summary>
@@ -155,7 +154,7 @@ namespace ICU4N.Impl.Coll
                 // Try to encode two CEs as one CE32.
                 long ce0 = ces[0];
                 long ce1 = ces[1];
-                long p0 = ce0.TripleShift(32);
+                long p0 = ce0 >>> 32;
                 if ((ce0 & 0xffffffffff00ffL) == Collation.COMMON_SECONDARY_CE &&
                         (ce1 & unchecked((long)0xffffffff00ffffffL)) == Collation.COMMON_TERTIARY_CE &&
                         p0 != 0)
@@ -531,14 +530,14 @@ namespace ICU4N.Impl.Coll
 
         private static int EncodeOneCEAsCE32(long ce)
         {
-            long p = ce.TripleShift(32);
+            long p = ce >>> 32;
             int lower32 = (int)ce;
             int t = lower32 & 0xffff;
             Debug.Assert((t & 0xc000) != 0xc000);  // Impossible case bits 11 mark special CE32s.
             if ((ce & 0xffff00ff00ffL) == 0)
             {
                 // normal form ppppsstt
-                return (int)p | (lower32.TripleShift(16)) | (t >> 8);
+                return (int)p | (lower32 >>> 16) | (t >> 8);
             }
             else if ((ce & 0xffffffffffL) == Collation.CommonSecondaryAndTertiaryCE)
             {

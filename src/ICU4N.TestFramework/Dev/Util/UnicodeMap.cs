@@ -3,7 +3,6 @@ using ICU4N.Support.Collections;
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N.Collections.Generic.Extensions;
-using J2N.Numerics;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -192,7 +191,7 @@ namespace ICU4N.Dev.Util
         {
             int lo = 0;
             int hi = length - 1;
-            int i = (lo + hi).TripleShift(1);
+            int i = (lo + hi) >>> 1;
             // invariant: c >= list[lo]
             // invariant: c < list[hi]
             while (i != lo)
@@ -205,7 +204,7 @@ namespace ICU4N.Dev.Util
                 {
                     lo = i;
                 }
-                i = (lo + hi).TripleShift(1);
+                i = (lo + hi) >>> 1;
             }
             if (ASSERTIONS) _checkFind(c, lo);
             return lo;

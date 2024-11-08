@@ -4,7 +4,6 @@ using ICU4N.Util;
 using J2N;
 using J2N.Collections.Concurrent;
 using J2N.IO;
-using J2N.Numerics;
 using J2N.Text;
 #if FEATURE_MICROSOFT_EXTENSIONS_CACHING
     using Microsoft.Extensions.Caching.Memory;
@@ -289,7 +288,7 @@ namespace ICU4N.Impl
                 // In version 2, bits 31..8 were reserved and always 0.
                 // In version 3, they contain bits 23..0 of the poolStringIndexLimit.
                 // Bits 27..24 are in indexes[URES_INDEX_ATTRIBUTES] bits 15..12.
-                poolStringIndexLimit = indexes0.TripleShift(8);
+                poolStringIndexLimit = indexes0 >>> 8;
             }
             if (indexLength > URES_INDEX_ATTRIBUTES)
             {
@@ -300,7 +299,7 @@ namespace ICU4N.Impl
                 isPoolBundle = (att & URES_ATT_IS_POOL_BUNDLE) != 0;
                 usesPoolBundle = (att & URES_ATT_USES_POOL_BUNDLE) != 0;
                 poolStringIndexLimit |= (att & 0xf000) << 12;  // bits 15..12 -> 27..24
-                poolStringIndex16Limit = att.TripleShift(16);
+                poolStringIndex16Limit = att >>> 16;
             }
 
             int keysBottom = 1 + indexLength;
@@ -377,7 +376,7 @@ namespace ICU4N.Impl
 
         internal static UResourceType RES_GET_TYPE(int res)
         {
-            return (UResourceType)res.TripleShift(28);
+            return (UResourceType)(res >>> 28);
         }
         private static int RES_GET_OFFSET(int res)
         {
@@ -1261,7 +1260,7 @@ namespace ICU4N.Impl
                 limit = size;
                 while (start < limit)
                 {
-                    mid = (start + limit).TripleShift(1);
+                    mid = (start + limit) >>> 1;
                     if (keyOffsets != null)
                     {
                         result = reader.CompareKeys(key, keyOffsets[mid]);

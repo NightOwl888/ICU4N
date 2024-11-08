@@ -3,7 +3,6 @@ using ICU4N.Impl;
 using ICU4N.Util;
 using J2N;
 using J2N.Collections.Generic.Extensions;
-using J2N.Numerics;
 using J2N.Text;
 using System;
 using System.Collections;
@@ -2332,7 +2331,7 @@ namespace ICU4N.Text
             // invariant: c < list[hi]
             for (; ; )
             {
-                int i = (lo + hi).TripleShift(1);
+                int i = (lo + hi) >>> 1;
                 if (i == lo) return hi;
                 if (c < list[i])
                 {
@@ -5593,7 +5592,7 @@ namespace ICU4N.Text
                 }
                 // compute ourselves, to save tests and calls
                 int offset = codepoint - Character.MinSupplementaryCodePoint;
-                buffer[0] = (char)(offset.TripleShift(10) + Character.MinHighSurrogate);
+                buffer[0] = (char)((offset >>> 10) + Character.MinHighSurrogate);
                 buffer[1] = (char)((offset & 0x3ff) + Character.MinLowSurrogate);
                 currentElement = new string(buffer);
                 return true;

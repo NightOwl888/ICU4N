@@ -5,7 +5,6 @@ using ICU4N.Support.Text;
 using ICU4N.Text;
 using J2N;
 using J2N.Globalization;
-using J2N.Numerics;
 using System;
 using System.Buffers;
 using System.Diagnostics;
@@ -57,8 +56,8 @@ namespace ICU4N
             PatternStringParser.ParsedSubpatternInfo positive = patternInfo.positive;
             // Grouping settings
             short grouping1 = (short)(positive.groupingSizes & 0xffff);
-            short grouping2 = (short)((positive.groupingSizes.TripleShift(16)) & 0xffff);
-            short grouping3 = (short)((positive.groupingSizes.TripleShift(32)) & 0xffff);
+            short grouping2 = (short)((positive.groupingSizes >>> 16) & 0xffff);
+            short grouping3 = (short)((positive.groupingSizes >>> 32) & 0xffff);
 
             int groupingSize = grouping1 < 0 ? 0 : grouping1;
             int secondaryGroupingSize = grouping3 != -1 ? (grouping2 < 0 ? 0 : grouping2) : 0;

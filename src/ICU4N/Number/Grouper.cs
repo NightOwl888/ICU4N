@@ -1,5 +1,4 @@
-﻿using J2N.Numerics;
-using System;
+﻿using System;
 using System.Diagnostics;
 using static ICU4N.Numerics.PatternStringParser;
 
@@ -96,8 +95,8 @@ namespace ICU4N.Numerics
             }
             // TODO: short or byte?
             sbyte grouping1 = (sbyte)(patternInfo.positive.groupingSizes & 0xffff);
-            sbyte grouping2 = (sbyte)((patternInfo.positive.groupingSizes.TripleShift(16)) & 0xffff);
-            sbyte grouping3 = (sbyte)((patternInfo.positive.groupingSizes.TripleShift(32)) & 0xffff);
+            sbyte grouping2 = (sbyte)((patternInfo.positive.groupingSizes >>> 16) & 0xffff);
+            sbyte grouping3 = (sbyte)((patternInfo.positive.groupingSizes >>> 32) & 0xffff);
             if (grouping2 == -1)
             {
                 grouping1 = -1;

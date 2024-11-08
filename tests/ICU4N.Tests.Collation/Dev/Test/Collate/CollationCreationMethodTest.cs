@@ -1,7 +1,6 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Text;
 using J2N;
-using J2N.Numerics;
 using NUnit.Framework;
 using System;
 using System.Globalization;
@@ -82,7 +81,7 @@ namespace ICU4N.Dev.Test.Collate
                 z = r.Next(0x7fff); //the code point...
 
                 c[x + 1] = (byte)z;
-                c[x] = (byte)(z.TripleShift(4));
+                c[x] = (byte)(z >>> 4);
             }
             try
             {

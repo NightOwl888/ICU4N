@@ -1505,8 +1505,7 @@ namespace ICU4N.Numerics
                             }
                             else
                             {
-                                //groupingWidths >>>= 4;
-                                groupingWidths = groupingWidths.TripleShift(4);
+                                groupingWidths >>>= 4;
                                 numGroupingRegions--;
                             }
                         }
@@ -1524,7 +1523,7 @@ namespace ICU4N.Numerics
                             if (DEBUGGING) Console.Out.WriteLine("-> rejected due to first grouping violation");
                             continue;
                         }
-                        else if (((groupingWidths.TripleShift((numGroupingRegions - 1) * 4)) & 0xf) > grouping2)
+                        else if (((groupingWidths >>> ((numGroupingRegions - 1) * 4)) & 0xf) > grouping2)
                         {
                             // String like "1234,567" where the highest grouping is too large
                             if (DEBUGGING) Console.Out.WriteLine("-> rejected due to final grouping violation");
@@ -1534,7 +1533,7 @@ namespace ICU4N.Numerics
                         {
                             for (int j = 1; j < numGroupingRegions - 1; j++)
                             {
-                                if (((groupingWidths.TripleShift(j * 4)) & 0xf) != grouping2)
+                                if (((groupingWidths >>> (j * 4)) & 0xf) != grouping2)
                                 {
                                     // A grouping size somewhere in the middle is invalid
                                     if (DEBUGGING) Console.Out.WriteLine("-> rejected due to inner grouping violation");

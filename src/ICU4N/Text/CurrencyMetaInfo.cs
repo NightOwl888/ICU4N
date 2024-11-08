@@ -2,7 +2,6 @@
 using ICU4N.Support.Collections;
 using ICU4N.Util;
 using J2N;
-using J2N.Numerics;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -519,9 +518,9 @@ namespace ICU4N.Text
                 hc = hc * 31 + currency.GetHashCode();
             }
             hc = hc * 31 + (int)from;
-            hc = hc * 31 + (int)(from.TripleShift(32));
+            hc = hc * 31 + (int)(from >>> 32);
             hc = hc * 31 + (int)to;
-            hc = hc * 31 + (int)(to.TripleShift(32));
+            hc = hc * 31 + (int)(to >>> 32);
             hc = hc * 31 + (tenderOnly ? 1 : 0);
             return hc;
         }

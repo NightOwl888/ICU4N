@@ -314,7 +314,7 @@ namespace ICU4N.Numerics.BigMath
             {
                 int trailingZeros = System.Math.Min(_scale, mantisa.TrailingZeroCount());
                 //long mantisa2 = (long)(((ulong)mantisa) >> trailingZeros);
-                mantisa = mantisa.TripleShift(trailingZeros);
+                mantisa >>>= trailingZeros;
                 _scale -= trailingZeros;
             }
             // Calculating the new unscaled value and the new scale

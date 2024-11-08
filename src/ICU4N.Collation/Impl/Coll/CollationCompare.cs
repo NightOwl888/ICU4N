@@ -1,6 +1,5 @@
 ﻿using ICU4N.Text;
 using J2N;
-using J2N.Numerics;
 using System.Diagnostics;
 
 namespace ICU4N.Impl.Coll
@@ -33,7 +32,7 @@ namespace ICU4N.Impl.Coll
                 do
                 {
                     long ce = left.NextCE();
-                    leftPrimary = ce.TripleShift(32);
+                    leftPrimary = ce >>> 32;
                     if (leftPrimary < variableTop && leftPrimary > Collation.MergeSeparatorPrimary)
                     {
                         // Variable CE, shift it to quaternary level.
@@ -46,7 +45,7 @@ namespace ICU4N.Impl.Coll
                             for (; ; )
                             {
                                 ce = left.NextCE();
-                                leftPrimary = ce.TripleShift(32);
+                                leftPrimary = ce >>> 32;
                                 if (leftPrimary == 0)
                                 {
                                     left.SetCurrentCE(0);
@@ -64,7 +63,7 @@ namespace ICU4N.Impl.Coll
                 do
                 {
                     long ce = right.NextCE();
-                    rightPrimary = ce.TripleShift(32);
+                    rightPrimary = ce >>> 32;
                     if (rightPrimary < variableTop && rightPrimary > Collation.MergeSeparatorPrimary)
                     {
                         // Variable CE, shift it to quaternary level.
@@ -77,7 +76,7 @@ namespace ICU4N.Impl.Coll
                             for (; ; )
                             {
                                 ce = right.NextCE();
-                                rightPrimary = ce.TripleShift(32);
+                                rightPrimary = ce >>> 32;
                                 if (rightPrimary == 0)
                                 {
                                     right.SetCurrentCE(0);
@@ -121,13 +120,13 @@ namespace ICU4N.Impl.Coll
                         int leftSecondary;
                         do
                         {
-                            leftSecondary = ((int)left.GetCE(leftIndex2++)).TripleShift(16);
+                            leftSecondary = (int)left.GetCE(leftIndex2++) >>> 16;
                         } while (leftSecondary == 0);
 
                         int rightSecondary;
                         do
                         {
-                            rightSecondary = ((int)right.GetCE(rightIndex2++)).TripleShift(16);
+                            rightSecondary = (int)right.GetCE(rightIndex2++) >>> 16;
                         } while (rightSecondary == 0);
 
                         if (leftSecondary != rightSecondary)
@@ -151,13 +150,13 @@ namespace ICU4N.Impl.Coll
                         // Find the merge separator or the NO_CE terminator.
                         long p;
                         int leftLimit = leftStart;
-                        while ((p = left.GetCE(leftLimit).TripleShift(32)) > Collation.MergeSeparatorPrimary
+                        while ((p = left.GetCE(leftLimit) >>> 32) > Collation.MergeSeparatorPrimary
                                 || p == 0)
                         {
                             ++leftLimit;
                         }
                         int rightLimit = rightStart;
-                        while ((p = right.GetCE(rightLimit).TripleShift(32)) > Collation.MergeSeparatorPrimary
+                        while ((p = right.GetCE(rightLimit) >>> 32) > Collation.MergeSeparatorPrimary
                                 || p == 0)
                         {
                             ++rightLimit;
@@ -171,13 +170,13 @@ namespace ICU4N.Impl.Coll
                             int leftSecondary = 0;
                             while (leftSecondary == 0 && leftIndex3 > leftStart)
                             {
-                                leftSecondary = ((int)left.GetCE(--leftIndex3)).TripleShift(16);
+                                leftSecondary = (int)left.GetCE(--leftIndex3) >>> 16;
                             }
 
                             int rightSecondary = 0;
                             while (rightSecondary == 0 && rightIndex3 > rightStart)
                             {
-                                rightSecondary = ((int)right.GetCE(--rightIndex3)).TripleShift(16);
+                                rightSecondary = (int)right.GetCE(--rightIndex3) >>> 16;
                             }
 
                             if (leftSecondary != rightSecondary)
@@ -225,7 +224,7 @@ namespace ICU4N.Impl.Coll
                         {
                             ce = left.GetCE(leftIndex4++);
                             leftCase = (int)ce;
-                        } while ((ce.TripleShift(32)) == 0 || leftCase == 0);
+                        } while ((ce >>> 32) == 0 || leftCase == 0);
                         leftLower32 = leftCase;
                         leftCase &= 0xc000;
 
@@ -233,7 +232,7 @@ namespace ICU4N.Impl.Coll
                         {
                             ce = right.GetCE(rightIndex4++);
                             rightCase = (int)ce;
-                        } while ((ce.TripleShift(32)) == 0 || rightCase == 0);
+                        } while ((ce >>> 32) == 0 || rightCase == 0);
                         rightCase &= 0xc000;
                     }
                     else
@@ -280,7 +279,7 @@ namespace ICU4N.Impl.Coll
                             return (leftCase < rightCase) ? Collation.Greater : Collation.Less;
                         }
                     }
-                    if ((leftLower32.TripleShift(16)) == Collation.NO_CE_WEIGHT16)
+                    if ((leftLower32 >>> 16) == Collation.NO_CE_WEIGHT16)
                     {
                         break;
                     }
@@ -379,7 +378,7 @@ namespace ICU4N.Impl.Coll
                     if (leftQuaternary <= Collation.NO_CE_WEIGHT16)
                     {
                         // Variable primary or completely ignorable or NO_CE.
-                        leftQuaternary = ce.TripleShift(32);
+                        leftQuaternary = ce >>> 32;
                     }
                     else
                     {
@@ -397,7 +396,7 @@ namespace ICU4N.Impl.Coll
                     if (rightQuaternary <= Collation.NO_CE_WEIGHT16)
                     {
                         // Variable primary or completely ignorable or NO_CE.
-                        rightQuaternary = ce.TripleShift(32);
+                        rightQuaternary = ce >>> 32;
                     }
                     else
                     {

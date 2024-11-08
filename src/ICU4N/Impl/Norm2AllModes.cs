@@ -1,7 +1,6 @@
 ﻿using ICU4N.Support.Text;
 using ICU4N.Text;
 using J2N.IO;
-using J2N.Numerics;
 using J2N.Text;
 using System;
 using System.Runtime.CompilerServices;
@@ -659,7 +658,7 @@ namespace ICU4N.Impl
             {
                 return QuickCheckResult.Maybe;
             }
-            else if ((spanLengthAndMaybe.TripleShift(1)) == s.Length)
+            else if ((spanLengthAndMaybe >>> 1) == s.Length)
             {
                 return QuickCheckResult.Yes;
             }
@@ -675,7 +674,7 @@ namespace ICU4N.Impl
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override int SpanQuickCheckYes(ReadOnlySpan<char> s)
-            => Impl.ComposeQuickCheck(s, onlyContiguous, doSpan: true).TripleShift(1); // ICU4N: Checked 3rd parameter
+            => Impl.ComposeQuickCheck(s, onlyContiguous, doSpan: true) >>> 1; // ICU4N: Checked 3rd parameter
 
         #endregion SpanQuickCheckYes(ICharSequence)
 

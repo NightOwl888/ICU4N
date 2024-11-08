@@ -2,7 +2,6 @@
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
-using J2N.Numerics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -62,7 +61,7 @@ namespace ICU4N.Impl.Coll
 
         public bool IsCompressiblePrimary(long p)
         {
-            return IsCompressibleLeadByte(((int)p).TripleShift(24));
+            return IsCompressibleLeadByte((int)p >>> 24);
         }
 
         /// <summary>
