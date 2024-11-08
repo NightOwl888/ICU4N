@@ -314,7 +314,7 @@ namespace ICU4N.Impl.Coll
 
         public long Reorder(long p)
         {
-            byte b = reorderTable[(int)(p >>> 24)];
+            byte b = reorderTable[(int)p >>> 24];
             if (b != 0 || p <= Collation.NO_CE_PRIMARY)
             {
                 return ((b & 0xffL) << 24) | (p & 0xffffff);
