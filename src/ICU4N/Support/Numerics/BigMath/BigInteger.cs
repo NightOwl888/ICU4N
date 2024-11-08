@@ -206,7 +206,7 @@ namespace ICU4N.Numerics.BigMath
                     digits[i] = random.Next();
                 }
                 // Using only the necessary bits
-                digits[numberLength - 1] >>>= -numBits & 31;
+                digits[numberLength - 1] >>>= (-numBits) & 31;
                 CutOffLeadingZeroes();
             }
         }
