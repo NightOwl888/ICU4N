@@ -102,7 +102,7 @@ namespace ICU4N.Text
             public virtual object Clone()
             {
                 DequeI result = (DequeI)base.MemberwiseClone();
-                result.data = (int[])data.Clone();
+                result.data = (int[])data.Clone(); // ICU4N: backported fix from ICU-13512
                 return result;
             }
 
