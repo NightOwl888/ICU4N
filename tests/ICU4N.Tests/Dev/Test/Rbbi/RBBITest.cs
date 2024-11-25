@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using StringBuffer = System.Text.StringBuilder;
 
 //Regression testing of RuleBasedBreakIterator
@@ -576,6 +577,132 @@ namespace ICU4N.Dev.Test.Rbbi
             RuleBasedBreakIterator cloneFr = (RuleBasedBreakIterator)biFr.Clone();
             assertEquals("", biFr, cloneFr);
             assertEquals("", new UCultureInfo("fr"), cloneFr.ValidCulture);
+        }
+
+        // Backported from ICU-13512 fix in ICU commit fbaef1f
+        internal class T13512Thread : ThreadJob
+        {
+            private readonly string fText;
+            public IList<int> fBoundaries;
+            public readonly IList<int> fExpectedBoundaries;
+
+            internal T13512Thread(string text) {
+                fText = text;
+                fExpectedBoundaries = GetBoundary(fText);
+            }
+
+            public override void Run()
+            {
+                for (int i = 0; i < 10000; ++i) {
+                    fBoundaries = GetBoundary(fText);
+                    if (!fBoundaries.Equals(fExpectedBoundaries)) {
+                        break;
+                    }
+                }
+            }
+
+            private static readonly BreakIterator BREAK_ITERATOR_CACHE = BreakIterator.GetWordInstance(UCultureInfo.InvariantCulture);
+
+            public static IList<int> GetBoundary(string toParse) {
+                IList<int> retVal = new List<int>();
+                BreakIterator bi = (BreakIterator) BREAK_ITERATOR_CACHE.Clone();
+                bi.SetText(toParse);
+                for (int boundary = bi.First(); boundary != BreakIterator.Done; boundary = bi.Next()) {
+                    retVal.Add(boundary);
+                }
+                return retVal;
+            }
+        }
+
+        [Test]
+        public void TestBug13512()
+        {
+            const string japanese =
+                "コンピューターは、本質的には数字しか扱うことができません。コンピューターは、文字や記号などのそれぞれに番号を割り振る"
+                + "ことによって扱えるようにします。ユニコードが出来るまでは、これらの番号を割り振る仕組みが何百種類も存在しました。どの一つをとっても、十分な"
+                + "文字を含んではいませんでした。例えば、欧州連合一つを見ても、そのすべての言語をカバーするためには、いくつかの異なる符号化の仕"
+                + "組みが必要でした。英語のような一つの言語に限っても、一つだけの符号化の仕組みでは、一般的に使われるすべての文字、句読点、技術"
+                + "的な記号などを扱うには不十分でした。";
+            const string thai =
+                "โดยพื้นฐานแล้ว, คอมพิวเตอร์จะเกี่ยวข้องกับเรื่องของตัวเลข. คอมพิวเตอร์จัดเก็บตัวอักษรและอักขระอื่นๆ"
+                + " โดยการกำหนดหมายเลขให้สำหรับแต่ละตัว. ก่อนหน้าที่๊ Unicode จะถูกสร้างขึ้น, ได้มีระบบ encoding "
+                + "อยู่หลายร้อยระบบสำหรับการกำหนดหมายเลขเหล่านี้. ไม่มี encoding ใดที่มีจำนวนตัวอักขระมากเพียงพอ: ยกตัวอย่างเช่น, "
+                + "เฉพาะในกลุ่มสหภาพยุโรปเพียงแห่งเดียว ก็ต้องการหลาย encoding ในการครอบคลุมทุกภาษาในกลุ่ม. "
+                + "หรือแม้แต่ในภาษาเดี่ยว เช่น ภาษาอังกฤษ ก็ไม่มี encoding ใดที่เพียงพอสำหรับทุกตัวอักษร, "
+                + "เครื่องหมายวรรคตอน และสัญลักษณ์ทางเทคนิคที่ใช้กันอยู่ทั่วไป.\n" +
+                "ระบบ encoding เหล่านี้ยังขัดแย้งซึ่งกันและกัน. นั่นก็คือ, ในสอง encoding สามารถใช้หมายเลขเดียวกันสำหรับตัวอักขระสองตัวที่แตกต่างกัน,"
+                + "หรือใช้หมายเลขต่างกันสำหรับอักขระตัวเดียวกัน. ในระบบคอมพิวเตอร์ (โดยเฉพาะเซิร์ฟเวอร์) ต้องมีการสนับสนุนหลาย"
+                + " encoding; และเมื่อข้อมูลที่ผ่านไปมาระหว่างการเข้ารหัสหรือแพล็ตฟอร์มที่ต่างกัน, ข้อมูลนั้นจะเสี่ยงต่อการผิดพลาดเสียหาย.";
+
+            T13512Thread t1 = new T13512Thread(thai);
+            T13512Thread t2 = new T13512Thread(japanese);
+
+            try
+            {
+                t1.Start();
+                t2.Start();
+                t1.Join();
+                t2.Join();
+            }
+            catch (Exception e)
+            {
+                fail(e.ToString());
+            }
+
+            assertEquals("", t1.fExpectedBoundaries, t1.fBoundaries);
+            assertEquals("", t2.fExpectedBoundaries, t2.fBoundaries);
+        }
+
+        // ICU4N specific - the TestBug13512 test above doesn't always catch this issue;
+        // this one does pretty reliably if you revert the fix in DictionaryBreakEngine.DequeI.Clone().
+        [Test]
+        public void ICU4N_Issue95()
+        {
+            // NOTE: These failing strings are just some sampled from the Lucene.NET project's
+            // TestUtil.RandomAnalysisString method that have been known to cause this to fail.
+            // Hex-encoding them here to avoid any encoding/display issues.
+            var failingStrings = new[]
+            {
+                Encoding.UTF8.GetString(HexStringToByteArray("D2BCDFAAED96B3E18F86E28BAFE29298EFA1BBE9B2AEE7BEAD76")),
+                Encoding.UTF8.GetString(HexStringToByteArray("F28DB9BC2CEB8C96F1B18880CAB9E59BB5E889ADDC8017")),
+                Encoding.UTF8.GetString(HexStringToByteArray("D1AD13F0A5A29DE8B794CA80")),
+                Encoding.UTF8.GetString(HexStringToByteArray("D0931DEFA897D687EE9D8FE68890E3B591F28A8888E7AFADD7B3C88E05")),
+                Encoding.UTF8.GetString(HexStringToByteArray("EE8F87D78CEE8187F09EA3BC6DD896EFB98FE7B298E3A5A7EFB7AAEF9CBE")),
+            };
+
+            var cjkBreakIterator = BreakIterator.GetWordInstance(UCultureInfo.InvariantCulture);
+            var random = new Random();
+
+            Parallel.For(0, 100000, _ =>
+            {
+                var text = failingStrings[random.Next(failingStrings.Length)];
+                var rbbi = (RuleBasedBreakIterator)cjkBreakIterator.Clone();
+                rbbi.SetText(text);
+                rbbi.First();
+                int end = rbbi.Next();
+                while (end != BreakIterator.Done)
+                {
+                    end = rbbi.Next();
+                }
+            });
+        }
+
+        // ICU4N specific - used by test above
+        private static byte[] HexStringToByteArray(string hex)
+        {
+            if (string.IsNullOrWhiteSpace(hex))
+                throw new ArgumentException("Input string cannot be null or empty.");
+
+            if (hex.Length % 2 != 0)
+                throw new ArgumentException("Hex string must have an even length.");
+
+            byte[] bytes = new byte[hex.Length / 2];
+            for (int i = 0; i < hex.Length; i += 2)
+            {
+                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+            }
+
+            return bytes;
         }
     }
 }
