@@ -2908,7 +2908,7 @@ namespace ICU4N.Text
         /// <summary>
         /// internal function; package visibility for use by <see cref="UTF16.StringComparer"/>
         /// </summary>
-        internal static int CmpEquivFold(ReadOnlySpan<char> cs1, ReadOnlySpan<char> cs2, int options)
+        internal static int CmpEquivFold(ReadOnlySpan<char> cs1, ReadOnlySpan<char> cs2, int options) // ICU4N TODO: Port the C++ version because this would be simpler and safer with pointers
         {
             Normalizer2Impl nfcImpl;
             UCaseProperties csp;
@@ -2924,14 +2924,13 @@ namespace ICU4N.Text
             StackContainer stack2 = new StackContainer();
 
             /* buffers for algorithmic decompositions */
-            const int DecompositionCharStackBufferSize = 16; // maximum length of 6, but need to be safe because it will fail if not enough
+            const int DecompositionCharStackBufferSize = 8; // maximum length of 6, but need to be safe because it will fail if not enough
             Span<char> decomp1 = stackalloc char[DecompositionCharStackBufferSize];
             Span<char> decomp2 = stackalloc char[DecompositionCharStackBufferSize];
 
             /* case folding buffers, only use current-level start/limit */
-            const int FoldCharStackBufferSize = 8; // maximum length of 3
-            var fold1 = new ValueStringBuilder(stackalloc char[FoldCharStackBufferSize]);
-            var fold2 = new ValueStringBuilder(stackalloc char[FoldCharStackBufferSize]);
+            var fold1 = new ValueStringBuilder(stackalloc char[UCaseProperties.MaxStringLength + 1]);
+            var fold2 = new ValueStringBuilder(stackalloc char[UCaseProperties.MaxStringLength + 1]);
             try
             {
 
