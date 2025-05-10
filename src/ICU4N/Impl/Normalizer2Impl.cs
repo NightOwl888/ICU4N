@@ -458,9 +458,6 @@ namespace ICU4N.Impl
         public ReadOnlySpan<char> AsSpan(int start) => str.AsSpan(start);
         public ReadOnlySpan<char> AsSpan(int start, int length) => str.AsSpan(start, length);
 
-        [CLSCompliant(false)]
-        public char* GetCharsPointer() => str.GetCharsPointer();
-
         public Span<char> RawChars => str.RawChars;
 
         public bool TryCopyTo(Span<char> destination, out int charsWritten) => str.TryCopyTo(destination, out charsWritten);
@@ -474,7 +471,7 @@ namespace ICU4N.Impl
             return UTF16Plus.Equal(str.AsSpan(), s.AsSpan(start, length));
         }
 
-        public bool Equals(ReadOnlySpan<char> s)
+        public bool Equals(scoped ReadOnlySpan<char> s)
         {
             return UTF16Plus.Equal(str.AsSpan(), s);
         }
@@ -1633,7 +1630,7 @@ namespace ICU4N.Impl
         }
 
         // ICU4N TODO: Make public TryDecompose() method that accepts ReadOnlySpan<char>, Span<char>, out int charLength
-        internal void Decompose(ReadOnlySpan<char> s, ref ValueStringBuilder dest) // ICU4N: internal because ValueStringBuilder is internal
+        internal void Decompose(scoped ReadOnlySpan<char> s, scoped ref ValueStringBuilder dest) // ICU4N: internal because ValueStringBuilder is internal
         {
             Decompose(s, ref dest, s.Length);
         }
@@ -1665,7 +1662,7 @@ namespace ICU4N.Impl
         /// length can be NULL if src is NUL-terminated.
         /// <paramref name="destLengthEstimate"/> is the initial <paramref name="dest"/> buffer capacity and can be -1.
         /// </summary>
-        internal void Decompose(ReadOnlySpan<char> s, ref ValueStringBuilder dest, int destLengthEstimate)
+        internal void Decompose(scoped ReadOnlySpan<char> s, scoped ref ValueStringBuilder dest, int destLengthEstimate)
         {
             int src = 0, limit = s.Length;
             if (destLengthEstimate < 0)
@@ -1681,7 +1678,7 @@ namespace ICU4N.Impl
         // normalize
         // ICU4N: This was part of the dual functionality of Decompose() in ICU4J.
         // Separated out into Decompose() and DecomposeQuickCheck() so we can use a ref struct for the buffer.
-        public int Decompose(ReadOnlySpan<char> s, ref ReorderingBuffer buffer)
+        public int Decompose(scoped ReadOnlySpan<char> s, scoped ref ReorderingBuffer buffer)
         {
             int src = 0, limit = s.Length;
             int minNoCP = minDecompNoCP;
@@ -1841,7 +1838,7 @@ namespace ICU4N.Impl
             return src;
         }
 
-        public void DecomposeAndAppend(ReadOnlySpan<char> s, bool doDecompose, ref ReorderingBuffer buffer)
+        public void DecomposeAndAppend(scoped ReadOnlySpan<char> s, bool doDecompose, scoped ref ReorderingBuffer buffer)
         {
             int limit = s.Length;
             if (limit == 0)
@@ -1876,10 +1873,10 @@ namespace ICU4N.Impl
         // Very similar to ComposeQuickCheck(): Make the same changes in both places if relevant.
         // doCompose: normalize
         // !doCompose: isNormalized (buffer must be empty and initialized)
-        public bool Compose(ReadOnlySpan<char> s,
+        public bool Compose(scoped ReadOnlySpan<char> s,
                            bool onlyContiguous,
                            bool doCompose,
-                           ref ReorderingBuffer buffer)
+                           scoped ref ReorderingBuffer buffer)
         {
             int src = 0, limit = s.Length;
             int prevBoundary = src;
@@ -2335,10 +2332,10 @@ namespace ICU4N.Impl
             }
         }
 
-        public void ComposeAndAppend(ReadOnlySpan<char> s,
+        public void ComposeAndAppend(scoped ReadOnlySpan<char> s,
             bool doCompose,
             bool onlyContiguous,
-            ref ReorderingBuffer buffer)
+            scoped ref ReorderingBuffer buffer)
         {
             int src = 0, limit = s.Length;
             if (!buffer.IsEmpty)
@@ -2357,10 +2354,7 @@ namespace ICU4N.Impl
                         middle.Append(buffer.AsSpan(), lastStarterInDest, buffer.Length - lastStarterInDest); // ICU4N : Fixed 3rd parameter
                         buffer.RemoveSuffix(buffer.Length - lastStarterInDest);
                         middle.Append(s, 0, firstStarterInSrc - 0);
-                        unsafe
-                        {
-                            Compose(new ReadOnlySpan<char>(middle.GetCharsPointer(), middle.Length), onlyContiguous, true, ref buffer);
-                        }
+                        Compose(middle.AsSpan(), onlyContiguous, true, ref buffer);
                         src = firstStarterInSrc;
                     }
                     finally
@@ -2381,7 +2375,7 @@ namespace ICU4N.Impl
 
         // normalize
         // ICU4N: Separated dual functionality that was in ICU4J into MakeFCD() and MakeFCDSpanQuickCheckYes()
-        public int MakeFCD(ReadOnlySpan<char> s, ref ReorderingBuffer buffer)
+        public int MakeFCD(scoped ReadOnlySpan<char> s, scoped ref ReorderingBuffer buffer)
         {
             // Note: In this function we use buffer->appendZeroCC() because we track
             // the lead and trail combining classes here, rather than leaving it to
@@ -2704,10 +2698,7 @@ namespace ICU4N.Impl
                         middle.Append(buffer.AsSpan(), lastBoundaryInDest, buffer.Length - lastBoundaryInDest); // ICU4N : Fixed 3rd parameter
                         buffer.RemoveSuffix(buffer.Length - lastBoundaryInDest);
                         middle.Append(s, 0, firstBoundaryInSrc - 0);
-                        unsafe
-                        {
-                            MakeFCD(new ReadOnlySpan<char>(middle.GetCharsPointer(), middle.Length), ref buffer);
-                        }
+                        MakeFCD(middle.AsSpan(), ref buffer);
                         src = firstBoundaryInSrc;
                     }
                     finally
@@ -2940,9 +2931,9 @@ namespace ICU4N.Impl
         // Called by the Compose() and MakeFCD() implementations.
         // Public in .NET for collation implementation code.
         private int DecomposeShort(
-                ReadOnlySpan<char> s, int src, int limit,
+                scoped ReadOnlySpan<char> s, int src, int limit,
                 bool stopAtCompBoundary, bool onlyContiguous,
-                ref ReorderingBuffer buffer)
+                scoped ref ReorderingBuffer buffer)
         {
             while (src < limit)
             {
@@ -2966,7 +2957,7 @@ namespace ICU4N.Impl
             return src;
         }
 
-        private void Decompose(int c, int norm16, ref ReorderingBuffer buffer)
+        private void Decompose(int c, int norm16, scoped ref ReorderingBuffer buffer)
         {
             // get the decomposition and the lead and trail cc's
             if (norm16 >= limitNoNo)
@@ -3143,7 +3134,7 @@ namespace ICU4N.Impl
         /// a composition may contain at most one more code unit than the original starter,
         /// while the combining mark that is removed has at least one code unit.
         /// </remarks>
-        private void Recompose(ref ReorderingBuffer buffer, int startIndex,
+        private void Recompose(scoped ref ReorderingBuffer buffer, int startIndex,
                                bool onlyContiguous)
         {
             ref ReorderingBuffer sb = ref buffer;

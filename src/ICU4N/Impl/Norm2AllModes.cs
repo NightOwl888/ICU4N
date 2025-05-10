@@ -23,7 +23,7 @@ namespace ICU4N.Impl
             return dest.Append(src);
         }
 
-        internal override void Normalize(scoped ReadOnlySpan<char> src, ref ValueStringBuilder dest)
+        internal override void Normalize(scoped ReadOnlySpan<char> src, scoped ref ValueStringBuilder dest)
         {
             if (src.Overlaps(dest.RawChars))
             {
@@ -59,7 +59,7 @@ namespace ICU4N.Impl
             return first.Append(second);
         }
 
-        internal override void NormalizeSecondAndAppend(ref ValueStringBuilder first, ReadOnlySpan<char> second)
+        internal override void NormalizeSecondAndAppend(scoped ref ValueStringBuilder first, scoped ReadOnlySpan<char> second)
         {
             if (first.RawChars.Overlaps(second))
             {
@@ -81,7 +81,7 @@ namespace ICU4N.Impl
             return first.Append(second);
         }
 
-        internal override void Append(ref ValueStringBuilder first, ReadOnlySpan<char> second)
+        internal override void Append(scoped ref ValueStringBuilder first, scoped ReadOnlySpan<char> second)
         {
             if (first.RawChars.Overlaps(second))
             {
@@ -295,7 +295,7 @@ namespace ICU4N.Impl
             return dest;
         }
 
-        internal override void Normalize(scoped ReadOnlySpan<char> src, ref ValueStringBuilder dest)
+        internal override void Normalize(scoped ReadOnlySpan<char> src, scoped ref ValueStringBuilder dest)
         {
             if (src.Overlaps(dest.RawChars))
             {
@@ -311,10 +311,7 @@ namespace ICU4N.Impl
             {
                 Normalize(src, ref buffer);
                 dest.Length = 0;
-                unsafe
-                {
-                    dest.Append(new ReadOnlySpan<char>(buffer.GetCharsPointer(), buffer.Length));
-                }
+                dest.Append(buffer.AsSpan());
             }
             finally
             {
@@ -362,7 +359,7 @@ namespace ICU4N.Impl
             return NormalizeSecondAndAppend(first, second, doNormalize: true);
         }
 
-        internal override void NormalizeSecondAndAppend(ref ValueStringBuilder first, ReadOnlySpan<char> second)
+        internal override void NormalizeSecondAndAppend(scoped ref ValueStringBuilder first, scoped ReadOnlySpan<char> second)
         {
             NormalizeSecondAndAppend(ref first, second, doNormalize: true);
         }
@@ -376,7 +373,7 @@ namespace ICU4N.Impl
             return NormalizeSecondAndAppend(first, second, false);
         }
 
-        internal override void Append(ref ValueStringBuilder first, ReadOnlySpan<char> second)
+        internal override void Append(scoped ref ValueStringBuilder first, scoped ReadOnlySpan<char> second)
         {
             NormalizeSecondAndAppend(ref first, second, false);
         }
@@ -409,7 +406,7 @@ namespace ICU4N.Impl
             return first;
         }
 
-        internal virtual void NormalizeSecondAndAppend(ref ValueStringBuilder first, ReadOnlySpan<char> second, bool doNormalize)
+        internal virtual void NormalizeSecondAndAppend(scoped ref ValueStringBuilder first, scoped ReadOnlySpan<char> second, bool doNormalize)
         {
             if (first.RawChars.Overlaps(second))
             {
@@ -426,10 +423,7 @@ namespace ICU4N.Impl
                 var buffer = new ReorderingBuffer(Impl, ref sb, length);
                 NormalizeAndAppend(second, doNormalize, ref buffer);
                 first.Length = 0;
-                unsafe
-                {
-                    first.Append(new ReadOnlySpan<char>(buffer.GetCharsPointer(), buffer.Length));
-                }
+                first.Append(buffer.AsSpan());
             }
             finally
             {
