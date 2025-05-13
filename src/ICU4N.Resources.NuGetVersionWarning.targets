@@ -1,0 +1,66 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- 
+    ===========================================================================================================================================================
+    This is a build warning for NuGet.Build.Tasks.Pack versions that are too old. Versions older than 6.13.0.52 fail to copy satellite assemblies
+    with 3-character language codes to the build and/or publish output directory. It is required to be buildTransitive
+    because there are many .NET SDKs that are broken in this way. If you customize the resources for your build, be sure to include this warning
+    so users are propmted to install a .NET SDK that supports locales with 3-letter language codes. Note that these resources are optional and
+    applications that do not require 3-letter language codes can do without them. This is the reason why it is a warning rather than an error.
+    
+    Supported Custom Properties
+    
+    ICU4NSuppressNuGetBuildTasksPackVersionWarnings     -   Set to 'true' to opt out of build warnings for old .NET SDKs.
+    ===========================================================================================================================================================
+  -->
+
+  <PropertyGroup Label="ICU4N properties">
+    <!-- Try to get SDK base path from DOTNET_HOST_PATH or DOTNET_ROOT -->
+    <_ICU4N_DotNetBasePath Condition="'$(DOTNET_HOST_PATH)' != ''">$([System.IO.Path]::GetDirectoryName('$(DOTNET_HOST_PATH)'))</_ICU4N_DotNetBasePath>
+    <_ICU4N_DotNetBasePath Condition="'$(_ICU4N_DotNetBasePath)' == '' And '$(DOTNET_ROOT)' != ''">$(DOTNET_ROOT)</_ICU4N_DotNetBasePath>
+
+    <!-- Fallback to default paths if env variables not set. -->
+    <!-- Note on Windows we are using the ProgramFiles environment variable to choose the correct SDK based on bitness of the current process. -->
+    <_ICU4N_DotNetBasePath Condition="'$(_ICU4N_DotNetBasePath)' == '' And $(OS.StartsWith('Win'))">$(ProgramFiles)\dotnet</_ICU4N_DotNetBasePath>
+    <_ICU4N_DotNetBasePath Condition="'$(_ICU4N_DotNetBasePath)' == ''">/usr/local/share/dotnet</_ICU4N_DotNetBasePath>
+
+    <!-- NOTE: We assume that the Desktop version will be version alligned with the CoreCLR version for a given SDK. -->
+    <_ICU4NNuGetBuildTasksPackDllPath Condition="'$(_ICU4NNuGetBuildTasksPackDllPath)' == ''">$(_ICU4N_DotNetBasePath)\sdk\$(NETCoreSdkVersion)\Sdks\NuGet.Build.Tasks.Pack\CoreCLR\NuGet.Build.Tasks.Pack.dll</_ICU4NNuGetBuildTasksPackDllPath>
+    <_ICU4NNuGetBuildTasksPackDllExists Condition="Exists('$(_ICU4NNuGetBuildTasksPackDllPath)')">true</_ICU4NNuGetBuildTasksPackDllExists>
+    <_ICU4NNuGetBuildTasksPackVersionMinimum>6.13.0.52</_ICU4NNuGetBuildTasksPackVersionMinimum>
+    <_ICU4NDotNetSDKVersionMinimum>9.0.200</_ICU4NDotNetSDKVersionMinimum>
+    <ICU4NSuppressNuGetBuildTasksPackVersionWarnings Condition="'$(ICU4NSuppressNuGetBuildTasksPackVersionWarnings)' == ''">false</ICU4NSuppressNuGetBuildTasksPackVersionWarnings>
+  </PropertyGroup>
+
+  <Target Name="ICU4N_WarnIfOldNuGetBuildTasksPackVersion" BeforeTargets="Build;Publish" Condition="'$(ICU4NSuppressNuGetBuildTasksPackVersionWarnings)' != 'true'">
+    <ICU4N_GetFileVersion FilePath="$(_ICU4NNuGetBuildTasksPackDllPath)">
+      <Output TaskParameter="FileVersion" PropertyName="_ICU4NNuGetBuildTasksPackVersion" />
+    </ICU4N_GetFileVersion>
+
+    <PropertyGroup Condition="'$(_ICU4NNuGetBuildTasksPackVersion)' != ''">
+      <_ICU4NNuGetBuildTasksPackVersionTooOld Condition="$([System.Version]::Parse('$(_ICU4NNuGetBuildTasksPackVersion)')) &lt; $([System.Version]::Parse('$(_ICU4NNuGetBuildTasksPackVersionMinimum)'))">true</_ICU4NNuGetBuildTasksPackVersionTooOld>
+    </PropertyGroup>
+
+    <Warning Code="ICU4N_IDE_0001" Text="NuGet.Build.Tasks.Pack is older than version $(_ICU4NNuGetBuildTasksPackVersionMinimum) and does not support copying satellite assemblies with 3-character language codes to the build/publish output. ICU4N supports 3-letter language codes. Consider using .NET SDK $(_ICU4NDotNetSDKVersionMinimum) or later to build your project." Condition="'$(_ICU4NNuGetBuildTasksPackVersionTooOld)' == 'true'" />
+    <Warning Code="ICU4N_IDE_0002" Text="Could not detect NuGet.Build.Tasks.Pack at '$(_ICU4NNuGetBuildTasksPackDllPath)' so the version information is unavailable. We cannot determine whether your .NET SDK supports satellite assemblies with 3-letter language codes. ICU4N supports 3-letter language codes. Consider using .NET SDK $(_ICU4NDotNetSDKVersionMinimum) or later to build your project." Condition="'$(_ICU4NNuGetBuildTasksPackDllExists)' != 'true'" />
+  </Target>
+
+  <UsingTask TaskName="ICU4N_GetFileVersion" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildBinPath)/Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <FilePath ParameterType="System.String" Required="true" />
+      <FileVersion Output="true" ParameterType="System.String" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System.Diagnostics" />
+      <Using Namespace="System.IO" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+          FileVersion = File.Exists(FilePath)
+            ? FileVersionInfo.GetVersionInfo(FilePath).FileVersion ?? ""
+            : "";
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+</Project>

@@ -15,13 +15,7 @@
   <ItemGroup Condition="'$(PackResourceStubs)' != 'true'">
     <None Include="$(ICU4NSatelliteAssemblyOutputDir)/**/*.resources.dll" Pack="true" PackagePath="lib/net40" Visible="false" />
     <None Include="ICU4N.Resources.NETFramework4.0.targets" Pack="true" PackagePath="buildTransitive/$(PackageId).targets" />
-    <None Include="../ICU4N.Resources.CopyPatch.targets" Pack="true" PackagePath="buildTransitive/ICU4N.Resources.CopyPatch.targets" />
+    <None Include="../ICU4N.Resources.NuGetVersionWarning.targets" Pack="true" PackagePath="buildTransitive/ICU4N.Resources.NuGetVersionWarning.targets" />
   </ItemGroup>
 
-  <PropertyGroup>
-    <_ICU4NNewtonsoftJsonTargetFramework>$(TargetFramework)</_ICU4NNewtonsoftJsonTargetFramework>
-  </PropertyGroup>
-
-  <Import Project="../ICU4N.Resources.PackJsonSerializer.targets" Condition="'$(PackResourceStubs)' != 'true'" />
-  
 </Project>
