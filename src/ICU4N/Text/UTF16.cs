@@ -251,7 +251,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.1</stable>
         public static int CharAt(ReadOnlySpan<char> source, int offset16) // ICU4N TODO: API - Rename CodePointAt()
         {
-            if (offset16 < 0 || offset16 >= source.Length)
+            if ((uint)offset16 >= source.Length)
                 throw new IndexOutOfRangeException(nameof(offset16));
 
             char single = source[offset16];
@@ -308,7 +308,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.1</stable>
         public static int CharAt(IReplaceable source, int offset16) // ICU4N TODO: API - Rename CodePointAt()
         {
-            if (offset16 < 0 || offset16 >= source.Length)
+            if ((uint)offset16 >= source.Length)
             {
                 throw new IndexOutOfRangeException(nameof(offset16));
             }
@@ -356,6 +356,7 @@ namespace ICU4N.Text
         /// <param name="char32">The input codepoint.</param>
         /// <returns>2 if is in supplementary space, otherwise 1.</returns>
         /// <stable>ICU 2.1</stable>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int GetCharCount(int char32)
         {
             if (char32 < SupplementaryMinValue)
@@ -579,11 +580,11 @@ namespace ICU4N.Text
         /// <draft>ICU 60.1</draft>
         public static int ValueOf(int char32, Span<char> destination, int destinationIndex) // ICU4N TODO: API - This method name is Java-like. In J2N, these were named ToChars().
         {
-            if (char32 < CodePointMinValue || char32 > CodePointMaxValue)
+            if ((uint)char32 > CodePointMaxValue) // Optimized version of char32 < CodePointMinValue || char32 > CodePointMaxValue
             {
                 throw new ArgumentException("Illegal codepoint");
             }
-            if (destinationIndex < 0 || destinationIndex >= destination.Length)
+            if ((uint)destinationIndex >= (uint)destination.Length)
                 throw new ArgumentOutOfRangeException(nameof(destinationIndex));
 
             if (char32 < SupplementaryMinValue)
@@ -616,7 +617,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.1</stable>
         public static string ValueOf(int char32)
         {
-            if (char32 < CodePointMinValue || char32 > CodePointMaxValue)
+            if ((uint)char32 > CodePointMaxValue) // Optimized version of char32 < CodePointMinValue || char32 > CodePointMaxValue
             {
                 throw new ArgumentException("Illegal codepoint");
             }
@@ -637,7 +638,7 @@ namespace ICU4N.Text
         /// <draft>ICU 60.1</draft>
         public static ReadOnlySpan<char> ValueOf(int char32, Span<char> buffer) // ICU4N TODO: API - Rename these overloads ToChars() to match J2N.Character. This name probably was chosen because it aligned with Java and the methods to convert codepoints didn't exist yet when these methods were created.
         {
-            if (char32 < CodePointMinValue || char32 > CodePointMaxValue)
+            if ((uint)char32 > CodePointMaxValue) // Optimized version of char32 < CodePointMinValue || char32 > CodePointMaxValue
             {
                 throw new ArgumentException("Illegal codepoint");
             }
