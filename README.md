@@ -108,10 +108,13 @@ To replace the satellite assemblies that are shipped with ICU4N, use the [`Exclu
 ```xml
     <PackageReference Include="ICU4N.Resources"
                       Version="<the specific version of ICU4N.Resources>"
-                      ExcludeAssets="all" />
+                      ExcludeAssets="runtime;compile" />
 ```
 
-> **NOTE:** At the time of this writing, all versions of MSBuild have a bug where satellite assemblies that use 3-letter language codes are not copied to the build and/or publish output. ICU4N.Resources includes a patch in the `ICU4N.Resources.CopyPatch.targets` file. It is recommended that you use a NuGet package and include this file along with a `.targets` file named `$(PackageId).targets` that includes `ICU4N.Resources.CopyPatch.targets` and the properties it requires in its `buildTransitive` folder.
+- runtime - controls whether the localized satellite assemblies are excluded.
+- compile - controls whether the neutral (root) satellite assembly is included. Note that this file is required for ICU4N to function, but it is possible to customize these resources so you may wish to exclude the default if your custom resources include them.
+
+> **NOTE:** All .NET SDKs below version 9.0.200 have a bug where satellite assemblies that use 3-letter language codes are not copied to the build and/or publish output. ICU4N.Resources includes a warning in the `buildTransitive/ICU4N.Resources.NuGetVersionWarning.targets` file to warn users if their .NET SDK is too old. It is recommended to include `buildTransitive` assets from `ICU4N.Resources` even when the satellite assemblies are excluded to ensure end users recieve a warning when the .NET SDK used to build doesn't support copying 3-letter language codes. 3-letter language codes are somewhat rare, but ICU4N cannot support them unless the corresponding satellite assemblies are copied to the build or publish output.
 
 ### Custom Resource Files
 
