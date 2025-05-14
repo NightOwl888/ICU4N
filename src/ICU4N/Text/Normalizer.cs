@@ -2884,7 +2884,9 @@ namespace ICU4N.Text
             CmpEquivLevel* stack2 = stackalloc CmpEquivLevel[2];
 
             /* buffers for algorithmic decompositions */
-            const int DecompositionCharStackBufferSize = 8; // maximum length of 6, but need to be safe because it will fail if not enough
+            //.NET: maximum length of 18 according to UnicodeData.txt. We set to 32 to align for performance.
+            // This aligns with the Java implementation, but the C++ implementation cuts this at 4 chars.
+            const int DecompositionCharStackBufferSize = 32;
             char* decomp1 = stackalloc char[DecompositionCharStackBufferSize];
             char* decomp2 = stackalloc char[DecompositionCharStackBufferSize];
 
