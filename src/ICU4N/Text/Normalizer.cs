@@ -3354,10 +3354,10 @@ namespace ICU4N.Text
             }
             finally
             {
-                fold1Builder.Dispose();
-                fold2Builder.Dispose();
                 fold1Pin.Dispose();
                 fold2Pin.Dispose();
+                fold1Builder.Dispose();
+                fold2Builder.Dispose();
             }
         }
 
