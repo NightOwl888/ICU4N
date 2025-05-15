@@ -74,10 +74,11 @@ For class libraries that are deployed in public systems such as NuGet, it is rec
 
 ICU4N contains more than 750 cultures which use more than 18MB of disk space. If you are publishing an application and wish to reduce the distribution size of your application, ICU4N supports the [SatelliteResourceLanguages](https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#satelliteresourcelanguages) property. Although ICU provides support for both specific and neutral cultures at runtime, the satellite assemblies are packaged as [.NET *neutral culture*](https://learn.microsoft.com/en-us/dotnet/api/system.globalization.culturetypes?view=net-8.0) packages to eliminate issues with ICU locale names that .NET doesn't recognize. All *specific cultures* (such as `en-GB` or `fr-CA`) are packaged in the satellite assembly with the corresponding *neutral culture* (in this case `en` and `fr` respectively).
 
-There are 4 special cases where locale names and culture names differ between ICU4N locale names and the satellite assembly names. For these locales, the .NET culture name must be used to filter the satellite assemblies even though the ICU locale name can be specified in the constructor of the `UCultureInfo` class.
+There are 5 special cases where locale names and culture names differ between ICU4N locale names and the satellite assembly names. For these locales, the .NET culture name must be used to filter the satellite assemblies even though the ICU locale name can be specified in the constructor of the `UCultureInfo` class.
 
 | Language Name             | ICU4N Locale Name | .NET Culture Name |
 | :------------------------ | :---------------- | :---------------- |
+| Central Kurdish           | ckb               | ku                |
 | Quechua                   | qu                | quz               |
 | Cantonese                 | yue               | zh                |
 | Cantonese (Simplified)    | yue-Hans          | zh-Hans           |
