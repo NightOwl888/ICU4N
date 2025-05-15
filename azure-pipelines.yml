@@ -113,7 +113,99 @@ stages:
   displayName: 'Test Stage:'
   jobs:
 
-  - job: Test_net8_0_x64
+  - job: Test_net47_x64
+    condition: and(succeeded(), ne(variables['RunTests'], 'false'))
+    displayName: 'Test net47,x64 on Windows'
+    pool:
+      vmImage: 'windows-2019'
+    steps:
+    - template: '.build/azure-templates/run-tests-on-os.yml'
+      parameters:
+        osName: 'Windows'
+        testTargetFrameworks: 'net47'
+        vsTestPlatform: 'x64'
+        testResultsArtifactName: '$(TestResultsArtifactName)'
+        maximumParallelJobs: 1 # Don't run tests in parallel because of file locking issues with satellite assemblies
+        maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
+        dotNetSdkVersion: '$(DotNetSDKVersion)'
+
+  - job: Test_net47_x86 # Only run if explicitly enabled with RunX86Tests
+    condition: and(succeeded(), ne(variables['RunTests'], 'false'), eq(variables['RunX86Tests'], 'true'))
+    displayName: 'Test net47,x86 on Windows'
+    pool:
+      vmImage: 'windows-2019'
+    steps:
+    - template: '.build/azure-templates/run-tests-on-os.yml'
+      parameters:
+        osName: 'Windows'
+        testTargetFrameworks: 'net47'
+        vsTestPlatform: 'x86'
+        testResultsArtifactName: '$(TestResultsArtifactName)'
+        maximumParallelJobs: 1 # Don't run tests in parallel because of file locking issues with satellite assemblies
+        maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
+        dotNetSdkVersion: '$(DotNetSDKVersion)'
+
+  - job: Test_net472_x64
+    condition: and(succeeded(), ne(variables['RunTests'], 'false'))
+    displayName: 'Test net472,x64 on Windows'
+    pool:
+      vmImage: 'windows-2019'
+    steps:
+    - template: '.build/azure-templates/run-tests-on-os.yml'
+      parameters:
+        osName: 'Windows'
+        testTargetFrameworks: 'net472'
+        vsTestPlatform: 'x64'
+        testResultsArtifactName: '$(TestResultsArtifactName)'
+        maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
+        dotNetSdkVersion: '$(DotNetSDKVersion)'
+
+  - job: Test_net472_x86 # Only run if explicitly enabled with RunX86Tests
+    condition: and(succeeded(), ne(variables['RunTests'], 'false'), eq(variables['RunX86Tests'], 'true'))
+    displayName: 'Test net472,x86 on Windows'
+    pool:
+      vmImage: 'windows-2019'
+    steps:
+    - template: '.build/azure-templates/run-tests-on-os.yml'
+      parameters:
+        osName: 'Windows'
+        testTargetFrameworks: 'net472'
+        vsTestPlatform: 'x86'
+        testResultsArtifactName: '$(TestResultsArtifactName)'
+        maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
+        dotNetSdkVersion: '$(DotNetSDKVersion)'
+
+  - job: Test_net48_x64
+    condition: and(succeeded(), ne(variables['RunTests'], 'false'))
+    displayName: 'Test net48,x64 on Windows'
+    pool:
+      vmImage: 'windows-2019'
+    steps:
+    - template: '.build/azure-templates/run-tests-on-os.yml'
+      parameters:
+        osName: 'Windows'
+        testTargetFrameworks: 'net48'
+        vsTestPlatform: 'x64'
+        testResultsArtifactName: '$(TestResultsArtifactName)'
+        maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
+        dotNetSdkVersion: '$(DotNetSDKVersion)'
+
+  - job: Test_net48_x86 # Only run if explicitly enabled with RunX86Tests
+    condition: and(succeeded(), ne(variables['RunTests'], 'false'), eq(variables['RunX86Tests'], 'true'))
+    displayName: 'Test net48,x86 on Windows'
+    pool:
+      vmImage: 'windows-2019'
+    steps:
+    - template: '.build/azure-templates/run-tests-on-os.yml'
+      parameters:
+        osName: 'Windows'
+        testTargetFrameworks: 'net48'
+        vsTestPlatform: 'x86'
+        testResultsArtifactName: '$(TestResultsArtifactName)'
+        maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
+        dotNetSdkVersion: '$(DotNetSDKVersion)'
+
+  - job: Test_net5_0_x64
     condition: and(succeeded(), ne(variables['RunTests'], 'false'))
     strategy:
       matrix:
@@ -123,26 +215,26 @@ stages:
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         Linux:
           osName: 'Linux'
-          imageName: 'ubuntu-latest'
+          imageName: 'ubuntu-22.04' # 24.04 now fails for net5.0 because of OpenSLL version issue, so we have to pin this.
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         macOS:
           osName: 'macOS'
           imageName: 'macOS-latest'
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
-    displayName: 'Test net8.0,x64 on'
+    displayName: 'Test net5.0,x64 on'
     pool:
       vmImage: $(imageName)
     steps:
     - template: '.build/azure-templates/run-tests-on-os.yml'
       parameters:
         osName: $(osName)
-        testTargetFrameworks: 'net8.0'
+        testTargetFrameworks: 'net5.0'
         vsTestPlatform: 'x64'
         testResultsArtifactName: '$(TestResultsArtifactName)'
         maximumAllowedFailures: $(maximumAllowedFailures)
         dotNetSdkVersion: '$(DotNetSDKVersion)'
 
-  - job: Test_net8_0_x86 # Only run if explicitly enabled with RunX86Tests
+  - job: Test_net5_0_x86 # Only run if explicitly enabled with RunX86Tests
     condition: and(succeeded(), ne(variables['RunTests'], 'false'), eq(variables['RunX86Tests'], 'true'))
     strategy:
       matrix:
@@ -150,14 +242,14 @@ stages:
           osName: 'Windows'
           imageName: 'windows-2019'
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
-    displayName: 'Test net8.0,x86 on'
+    displayName: 'Test net5.0,x86 on'
     pool:
       vmImage: $(imageName)
     steps:
     - template: '.build/azure-templates/run-tests-on-os.yml'
       parameters:
         osName: $(osName)
-        testTargetFrameworks: 'net8.0'
+        testTargetFrameworks: 'net5.0'
         vsTestPlatform: 'x86'
         testResultsArtifactName: '$(TestResultsArtifactName)'
         maximumAllowedFailures: $(maximumAllowedFailures)
@@ -213,7 +305,7 @@ stages:
         maximumAllowedFailures: $(maximumAllowedFailures)
         dotNetSdkVersion: '$(DotNetSDKVersion)'
 
-  - job: Test_net5_0_x64
+  - job: Test_net8_0_x64
     condition: and(succeeded(), ne(variables['RunTests'], 'false'))
     strategy:
       matrix:
@@ -223,26 +315,26 @@ stages:
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         Linux:
           osName: 'Linux'
-          imageName: 'ubuntu-22.04' # 24.04 now fails for net5.0 because of OpenSLL version issue, so we have to pin this.
+          imageName: 'ubuntu-latest'
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         macOS:
           osName: 'macOS'
           imageName: 'macOS-latest'
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
-    displayName: 'Test net5.0,x64 on'
+    displayName: 'Test net8.0,x64 on'
     pool:
       vmImage: $(imageName)
     steps:
     - template: '.build/azure-templates/run-tests-on-os.yml'
       parameters:
         osName: $(osName)
-        testTargetFrameworks: 'net5.0'
+        testTargetFrameworks: 'net8.0'
         vsTestPlatform: 'x64'
         testResultsArtifactName: '$(TestResultsArtifactName)'
         maximumAllowedFailures: $(maximumAllowedFailures)
         dotNetSdkVersion: '$(DotNetSDKVersion)'
 
-  - job: Test_net5_0_x86 # Only run if explicitly enabled with RunX86Tests
+  - job: Test_net8_0_x86 # Only run if explicitly enabled with RunX86Tests
     condition: and(succeeded(), ne(variables['RunTests'], 'false'), eq(variables['RunX86Tests'], 'true'))
     strategy:
       matrix:
@@ -250,109 +342,17 @@ stages:
           osName: 'Windows'
           imageName: 'windows-2019'
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
-    displayName: 'Test net5.0,x86 on'
+    displayName: 'Test net8.0,x86 on'
     pool:
       vmImage: $(imageName)
     steps:
     - template: '.build/azure-templates/run-tests-on-os.yml'
       parameters:
         osName: $(osName)
-        testTargetFrameworks: 'net5.0'
+        testTargetFrameworks: 'net8.0'
         vsTestPlatform: 'x86'
         testResultsArtifactName: '$(TestResultsArtifactName)'
         maximumAllowedFailures: $(maximumAllowedFailures)
-        dotNetSdkVersion: '$(DotNetSDKVersion)'
-
-  - job: Test_net48_x64
-    condition: and(succeeded(), ne(variables['RunTests'], 'false'))
-    displayName: 'Test net48,x64 on Windows'
-    pool:
-      vmImage: 'windows-2019'
-    steps:
-    - template: '.build/azure-templates/run-tests-on-os.yml'
-      parameters:
-        osName: 'Windows'
-        testTargetFrameworks: 'net48'
-        vsTestPlatform: 'x64'
-        testResultsArtifactName: '$(TestResultsArtifactName)'
-        maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
-        dotNetSdkVersion: '$(DotNetSDKVersion)'
-
-  - job: Test_net48_x86 # Only run if explicitly enabled with RunX86Tests
-    condition: and(succeeded(), ne(variables['RunTests'], 'false'), eq(variables['RunX86Tests'], 'true'))
-    displayName: 'Test net48,x86 on Windows'
-    pool:
-      vmImage: 'windows-2019'
-    steps:
-    - template: '.build/azure-templates/run-tests-on-os.yml'
-      parameters:
-        osName: 'Windows'
-        testTargetFrameworks: 'net48'
-        vsTestPlatform: 'x86'
-        testResultsArtifactName: '$(TestResultsArtifactName)'
-        maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
-        dotNetSdkVersion: '$(DotNetSDKVersion)'
-
-  - job: Test_net472_x64
-    condition: and(succeeded(), ne(variables['RunTests'], 'false'))
-    displayName: 'Test net472,x64 on Windows'
-    pool:
-      vmImage: 'windows-2019'
-    steps:
-    - template: '.build/azure-templates/run-tests-on-os.yml'
-      parameters:
-        osName: 'Windows'
-        testTargetFrameworks: 'net472'
-        vsTestPlatform: 'x64'
-        testResultsArtifactName: '$(TestResultsArtifactName)'
-        maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
-        dotNetSdkVersion: '$(DotNetSDKVersion)'
-
-  - job: Test_net472_x86 # Only run if explicitly enabled with RunX86Tests
-    condition: and(succeeded(), ne(variables['RunTests'], 'false'), eq(variables['RunX86Tests'], 'true'))
-    displayName: 'Test net472,x86 on Windows'
-    pool:
-      vmImage: 'windows-2019'
-    steps:
-    - template: '.build/azure-templates/run-tests-on-os.yml'
-      parameters:
-        osName: 'Windows'
-        testTargetFrameworks: 'net472'
-        vsTestPlatform: 'x86'
-        testResultsArtifactName: '$(TestResultsArtifactName)'
-        maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
-        dotNetSdkVersion: '$(DotNetSDKVersion)'
-
-  - job: Test_net47_x64
-    condition: and(succeeded(), ne(variables['RunTests'], 'false'))
-    displayName: 'Test net47,x64 on Windows'
-    pool:
-      vmImage: 'windows-2019'
-    steps:
-    - template: '.build/azure-templates/run-tests-on-os.yml'
-      parameters:
-        osName: 'Windows'
-        testTargetFrameworks: 'net47'
-        vsTestPlatform: 'x64'
-        testResultsArtifactName: '$(TestResultsArtifactName)'
-        maximumParallelJobs: 1 # Don't run tests in parallel because of file locking issues with satellite assemblies
-        maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
-        dotNetSdkVersion: '$(DotNetSDKVersion)'
-
-  - job: Test_net47_x86 # Only run if explicitly enabled with RunX86Tests
-    condition: and(succeeded(), ne(variables['RunTests'], 'false'), eq(variables['RunX86Tests'], 'true'))
-    displayName: 'Test net47,x86 on Windows'
-    pool:
-      vmImage: 'windows-2019'
-    steps:
-    - template: '.build/azure-templates/run-tests-on-os.yml'
-      parameters:
-        osName: 'Windows'
-        testTargetFrameworks: 'net47'
-        vsTestPlatform: 'x86'
-        testResultsArtifactName: '$(TestResultsArtifactName)'
-        maximumParallelJobs: 1 # Don't run tests in parallel because of file locking issues with satellite assemblies
-        maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         dotNetSdkVersion: '$(DotNetSDKVersion)'
 
 - stage: Publish_Stage
