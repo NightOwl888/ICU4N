@@ -3164,7 +3164,7 @@ namespace ICU4N.Dev.Test.Normalizers
 
             public override StringBuffer Normalize(ReadOnlySpan<char> src, StringBuffer dest) => null;
 
-            internal override void Normalize(scoped ReadOnlySpan<char> src, ref ValueStringBuilder dest)
+            internal override void Normalize(scoped ReadOnlySpan<char> src, scoped ref ValueStringBuilder dest)
             {
             }
 
@@ -3172,13 +3172,13 @@ namespace ICU4N.Dev.Test.Normalizers
 
             public override StringBuffer NormalizeSecondAndAppend(StringBuffer first, ReadOnlySpan<char> second) => null;
 
-            internal override void NormalizeSecondAndAppend(ref ValueStringBuilder first, ReadOnlySpan<char> second)
+            internal override void NormalizeSecondAndAppend(scoped ref ValueStringBuilder first, scoped ReadOnlySpan<char> second)
             {
             }
 
             public override StringBuffer Append(StringBuffer first, ReadOnlySpan<char> second) => null;
 
-            internal override void Append(ref ValueStringBuilder first, ReadOnlySpan<char> second)
+            internal override void Append(scoped ref ValueStringBuilder first, scoped ReadOnlySpan<char> second)
             {
             }
 

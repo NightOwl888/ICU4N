@@ -3,13 +3,9 @@ using ICU4N.Impl;
 using ICU4N.Support;
 using ICU4N.Support.Text;
 using J2N;
-using J2N.IO;
-using J2N.Text;
 using System;
-using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using System.Text;
+using System.Runtime.InteropServices;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
@@ -2855,48 +2851,13 @@ namespace ICU4N.Text
          * (Comments in unorm_compare() are more up to date than this TODO.)
          */
 
-        // ICU4N: Refactored the "stack" to use ref structs
+        // ICU4N: Refactored the "stack" to use a ref struct
         /* stack element for previous-level source/decomposition pointers */
         private unsafe ref struct CmpEquivLevel
         {
-            public CmpEquivLevel()
-            {
-                Cs = default;
-                S = default;
-            }
-
-            public ReadOnlySpan<char> Cs { get; set; }
-            public int S { get; set; }
-        }
-
-        private unsafe ref struct StackContainer
-        {
-            private CmpEquivLevel level0;
-            private CmpEquivLevel level1;
-
-            public StackContainer()
-            {
-                level0 = new CmpEquivLevel();
-                level1 = new CmpEquivLevel();
-            }
-
-            public ref CmpEquivLevel this[int index]
-            {
-                get
-                {
-                    switch (index)
-                    {
-                        case 0:
-#pragma warning disable CS9084 // Struct member returns 'this' or other instance members by reference
-                            return ref level0;
-                        case 1:
-                            return ref level1;
-#pragma warning restore CS9084 // Struct member returns 'this' or other instance members by reference
-                        default:
-                            throw new IndexOutOfRangeException(nameof(index));
-                    }
-                }
-            }
+            public char* cs;
+            public int s;
+            public int limit;
         }
 
         /// <summary>
@@ -2905,10 +2866,9 @@ namespace ICU4N.Text
         /// </summary>
         private const int COMPARE_EQUIV = 0x80000;
 
-        /// <summary>
-        /// internal function; package visibility for use by <see cref="UTF16.StringComparer"/>
-        /// </summary>
-        internal static int CmpEquivFold(ReadOnlySpan<char> cs1, ReadOnlySpan<char> cs2, int options)
+        internal static unsafe int CmpEquivFold(char* cs1, int length1,
+                                                char* cs2, int length2,
+                                                int options)
         {
             Normalizer2Impl nfcImpl;
             UCaseProperties csp;
@@ -2920,59 +2880,76 @@ namespace ICU4N.Text
             int length;
 
             /* stacks of previous-level start/current/limit */
-            StackContainer stack1 = new StackContainer();
-            StackContainer stack2 = new StackContainer();
+            CmpEquivLevel* stack1 = stackalloc CmpEquivLevel[2];
+            CmpEquivLevel* stack2 = stackalloc CmpEquivLevel[2];
 
             /* buffers for algorithmic decompositions */
-            const int DecompositionCharStackBufferSize = 16; // maximum length of 6, but need to be safe because it will fail if not enough
-            Span<char> decomp1 = stackalloc char[DecompositionCharStackBufferSize];
-            Span<char> decomp2 = stackalloc char[DecompositionCharStackBufferSize];
+            //.NET: maximum length of 18 according to UnicodeData.txt. We set to 32 to align for performance.
+            // This aligns with the Java implementation, but the C++ implementation cuts this at 4 chars.
+            const int DecompositionCharStackBufferSize = 32;
+            char* decomp1 = stackalloc char[DecompositionCharStackBufferSize];
+            char* decomp2 = stackalloc char[DecompositionCharStackBufferSize];
+
+            // Spans around decomposition memory, for convenince.
+            Span<char> decomp1Span = new Span<char>(decomp1, DecompositionCharStackBufferSize);
+            Span<char> decomp2Span = new Span<char>(decomp2, DecompositionCharStackBufferSize);
 
             /* case folding buffers, only use current-level start/limit */
-            const int FoldCharStackBufferSize = 8; // maximum length of 3
-            var fold1 = new ValueStringBuilder(stackalloc char[FoldCharStackBufferSize]);
-            var fold2 = new ValueStringBuilder(stackalloc char[FoldCharStackBufferSize]);
+            const int FoldCharStackBufferSize = UCaseProperties.MaxStringLength + 1;
+            char* fold1 = stackalloc char[FoldCharStackBufferSize];
+            char* fold2 = stackalloc char[FoldCharStackBufferSize];
+
+            // Spans around folding memory, for convenince.
+            Span<char> fold1Span = new Span<char>(fold1, FoldCharStackBufferSize);
+            Span<char> fold2Span = new Span<char>(fold2, FoldCharStackBufferSize);
+
+            /* track which is the current level per string */
+            int level1, level2;
+
+            /* current code units, and code points for lookups */
+            int c1, c2, cp1, cp2;
+
+            /* no argument error checking because this itself is not an API */
+
+            /*
+             * assume that at least one of the options _COMPARE_EQUIV and U_COMPARE_IGNORE_CASE is set
+             * otherwise this function must behave exactly as uprv_strCompare()
+             * not checking for that here makes testing this function easier
+             */
+
+            /* normalization/properties data loaded? */
+            if ((options & COMPARE_EQUIV) != 0)
+            {
+                nfcImpl = Norm2AllModes.NFCInstance.Impl;
+            }
+            else
+            {
+                nfcImpl = null;
+            }
+            if ((options & COMPARE_IGNORE_CASE) != 0)
+            {
+                csp = UCaseProperties.Instance;
+                // ICU4N: fold1, fold2 instantiated on stack above
+            }
+            else
+            {
+                csp = null;
+            }
+
+            // Builders to get foldings.
+            var fold1Builder = new ValueStringBuilder(fold1Span);
+            var fold2Builder = new ValueStringBuilder(fold2Span);
+            // Pins in case we overflow the stack. This keeps the pointers to backing arrays
+            // in scope until we are done.
+            var fold1Pin = new ValueStringBuilderPin();
+            var fold2Pin = new ValueStringBuilderPin();
             try
             {
-
-                /* track which is the current level per string */
-                int level1, level2;
-
-                /* current code units, and code points for lookups */
-                int c1, c2, cp1, cp2;
-
-                /* no argument error checking because this itself is not an API */
-
-                /*
-                 * assume that at least one of the options _COMPARE_EQUIV and U_COMPARE_IGNORE_CASE is set
-                 * otherwise this function must behave exactly as uprv_strCompare()
-                 * not checking for that here makes testing this function easier
-                 */
-
-                /* normalization/properties data loaded? */
-                if ((options & COMPARE_EQUIV) != 0)
-                {
-                    nfcImpl = Norm2AllModes.NFCInstance.Impl;
-                }
-                else
-                {
-                    nfcImpl = null;
-                }
-                if ((options & COMPARE_IGNORE_CASE) != 0)
-                {
-                    csp = UCaseProperties.Instance;
-                    // ICU4N: fold1, fold2 instantiated on stack above
-                }
-                else
-                {
-                    csp = null;
-                }
-
                 /* initialize */
                 s1 = 0;
-                limit1 = cs1.Length;
+                limit1 = length1;
                 s2 = 0;
-                limit2 = cs2.Length;
+                limit2 = length2;
 
                 level1 = level2 = 0;
                 c1 = c2 = -1;
@@ -3008,10 +2985,10 @@ namespace ICU4N.Text
                             do
                             {
                                 --level1;
-                                cs1 = stack1[level1].Cs;
-                            } while (cs1 == null);
-                            s1 = stack1[level1].S;
-                            limit1 = cs1.Length;
+                                cs1 = stack1[level1].cs;                /*Not uninitialized*/
+                            } while (cs1 is null);
+                            s1 = stack1[level1].s;
+                            limit1 = stack1[level1].limit;
                         }
                     }
 
@@ -3038,10 +3015,10 @@ namespace ICU4N.Text
                             do
                             {
                                 --level2;
-                                cs2 = stack2[level2].Cs;
-                            } while (cs2 == null);
-                            s2 = stack2[level2].S;
-                            limit2 = cs2.Length;
+                                cs2 = stack2[level2].cs;                /*Not uninitialized*/
+                            } while (cs2 is null);
+                            s2 = stack2[level2].s;
+                            limit2 = stack2[level2].limit;
                         }
                     }
 
@@ -3119,7 +3096,7 @@ namespace ICU4N.Text
                      */
 
                     if (level1 == 0 && (options & COMPARE_IGNORE_CASE) != 0 &&
-                        (length = csp.ToFullFolding(cp1, ref fold1, options)) >= 0)
+                        (length = csp.ToFullFolding(cp1, ref fold1Builder, options)) >= 0)
                     {
                         /* cp1 case-folds to the code point "length" or to p[length] */
                         if (UTF16.IsSurrogate((char)c1))
@@ -3144,29 +3121,29 @@ namespace ICU4N.Text
                         }
 
                         /* push current level pointers */
-                        stack1[0].Cs = cs1;
-                        stack1[0].S = s1;
+                        /* .NET: The stack1 buffer was instantiated on the stack above */
+                        stack1[0].cs = cs1;
+                        stack1[0].s = s1;
+                        stack1[0].limit = limit1;
                         ++level1;
 
                         /* copy the folding result to fold1[] */
-                        /* Java: the buffer was probably not empty, remove the old contents */
+                        /* .NET: the buffer was probably not empty, remove the old contents */
                         if (length <= UCaseProperties.MaxStringLength)
                         {
-                            fold1.Delete(0, (fold1.Length - length) - 0); // ICU4N: Corrected 2nd parameter of Delete
+                            fold1Builder.Delete(0, (fold1Builder.Length - length)); // ICU4N: Checked 2nd parameter of Delete
                         }
                         else
                         {
-                            fold1.Length = 0;
-                            fold1.AppendCodePoint(length);
+                            fold1Builder.Length = 0;
+                            fold1Builder.AppendCodePoint(length);
                         }
 
                         /* set next level pointers to case folding */
-                        unsafe
-                        {
-                            cs1 = new ReadOnlySpan<char>(fold1.GetCharsPointer(), fold1.Length);
-                        }
+                        // .NET: We need to get a pinned pointer if we are on the heap so the GC doesn't collect it before we are done
+                        cs1 = fold1Pin.GetSafePointer(ref fold1Builder);
                         s1 = 0;
-                        limit1 = fold1.Length;
+                        limit1 = fold1Builder.Length;
 
                         /* get ready to read from decomposition, continue with loop */
                         c1 = -1;
@@ -3174,7 +3151,7 @@ namespace ICU4N.Text
                     }
 
                     if (level2 == 0 && (options & COMPARE_IGNORE_CASE) != 0 &&
-                        (length = csp.ToFullFolding(cp2, ref fold2, options)) >= 0
+                        (length = csp.ToFullFolding(cp2, ref fold2Builder, options)) >= 0
                     )
                     {
                         /* cp2 case-folds to the code point "length" or to p[length] */
@@ -3200,29 +3177,29 @@ namespace ICU4N.Text
                         }
 
                         /* push current level pointers */
-                        stack2[0].Cs = cs2;
-                        stack2[0].S = s2;
+                        /* .NET: The stack2 buffer was instantiated on the stack above */
+                        stack2[0].cs = cs2;
+                        stack2[0].s = s2;
+                        stack2[0].limit = limit2;
                         ++level2;
 
                         /* copy the folding result to fold2[] */
-                        /* Java: the buffer was probably not empty, remove the old contents */
+                        /* .NET: the buffer was probably not empty, remove the old contents */
                         if (length <= UCaseProperties.MaxStringLength)
                         {
-                            fold2.Delete(0, (fold2.Length - length) - 0); // ICU4N: Corrected 2nd parameter of Delete
+                            fold2Builder.Delete(0, (fold2Builder.Length - length)); // ICU4N: Checked 2nd parameter of Delete
                         }
                         else
                         {
-                            fold2.Length = 0;
-                            fold2.AppendCodePoint(length);
+                            fold2Builder.Length = 0;
+                            fold2Builder.AppendCodePoint(length);
                         }
 
                         /* set next level pointers to case folding */
-                        unsafe
-                        {
-                            cs2 = new ReadOnlySpan<char>(fold2.GetCharsPointer(), fold2.Length);
-                        }
+                        // .NET: We need to get a pinned pointer if we are on the heap so the GC doesn't collect it before we are done
+                        cs2 = fold2Pin.GetSafePointer(ref fold2Builder);
                         s2 = 0;
-                        limit2 = fold2.Length;
+                        limit2 = fold2Builder.Length;
 
                         /* get ready to read from decomposition, continue with loop */
                         c2 = -1;
@@ -3230,7 +3207,7 @@ namespace ICU4N.Text
                     }
 
                     if (level1 < 2 && (options & COMPARE_EQUIV) != 0 &&
-                        nfcImpl.TryGetDecomposition(cp1, decomp1, out int decomp1Length)
+                        nfcImpl.TryGetDecomposition(cp1, decomp1Span, out length)
                     )
                     {
                         /* cp1 decomposes into p[length] */
@@ -3256,23 +3233,21 @@ namespace ICU4N.Text
                         }
 
                         /* push current level pointers */
-                        stack1[level1].Cs = cs1;
-                        stack1[level1].S = s1;
+                        stack1[level1].cs = cs1;
+                        stack1[level1].s = s1;
+                        stack1[level1].limit = limit1;
                         ++level1;
 
                         /* set empty intermediate level if skipped */
                         if (level1 < 2)
                         {
-                            stack1[level1++].Cs = null;
+                            stack1[level1++].cs = null;
                         }
 
                         /* set next level pointers to decomposition */
-                        unsafe
-                        {
-                            cs1 = new ReadOnlySpan<char>((char*)Unsafe.AsPointer(ref decomp1[0]), decomp1Length);
-                        }
+                        cs1 = decomp1;
                         s1 = 0;
-                        limit1 = decomp1Length;
+                        limit1 = length;
 
                         /* get ready to read from decomposition, continue with loop */
                         c1 = -1;
@@ -3280,7 +3255,7 @@ namespace ICU4N.Text
                     }
 
                     if (level2 < 2 && (options & COMPARE_EQUIV) != 0 &&
-                        nfcImpl.TryGetDecomposition(cp2, decomp2, out int decomp2Length)
+                        nfcImpl.TryGetDecomposition(cp2, decomp2Span, out length)
                     )
                     {
                         /* cp2 decomposes into p[length] */
@@ -3306,23 +3281,21 @@ namespace ICU4N.Text
                         }
 
                         /* push current level pointers */
-                        stack2[level2].Cs = cs2;
-                        stack2[level2].S = s2;
+                        stack2[level2].cs = cs2;
+                        stack2[level2].s = s2;
+                        stack2[level2].limit = limit2;
                         ++level2;
 
                         /* set empty intermediate level if skipped */
                         if (level2 < 2)
                         {
-                            stack2[level2++].Cs = null;
+                            stack2[level2++].cs = null;
                         }
 
                         /* set next level pointers to decomposition */
-                        unsafe
-                        {
-                            cs2 = new ReadOnlySpan<char>((char*)Unsafe.AsPointer(ref decomp2[0]), decomp2Length);
-                        }
+                        cs2 = decomp2;
                         s2 = 0;
-                        limit2 = decomp2Length;
+                        limit2 = length;
 
                         /* get ready to read from decomposition, continue with loop */
                         c2 = -1;
@@ -3381,8 +3354,21 @@ namespace ICU4N.Text
             }
             finally
             {
-                fold1.Dispose();
-                fold2.Dispose();
+                fold1Pin.Dispose();
+                fold2Pin.Dispose();
+                fold1Builder.Dispose();
+                fold2Builder.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// internal function; package visibility for use by <see cref="UTF16.StringComparer"/>
+        /// </summary>
+        internal unsafe static int CmpEquivFold(ReadOnlySpan<char> cs1, ReadOnlySpan<char> cs2, int options)
+        {
+            fixed(char* cs1Ptr = &MemoryMarshal.GetReference(cs1), cs2Ptr = &MemoryMarshal.GetReference(cs2))
+            {
+                return CmpEquivFold(cs1Ptr, cs1.Length, cs2Ptr, cs2.Length, options);
             }
         }
 

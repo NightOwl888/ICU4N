@@ -2510,10 +2510,13 @@ namespace ICU4N.Text
             /// <param name="s2">Second string to compare.</param>
             /// <returns>-1 if <paramref name="s1"/> &lt; <paramref name="s2"/>, 0 if equal, 
             /// 1 if <paramref name="s1"/> &gt; <paramref name="s2"/>.</returns>
-            private int CompareCaseInsensitive(string s1, string s2)
+            private unsafe int CompareCaseInsensitive(string s1, string s2)
             {
-                return Normalizer.CmpEquivFold(s1.AsSpan(), s2.AsSpan(), m_foldCase_ | m_codePointCompare_
-                        | Normalizer.COMPARE_IGNORE_CASE);
+                fixed (char* s1Ptr = s1, s2Ptr = s2)
+                {
+                    return Normalizer.CmpEquivFold(s1Ptr, s1.Length, s2Ptr, s2.Length, m_foldCase_ | m_codePointCompare_
+                            | Normalizer.COMPARE_IGNORE_CASE);
+                }
             }
 
             /// <summary>

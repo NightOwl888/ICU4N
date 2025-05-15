@@ -444,7 +444,7 @@ namespace ICU4N.Text
         /// <paramref name="src"/> and <paramref name="dest"/> refer to the same memory location.
         /// </exception>
         /// <draft>ICU 60.1</draft>
-        internal abstract void Normalize(scoped ReadOnlySpan<char> src, ref ValueStringBuilder dest);
+        internal abstract void Normalize(scoped ReadOnlySpan<char> src, scoped ref ValueStringBuilder dest);
 
         #endregion Normalize(ICharSequence, StringBuilder)
 
@@ -537,7 +537,7 @@ namespace ICU4N.Text
         /// </exception>
         /// <draft>ICU 60.1</draft>
         internal abstract void NormalizeSecondAndAppend(
-            ref ValueStringBuilder first, ReadOnlySpan<char> second);
+            scoped ref ValueStringBuilder first, scoped ReadOnlySpan<char> second);
 
         #endregion
 
@@ -589,7 +589,7 @@ namespace ICU4N.Text
         /// <paramref name="first"/> and <paramref name="second"/> refer to the same memory location.
         /// </exception>
         /// <stable>ICU 4.4</stable>
-        internal abstract void Append(ref ValueStringBuilder first, ReadOnlySpan<char> second);
+        internal abstract void Append(scoped ref ValueStringBuilder first, scoped ReadOnlySpan<char> second);
 
         #endregion Append(StringBuilder, ICharSequence)
 

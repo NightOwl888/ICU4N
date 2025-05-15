@@ -60,7 +60,7 @@ namespace ICU4N.Text
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.4</stable>
-        internal override void Normalize(scoped ReadOnlySpan<char> src, ref ValueStringBuilder dest)
+        internal override void Normalize(scoped ReadOnlySpan<char> src, scoped ref ValueStringBuilder dest)
         {
             if (src.Overlaps(dest.RawChars))
             {
@@ -128,7 +128,7 @@ namespace ICU4N.Text
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal override void NormalizeSecondAndAppend(
-            ref ValueStringBuilder first, ReadOnlySpan<char> second)
+            scoped ref ValueStringBuilder first, scoped ReadOnlySpan<char> second)
         {
             NormalizeSecondAndAppend(ref first, second, doNormalize: true);
         }
@@ -167,7 +167,7 @@ namespace ICU4N.Text
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal override void Append(ref ValueStringBuilder first, ReadOnlySpan<char> second)
+        internal override void Append(scoped ref ValueStringBuilder first, scoped ReadOnlySpan<char> second)
         {
             if (first.RawChars.Overlaps(second))
             {
@@ -541,10 +541,7 @@ namespace ICU4N.Text
                             // Not norm2.normalizeSecondAndAppend() because we do not want
                             // to modify the non-filter part of dest.
                             norm2.Normalize(src.Slice(prevSpanLimit, spanLimit - prevSpanLimit), ref tempDest); // ICU4N: Changed 2nd parameter
-                            unsafe
-                            {
-                                dest.Append(new ReadOnlySpan<char>(tempDest.GetCharsPointer(), tempDest.Length));
-                            }
+                            dest.Append(tempDest.AsSpan());
                         }
                         spanCondition = SpanCondition.NotContained;
                     }
@@ -565,7 +562,7 @@ namespace ICU4N.Text
         // <see cref="SpanCondition.Simple"/> should be passed in for the start of src
         // and <see cref="SpanCondition.NotContained"/> should be passed in if we continue after
         // an in-filter prefix.
-        private void Normalize(scoped ReadOnlySpan<char> src, ref ValueStringBuilder dest,
+        private void Normalize(scoped ReadOnlySpan<char> src, scoped ref ValueStringBuilder dest,
                                      SpanCondition spanCondition)
         {
             // Don't throw away destination buffer between iterations.
@@ -592,10 +589,7 @@ namespace ICU4N.Text
                             // Not norm2.normalizeSecondAndAppend() because we do not want
                             // to modify the non-filter part of dest.
                             norm2.Normalize(src.Slice(prevSpanLimit, spanLimit - prevSpanLimit), ref tempDest); // ICU4N: Changed 2nd parameter
-                            unsafe
-                            {
-                                dest.Append(new ReadOnlySpan<char>(tempDest.GetCharsPointer(), tempDest.Length));
-                            }
+                            dest.Append(tempDest.AsSpan());
                         }
                         spanCondition = SpanCondition.NotContained;
                     }
@@ -642,10 +636,8 @@ namespace ICU4N.Text
                             // Not norm2.normalizeSecondAndAppend() because we do not want
                             // to modify the non-filter part of dest.
                             norm2.Normalize(src.Slice(prevSpanLimit, spanLimit - prevSpanLimit), ref tempDest); // ICU4N: Changed 2nd parameter
-                            unsafe
-                            {
-                                dest.Append(new ReadOnlySpan<char>(tempDest.GetCharsPointer(), tempDest.Length));
-                            }
+                            dest.Append(tempDest.AsSpan());
+
                         }
                         spanCondition = SpanCondition.NotContained;
                     }
@@ -663,7 +655,7 @@ namespace ICU4N.Text
 
         #region NormalizeSecondAndAppend(StringBuilder, ICharSequence, bool)
 
-        private void NormalizeSecondAndAppend(ref ValueStringBuilder first, ReadOnlySpan<char> second,
+        private void NormalizeSecondAndAppend(scoped ref ValueStringBuilder first, scoped ReadOnlySpan<char> second,
                                                bool doNormalize)
         {
             if (first.RawChars.Overlaps(second))
