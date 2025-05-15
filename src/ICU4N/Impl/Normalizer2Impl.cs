@@ -1291,7 +1291,7 @@ namespace ICU4N.Impl
             else if (IsHangulLV(norm16) || IsHangulLVT(norm16))
             {
                 // Hangul syllable: decompose algorithmically
-                ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[3]);
+                ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[4]);
                 try
                 {
                     buffer.AppendHangulDecomposition(c);
@@ -1344,18 +1344,23 @@ namespace ICU4N.Impl
                 }
                 else
                 {
-                    charsLength = UTF16.ValueOf(decomp, destination, 0);
-                    return true;
+                    charsLength = decomp < UTF16.SupplementaryMinValue ? 1 : 2;
+                    if (destination.Length >= charsLength)
+                    {
+                        UTF16.ValueOf(decomp, destination, 0);
+                        return true;
+                    }
+                    return false;
                 }
             }
             else if (IsHangulLV(norm16) || IsHangulLVT(norm16))
             {
                 // Hangul syllable: decompose algorithmically
-                ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[2]);
+                ValueStringBuilder buffer = new ValueStringBuilder(destination);
                 try
                 {
-                    charsLength = buffer.AppendHangulDecomposition(c);
-                    return buffer.TryCopyTo(destination, out _);
+                    buffer.AppendHangulDecomposition(c);
+                    return buffer.FitsInitialBuffer(out charsLength);
                 }
                 finally
                 {
@@ -1385,7 +1390,7 @@ namespace ICU4N.Impl
             else if (IsHangulLV(norm16) || IsHangulLVT(norm16))
             {
                 // Hangul syllable: decompose algorithmically
-                ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[3]);
+                ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[4]);
                 try
                 {
                     buffer.AppendHangulRawDecomposition(c);
@@ -1453,11 +1458,11 @@ namespace ICU4N.Impl
             else if (IsHangulLV(norm16) || IsHangulLVT(norm16))
             {
                 // Hangul syllable: decompose algorithmically
-                ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[2]);
+                ValueStringBuilder buffer = new ValueStringBuilder(destination);
                 try
                 {
                     buffer.AppendHangulRawDecomposition(c);
-                    buffer.TryCopyTo(destination, out charsLength);
+                    return buffer.FitsInitialBuffer(out charsLength);
                 }
                 finally
                 {
@@ -1466,8 +1471,14 @@ namespace ICU4N.Impl
             }
             else if (IsDecompNoAlgorithmic(norm16))
             {
-                charsLength = UTF16.ValueOf(MapAlgorithmic(c, norm16), destination, 0);
-                return true;
+                int mapped = MapAlgorithmic(c, norm16);
+                charsLength = mapped < UTF16.SupplementaryMinValue ? 1 : 2;
+                if (destination.Length >= charsLength)
+                {
+                    UTF16.ValueOf(mapped, destination, 0);
+                    return true;
+                }
+                return false;
             }
             // c decomposes, get everything from the variable-length extra data
             int mapping = norm16 >> OffsetShift;
@@ -1481,7 +1492,6 @@ namespace ICU4N.Impl
                 char rm0 = extraData[rawMapping];
                 if (rm0 <= MappingLengthMask)
                 {
-                    //return extraData.Substring(rawMapping - rm0, rm0); // ICU4N: (rawMapping - rm0) - rawMapping == rm0
                     charsLength = rm0;
                     return extraData.AsSpan(rawMapping - rm0, rm0).TryCopyTo(destination); // ICU4N: (rawMapping - rm0) - rawMapping == rm0
                 }
