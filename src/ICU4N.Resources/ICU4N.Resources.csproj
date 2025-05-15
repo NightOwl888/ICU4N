@@ -14,18 +14,12 @@
   <ItemGroup Condition="'$(PackResourceStubs)' != 'true'">
     <None Include="$(ICU4NSatelliteAssemblyOutputDir)/**/*.resources.dll" Pack="true" PackagePath="lib/netstandard2.0" Visible="false" />
     <None Include="ICU4N.Resources.targets" Pack="true" PackagePath="buildTransitive/$(PackageId).targets" />
-    <None Include="../ICU4N.Resources.CopyPatch.targets" Pack="true" PackagePath="buildTransitive/ICU4N.Resources.CopyPatch.targets" />
+    <None Include="../ICU4N.Resources.NuGetVersionWarning.targets" Pack="true" PackagePath="buildTransitive/ICU4N.Resources.NuGetVersionWarning.targets" />
   </ItemGroup>
 
   <ItemGroup>
     <!-- Reference NETStandard.Library for .NET Standard 2.0, but avoid including it as a transitive dependency -->
     <PackageReference Update="NETStandard.Library" Version="$(NETStandardLibrary20PackageReferenceVersion)" PrivateAssets="All" />
   </ItemGroup>
-
-  <PropertyGroup>
-    <_ICU4NNewtonsoftJsonTargetFramework>$(TargetFramework)</_ICU4NNewtonsoftJsonTargetFramework>
-  </PropertyGroup>
-
-  <Import Project="../ICU4N.Resources.PackJsonSerializer.targets" Condition="'$(PackResourceStubs)' != 'true'" />
 
 </Project>

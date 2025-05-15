@@ -1,14 +1,5 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <PropertyGroup Label="ICU4N properties">
-    <_ICU4NResourcesPackageId>ICU4N.Resources.NETFramework4.0</_ICU4NResourcesPackageId>
-    <_ICU4NResourcesSourcesDirectory>lib/net40</_ICU4NResourcesSourcesDirectory>
-  </PropertyGroup>
+  <Import Project="ICU4N.Resources.NuGetVersionWarning.targets"/>
 
-  <PropertyGroup Label="Newtonsoft.Json properties">
-    <_ICU4NNewtonsoftJsonTargetFramework>net40</_ICU4NNewtonsoftJsonTargetFramework>
-  </PropertyGroup>
-
-  <Import Project="ICU4N.Resources.CopyPatch.targets"/>
-  
 </Project>
