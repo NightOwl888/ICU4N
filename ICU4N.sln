@@ -56,7 +56,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{543196C0-5AE
 	ProjectSection(SolutionItems) = preProject
 		src\Directory.Build.props = src\Directory.Build.props
 		src\Directory.Build.targets = src\Directory.Build.targets
-		src\ICU4N.Resources.PackJsonSerializer.targets = src\ICU4N.Resources.PackJsonSerializer.targets
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8C266EC1-9565-4827-B3AD-AC657F6BDC27}"
