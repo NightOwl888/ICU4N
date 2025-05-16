@@ -35,7 +35,7 @@ namespace ICU4N.Text
                 Grow(count);
             }
 
-            value.CopyTo(startIndex, _chars, _pos, count);
+            value.CopyTo(startIndex, _chars, pos, count);
             _pos += count;
             return this;
         }
@@ -75,7 +75,7 @@ namespace ICU4N.Text
                 Grow(count);
             }
 
-            value.CopyTo(startIndex, _chars, _pos, count);
+            value.CopyTo(startIndex, _chars, pos, count);
             _pos += count;
             return this;
         }

@@ -113,12 +113,12 @@ namespace ICU4N.Text
             if (_arrayToReturnToPool is null)
             {
                 // Only call our extension method (which may allocate a buffer) if we have to.
-                value.CopyTo(startIndex, _chars.Slice(_pos), count);
+                value.CopyTo(startIndex, _chars.Slice(pos), count);
             }
             else
             {
                 // If we are already on the heap, we can use CopyTo(int, char[], int, int) for better efficiency
-                value.CopyTo(startIndex, _arrayToReturnToPool, _pos, count);
+                value.CopyTo(startIndex, _arrayToReturnToPool, pos, count);
             }
             _pos += count;
             UpdateMaxLength();
