@@ -976,7 +976,7 @@ namespace ICU4N.Util
             {
 #pragma warning disable 612, 618
                 int offset = strings.Length;
-                strings.Append(s, start, s.Length - start); // ICU4N: Corrected 3rd parameter
+                strings.Append(s.Slice(start, s.Length - start)); // ICU4N: Corrected 3rd parameter
                 node = new LinearMatchNode(strings, offset, s.Length - start, node);
 #pragma warning restore 612, 618
             }

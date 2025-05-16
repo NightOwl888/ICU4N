@@ -244,10 +244,10 @@ namespace ICU4N.Util
                     int length = node - CharsTrie.kMinLinearMatch + 1;
                     if (maxLength_ > 0 && str_.Length + length > maxLength_)
                     {
-                        str_.Append(chars_, pos, maxLength_ - str_.Length); // ICU4N: (pos + maxLength_ - str_.Length) - pos == (maxLength_ - str_.Length)
+                        str_.Append(chars_.Slice(pos, maxLength_ - str_.Length)); // ICU4N: (pos + maxLength_ - str_.Length) - pos == (maxLength_ - str_.Length)
                         return TruncateAndStop();
                     }
-                    str_.Append(chars_, pos, length); // ICU4N: (pos + length) - pos == length
+                    str_.Append(chars_.Slice(pos, length)); // ICU4N: (pos + length) - pos == length
                     pos += length;
                 }
             }

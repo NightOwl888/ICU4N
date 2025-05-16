@@ -1139,9 +1139,9 @@ namespace ICU4N.Impl.Coll
             // into the nfdString's last starter and the combining marks following it.
             // Make an NFD version, and a version with the composite.
             newNFDString.Length = 0;
-            newNFDString.Append(nfdString, 0, indexAfterLastStarter - 0); // ICU4N: Checked 3rd parameter
+            newNFDString.Append(nfdString.Slice(0, indexAfterLastStarter)); // ICU4N: Checked length parameter
             newString.Length = 0;
-            newString.Append(nfdString, 0, (indexAfterLastStarter - lastStarterLength) - 0); // ICU4N: Checked 3rd parameter
+            newString.Append(nfdString.Slice(0, indexAfterLastStarter - lastStarterLength)); // ICU4N: Checked length parameter
             newString.AppendCodePoint(composite);
 
             // The following is related to discontiguous contraction matching,
@@ -1208,12 +1208,12 @@ namespace ICU4N.Impl.Coll
                     // Appending the next source character to the composite would not be FCD.
                     return false;
                 }
-                newNFDString.Append(nfdString, sourceIndex, nfdString.Length - sourceIndex); // ICU4N: Corrected 3rd parameter
-                newString.Append(nfdString, sourceIndex, nfdString.Length - sourceIndex); // ICU4N: Corrected 3rd parameter
+                newNFDString.Append(nfdString.Slice(sourceIndex, nfdString.Length - sourceIndex)); // ICU4N: Corrected length parameter
+                newString.Append(nfdString.Slice(sourceIndex, nfdString.Length - sourceIndex)); // ICU4N: Corrected length parameter
             }
             else if (decompIndex < decomp.Length)
             {  // more characters from decomp, not from nfdString
-                newNFDString.Append(decomp, decompIndex, decomp.Length - decompIndex); // ICU4N: Corrected 3rd parameter
+                newNFDString.Append(decomp.Slice(decompIndex, decomp.Length - decompIndex)); // ICU4N: Corrected length parameter
             }
             Debug.Assert(nfd.IsNormalized(newNFDString.AsSpan()));
             Debug.Assert(fcd.IsNormalized(newString.AsSpan()));
