@@ -58,16 +58,40 @@ namespace ICU4N.Text
 
         public void Append(string? value, int startIndex, int count)
         {
+            Debug.Assert(startIndex >= 0);
+            Debug.Assert(count >= 0);
+            Debug.Assert(value is null || value?.Length - startIndex >= count);
+
             if (value is null || count == 0) return;
 
-            Append(value.AsSpan(startIndex, count));
+            int pos = _pos;
+            if (pos > _chars.Length - count)
+            {
+                Grow(count);
+            }
+
+            value.AsSpan(startIndex, count).CopyTo(_chars.Slice(pos, count));
+            _pos += count;
+            UpdateMaxLength();
         }
 
-        public void Append(scoped ReadOnlySpan<char> value, int startIndex, int count)
+        public void Append(char[]? value, int startIndex, int count)
         {
-            if (value == default || count == 0) return;
+            Debug.Assert(startIndex >= 0);
+            Debug.Assert(count >= 0);
+            Debug.Assert(value is null || value?.Length - startIndex >= count);
 
-            Append(value.Slice(startIndex, count));
+            if (value is null || count == 0) return;
+
+            int pos = _pos;
+            if (pos > _chars.Length - count)
+            {
+                Grow(count);
+            }
+
+            value.AsSpan(startIndex, count).CopyTo(_chars.Slice(pos, count));
+            _pos += count;
+            UpdateMaxLength();
         }
 
         public void Append(StringBuilder? value) => Append(value, 0, value?.Length ?? 0);

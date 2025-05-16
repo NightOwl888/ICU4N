@@ -2361,9 +2361,9 @@ namespace ICU4N.Impl
                         : new ValueStringBuilder(middleLength);
                     try
                     {
-                        middle.Append(buffer.AsSpan(), lastStarterInDest, buffer.Length - lastStarterInDest); // ICU4N : Fixed 3rd parameter
+                        middle.Append(buffer.AsSpan(lastStarterInDest, buffer.Length - lastStarterInDest)); // ICU4N : Fixed length parameter
                         buffer.RemoveSuffix(buffer.Length - lastStarterInDest);
-                        middle.Append(s, 0, firstStarterInSrc - 0);
+                        middle.Append(s.Slice(0, firstStarterInSrc - 0));
                         Compose(middle.AsSpan(), onlyContiguous, true, ref buffer);
                         src = firstStarterInSrc;
                     }
@@ -2375,7 +2375,7 @@ namespace ICU4N.Impl
             }
             if (doCompose)
             {
-                Compose(s.Slice(src, limit - src), onlyContiguous, true, ref buffer); // ICU4N: Corrected 3rd parameter
+                Compose(s.Slice(src, limit - src), onlyContiguous, true, ref buffer); // ICU4N: Corrected length parameter
             }
             else
             {
@@ -2705,9 +2705,9 @@ namespace ICU4N.Impl
                         : new ValueStringBuilder(middleLength);
                     try
                     {
-                        middle.Append(buffer.AsSpan(), lastBoundaryInDest, buffer.Length - lastBoundaryInDest); // ICU4N : Fixed 3rd parameter
+                        middle.Append(buffer.AsSpan(lastBoundaryInDest, buffer.Length - lastBoundaryInDest)); // ICU4N : Fixed length parameter
                         buffer.RemoveSuffix(buffer.Length - lastBoundaryInDest);
-                        middle.Append(s, 0, firstBoundaryInSrc - 0);
+                        middle.Append(s.Slice(0, firstBoundaryInSrc - 0));
                         MakeFCD(middle.AsSpan(), ref buffer);
                         src = firstBoundaryInSrc;
                     }
@@ -2719,7 +2719,7 @@ namespace ICU4N.Impl
             }
             if (doMakeFCD)
             {
-                MakeFCD(s.Slice(src, limit - src), ref buffer); // ICU4N: Corrected 3rd parameter
+                MakeFCD(s.Slice(src, limit - src), ref buffer); // ICU4N: Corrected length parameter
             }
             else
             {

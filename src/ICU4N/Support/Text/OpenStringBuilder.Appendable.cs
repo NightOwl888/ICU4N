@@ -1,10 +1,7 @@
 ﻿using J2N.Text;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 #nullable enable
 
 namespace ICU4N.Text
@@ -26,16 +23,40 @@ namespace ICU4N.Text
 
         public OpenStringBuilder Append(string? value, int startIndex, int count)
         {
+            Debug.Assert(startIndex >= 0);
+            Debug.Assert(count >= 0);
+            Debug.Assert(value is null || value.Length - startIndex >= count);
+
             if (value is null || count == 0) return this;
 
-            return Append(value.AsSpan(startIndex, count));
+            int pos = _pos;
+            if (pos > _chars.Length - count)
+            {
+                Grow(count);
+            }
+
+            value.CopyTo(startIndex, _chars, _pos, count);
+            _pos += count;
+            return this;
         }
 
-        public OpenStringBuilder Append(ReadOnlySpan<char> value, int startIndex, int count)
+        public OpenStringBuilder Append(char[]? value, int startIndex, int count)
         {
-            if (value == default || count == 0) return this;
+            Debug.Assert(startIndex >= 0);
+            Debug.Assert(count >= 0);
+            Debug.Assert(value is null || value.Length - startIndex >= count);
 
-            return Append(value.Slice(startIndex, count));
+            if (value is null || count == 0) return this;
+
+            int pos = _pos;
+            if (pos > _chars.Length - count)
+            {
+                Grow(count);
+            }
+
+            Array.Copy(value, startIndex, _chars, pos, count);
+            _pos += count;
+            return this;
         }
 
         public OpenStringBuilder Append(StringBuilder? value) => Append(value, 0, value?.Length ?? 0);
