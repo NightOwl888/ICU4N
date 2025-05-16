@@ -19,7 +19,7 @@ properties {
     [string]$configuration         = "Release"
     [string]$platform              = "Any CPU"
     [bool]$backupFiles             = $true
-    [string]$minimumSdkVersion     = "8.0.100"
+    [string]$minimumSdkVersion     = "9.0.100"
 
     #test parameters
     [string]$testPlatforms         = "x64"
