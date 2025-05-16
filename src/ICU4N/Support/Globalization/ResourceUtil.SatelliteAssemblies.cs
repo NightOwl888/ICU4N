@@ -11,6 +11,7 @@ namespace ICU4N.Globalization
         private static readonly Dictionary<string, string> NeutralCultureSubstitutions = new Dictionary<string, string>(AsciiStringComparer.Ordinal)
         {
             // ICU baseLocale       .NET culture
+            ["ckb"]                 = "ku",
             ["qu"]                  = "quz",
             ["yue"]                 = "zh",
             ["yue-Hans"]            = "zh-Hans",
