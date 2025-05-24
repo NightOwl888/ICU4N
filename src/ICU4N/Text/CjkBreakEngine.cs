@@ -1,9 +1,11 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Support.Text;
 using J2N;
+using J2N.Text;
 using System;
 using System.Buffers;
 using System.Diagnostics;
+using System.Text;
 #nullable enable
 
 namespace ICU4N.Text
@@ -70,9 +72,6 @@ namespace ICU4N.Text
                     (value >= 0xFF66 && value <= 0xFF9F);
         }
 
-        // ICU4N: Note that something is up with this method in .NET Framework. The assert for prev[t_boundary[numBreaks - 1]] == 0 throws an IndexOutOfRangeException
-        // only when optimizations are enabled. It has been changed to Debug.Assert() so it is left out of the compile, but this may be a symptom of a larger issue.
-        // This started happening after switching to Span<T> and ArrayPool<T> to reuse the temporary int arrays in this method.
         public override int DivideUpDictionaryRange(CharacterIterator inText, int startPos, int endPos,
                 DequeI foundBreaks)
         {
@@ -83,224 +82,178 @@ namespace ICU4N.Text
 
             inText.SetIndex(startPos);
 
-            // ICU4N: manage allocations via stack or array pool
             int inputLength = endPos - startPos;
-            int charPositionsLength = inputLength + 1;
-            int[]? charPositionsArray = null; // new int[inputLength + 1];
-            int[]? bestSnlpArray = null;
-            int[]? prevArray = null;
-            int[]? valuesArray = null;
-            int[]? lengthsArray = null;
-            int[]? t_boundaryArray = null;
-            ArrayPool<int> arrayPool = ArrayPool<int>.Shared;
-
-            var normStr = default(ValueStringBuilder);
-            var s = new ValueStringBuilder(inputLength + 1); // ICU4N: We need to keep this on the heap to use ReadOnlyMemoryCharacterIterator
-            try
+            int[] charPositions = new int[inputLength + 1];
+            StringBuilder s = new StringBuilder(inputLength  + 1);
+            inText.SetIndex(startPos);
+            while (inText.Index < endPos)
             {
-                Span<int> charPositions = charPositionsLength > Int32StackBufferSize
-                    ? (charPositionsArray = arrayPool.Rent(charPositionsLength)).AsSpan(0, charPositionsLength)
-                    : stackalloc int[charPositionsLength];
-
-                inText.SetIndex(startPos);
-                while (inText.Index < endPos)
-                {
-                    s.Append(inText.Current);
-                    inText.Next();
-                }
-                ReadOnlyMemory<char> prenormstr = s.AsMemory();
-                ReadOnlySpan<char> prenormstrSpan = prenormstr.Span;
+                s.Append(inText.Current);
+                inText.Next();
+            }
+            string prenormstr = s.ToString();
 #pragma warning disable 612, 618
-                bool isNormalized = Normalizer.QuickCheck(prenormstrSpan, NormalizerMode.NFKC) == QuickCheckResult.Yes ||
-                                   Normalizer.IsNormalized(prenormstrSpan, NormalizerMode.NFKC, 0);
+            bool isNormalized = Normalizer.QuickCheck(prenormstr, NormalizerMode.NFKC) == QuickCheckResult.Yes ||
+                               Normalizer.IsNormalized(prenormstr, NormalizerMode.NFKC, 0);
 #pragma warning restore 612, 618
-                CharacterIterator text;
-                int numChars = 0;
-                if (isNormalized)
+            CharacterIterator text;
+            int numChars = 0;
+            if (isNormalized)
+            {
+                text = new StringCharacterIterator(prenormstr);
+                int index = 0;
+                charPositions[0] = 0;
+                while (index < prenormstr.Length)
                 {
-                    text = new ReadOnlyMemoryCharacterIterator(prenormstr);
-                    int index = 0;
-                    charPositions[0] = 0;
-                    while (index < prenormstr.Length)
-                    {
-                        int codepoint = prenormstrSpan.CodePointAt(index);
-                        index += Character.CharCount(codepoint);
-                        numChars++;
-                        charPositions[numChars] = index;
-                    }
+                    int codepoint = prenormstr.CodePointAt(index);
+                    index += Character.CharCount(codepoint);
+                    numChars++;
+                    charPositions[numChars] = index;
                 }
-                else
-                {
+            }
+            else
+            {
 #pragma warning disable 612, 618
-                    normStr = new ValueStringBuilder(prenormstrSpan.Length); // ICU4N: We need to keep this on the heap to use ReadOnlyMemoryCharacterIterator
-                    Normalizer.Normalize(prenormstrSpan, NormalizerMode.NFKC, NormalizerUnicodeVersion.Default, ref normStr);
-                    text = new ReadOnlyMemoryCharacterIterator(normStr.AsMemory());
-                    arrayPool.ReturnIfNotNull(charPositionsArray);
-                    charPositionsLength = normStr.Length + 1;
-                    charPositions = (charPositionsArray = arrayPool.Rent(charPositionsLength)).AsSpan(0, charPositionsLength);
-                    Normalizer normalizer = new Normalizer(prenormstrSpan, NormalizerMode.NFKC, 0);
-                    int index = 0;
-                    charPositions[0] = 0;
-                    while (index < normalizer.EndIndex)
-                    {
-                        normalizer.Next();
-                        numChars++;
-                        index = normalizer.Index;
-                        charPositions[numChars] = index;
-                    }
+                string normStr = Normalizer.Normalize(prenormstr, NormalizerMode.NFKC);
+                text = new StringCharacterIterator(normStr);
+                charPositions = new int[normStr.Length + 1];
+                Normalizer normalizer = new Normalizer(prenormstr, NormalizerMode.NFKC, 0);
+                int index = 0;
+                charPositions[0] = 0;
+                while (index < normalizer.EndIndex)
+                {
+                    normalizer.Next();
+                    numChars++;
+                    index = normalizer.Index;
+                    charPositions[numChars] = index;
+                }
 #pragma warning restore 612, 618
+            }
+
+            // From here on out, do the algorithm. Note that our indices
+            // refer to indices within the normalized string.
+            int[] bestSnlp = new int[numChars + 1];
+            bestSnlp[0] = 0;
+            for (int i = 1; i <= numChars; i++)
+            {
+                bestSnlp[i] = kint32max;
+            }
+
+            int[] prev = new int[numChars + 1];
+            for (int i = 0; i <= numChars; i++)
+            {
+                prev[i] = -1;
+            }
+
+            int maxWordSize = 20;
+            int[] values = new int[numChars];
+            int[] lengths = new int[numChars];
+            // dynamic programming to find the best segmentation
+            bool is_prev_katakana = false;
+            for (int i = 0; i < numChars; i++)
+            {
+                text.SetIndex(i);
+                if (bestSnlp[i] == kint32max)
+                {
+                    continue;
                 }
 
-                // From here on out, do the algorithm. Note that our indices
-                // refer to indices within the normalized string.
-                int bestSnlpLength = numChars + 1;
-                Span<int> bestSnlp = bestSnlpLength > Int32StackBufferSize
-                    ? (bestSnlpArray = arrayPool.Rent(bestSnlpLength)).AsSpan(0, bestSnlpLength)
-                    : stackalloc int[bestSnlpLength];
-                bestSnlp[0] = 0;
-                for (int i = 1; i <= numChars; i++)
+                int maxSearchLength = (i + maxWordSize < numChars) ? maxWordSize : (numChars - i);
+                fDictionary.Matches(text, maxSearchLength, lengths, out int count, maxSearchLength, values);
+
+                // if there are no single character matches found in the dictionary
+                // starting with this character, treat character as a 1-character word
+                // with the highest value possible (i.e. the least likely to occur).
+                // Exclude Korean characters from this treatment, as they should be
+                // left together by default.
+                text.SetIndex(i);  // fDictionary.matches() advances the text position; undo that.
+                if ((count == 0 || lengths[0] != 1) && CharacterIteration.Current32(text) != CharacterIteration.Done32 && !fHangulWordSet.Contains(CharacterIteration.Current32(text)))
                 {
-                    bestSnlp[i] = kint32max;
+                    values[count] = maxSnlp;
+                    lengths[count] = 1;
+                    count++;
                 }
 
-                int prevLength = numChars + 1;
-                Span<int> prev = prevLength > Int32StackBufferSize
-                    ? (prevArray = arrayPool.Rent(prevLength)).AsSpan(0, prevLength)
-                    : stackalloc int[prevLength];
-                for (int i = 0; i <= numChars; i++)
+                for (int j = 0; j < count; j++)
                 {
-                    prev[i] = -1;
+                    int newSnlp = bestSnlp[i] + values[j];
+                    if (newSnlp < bestSnlp[lengths[j] + i])
+                    {
+                        bestSnlp[lengths[j] + i] = newSnlp;
+                        prev[lengths[j] + i] = i;
+                    }
                 }
 
-                int maxWordSize = 20;
-                Span<int> values = numChars > Int32StackBufferSize
-                    ? (valuesArray = arrayPool.Rent(numChars)).AsSpan(0, numChars)
-                    : stackalloc int[numChars];
-                Span<int> lengths = numChars > Int32StackBufferSize
-                    ? (lengthsArray = arrayPool.Rent(numChars)).AsSpan(0, numChars)
-                    : stackalloc int[numChars];
-                // dynamic programming to find the best segmentation
-                bool is_prev_katakana = false;
-                for (int i = 0; i < numChars; i++)
+                // In Japanese, single-character Katakana words are pretty rare.
+                // So we apply the following heuristic to Katakana: any continuous
+                // run of Katakana characters is considered a candidate word with
+                // a default cost specified in the katakanaCost table according
+                // to its length.
+                bool is_katakana = IsKatakana(CharacterIteration.Current32(text));
+                if (!is_prev_katakana && is_katakana)
                 {
-                    text.SetIndex(i);
-                    if (bestSnlp[i] == kint32max)
+                    int j = i + 1;
+                    CharacterIteration.Next32(text);
+                    while (j < numChars && (j - i) < kMaxKatakanaGroupLength && IsKatakana(CharacterIteration.Current32(text)))
                     {
-                        continue;
-                    }
-
-                    int maxSearchLength = (i + maxWordSize < numChars) ? maxWordSize : (numChars - i);
-                    fDictionary.Matches(text, maxSearchLength, lengths, out int count, maxSearchLength, values);
-
-                    // if there are no single character matches found in the dictionary
-                    // starting with this character, treat character as a 1-character word
-                    // with the highest value possible (i.e. the least likely to occur).
-                    // Exclude Korean characters from this treatment, as they should be
-                    // left together by default.
-                    text.SetIndex(i);  // fDictionary.matches() advances the text position; undo that.
-                    if ((count == 0 || lengths[0] != 1) && CharacterIteration.Current32(text) != CharacterIteration.Done32 && !fHangulWordSet.Contains(CharacterIteration.Current32(text)))
-                    {
-                        values[count] = maxSnlp;
-                        lengths[count] = 1;
-                        count++;
-                    }
-
-                    for (int j = 0; j < count; j++)
-                    {
-                        int newSnlp = bestSnlp[i] + values[j];
-                        if (newSnlp < bestSnlp[lengths[j] + i])
-                        {
-                            bestSnlp[lengths[j] + i] = newSnlp;
-                            prev[lengths[j] + i] = i;
-                        }
-                    }
-
-                    // In Japanese, single-character Katakana words are pretty rare.
-                    // So we apply the following heuristic to Katakana: any continuous
-                    // run of Katakana characters is considered a candidate word with
-                    // a default cost specified in the katakanaCost table according
-                    // to its length.
-                    bool is_katakana = IsKatakana(CharacterIteration.Current32(text));
-                    if (!is_prev_katakana && is_katakana)
-                    {
-                        int j = i + 1;
                         CharacterIteration.Next32(text);
-                        while (j < numChars && (j - i) < kMaxKatakanaGroupLength && IsKatakana(CharacterIteration.Current32(text)))
-                        {
-                            CharacterIteration.Next32(text);
-                            ++j;
-                        }
+                        ++j;
+                    }
 
-                        if ((j - i) < kMaxKatakanaGroupLength)
+                    if ((j - i) < kMaxKatakanaGroupLength)
+                    {
+                        int newSnlp = bestSnlp[i] + GetKatakanaCost(j - i);
+                        if (newSnlp < bestSnlp[j])
                         {
-                            int newSnlp = bestSnlp[i] + GetKatakanaCost(j - i);
-                            if (newSnlp < bestSnlp[j])
-                            {
-                                bestSnlp[j] = newSnlp;
-                                prev[j] = i;
-                            }
+                            bestSnlp[j] = newSnlp;
+                            prev[j] = i;
                         }
                     }
-                    is_prev_katakana = is_katakana;
                 }
+                is_prev_katakana = is_katakana;
+            }
 
-                int t_boundaryLength = numChars + 1;
-                Span<int> t_boundary = t_boundaryLength > Int32StackBufferSize
-                    ? (t_boundaryArray = arrayPool.Rent(t_boundaryLength)).AsSpan(0, t_boundaryLength)
-                    : stackalloc int[t_boundaryLength];
-                int numBreaks = 0;
-                if (bestSnlp[numChars] == kint32max)
+            int[] t_boundary = new int[numChars + 1];
+            int numBreaks = 0;
+            if (bestSnlp[numChars] == kint32max)
+            {
+                t_boundary[numBreaks] = numChars;
+                numBreaks++;
+            }
+            else
+            {
+                for (int i = numChars; i > 0; i = prev[i])
                 {
-                    t_boundary[numBreaks] = numChars;
+                    t_boundary[numBreaks] = i;
                     numBreaks++;
                 }
-                else
-                {
-                    for (int i = numChars; i > 0; i = prev[i])
-                    {
-                        t_boundary[numBreaks] = i;
-                        numBreaks++;
-                    }
-                    Debug.Assert(prev[t_boundary[numBreaks - 1]] == 0); // ICU4N: Using Debug.Assert, since this breaks in Release mode on .NET Framework. We don't want to use Assert.Assrt() in .NET, anyway.
-                }
-
-                if (foundBreaks.Count == 0 || foundBreaks.Peek() < startPos)
-                {
-                    t_boundary[numBreaks++] = 0;
-                }
-
-                int correctedNumBreaks = 0;
-                for (int i = numBreaks - 1; i >= 0; i--)
-                {
-                    int pos = charPositions[t_boundary[i]] + startPos;
-                    if (!(foundBreaks.Contains(pos) || pos == startPos))
-                    {
-                        foundBreaks.Push(charPositions[t_boundary[i]] + startPos);
-                        correctedNumBreaks++;
-                    }
-                }
-
-                if (!foundBreaks.IsEmpty && foundBreaks.Peek() == endPos)
-                {
-                    foundBreaks.Pop();
-                    correctedNumBreaks--;
-                }
-                if (!foundBreaks.IsEmpty)
-                    inText.SetIndex(foundBreaks.Peek());
-                return correctedNumBreaks;
+                Assert.Assrt(prev[t_boundary[numBreaks - 1]] == 0);
             }
-            finally
+
+            if (foundBreaks.Count == 0 || foundBreaks.Peek() < startPos)
             {
-                normStr.Dispose();
-                s.Dispose();
-
-                arrayPool.ReturnIfNotNull(charPositionsArray);
-                arrayPool.ReturnIfNotNull(bestSnlpArray);
-                arrayPool.ReturnIfNotNull(prevArray);
-                arrayPool.ReturnIfNotNull(valuesArray);
-                arrayPool.ReturnIfNotNull(lengthsArray);
-                arrayPool.ReturnIfNotNull(t_boundaryArray);
+                t_boundary[numBreaks++] = 0;
             }
+
+            int correctedNumBreaks = 0;
+            for (int i = numBreaks - 1; i >= 0; i--)
+            {
+                int pos = charPositions[t_boundary[i]] + startPos;
+                if (!(foundBreaks.Contains(pos) || pos == startPos))
+                {
+                    foundBreaks.Push(charPositions[t_boundary[i]] + startPos);
+                    correctedNumBreaks++;
+                }
+            }
+
+            if (!foundBreaks.IsEmpty && foundBreaks.Peek() == endPos)
+            {
+                foundBreaks.Pop();
+                correctedNumBreaks--;
+            }
+            if (!foundBreaks.IsEmpty)
+                inText.SetIndex(foundBreaks.Peek());
+            return correctedNumBreaks;
         }
     }
 }
