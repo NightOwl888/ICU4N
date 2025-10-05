@@ -211,7 +211,7 @@ namespace ICU4N.Dev.Test.Format
         [Test]
         public void TestSamples()
         {
-            IDictionary<UCultureInfo, ISet<UCultureInfo>> same = new LinkedDictionary<UCultureInfo, ISet<UCultureInfo>>();
+            IDictionary<UCultureInfo, ISet<UCultureInfo>> same = new J2N.Collections.Generic.OrderedDictionary<UCultureInfo, ISet<UCultureInfo>>();
             foreach (UCultureInfo locale in PluralRules.GetUCultures())
             {
                 UCultureInfo otherLocale = PluralRules.GetFunctionalEquivalent(locale);
