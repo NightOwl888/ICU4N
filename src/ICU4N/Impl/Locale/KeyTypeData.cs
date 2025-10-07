@@ -256,7 +256,7 @@ namespace ICU4N.Impl.Locale
             // iterate through keyMap resource
             using (UResourceBundleEnumerator keyMapItr = keyMapRes.GetEnumerator())
             {
-                IDictionary<string, ISet<string>> _Bcp47Keys = new JCG.OrderedDictionary<string, ISet<string>>(); // ICU4N NOTE: As long as we don't delete, Dictionary keeps insertion order the same as LinkedHashMap
+                IDictionary<string, ISet<string>> _Bcp47Keys = new JCG.OrderedDictionary<string, ISet<string>>();
 
                 while (keyMapItr.MoveNext())
                 {
