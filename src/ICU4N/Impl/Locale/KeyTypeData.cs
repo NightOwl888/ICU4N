@@ -256,7 +256,7 @@ namespace ICU4N.Impl.Locale
             // iterate through keyMap resource
             using (UResourceBundleEnumerator keyMapItr = keyMapRes.GetEnumerator())
             {
-                IDictionary<string, ISet<string>> _Bcp47Keys = new JCG.LinkedDictionary<string, ISet<string>>(); // ICU4N NOTE: As long as we don't delete, Dictionary keeps insertion order the same as LinkedHashMap
+                IDictionary<string, ISet<string>> _Bcp47Keys = new JCG.OrderedDictionary<string, ISet<string>>();
 
                 while (keyMapItr.MoveNext())
                 {
@@ -477,7 +477,7 @@ namespace ICU4N.Impl.Locale
         private static void GetKeyInfo(UResourceBundle keyInfoRes)
         {
             ISet<string> _deprecatedKeys = new JCG.HashSet<string>();
-            IDictionary<string, KeyTypeDataValueType> _valueTypes = new JCG.LinkedDictionary<string, KeyTypeDataValueType>();
+            IDictionary<string, KeyTypeDataValueType> _valueTypes = new JCG.OrderedDictionary<string, KeyTypeDataValueType>();
             foreach (var keyInfoEntry in keyInfoRes)
             {
                 string key = keyInfoEntry.Key;
@@ -519,7 +519,7 @@ namespace ICU4N.Impl.Locale
          */
         private static void GetTypeInfo(UResourceBundle typeInfoRes)
         {
-            IDictionary<string, ISet<string>> _deprecatedKeyTypes = new JCG.LinkedDictionary<string, ISet<string>>();
+            IDictionary<string, ISet<string>> _deprecatedKeyTypes = new JCG.OrderedDictionary<string, ISet<string>>();
             foreach (var keyInfoEntry in typeInfoRes)
             {
                 string key = keyInfoEntry.Key;
