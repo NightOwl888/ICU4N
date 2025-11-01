@@ -15,7 +15,7 @@ namespace ICU4N.Util
         /// <summary>
         /// Map of singletons
         /// </summary>
-        private static readonly ConcurrentDictionary<int, VersionInfo> MAP_ = new ConcurrentDictionary<int, VersionInfo>();
+        private static readonly ConcurrentDictionary<int, Lazy<VersionInfo>> MAP_ = new ConcurrentDictionary<int, Lazy<VersionInfo>>();
 
         // public data members -------------------------------------------------
 
@@ -333,7 +333,7 @@ namespace ICU4N.Util
             int key = GetInt32(major, minor, milli, micro);
             int version = key;
 
-            return MAP_.GetOrAdd(version, (version) => new VersionInfo(version));
+            return MAP_.GetOrAdd(version, (version) => new Lazy<VersionInfo>(() => new VersionInfo(version))).Value;
         }
 
         /// <summary>

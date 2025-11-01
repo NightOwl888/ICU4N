@@ -20,7 +20,7 @@ namespace ICU4N.Impl
         : PluralRulesFactory
 #pragma warning restore 612, 618
     {
-        private readonly ConcurrentDictionary<string, PluralRules?> rulesIdToRules = new ConcurrentDictionary<string, PluralRules?>();
+        private readonly ConcurrentDictionary<string, Lazy<PluralRules?>> rulesIdToRules = new ConcurrentDictionary<string, Lazy<PluralRules?>>();
         // lazy init, use getLocaleIdToRulesIdMap to access
         private IDictionary<string, string>? localeIdToCardinalRulesId;
         private IDictionary<string, string>? localeIdToOrdinalRulesId;
@@ -229,8 +229,8 @@ namespace ICU4N.Impl
             if (rulesId is null)
                 throw new ArgumentNullException(nameof(rulesId));
 
-            return rulesIdToRules.GetOrAdd(rulesId, (key) => {
-
+            var rules = rulesIdToRules.GetOrAdd(rulesId, (key) => new Lazy<PluralRules?>(() =>
+            {
                 UResourceBundle setb;
                 try
                 {
@@ -245,7 +245,7 @@ namespace ICU4N.Impl
 
                 var ruleList = new PluralRules.RuleList();
                 bool parseFailure = false;
-                for (int i = 0; i < setb.Length; ++i)
+                for (int i = 0; i < setb.Length && !parseFailure; ++i)
                 {
                     UResourceBundle b = setb.Get(i);
                     if (PluralRules.TryParseRule(b.Key, b.GetString(), out PluralRules.Rule rule))
@@ -261,7 +261,9 @@ namespace ICU4N.Impl
                     return null; // can be null
 
                 return new PluralRules(ruleList.Finish());
-            });
+            }));
+
+            return rules.Value;
         }
 
         /// <summary>
@@ -289,11 +291,11 @@ namespace ICU4N.Impl
                 throw new ArgumentNullException(nameof(localeName));
 
             string? rulesId = GetRulesIdForLocale(localeName, type);
-            if (rulesId == null || rulesId.Trim().Length == 0)
+            if (string.IsNullOrWhiteSpace(rulesId))
             {
                 return PluralRules.Default;
             }
-            PluralRules? rules = GetRulesForRulesId(rulesId);
+            PluralRules? rules = GetRulesForRulesId(rulesId!); // [!] Checked for null above
             if (rules == null)
             {
                 rules = PluralRules.Default;

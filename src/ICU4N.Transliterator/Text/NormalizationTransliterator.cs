@@ -174,7 +174,7 @@ namespace ICU4N.Text
             offsets.Limit = limit;
         }
 
-        internal static readonly ConcurrentDictionary<Normalizer2, SourceTargetUtility> SOURCE_CACHE = new ConcurrentDictionary<Normalizer2, SourceTargetUtility>();
+        internal static readonly ConcurrentDictionary<Normalizer2, Lazy<SourceTargetUtility>> SOURCE_CACHE = new ConcurrentDictionary<Normalizer2, Lazy<SourceTargetUtility>>();
 
         // TODO Get rid of this if Normalizer2 becomes a Transform
         internal class NormalizingTransform : ITransform<string, string>
@@ -196,7 +196,8 @@ namespace ICU4N.Text
         public override void AddSourceTargetSet(UnicodeSet inputFilter, UnicodeSet sourceSet, UnicodeSet targetSet)
 #pragma warning restore 672
         {
-            SourceTargetUtility cache = SOURCE_CACHE.GetOrAdd(norm2, (norm2) => new SourceTargetUtility(new NormalizingTransform(norm2), norm2));
+            SourceTargetUtility cache = SOURCE_CACHE.GetOrAdd(norm2, (norm2) =>
+                new Lazy<SourceTargetUtility>(() => new SourceTargetUtility(new NormalizingTransform(norm2), norm2))).Value;
             cache.AddSourceTargetSet(this, inputFilter, sourceSet, targetSet);
         }
     }
