@@ -63,11 +63,6 @@ namespace ICU4N.Text
         private Transliterator widthFix = Transliterator.GetInstance("[[:dt=Nar:][:dt=Wide:]] nfkd");
 
         /// <summary>
-        /// Sentinel value for widthFix
-        /// </summary>
-        private static readonly Transliterator NullValue = new NullTransliterator();
-
-        /// <summary>
         /// Implements <see cref="Transliterator.HandleTransliterate(IReplaceable, TransliterationPosition, bool)"/>.
         /// </summary>
         protected override void HandleTransliterate(IReplaceable text,
