@@ -381,6 +381,12 @@ namespace ICU4N.Dev.Test.Util
 
             foreach (String malformed in new string[] { "en-a", "$", "ü--a", "en--US" })
             {
+#if DEBUG
+                // ICU4N: Skipped in Debug because of internal ASCII-only Debug.Assert().
+                if (malformed == "ü--a")
+                    continue;
+#endif
+
                 try
                 {
                     ISet<UCultureInfo> supported = new HashSet<UCultureInfo> { new UCultureInfo(malformed) }; //Collections.singleton(new UCultureInfo(malformed));
