@@ -2,7 +2,9 @@
 using J2N.Threading;
 using NUnit.Framework;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace ICU4N.Dev.Test.Translit
@@ -118,6 +120,43 @@ namespace ICU4N.Dev.Test.Translit
                 }
 #endif
             }
+        }
+
+        // Test for ICU4N#113, race in cache code in AnyTransliterator.
+        [Test]
+        public void TestConcurrentTransliterationCyrillic()
+        {
+            Transliterator tx = Transliterator.GetInstance(@"Any-Latin;Latin-ASCII;[\u0000-\u0020\u007f-\uffff] Remove");
+
+            //string result1 = tx.Transliterate("WБ1 289");
+
+            const int jobCount = 2000;
+            var results = new ConcurrentBag<string>();
+            using var countdown = new CountdownEvent(jobCount);
+
+            for (int i = 0; i < jobCount; i++)
+            {
+                ThreadPool.QueueUserWorkItem(_ =>
+                {
+                    try
+                    {
+                        // Perform transliteration
+                        string result = tx.Transliterate("WБ1 289");
+                        results.Add(result);
+                    }
+                    finally
+                    {
+                        countdown.Signal();
+                    }
+                });
+            }
+
+            // Wait for all threads to complete
+            countdown.Wait();
+
+            // Aggregate and print results
+            string actual = string.Join(",", results.Distinct());
+            Assert.AreEqual("WB1289", actual);
         }
     }
 }

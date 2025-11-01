@@ -4,6 +4,8 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Resources;
+using System.Threading;
+#nullable enable
 
 namespace ICU4N.Text
 {
@@ -43,7 +45,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Cache mapping Script code values to Transliterator*.
         /// </summary>
-        private ConcurrentDictionary<int, Transliterator> cache;
+        private ConcurrentDictionary<int, Lazy<Transliterator>> cache;
 
         /// <summary>
         /// The target or target/variant string.
@@ -79,7 +81,7 @@ namespace ICU4N.Text
 
                 // Try to instantiate transliterator from it.scriptCode to
                 // our target or target/variant
-                Transliterator t = GetTransliterator(it.ScriptCode);
+                Transliterator? t = GetTransliterator(it.ScriptCode);
 
                 if (t == null)
                 {
@@ -129,7 +131,7 @@ namespace ICU4N.Text
             : base(id, null)
         {
             targetScript = theTargetScript;
-            cache = new ConcurrentDictionary<int, Transliterator>();
+            cache = new ConcurrentDictionary<int, Lazy<Transliterator>>();
 
             target = theTarget;
             if (theVariant.Length > 0)
@@ -148,8 +150,8 @@ namespace ICU4N.Text
         /// <param name="targetScript2">The script code corresponding to theTarget.</param>
         /// <param name="widthFix2">The <see cref="Transliterator"/> width fix.</param>
         /// <param name="cache2">The <see cref="ConcurrentDictionary{TKey, TValue}"/> object for cache.</param>
-        public AnyTransliterator(string id, UnicodeFilter filter, string target2,
-                int targetScript2, Transliterator widthFix2, ConcurrentDictionary<int, Transliterator> cache2)
+        public AnyTransliterator(string id, UnicodeFilter? filter, string target2,
+                int targetScript2, Transliterator widthFix2, ConcurrentDictionary<int, Lazy<Transliterator>> cache2)
             : base(id, filter)
         {
             targetScript = targetScript2;
@@ -165,73 +167,53 @@ namespace ICU4N.Text
         /// time.  The caller does NOT own the result and must not delete
         /// it.
         /// </summary>
-        private Transliterator GetTransliterator(int source)
+        private Transliterator? GetTransliterator(int source)
         {
             if (source == targetScript || source == UScript.InvalidCode)
             {
-                if (IsWide(targetScript))
-                {
-                    return null;
-                }
-                else
-                {
-                    return widthFix;
-                }
+                return IsWide(targetScript) ? null : widthFix;
             }
 
-            int key = (int)source;
-            if (!cache.TryGetValue(key, out Transliterator t) || t == null)
+            if (cache.TryGetValue(source, out Lazy<Transliterator>? lazy))
             {
-                string sourceName = UScript.GetName(source);
-                string id = sourceName + TARGET_SEP + target;
+                return lazy.Value;
+            }
 
+            Transliterator? built = BuildTransliterator(source);
+            // Ensure that null is never added to the cache so it can be rebuilt
+            if (built != null)
+            {
+                var added = cache.GetOrAdd(source, _ => new(() => built));
+                return added.Value;
+            }
+
+            return IsWide(targetScript) ? null : widthFix;
+        }
+
+        private Transliterator? BuildTransliterator(int source)
+        {
+            string sourceName = UScript.GetName(source);
+            string id = sourceName + TARGET_SEP + target;
+
+            Transliterator? t = null;
+            try
+            {
+                t = Transliterator.GetInstance(id, Forward);
+            }
+            catch { }
+            if (t == null)
+            {
+                // Try to pivot around Latin, our most common script
+                id = sourceName + LATIN_PIVOT + target;
                 try
                 {
                     t = Transliterator.GetInstance(id, Forward);
                 }
-                catch (Exception) { }
-                if (t == null)
-                {
-
-                    // Try to pivot around Latin, our most common script
-                    id = sourceName + LATIN_PIVOT + target;
-                    try
-                    {
-                        t = Transliterator.GetInstance(id, Forward);
-                    }
-                    catch (Exception) { }
-                }
-
-                if (t != null)
-                {
-                    if (!IsWide(targetScript))
-                    {
-                        IList<Transliterator> v = new List<Transliterator>();
-                        v.Add(widthFix);
-                        v.Add(t);
-                        t = new CompoundTransliterator(v);
-                    }
-                    //Transliterator prevCachedT = cache.putIfAbsent(key, t);
-                    Transliterator prevCachedT;
-                    // ICU4N: This is to simulate putIfAbsent
-                    // ICU4N TODO: If this works, make it into a PutIfAbsent extension method so we can go back to using ConcurrentDictionary elsewhere
-                    if (!cache.TryGetValue(key, out prevCachedT))
-                    {
-                        // If another thread beat us here, set the prevCachedT
-                        // value to NullTransliterator to indicate it already exists
-                        if (!cache.TryAdd(key, t))
-                            prevCachedT = new NullTransliterator();
-                    }
-                    if (prevCachedT != null)
-                    {
-                        t = prevCachedT;
-                    }
-                }
-                else if (!IsWide(targetScript))
-                {
-                    return widthFix;
-                }
+                catch { }
             }
+
+            if (t != null && !IsWide(targetScript))
+                t = new CompoundTransliterator(new[] { widthFix, t });
 
             return t;
         }
@@ -265,7 +247,7 @@ namespace ICU4N.Text
                         continue;
                     }
 
-                    if (!seen.TryGetValue(target, out ISet<string> seenVariants) || seenVariants == null)
+                    if (!seen.TryGetValue(target, out ISet<string>? seenVariants) || seenVariants == null)
                     {
                         seen[target] = seenVariants = new HashSet<string>();
                     }
