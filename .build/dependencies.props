@@ -21,6 +21,7 @@
     <SystemReflectionMetadataPackageReferenceVersion Condition=" '$(TargetFramework)' == 'net451' ">1.8.1</SystemReflectionMetadataPackageReferenceVersion>
     <SystemRuntimeCompilerServicesUnsafePackageReferenceVersion>6.0.0</SystemRuntimeCompilerServicesUnsafePackageReferenceVersion>
     <SystemRuntimeCompilerServicesUnsafePackageReferenceVersion Condition=" '$(TargetFramework)' == 'net451' ">4.7.1</SystemRuntimeCompilerServicesUnsafePackageReferenceVersion>
+    <SystemRuntimeSerializationFormattersPackageReferenceVersion>10.0.0</SystemRuntimeSerializationFormattersPackageReferenceVersion>
     <SystemTextRegularExpressionsPackageReferenceVersion>4.3.1</SystemTextRegularExpressionsPackageReferenceVersion>
   </PropertyGroup>
   <PropertyGroup Label=".NET Tool Package Versions">
