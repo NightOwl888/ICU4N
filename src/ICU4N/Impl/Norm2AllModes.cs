@@ -388,20 +388,33 @@ namespace ICU4N.Impl
                 throw new ArgumentNullException(nameof(first));
 
             int length = first.Length + second.Length;
-            var sb = length <= CharStackBufferSize
-                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
-                : new ValueStringBuilder(length);
+            // Materialize `first` into a span so it can be passed as the initial value to ReorderingBuffer.
+            char[]? firstPoolArray = null;
+            Span<char> firstSpan = first.Length <= CharStackBufferSize
+                ? stackalloc char[CharStackBufferSize].Slice(0, first.Length)
+                : (firstPoolArray = System.Buffers.ArrayPool<char>.Shared.Rent(first.Length)).AsSpan(0, first.Length);
             try
             {
-                sb.Append(first);
-                var buffer = new ReorderingBuffer(Impl, ref sb, length);
-                NormalizeAndAppend(second, doNormalize, ref buffer);
-                first.Length = 0;
-                first.Append(buffer.AsSpan());
+                first.CopyTo(0, firstSpan, first.Length);
+
+                var buffer = length <= CharStackBufferSize
+                    ? new ReorderingBuffer(Impl, firstSpan, stackalloc char[CharStackBufferSize])
+                    : new ReorderingBuffer(Impl, firstSpan, length);
+                try
+                {
+                    NormalizeAndAppend(second, doNormalize, ref buffer);
+                    first.Length = 0;
+                    first.Append(buffer.AsSpan());
+                }
+                finally
+                {
+                    buffer.Dispose();
+                }
             }
             finally
             {
-                sb.Dispose();
+                if (firstPoolArray != null)
+                    System.Buffers.ArrayPool<char>.Shared.Return(firstPoolArray);
             }
             return first;
         }
@@ -414,20 +427,18 @@ namespace ICU4N.Impl
             }
 
             int length = first.Length + second.Length;
-            var sb = length <= CharStackBufferSize
-                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
-                : new ValueStringBuilder(length);
+            var buffer = length <= CharStackBufferSize
+                ? new ReorderingBuffer(Impl, first.AsSpan(), stackalloc char[CharStackBufferSize])
+                : new ReorderingBuffer(Impl, first.AsSpan(), length);
             try
             {
-                sb.Append(first.AsSpan());
-                var buffer = new ReorderingBuffer(Impl, ref sb, length);
                 NormalizeAndAppend(second, doNormalize, ref buffer);
                 first.Length = 0;
                 first.Append(buffer.AsSpan());
             }
             finally
             {
-                sb.Dispose();
+                buffer.Dispose();
             }
         }
 

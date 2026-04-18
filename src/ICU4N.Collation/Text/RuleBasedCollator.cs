@@ -1218,12 +1218,12 @@ namespace ICU4N.Text
             if (nfdQCYesLimit < s.Length)
             {
                 int destLengthEstimate = s.Length - nfdQCYesLimit;
-                ValueStringBuilder nfd = destLengthEstimate <= CharStackBufferSize
-                    ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
-                    : new ValueStringBuilder(destLengthEstimate);
+                ReorderingBuffer nfd = destLengthEstimate <= CharStackBufferSize
+                    ? new ReorderingBuffer(data.NfcImpl, stackalloc char[CharStackBufferSize])
+                    : new ReorderingBuffer(data.NfcImpl, destLengthEstimate);
                 try
                 {
-                    data.NfcImpl.Decompose(s.Slice(nfdQCYesLimit, s.Length - nfdQCYesLimit), ref nfd, destLengthEstimate); // ICU4N: Corrected 3rd parameter
+                    data.NfcImpl.Decompose(s.Slice(nfdQCYesLimit, s.Length - nfdQCYesLimit), ref nfd);
                     BOCSU.WriteIdenticalLevelRun(prev, nfd.AsSpan(), sink.Key);
                 }
                 finally
@@ -1499,19 +1499,18 @@ namespace ICU4N.Text
                     {
                         str.Length = 0;
                     }
-                    var sb = bufferSize <= CharStackBufferSize
-                        ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
-                        : new ValueStringBuilder(bufferSize);
+                    ReadOnlySpan<char> initial = seqSpan.Slice(start, spanLimit - start);
+                    ReorderingBuffer buffer = bufferSize <= CharStackBufferSize
+                        ? new ReorderingBuffer(nfcImpl, initial, stackalloc char[CharStackBufferSize])
+                        : new ReorderingBuffer(nfcImpl, initial, bufferSize);
                     try
                     {
-                        sb.Append(seqSpan.Slice(start, spanLimit - start)); // ICU4N: Corrected 3rd parameter
-                        ReorderingBuffer buffer = new ReorderingBuffer(nfcImpl, ref sb, bufferSize);
                         nfcImpl.MakeFCD(seqSpan.Slice(spanLimit, seq.Length - spanLimit), ref buffer); // ICU4N: Corrected 3rd parameter
                         str.Append(buffer.AsSpan());
                     }
                     finally
                     {
-                        sb.Dispose();
+                        buffer.Dispose();
                     }
                     s = str.AsMemory();
                     pos = 0;

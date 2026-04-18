@@ -505,20 +505,20 @@ namespace ICU4N.Impl.Coll
                 normalized = new OpenStringBuilder();
             }
 
-            var sb = s.Length <= Collator.CharStackBufferSize
-                ? new ValueStringBuilder(stackalloc char[Collator.CharStackBufferSize])
-                : new ValueStringBuilder(s.Length);
+            var buffer = s.Length <= Collator.CharStackBufferSize
+                ? new ReorderingBuffer(nfcImpl, stackalloc char[Collator.CharStackBufferSize])
+                : new ReorderingBuffer(nfcImpl, s.Length);
             try
             {
                 // NFD without argument checking.
-                nfcImpl.Decompose(s, ref sb);
+                nfcImpl.Decompose(s, ref buffer);
 
                 normalized.Length = 0;
-                normalized.Append(sb.AsSpan());
+                normalized.Append(buffer.AsSpan());
             }
             finally
             {
-                sb.Dispose();
+                buffer.Dispose();
             }
         }
 

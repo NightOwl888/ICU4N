@@ -487,18 +487,18 @@ namespace ICU4N.Impl.Coll
             }
             normalized.Length = 0;
             int estimatedLength = to - from;
-            ValueStringBuilder sb = estimatedLength <= CharStackBufferSize
-                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
-                : new ValueStringBuilder(estimatedLength);
+            ReorderingBuffer buffer = estimatedLength <= CharStackBufferSize
+                ? new ReorderingBuffer(nfcImpl, stackalloc char[CharStackBufferSize])
+                : new ReorderingBuffer(nfcImpl, estimatedLength);
             try
             {
                 // NFD without argument checking.
-                nfcImpl.Decompose(rawSeq.Span.Slice(from, to - from), ref sb, to - from); // ICU4N: Corrected 3rd parameter
-                normalized.Append(sb.AsSpan());
+                nfcImpl.Decompose(rawSeq.Span.Slice(from, to - from), ref buffer);
+                normalized.Append(buffer.AsSpan());
             }
             finally
             {
-                sb.Dispose();
+                buffer.Dispose();
             }
             // Switch collation processing into the FCD buffer
             // with the result of normalizing [segmentStart, segmentLimit[.
