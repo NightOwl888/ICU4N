@@ -346,6 +346,24 @@ namespace ICU4N.Impl
     /// <see cref="ToString()"/>. The user is responsible for calling <see cref="Dispose()"/>
     /// if the value is not obtained through <see cref="ToString()"/>.
     /// </summary>
+    /// <remarks>
+    /// Every constructor initializes its inner <see cref="ValueStringBuilder"/> from a
+    /// fresh <see cref="Span{T}"/> or capacity. Callers that want to seed the buffer from
+    /// existing content should pass it in as an <c>initialValue</c>
+    /// <see cref="ReadOnlySpan{T}"/>, which is copied in — the buffer is not shared with
+    /// the caller's storage.
+    /// <para/>
+    /// This matters because <see cref="ValueStringBuilder"/> is a ref struct that can be
+    /// backed by an <see cref="System.Buffers.ArrayPool{T}"/> rental — either by being
+    /// constructed with an <c>initialCapacity</c>, or by outgrowing the stack-allocated
+    /// <see cref="Span{T}"/> passed to its <c>initialBuffer</c> constructor. If two
+    /// <see cref="ValueStringBuilder"/> instances ever held the same rented <c>char[]</c>
+    /// (as could happen if one were by-value assigned from a <c>ref</c> parameter), growth
+    /// or disposal on either side would return the array to the pool while the other still
+    /// points at it — a silent, concurrency-sensitive corruption hazard. Keeping
+    /// inner-buffer ownership scoped to the <see cref="ReorderingBuffer"/> instance
+    /// eliminates the aliasing by construction.
+    /// </remarks>
     public unsafe ref struct ReorderingBuffer
     {
         public ReorderingBuffer(Normalizer2Impl ni, Span<char> initialBuffer)
@@ -386,7 +404,6 @@ namespace ICU4N.Impl
         {
         }
 
-        // ICU4N TODO: Evaluate whether this approach makes sense and if not, remove
         public ReorderingBuffer(Normalizer2Impl ni, ReadOnlySpan<char> initialValue, int initialCapacity)
         {
             impl = ni ?? throw new ArgumentNullException(nameof(ni));
@@ -416,11 +433,15 @@ namespace ICU4N.Impl
             }
         }
 
-        internal ReorderingBuffer(Normalizer2Impl ni, ref ValueStringBuilder destination, int destinationCapacity)
+        // ICU4N: Overloads that seed the inner buffer directly from a StringBuilder, avoiding an
+        // extra copy-through-intermediate-ValueStringBuilder at NormalizeSecondAndAppend call sites.
+        // Internal because this is a pragmatic interop shim; the rest of the API prefers
+        // ReadOnlySpan<char>. When the public API drops StringBuilder, these can go too.
+        internal ReorderingBuffer(Normalizer2Impl ni, StringBuilder? initialValue, Span<char> initialBuffer)
         {
             impl = ni ?? throw new ArgumentNullException(nameof(ni));
-            str = destination;
-            str.EnsureCapacity(destinationCapacity);
+            str = new ValueStringBuilder(initialBuffer);
+            str.Append(initialValue);
             reorderStart = 0;
             codePointStart = 0;
             codePointLimit = 0;
@@ -442,6 +463,31 @@ namespace ICU4N.Impl
             }
         }
 
+        internal ReorderingBuffer(Normalizer2Impl ni, StringBuilder? initialValue, int initialCapacity)
+        {
+            impl = ni ?? throw new ArgumentNullException(nameof(ni));
+            str = new ValueStringBuilder(initialCapacity);
+            str.Append(initialValue);
+            reorderStart = 0;
+            codePointStart = 0;
+            codePointLimit = 0;
+            lastCC = 0;
+            if (str.Length == 0)
+            {
+                lastCC = 0;
+            }
+            else
+            {
+                SetIterator();
+                lastCC = PreviousCC();
+                // Set reorderStart after the last code point with cc<=1 if there is one.
+                if (lastCC > 1)
+                {
+                    while (PreviousCC() > 1) { }
+                }
+                reorderStart = codePointLimit;
+            }
+        }
 
         public bool IsEmpty => str.Length == 0;
         public int Length => str.Length;
@@ -1640,10 +1686,6 @@ namespace ICU4N.Impl
         }
 
         // ICU4N TODO: Make public TryDecompose() method that accepts ReadOnlySpan<char>, Span<char>, out int charLength
-        internal void Decompose(scoped ReadOnlySpan<char> s, scoped ref ValueStringBuilder dest) // ICU4N: internal because ValueStringBuilder is internal
-        {
-            Decompose(s, ref dest, s.Length);
-        }
 
         /// <summary>
         /// Decomposes s[src, length[ and writes the result to <paramref name="dest"/>.
@@ -1652,37 +1694,22 @@ namespace ICU4N.Impl
         /// </summary>
         public void Decompose(ReadOnlySpan<char> s, StringBuilder dest, int destLengthEstimate)
         {
-            var sb = destLengthEstimate <= CharStackBufferSize
-                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
-                : new ValueStringBuilder(destLengthEstimate);
-
+            if (destLengthEstimate < 0)
+            {
+                destLengthEstimate = s.Length;
+            }
+            ReorderingBuffer buffer = destLengthEstimate <= CharStackBufferSize
+                ? new ReorderingBuffer(this, stackalloc char[CharStackBufferSize])
+                : new ReorderingBuffer(this, destLengthEstimate);
             try
             {
-                Decompose(s, ref sb, destLengthEstimate);
-                dest.Append(sb.AsSpan());
+                Decompose(s, ref buffer);
+                dest.Append(buffer.AsSpan());
             }
             finally
             {
-                sb.Dispose();
+                buffer.Dispose();
             }
-        }
-
-        /// <summary>
-        /// Decomposes s[src, length[ and writes the result to <paramref name="dest"/>.
-        /// length can be NULL if src is NUL-terminated.
-        /// <paramref name="destLengthEstimate"/> is the initial <paramref name="dest"/> buffer capacity and can be -1.
-        /// </summary>
-        internal void Decompose(scoped ReadOnlySpan<char> s, scoped ref ValueStringBuilder dest, int destLengthEstimate)
-        {
-            int src = 0, limit = s.Length;
-            if (destLengthEstimate < 0)
-            {
-                destLengthEstimate = limit - src;
-            }
-            ReorderingBuffer buffer = new ReorderingBuffer(this, ref dest, destLengthEstimate);
-            dest.Length = 0;
-            Decompose(s, ref buffer);
-            dest.Length = buffer.Length; // HACK: Although the value gets written to dest, the length value needs to be manually transferred.
         }
 
         // normalize
