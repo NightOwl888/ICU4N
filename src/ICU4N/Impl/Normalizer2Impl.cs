@@ -353,14 +353,16 @@ namespace ICU4N.Impl
     /// <see cref="ReadOnlySpan{T}"/>, which is copied in — the buffer is not shared with
     /// the caller's storage.
     /// <para/>
-    /// This matters because <see cref="ValueStringBuilder"/> is a ref struct backed by an
-    /// <see cref="System.Buffers.ArrayPool{T}"/> rental. If two <see cref="ValueStringBuilder"/>
-    /// instances ever held the same rented <c>char[]</c> (as can happen if one is
-    /// by-value assigned from a <c>ref</c> parameter), growth or disposal on either side
-    /// would return the array to the pool while the other still points at it — a
-    /// silent, concurrency-sensitive corruption hazard. Keeping inner-buffer ownership
-    /// scoped to the <see cref="ReorderingBuffer"/> instance eliminates the aliasing by
-    /// construction.
+    /// This matters because <see cref="ValueStringBuilder"/> is a ref struct that can be
+    /// backed by an <see cref="System.Buffers.ArrayPool{T}"/> rental — either by being
+    /// constructed with an <c>initialCapacity</c>, or by outgrowing the stack-allocated
+    /// <see cref="Span{T}"/> passed to its <c>initialBuffer</c> constructor. If two
+    /// <see cref="ValueStringBuilder"/> instances ever held the same rented <c>char[]</c>
+    /// (as could happen if one were by-value assigned from a <c>ref</c> parameter), growth
+    /// or disposal on either side would return the array to the pool while the other still
+    /// points at it — a silent, concurrency-sensitive corruption hazard. Keeping
+    /// inner-buffer ownership scoped to the <see cref="ReorderingBuffer"/> instance
+    /// eliminates the aliasing by construction.
     /// </remarks>
     public unsafe ref struct ReorderingBuffer
     {
@@ -402,7 +404,6 @@ namespace ICU4N.Impl
         {
         }
 
-        // ICU4N TODO: Evaluate whether this approach makes sense and if not, remove
         public ReorderingBuffer(Normalizer2Impl ni, ReadOnlySpan<char> initialValue, int initialCapacity)
         {
             impl = ni ?? throw new ArgumentNullException(nameof(ni));
@@ -411,6 +412,62 @@ namespace ICU4N.Impl
             {
                 str.Append(initialValue);
             }
+            reorderStart = 0;
+            codePointStart = 0;
+            codePointLimit = 0;
+            lastCC = 0;
+            if (str.Length == 0)
+            {
+                lastCC = 0;
+            }
+            else
+            {
+                SetIterator();
+                lastCC = PreviousCC();
+                // Set reorderStart after the last code point with cc<=1 if there is one.
+                if (lastCC > 1)
+                {
+                    while (PreviousCC() > 1) { }
+                }
+                reorderStart = codePointLimit;
+            }
+        }
+
+        // ICU4N: Overloads that seed the inner buffer directly from a StringBuilder, avoiding an
+        // extra copy-through-intermediate-ValueStringBuilder at NormalizeSecondAndAppend call sites.
+        // Internal because this is a pragmatic interop shim; the rest of the API prefers
+        // ReadOnlySpan<char>. When the public API drops StringBuilder, these can go too.
+        internal ReorderingBuffer(Normalizer2Impl ni, StringBuilder? initialValue, Span<char> initialBuffer)
+        {
+            impl = ni ?? throw new ArgumentNullException(nameof(ni));
+            str = new ValueStringBuilder(initialBuffer);
+            str.Append(initialValue);
+            reorderStart = 0;
+            codePointStart = 0;
+            codePointLimit = 0;
+            lastCC = 0;
+            if (str.Length == 0)
+            {
+                lastCC = 0;
+            }
+            else
+            {
+                SetIterator();
+                lastCC = PreviousCC();
+                // Set reorderStart after the last code point with cc<=1 if there is one.
+                if (lastCC > 1)
+                {
+                    while (PreviousCC() > 1) { }
+                }
+                reorderStart = codePointLimit;
+            }
+        }
+
+        internal ReorderingBuffer(Normalizer2Impl ni, StringBuilder? initialValue, int initialCapacity)
+        {
+            impl = ni ?? throw new ArgumentNullException(nameof(ni));
+            str = new ValueStringBuilder(initialCapacity);
+            str.Append(initialValue);
             reorderStart = 0;
             codePointStart = 0;
             codePointLimit = 0;
@@ -1627,6 +1684,8 @@ namespace ICU4N.Impl
             Decompose(s, dest, s.Length);
             return dest;
         }
+
+        // ICU4N TODO: Make public TryDecompose() method that accepts ReadOnlySpan<char>, Span<char>, out int charLength
 
         /// <summary>
         /// Decomposes s[src, length[ and writes the result to <paramref name="dest"/>.

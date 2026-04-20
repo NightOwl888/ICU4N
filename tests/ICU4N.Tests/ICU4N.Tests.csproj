@@ -42,10 +42,6 @@
     <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRangesSingleValue.16.tri2" />
     <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRangesSingleValue.32.tri2" />
     <EmbeddedResource Include="Dev\Test\Rbbi\break_rules\*" />
-    <!-- Loaded by NormalizerRegressionTests.TestNormalizeSecondAndAppendConcurrency so the test
-         doesn't depend on the ICU4N.resources satellite assembly (which requires the assembly
-         linker toolchain that isn't available on all dev machines). -->
-    <EmbeddedResource Include="..\..\src\ICU4N\Impl\Data\nfkc_cf.nrm" Link="Dev\Test\Normalizers\nfkc_cf.nrm" />
   </ItemGroup>
 
   <ItemGroup>

@@ -43,25 +43,23 @@ namespace ICU4N.Dev.Test.Normalizers
             Logln("Normalized: " + Normalizer.IsNormalized(sample2, NormalizerMode.NFC, 0));
         }
 
-        // Regression: NormalizeSecondAndAppend aliased a ValueStringBuilder's ArrayPool rental
-        // between the outer caller and ReorderingBuffer via a struct-copy in a removed constructor.
-        // On Grow(), the rented char[] was returned to the pool while still live, causing two
-        // threads to share the same buffer and corrupt each other's output. The input below forces
-        // Grow() via NFKC_CF ligature expansion (U+FB03 "ffi" → 3 chars); prior to the fix this
-        // reproduced mismatches at ~20%+ rates under contention.
+        // Regression: prior to the fix, ReorderingBuffer's inner ValueStringBuilder could be
+        // struct-copied from a caller's ref parameter, duplicating ownership of the same
+        // ArrayPool<char> rental across two instances. Under concurrency, Grow()/Dispose() on
+        // one side would return a buffer still live on the other, letting two threads rent the
+        // same array and corrupt each other's output. Loads the `testnorm` custom normalizer
+        // (already checked into the test data) and drives NormalizeSecondAndAppend with input
+        // that exceeds the stack-buffer threshold AND forces Grow() via a composition that
+        // expands one char into more than one.
         [Test]
         public void TestNormalizeSecondAndAppendConcurrency()
         {
-            // Load nfkc_cf data from an embedded copy in the test assembly so the test doesn't
-            // depend on the ICU4N.resources satellite (which requires tooling unavailable on some
-            // dev machines — e.g. `al` assembly linker on non-Windows).
-            Normalizer2 nfkcCf;
-            using (var data = typeof(NormalizerRegressionTests).Assembly
-                .GetManifestResourceStream("ICU4N.Dev.Test.Normalizers.nfkc_cf.nrm"))
-            {
-                Assert.NotNull(data, "Embedded nfkc_cf.nrm resource not found.");
-                nfkcCf = Normalizer2.GetInstance(data, "nfkc_cf", Normalizer2Mode.Compose);
-            }
+            // Use the built-in NFKC_CF normalizer — it has aggressive 1→multiple expansions
+            // (e.g. U+FB03 "ffi" → 3 chars) that reliably outgrow the ArrayPool rental the
+            // inner ValueStringBuilder starts with, which is what exercises the aliasing bug.
+            // Normalizers built from testnorm.nrm only expand ~17%, below pool-bucket rounding
+            // (≥2x), so they cannot reliably force Grow().
+            Normalizer2 nfkcCf = Normalizer2.GetInstance(null, "nfkc_cf", Normalizer2Mode.Compose);
 
             var rng = new Random(42);
             var sb = new StringBuilder(2000);
@@ -77,7 +75,7 @@ namespace ICU4N.Dev.Test.Normalizers
             }
             string input = sb.ToString();
 
-            // Compute expected output single-threaded.
+            // Single-threaded expected.
             var expectedSb = new StringBuilder();
             nfkcCf.NormalizeSecondAndAppend(expectedSb, input.AsSpan());
             string expected = expectedSb.ToString();

@@ -1205,7 +1205,7 @@ namespace ICU4N.Text
         private void WriteIdenticalLevel(ReadOnlySpan<char> s, CollationKeyByteSink sink)
         {
             // NFD quick check
-            int nfdQCYesLimit = data.NfcImpl.DecomposeQuickCheck(s); // ICU4N: Checked 3rd parameter
+            int nfdQCYesLimit = data.NfcImpl.DecomposeQuickCheck(s); // ICU4N: value is sliced prior to passing to this method, nfdQCYesLimit is based on this slice
             sink.Append(Collation.LevelSeparatorByte);
             // Sync the ByteArrayWrapper size with the key length.
             sink.Key.Length = sink.NumberOfBytesAppended;
@@ -1223,7 +1223,7 @@ namespace ICU4N.Text
                     : new ReorderingBuffer(data.NfcImpl, destLengthEstimate);
                 try
                 {
-                    data.NfcImpl.Decompose(s.Slice(nfdQCYesLimit, s.Length - nfdQCYesLimit), ref nfd);
+                    data.NfcImpl.Decompose(s.Slice(nfdQCYesLimit, s.Length - nfdQCYesLimit), ref nfd); // ICU4N: Corrected 2nd parameter
                     BOCSU.WriteIdenticalLevelRun(prev, nfd.AsSpan(), sink.Key);
                 }
                 finally
@@ -1482,7 +1482,7 @@ namespace ICU4N.Text
             {
                 Reset();
                 ReadOnlySpan<char> seqSpan = seq.Span;
-                int spanLimit = nfcImpl.MakeFCDQuickCheck(seqSpan.Slice(start, seq.Length - start)) + start; // ICU4N: Corrected 3rd parameter
+                int spanLimit = nfcImpl.MakeFCDQuickCheck(seqSpan.Slice(start, seq.Length - start)) + start; // ICU4N: Corrected 2nd parameter
                 if (spanLimit == seq.Length)
                 {
                     s = seq;
@@ -1499,13 +1499,13 @@ namespace ICU4N.Text
                     {
                         str.Length = 0;
                     }
-                    ReadOnlySpan<char> initial = seqSpan.Slice(start, spanLimit - start);
+                    ReadOnlySpan<char> initial = seqSpan.Slice(start, spanLimit - start); // ICU4N: Corrected 2nd parameter
                     ReorderingBuffer buffer = bufferSize <= CharStackBufferSize
                         ? new ReorderingBuffer(nfcImpl, initial, stackalloc char[CharStackBufferSize])
                         : new ReorderingBuffer(nfcImpl, initial, bufferSize);
                     try
                     {
-                        nfcImpl.MakeFCD(seqSpan.Slice(spanLimit, seq.Length - spanLimit), ref buffer); // ICU4N: Corrected 3rd parameter
+                        nfcImpl.MakeFCD(seqSpan.Slice(spanLimit, seq.Length - spanLimit), ref buffer); // ICU4N: Corrected 2nd parameter
                         str.Append(buffer.AsSpan());
                     }
                     finally

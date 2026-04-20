@@ -388,33 +388,18 @@ namespace ICU4N.Impl
                 throw new ArgumentNullException(nameof(first));
 
             int length = first.Length + second.Length;
-            // Materialize `first` into a span so it can be passed as the initial value to ReorderingBuffer.
-            char[]? firstPoolArray = null;
-            Span<char> firstSpan = first.Length <= CharStackBufferSize
-                ? stackalloc char[CharStackBufferSize].Slice(0, first.Length)
-                : (firstPoolArray = System.Buffers.ArrayPool<char>.Shared.Rent(first.Length)).AsSpan(0, first.Length);
+            var buffer = length <= CharStackBufferSize
+                ? new ReorderingBuffer(Impl, first, stackalloc char[CharStackBufferSize])
+                : new ReorderingBuffer(Impl, first, length);
             try
             {
-                first.CopyTo(0, firstSpan, first.Length);
-
-                var buffer = length <= CharStackBufferSize
-                    ? new ReorderingBuffer(Impl, firstSpan, stackalloc char[CharStackBufferSize])
-                    : new ReorderingBuffer(Impl, firstSpan, length);
-                try
-                {
-                    NormalizeAndAppend(second, doNormalize, ref buffer);
-                    first.Length = 0;
-                    first.Append(buffer.AsSpan());
-                }
-                finally
-                {
-                    buffer.Dispose();
-                }
+                NormalizeAndAppend(second, doNormalize, ref buffer);
+                first.Length = 0;
+                first.Append(buffer.AsSpan());
             }
             finally
             {
-                if (firstPoolArray != null)
-                    System.Buffers.ArrayPool<char>.Shared.Return(firstPoolArray);
+                buffer.Dispose();
             }
             return first;
         }

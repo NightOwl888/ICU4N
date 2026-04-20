@@ -481,19 +481,23 @@ namespace ICU4N.Impl.Coll
         private const int CharStackBufferSize = 64;
         private void Normalize(int from, int to)
         {
+            int estimatedLength = to - from;
+            ReadOnlySpan<char> value = rawSeq.Span.Slice(from, estimatedLength); // ICU4N: Corrected 2nd parameter
             if (normalized == null)
             {
-                normalized = new OpenStringBuilder();
+                normalized = new OpenStringBuilder(estimatedLength);
             }
-            normalized.Length = 0;
-            int estimatedLength = to - from;
+            else
+            {
+                normalized.Length = 0;
+            }
             ReorderingBuffer buffer = estimatedLength <= CharStackBufferSize
                 ? new ReorderingBuffer(nfcImpl, stackalloc char[CharStackBufferSize])
                 : new ReorderingBuffer(nfcImpl, estimatedLength);
             try
             {
                 // NFD without argument checking.
-                nfcImpl.Decompose(rawSeq.Span.Slice(from, to - from), ref buffer);
+                nfcImpl.Decompose(value, ref buffer);
                 normalized.Append(buffer.AsSpan());
             }
             finally
