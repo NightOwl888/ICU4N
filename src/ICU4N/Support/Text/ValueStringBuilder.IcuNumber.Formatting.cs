@@ -13,12 +13,6 @@ namespace ICU4N.Text
     {
         private const int CharStackBufferSize = 32;
 
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void AppendFormat(long value, string? format, UNumberFormatInfo info, int[]? numberGroupSizesOverride = null)
-            => AppendFormat(value, format.AsSpan(), info, numberGroupSizesOverride);
-#endif
-
         internal void AppendFormat(long value, ReadOnlySpan<char> format, UNumberFormatInfo info, int[]? numberGroupSizesOverride = null)
         {
             if (IcuNumber.TryFormatInt64(value, format, info, _chars.Slice(_pos), out int charsWritten, numberGroupSizesOverride))
@@ -47,13 +41,6 @@ namespace ICU4N.Text
                 }
             }
         }
-
-
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void AppendFormat(double value, string? format, UNumberFormatInfo info, int[]? numberGroupSizesOverride = null)
-            => AppendFormat(value, format.AsSpan(), info, numberGroupSizesOverride);
-#endif
 
         internal void AppendFormat(double value, ReadOnlySpan<char> format, UNumberFormatInfo info, int[]? numberGroupSizesOverride = null)
         {
@@ -84,12 +71,6 @@ namespace ICU4N.Text
             }
         }
 
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void InsertFormat(int index, long value, string? format, UNumberFormatInfo info, int[]? numberGroupSizesOverride = null)
-            => InsertFormat(index, value, format.AsSpan(), info, numberGroupSizesOverride);
-#endif
-
         internal void InsertFormat(int index, long value, ReadOnlySpan<char> format, UNumberFormatInfo info, int[]? numberGroupSizesOverride = null)
         {
             Span<char> buffer = stackalloc char[CharStackBufferSize];
@@ -112,12 +93,6 @@ namespace ICU4N.Text
                 Insert(index, IcuNumber.FormatInt64(value, format, info, numberGroupSizesOverride));
             }
         }
-
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void InsertFormat(int index, double value, string? format, UNumberFormatInfo info, int[]? numberGroupSizesOverride = null)
-            => InsertFormat(index, value, format.AsSpan(), info, numberGroupSizesOverride);
-#endif
 
         internal void InsertFormat(int index, double value, ReadOnlySpan<char> format, UNumberFormatInfo info, int[]? numberGroupSizesOverride = null)
         {

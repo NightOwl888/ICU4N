@@ -278,16 +278,6 @@ namespace ICU4N.Impl
             return buffer.ToString();
         }
 
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-        /// <summary>
-        /// Convert characters outside the range U+0020 to U+007F to
-        /// Unicode escapes, and convert backslash to a double backslash.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static string Escape(string s)
-            => Escape(s.AsSpan());
-#endif
-
         /// <summary>
         /// Convert characters outside the range U+0020 to U+007F to
         /// Unicode escapes, and convert backslash to a double backslash.
@@ -351,22 +341,6 @@ namespace ICU4N.Impl
             /*t*/ (char)0x74, (char)0x09,
             /*v*/ (char)0x76, (char)0x0b
         };
-
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-        /// <summary>
-        /// Convert an escape to a 32-bit code point value.  We attempt
-        /// to parallel the icu4c unescapeAt() function.
-        /// </summary>
-        /// <param name="s">The character sequence to escape.</param>
-        /// <param name="offset16">An offset to the character
-        /// <em>after</em> the backslash.  Upon return offset16 will
-        /// be updated to point after the escape sequence.</param>
-        /// <returns>Character value from 0 to 10FFFF, or -1 on error.</returns>
-        // ICU4N: To fix lack of implicit conversion
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int UnescapeAt(string s, ref int offset16)
-            => UnescapeAt(s.AsSpan(), ref offset16);
-#endif
 
         /// <summary>
         /// Convert an escape to a 32-bit code point value.  We attempt
@@ -516,17 +490,6 @@ namespace ICU4N.Impl
             return c;
         }
 
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-        /// <summary>
-        /// Convert all escapes in a given string using <see cref="UnescapeAt(ReadOnlySpan{char}, ref int)"/>.
-        /// </summary>
-        /// <exception cref="ArgumentException">If an invalid escape is seen.</exception>
-        // ICU4N: To fix lack of implicit conversion
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static string Unescape(string s)
-            => Unescape(s.AsSpan());
-#endif
-
         /// <summary>
         /// Convert all escapes in a given string using <see cref="UnescapeAt(ReadOnlySpan{char}, ref int)"/>.
         /// </summary>
@@ -573,15 +536,6 @@ namespace ICU4N.Impl
             }
         }
 
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-        /// <summary>
-        /// Convert all escapes in a given string using <see cref="UnescapeAt(ReadOnlySpan{char}, ref int)"/>.
-        /// Leave invalid escape sequences unchanged.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static string UnescapeLeniently(string s)
-            => UnescapeLeniently(s.AsSpan());
-#endif
         /// <summary>
         /// Convert all escapes in a given string using <see cref="UnescapeAt(ReadOnlySpan{char}, ref int)"/>.
         /// Leave invalid escape sequences unchanged.

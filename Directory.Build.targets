@@ -69,7 +69,6 @@
     <DefineConstants>$(DefineConstants);FEATURE_BIGINTEGER_TOBYTEARRAY_BIGENDIAN</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_RANDOMNUMBERGENERATOR_FILL_SPAN</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_STRING_CREATE</DefineConstants>
-    <DefineConstants>$(DefineConstants);FEATURE_STRING_IMPLCIT_TO_READONLYSPAN</DefineConstants>
 
   </PropertyGroup>
 

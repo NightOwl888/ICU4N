@@ -163,11 +163,7 @@ namespace ICU4N.Globalization
             {
                 // if the description doesn't begin with a rule set name, its
                 // name is "%default"
-                name = "%default"
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-                    .AsSpan()
-#endif
-                    ;
+                name = "%default";
                 isParseable = true;
                 return description;
             }

@@ -17,7 +17,7 @@ namespace ICU4N.Support.Text
         /// <param name="destination">The span into which to copy this string's contents.</param>
         /// <exception cref="ArgumentException">If <paramref name="destination"/> is too short.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void CopyTo(this string s, Span<char> destination) // ICU4N TODO: Move to J2N?
+        public static void CopyTo(this string s, Span<char> destination)
         {
             if (s is null)
                 throw new ArgumentNullException(nameof(s));
@@ -37,7 +37,7 @@ namespace ICU4N.Support.Text
         /// <param name="destination">The span into which to copy this string's contents.</param>
         /// <returns>true if the data was copied; false if the destination was too short to fit the contents of the string.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool TryCopyTo(this string s, Span<char> destination) // ICU4N TODO: Move to J2N?
+        public static bool TryCopyTo(this string s, Span<char> destination)
         {
             if (s is null)
                 throw new ArgumentNullException(nameof(s));

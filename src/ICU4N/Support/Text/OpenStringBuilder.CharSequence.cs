@@ -116,14 +116,6 @@ namespace ICU4N.Text
         public int IndexOf(ReadOnlySpan<char> value, int startIndex, StringComparison comparisonType)
             => AsSpan(startIndex).IndexOf(value, comparisonType) + startIndex;
 
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-        public int IndexOf(string value, StringComparison comparisonType)
-            => AsSpan().IndexOf(value.AsSpan(), comparisonType);
-
-        public int IndexOf(string value, int startIndex, StringComparison comparisonType)
-            => AsSpan(startIndex).IndexOf(value.AsSpan(), comparisonType) + startIndex;
-#endif
-
         public int LastIndexOf(char value) => _chars.AsSpan(0, _pos).LastIndexOf(value);
 
         public int LastIndexOf(ReadOnlySpan<char> value, StringComparison comparisonType)
@@ -131,15 +123,6 @@ namespace ICU4N.Text
 
         public int LastIndexOf(ReadOnlySpan<char> value, int startIndex, StringComparison comparisonType)
             => AsSpan(0, startIndex + 1).LastIndexOf(value, comparisonType);
-
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-        public int LastIndexOf(string value, StringComparison comparisonType)
-            => AsSpan().LastIndexOf(value.AsSpan(), comparisonType);
-
-        public int LastIndexOf(string value, int startIndex, StringComparison comparisonType)
-            => AsSpan(0, startIndex + 1).LastIndexOf(value.AsSpan(), comparisonType);
-#endif
-
 
         #region ICharSequence
 

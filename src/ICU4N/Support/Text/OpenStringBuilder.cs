@@ -1,4 +1,5 @@
-﻿using J2N.Text;
+﻿using ICU4N.Support.Text;
+using J2N.Text;
 using System;
 using System.Buffers;
 using System.Diagnostics;
@@ -175,11 +176,7 @@ namespace ICU4N.Text
 
             int remaining = _pos - index;
             _chars.AsSpan(index, remaining).CopyTo(_chars.AsSpan(index + count));
-            s
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-                .AsSpan()
-#endif
-                .CopyTo(_chars.AsSpan(index));
+            s.CopyTo(_chars.AsSpan(index));
             _pos += count;
             return this;
         }
@@ -270,11 +267,7 @@ namespace ICU4N.Text
                 Grow(s.Length);
             }
 
-            s
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-                .AsSpan()
-#endif
-                .CopyTo(_chars.AsSpan(pos));
+            s.CopyTo(_chars.AsSpan(pos));
             _pos += s.Length;
         }
 

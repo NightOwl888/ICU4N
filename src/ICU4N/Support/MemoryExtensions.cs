@@ -38,80 +38,12 @@ namespace ICU4N
         }
 #endif
 
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-
-        /// <summary>
-        /// Reports the zero-based index of the first occurrence of the specified <paramref name="value"/> in the current <paramref name="span"/>.
-        /// <param name="span">The source span.</param>
-        /// <param name="value">The value to seek within the source span.</param>
-        /// <param name="comparisonType">One of the enumeration values that determines how the <paramref name="span"/> and <paramref name="value"/> are compared.</param>
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int IndexOf(this ReadOnlySpan<char> span, string value, StringComparison comparisonType)
-        {
-            return System.MemoryExtensions.IndexOf(span, value.AsSpan(), comparisonType);
-        }
-
-
-        /// <summary>
-        /// Determines whether this <paramref name="span"/> and the specified <paramref name="other"/> span have the same characters
-        /// when compared using the specified <paramref name="comparisonType"/> option.
-        /// <param name="span">The source span.</param>
-        /// <param name="other">The value to compare with the source span.</param>
-        /// <param name="comparisonType">One of the enumeration values that determines how the <paramref name="span"/> and <paramref name="other"/> are compared.</param>
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool Equals(this ReadOnlySpan<char> span, string other, StringComparison comparisonType)
-        {
-            return System.MemoryExtensions.Equals(span, other.AsSpan(), comparisonType);
-        }
-
-        /// <summary>
-        /// Determines whether the beginning of the <paramref name="span"/> matches the specified <paramref name="value"/> when compared using the specified <paramref name="comparisonType"/> option.
-        /// </summary>
-        /// <param name="span">The source span.</param>
-        /// <param name="value">The sequence to compare to the beginning of the source span.</param>
-        /// <param name="comparisonType">One of the enumeration values that determines how the <paramref name="span"/> and <paramref name="value"/> are compared.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool StartsWith(this ReadOnlySpan<char> span, string value, StringComparison comparisonType)
-        {
-            return System.MemoryExtensions.StartsWith(span, value.AsSpan(), comparisonType);
-        }
-
-        /// <summary>
-        /// Determines whether the end of the <paramref name="span"/> matches the specified <paramref name="value"/> when compared using the specified <paramref name="comparisonType"/> option.
-        /// </summary>
-        /// <param name="span">The source span.</param>
-        /// <param name="value">The sequence to compare to the end of the source span.</param>
-        /// <param name="comparisonType">One of the enumeration values that determines how the <paramref name="span"/> and <paramref name="value"/> are compared.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool EndsWith(this ReadOnlySpan<char> span, string value, StringComparison comparisonType)
-        {
-            return System.MemoryExtensions.EndsWith(span, value.AsSpan(), comparisonType);
-        }
-#endif
-
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int IndexOf(this ReadOnlySpan<char> span, string value, int startIndex, StringComparison comparisonType)
-        {
-            return IndexOf(span, value.AsSpan(), startIndex, comparisonType);
-        }
-#endif
         public static int IndexOf(this ReadOnlySpan<char> span, ReadOnlySpan<char> value, int startIndex, StringComparison comparisonType)
         {
             ReadOnlySpan<char> slice = span.Slice(startIndex);
             int pos = System.MemoryExtensions.IndexOf(slice, value, comparisonType);
             return pos < 0 ? -1 : pos + startIndex;
         }
-
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int IndexOf(this ReadOnlySpan<char> span, string value, int startIndex, int count, StringComparison comparisonType)
-        {
-            return IndexOf(span, value.AsSpan(), startIndex, count, comparisonType);
-        }
-#endif
 
         public static int IndexOf(this ReadOnlySpan<char> span, ReadOnlySpan<char> value, int startIndex, int count, StringComparison comparisonType)
         {
@@ -128,29 +60,6 @@ namespace ICU4N
         }
 
 #if !FEATURE_MEMORYEXTENSIONS_LASTINDEXOF_COMPARISONTYPE
-
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-        /// <summary>
-        /// Reports the zero-based index of the last occurrence of the specified <paramref name="value"/> in the current <paramref name="span"/>.
-        /// <param name="span">The source span.</param>
-        /// <param name="value">The value to seek within the source span.</param>
-        /// <param name="comparisonType">One of the enumeration values that determines how the <paramref name="span"/> and <paramref name="value"/> are compared.</param>
-        /// </summary>
-        public static int LastIndexOf(this ReadOnlySpan<char> span, string value, StringComparison comparisonType)
-        {
-            CheckStringComparison(comparisonType);
-
-            if (comparisonType == StringComparison.Ordinal)
-            {
-                return span.LastIndexOf(value.AsSpan());
-            }
-
-            // Hack for platforms older than .NET Core, since this overload didn't exist.
-            // ICU4N TODO: Optimize (this is rarely used)
-            return span.ToString().LastIndexOf(value, comparisonType);
-        }
-
-#endif
 
         /// <summary>
         /// Reports the zero-based index of the last occurrence of the specified <paramref name="value"/> in the current <paramref name="span"/>.

@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using ICU4N.Support.Text;
 using System;
 using System.Buffers;
 using System.Diagnostics;
@@ -273,11 +274,7 @@ namespace ICU4N.Text
 
             int remaining = _pos - index;
             _chars.Slice(index, remaining).CopyTo(_chars.Slice(index + count));
-            s
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-                .AsSpan()
-#endif
-                .CopyTo(_chars.Slice(index));
+            s.CopyTo(_chars.Slice(index));
             _pos += count;
             UpdateMaxLength();
         }
@@ -369,11 +366,7 @@ namespace ICU4N.Text
                 Grow(s.Length);
             }
 
-            s
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-                .AsSpan()
-#endif
-                .CopyTo(_chars.Slice(pos));
+            s.CopyTo(_chars.Slice(pos));
             _pos += s.Length;
             UpdateMaxLength();
         }

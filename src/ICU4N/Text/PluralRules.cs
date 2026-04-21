@@ -1076,17 +1076,6 @@ namespace ICU4N.Text
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public virtual ReadOnlySpan<char> AsSpan() // ICU4N: Added to patch platforms that don't implicitly convert string to ReadOnlySpan<char>
-            {
-                return ToString()
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-                    .AsSpan()
-#endif
-                    ;
-            }
-
-            /// <internal/>
-            [Obsolete("This API is ICU internal only.")]
 #pragma warning disable 809
             public override string ToString()
 #pragma warning restore 809
@@ -1293,7 +1282,7 @@ namespace ICU4N.Text
                         }
                         if (!TryCheckDecimal(sampleType2, sample)) // ICU4N TODO: This can never fail - it should be an assert rather than an error.
                         {
-                            source = sample.AsSpan();
+                            source = sample.ToString(); // ICU4N TODO: API - ideally, there would be a TryGetChars() method that writes to Span<char> to avoid this unnecessary allocation.
                             return ParseRuleStatus.IllformedNumberRange;
                         }
                         samples2.Add(new FixedDecimalRange(sample, sample));
@@ -1312,12 +1301,12 @@ namespace ICU4N.Text
                         }
                         if (!TryCheckDecimal(sampleType2, start)) // ICU4N TODO: This can never fail - it should be an assert rather than an error.
                         {
-                            source = start.AsSpan();
+                            source = start.ToString(); // ICU4N TODO: API - ideally, there would be a TryGetChars() method that writes to Span<char> to avoid this unnecessary allocation.
                             return ParseRuleStatus.IllformedNumberRange;
                         }
                         if (!TryCheckDecimal(sampleType2, end)) // ICU4N TODO: This can never fail - it should be an assert rather than an error.
                         {
-                            source = end.AsSpan();
+                            source = end.ToString(); // ICU4N TODO: API - ideally, there would be a TryGetChars() method that writes to Span<char> to avoid this unnecessary allocation.
                             return ParseRuleStatus.IllformedNumberRange;
                         }
                         samples2.Add(new FixedDecimalRange(start, end));
@@ -1771,11 +1760,7 @@ namespace ICU4N.Text
                         // Hack to exclude "is not 1,2"
                         if (lowBound != highBound && hackForCompatibility && !inRange)
                         {
-                            token = "is not <range>"
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-                                .AsSpan()
-#endif
-                                ;
+                            token = "is not <range>";
                             return ParseRuleStatus.ConstraintUnexpectedToken;
                         }
 
@@ -1849,12 +1834,6 @@ namespace ICU4N.Text
             // ICU4N: Checked 2nd arg
             return TryParseRule(description.Slice(0, x).Trim(), description.Slice(x + 1).Trim(), out result, out source, out context);
         }
-
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool TryParseRule(string keyword, string description, out Rule result)
-            => TryParseRule(keyword.AsSpan(), description.AsSpan(), out result);
-#endif
 
         // ICU4N: Added overload for use by PluralRulesLoader so it doesn't have to use StringBuilder
         internal static bool TryParseRule(ReadOnlySpan<char> keyword, ReadOnlySpan<char> description, out Rule result)

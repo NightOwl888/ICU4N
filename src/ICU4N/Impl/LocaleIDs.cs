@@ -37,20 +37,6 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Util namespace
             return (string[])_languages.Clone();
         }
 
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-        /// <summary>
-        /// Returns a three-letter abbreviation for the provided country.  If the provided
-        /// country is empty, returns the empty string.  Otherwise, returns
-        /// an uppercase ISO 3166 3-letter country code.
-        /// </summary>
-        /// <exception cref="System.Resources.MissingManifestResourceException">Throws <see cref="System.Resources.MissingManifestResourceException"/> if the
-        /// three-letter country abbreviation is not available for this locale.</exception>
-        /// <stable>ICU 3.0</stable>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string GetThreeLetterISOCountryName(string country)
-            => GetThreeLetterISOCountryName(country.AsSpan());
-#endif
-
         /// <summary>
         /// Returns a three-letter abbreviation for the provided country.  If the provided
         /// country is empty, returns the empty string.  Otherwise, returns
@@ -76,23 +62,6 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Util namespace
             }
             return "";
         }
-
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-        /// <summary>
-        /// Returns a three-letter abbreviation for the language.  If language is
-        /// empty, returns the empty string.  Otherwise, returns
-        /// a lowercase ISO 639-2/T language code.
-        /// </summary>
-        /// <remarks>The ISO 639-2 language codes can be found on-line at
-        /// <a href="ftp://dkuug.dk/i18n/iso-639-2.txt">ftp://dkuug.dk/i18n/iso-639-2.txt</a>.
-        /// </remarks>
-        /// <exception cref="System.Resources.MissingManifestResourceException">Throws <see cref="System.Resources.MissingManifestResourceException"/> if the
-        /// three-letter language abbreviation is not available for this locale.</exception>
-        /// <stable>ICU 3.0</stable>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string GetThreeLetterISOLanguageName(string language)
-            => GetThreeLetterISOLanguageName(language.AsSpan());
-#endif
 
         /// <summary>
         /// Returns a three-letter abbreviation for the language.  If language is
@@ -123,12 +92,6 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Util namespace
             return "";
         }
 
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string ThreeToTwoLetterLanguage(string lang)
-            => ThreeToTwoLetterLanguage(lang.AsSpan());
-#endif
-
         public static string ThreeToTwoLetterLanguage(ReadOnlySpan<char> lang)
         {
             /* convert 3 character code to 2 character code if possible *CWB*/
@@ -146,12 +109,6 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Util namespace
 
             return null;
         }
-
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string ThreeToTwoLetterRegion(string region)
-            => ThreeToTwoLetterRegion(region.AsSpan());
-#endif
 
         public static string ThreeToTwoLetterRegion(ReadOnlySpan<char> region)
         {
@@ -506,11 +463,15 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Util namespace
             "ANT", "BUR", "SCG", "FXX", "ROM", "SUN", "TMP", "YMD", "YUG", "ZAR",
         };
 
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string GetCurrentCountryID(string oldID)
-            => GetCurrentCountryID(oldID.AsSpan());
-#endif
+        {
+            int offset = FindIndex(_deprecatedCountries, oldID);
+            if (offset >= 0)
+            {
+                return _replacementCountries[offset];
+            }
+            return oldID;
+        }
 
         public static string GetCurrentCountryID(ReadOnlySpan<char> oldID)
         {
@@ -522,11 +483,15 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Util namespace
             return oldID.ToString();
         }
 
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string GetCurrentLanguageID(string oldID)
-            => GetCurrentLanguageID(oldID.AsSpan());
-#endif
+        {
+            int offset = FindIndex(_obsoleteLanguages, oldID);
+            if (offset >= 0)
+            {
+                return _replacementLanguages[offset];
+            }
+            return oldID;
+        }
 
         public static string GetCurrentLanguageID(ReadOnlySpan<char> oldID)
         {
