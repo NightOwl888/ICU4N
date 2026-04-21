@@ -34,4 +34,35 @@
       <HintPath>$(PkgJ2N)/lib/net40/J2N.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">
+    <!-- On net472 (for testing net451), we incorrectly get references to System.Memory. We can exclude the DLL and dependencies as follows.
+        The IDE view is wrong, these references don't actually exist.
+        ExcludeAssets=compile removes the dependency from being referenced. ExcludeAssets=runtime removes the dependency from the build output. -->
+    
+    <PackageReference Include="J2N"
+                      Version="$(J2NPackageReferenceVersion)"
+                      ExcludeAssets="compile;runtime"
+                      GeneratePathProperty="true" />
+    <PackageReference Include="System.Buffers"
+                      Version="$(SystemBuffersPackageReferenceVersion)"
+                      ExcludeAssets="compile;runtime" />
+    <PackageReference Include="System.Memory"
+                      Version="$(SystemMemoryPackageReferenceVersion)"
+                      ExcludeAssets="compile;runtime" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe"
+                      Version="$(SystemRuntimeCompilerServicesUnsafePackageReferenceVersion)"
+                      ExcludeAssets="compile;runtime" />
+    <PackageReference Include="NetFx.System.Buffers"
+                      Version="$(NetFxSystemBuffersPackageReferenceVersion)" />
+    <PackageReference Include="NetFx.System.Memory"
+                      Version="$(NetFxSystemMemoryPackageReferenceVersion)" />
+    <PackageReference Include="NetFx.System.Runtime.CompilerServices.Unsafe"
+                      Version="$(NetFxSystemRuntimeCompilerServicesUnsafePackageReferenceVersion)" />
+
+    <Reference Include="J2N">
+      <HintPath>$(PkgJ2N)/lib/net45/J2N.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
