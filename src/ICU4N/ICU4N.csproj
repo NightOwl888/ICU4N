@@ -4,8 +4,8 @@
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
-    <TargetFrameworks Condition="$(VisualStudioVersion) &gt;= 16.10">net9.0;net8.0</TargetFrameworks>
-    <TargetFrameworks>$(TargetFrameworks);netstandard2.0;net462;net451;net40</TargetFrameworks>
+    <TargetFrameworks>net9.0;net8.0</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(IsLegacyVisualStudioVersion)' != 'true' ">$(TargetFrameworks);netstandard2.0;net462;net451;net40</TargetFrameworks>
 
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     
@@ -105,8 +105,7 @@
 
   <PropertyGroup>
     <ICU4JResourceConverterDir>$(SolutionDir)src/tools/ICU4JResourceConverter</ICU4JResourceConverterDir>
-    <ICU4JResourceConverterTargetFramework>net5.0</ICU4JResourceConverterTargetFramework>
-    <ICU4JResourceConverterTargetFramework Condition="'$(VisualStudioVersion)' &gt;= '16.10'">net9.0</ICU4JResourceConverterTargetFramework>
+    <ICU4JResourceConverterTargetFramework>net10.0</ICU4JResourceConverterTargetFramework>
     <ICU4JResourceConverterOutputDir>$(ICU4JResourceConverterDir)/bin/$(Configuration)/$(ICU4JResourceConverterTargetFramework)</ICU4JResourceConverterOutputDir>
 
     <ICU4JDownloadConfigFilePath>$(SolutionDir).build/icu4j-download-urls.txt</ICU4JDownloadConfigFilePath>
