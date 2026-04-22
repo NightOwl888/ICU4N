@@ -1032,7 +1032,7 @@ namespace ICU4N.Impl.Coll
                     string prefix = prefixIter.Current;
                     if (IgnorePrefix(prefix)) { continue; }
                     bool samePrefix = prefix.ContentEquals(nfdPrefix);
-                    ReadOnlySpan<char> prefixCharSequence = prefix.AsSpan();
+                    ReadOnlySpan<char> prefixCharSequence = prefix;
                     while (stringIter.MoveNext())
                     {
                         string str = stringIter.Current;
@@ -1079,7 +1079,7 @@ namespace ICU4N.Impl.Coll
                 Debug.Assert(iter.Codepoint != UnicodeSetIterator.IsString);
                 int composite = iter.Codepoint;
                 string decomp = nfd.GetDecomposition(composite);
-                if (!MergeCompositeIntoString(nfdString, indexAfterLastStarter, composite, decomp.AsSpan(),
+                if (!MergeCompositeIntoString(nfdString, indexAfterLastStarter, composite, decomp,
                         newNFDString, newString))
                 {
                     continue;
@@ -1217,7 +1217,7 @@ namespace ICU4N.Impl.Coll
             }
             Debug.Assert(nfd.IsNormalized(newNFDString.AsSpan()));
             Debug.Assert(fcd.IsNormalized(newString.AsSpan()));
-            Debug.Assert(nfd.Normalize(newString.AsSpan()).AsSpan().Equals(newNFDString.AsSpan(), StringComparison.Ordinal));  // canonically equivalent
+            Debug.Assert(nfd.Normalize(newString.AsSpan()).Equals(newNFDString.AsSpan(), StringComparison.Ordinal));  // canonically equivalent
             return true;
         }
 
