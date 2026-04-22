@@ -93,7 +93,7 @@ namespace ICU4N
 
                 // We didn't have enough buffer on the stack. Do it the slow way.
                 string temp = value.ToString(format.ToString(), nfi);
-                AppendConvertedDigits(ref sb, temp.AsSpan(), info!);
+                AppendConvertedDigits(ref sb, temp, info!);
             }
         }
 
@@ -187,7 +187,7 @@ namespace ICU4N
 
                 // We didn't have enough buffer on the stack. Do it the slow way.
                 string temp = value.ToString(format.ToString(), nfi);
-                AppendConvertedDigits(ref sb, temp.AsSpan(), info!);
+                AppendConvertedDigits(ref sb, temp, info!);
             }
             return null;
         }
@@ -215,7 +215,7 @@ namespace ICU4N
 
                 // We didn't have enough buffer on the stack. Do it the slow way.
                 string temp = value.ToString(format.ToString(), nfi);
-                AppendConvertedDigits(ref sb, temp.AsSpan(), info!);
+                AppendConvertedDigits(ref sb, temp, info!);
             }
             return null;
         }
@@ -394,7 +394,7 @@ namespace ICU4N
             // If no pattern was applied, return the formatted number.
             if (messagePattern is null || messagePattern.PartCount == 0)
             {
-                FormatDouble(ref sb, value, format.AsSpan(), info!, numberGroupSizesOverride);
+                FormatDouble(ref sb, value, format, info!, numberGroupSizesOverride);
                 return;
             }
 
@@ -409,11 +409,11 @@ namespace ICU4N
             {
                 if (offset == 0)
                 {
-                    FormatDouble(ref temp, value, format.AsSpan(), info!, numberGroupSizesOverride); // ICU4N NOTE: This is how we might format decimal/BigDecimal at some point (just like in ICU4J)
+                    FormatDouble(ref temp, value, format, info!, numberGroupSizesOverride); // ICU4N NOTE: This is how we might format decimal/BigDecimal at some point (just like in ICU4J)
                 }
                 else
                 {
-                    FormatDouble(ref temp, numberMinusOffset, format.AsSpan(), info!, numberGroupSizesOverride);
+                    FormatDouble(ref temp, numberMinusOffset, format, info!, numberGroupSizesOverride);
                 }
 #pragma warning disable 612, 618
                 // ICU4N NOTE: This is how we get the values for 'v' and 'f'
@@ -437,7 +437,7 @@ namespace ICU4N
                 // both for the length and the value to parse.
                 var asciiInfo = (UNumberFormatInfo)info.Clone();
                 asciiInfo.nativeDigits = AsciiDigits;
-                decimalString = FormatDouble(numberMinusOffset, format.AsSpan(), asciiInfo, numberGroupSizesOverride);
+                decimalString = FormatDouble(numberMinusOffset, format, asciiInfo, numberGroupSizesOverride);
             }
 
             int dotIndex = decimalString.IndexOf('.');
@@ -665,7 +665,7 @@ namespace ICU4N
             {
                 // We're outside of our normal range that this framework can handle.
                 // The DecimalFormat will provide more accurate results.
-                FormatBigInteger(ref sb, value, info!.NumberPattern.AsSpan(), info, info.decimalPatternProperties.GroupingSizes);
+                FormatBigInteger(ref sb, value, info!.NumberPattern, info, info.decimalPatternProperties.GroupingSizes);
             }
         }
 
@@ -734,7 +734,7 @@ namespace ICU4N
             {
                 // We're outside of our normal range that this framework can handle.
                 // The DecimalFormat will provide more accurate results.
-                FormatBigInteger(ref sb, value, info!.NumberPattern.AsSpan(), info, info.decimalPatternProperties.GroupingSizes);
+                FormatBigInteger(ref sb, value, info!.NumberPattern, info, info.decimalPatternProperties.GroupingSizes);
             }
         }
 
@@ -971,7 +971,7 @@ namespace ICU4N
         {
             Debug.Assert(source != null);
 
-            if (source.AsSpan().TryCopyTo(destination))
+            if (source!.TryCopyTo(destination))
             {
                 charsWritten = source!.Length;
                 return true;
