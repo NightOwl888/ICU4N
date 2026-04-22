@@ -240,7 +240,7 @@ namespace ICU4N.Text
                     NormalizeSecondAndAppend(ref sb, src.AsSpan(spanLength, src.Length - spanLength)); // ICU4N: Corrected 2nd substring parameter
                     return sb.ToString();
                 }
-                Normalize(src.AsSpan(), ref sb);
+                Normalize(src, ref sb);
                 return sb.ToString();
             }
             finally
