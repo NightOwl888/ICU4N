@@ -1510,7 +1510,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.6</stable>
         public static int IndexOf(string source, string str, int startIndex)
         {
-            return IndexOf(source, str, startIndex, StringComparison.CurrentCulture);
+            return IndexOf(source, str, startIndex, StringComparison.CurrentCulture); // ICU4N TODO: Culture sensitivy on IndexOf() is not particularly useful.
         }
 
         /// <summary>
@@ -1653,7 +1653,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.6</stable>
         public static int LastIndexOf(string source, string str)
         {
-            return LastIndexOf(source, str, StringComparison.CurrentCulture);
+            return LastIndexOf(source, str, StringComparison.CurrentCulture); // ICU4N TODO: Culture sensitivy on IndexOf() is not particularly useful.
         }
 
         /// <summary>
