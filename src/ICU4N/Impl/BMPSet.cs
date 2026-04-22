@@ -146,29 +146,6 @@ namespace ICU4N.Impl
         /// sufficient length for trail unit for each surrogate pair. Handle single surrogates as surrogate code points
         /// as usual in ICU.
         /// </remarks>
-        public int Span(string s, int start, SpanCondition spanCondition,
-            out int outCount)
-        {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
-
-            return Span(s.AsSpan(), start, spanCondition, out outCount);
-        }
-
-        /// <summary>
-        /// Span the initial substring for which each character c has <paramref name="spanCondition"/>==Contains(c). 
-        /// It must be <paramref name="spanCondition"/>==0 or 1.
-        /// </summary>
-        /// <param name="s"></param>
-        /// <param name="start">The start index.</param>
-        /// <param name="spanCondition"></param>
-        /// <param name="outCount">If not null: Receives the number of code points in the span.</param>
-        /// <returns>The limit (exclusive end) of the span.</returns>
-        /// <remarks>
-        /// NOTE: to reduce the overhead of function call to Contains(c), it is manually inlined here. Check for
-        /// sufficient length for trail unit for each surrogate pair. Handle single surrogates as surrogate code points
-        /// as usual in ICU.
-        /// </remarks>
         public int Span(ReadOnlySpan<char> s, int start, SpanCondition spanCondition,
             out int outCount) // ICU4N TODO: API - does it make sense to return length instead of limit to match .NET APIs?
         {
@@ -293,20 +270,6 @@ namespace ICU4N.Impl
             int spanLength = i - start;
             outCount = spanLength - numSupplementary;  // number of code points
             return i;
-        }
-
-        /// <summary>
-        /// Symmetrical with <see cref="Span(string, int, SpanCondition, out int)"/>.
-        /// Span the trailing substring for which each character c has <paramref name="spanCondition"/>==Contains(c). 
-        /// It must be <paramref name="s"/>.Length >= limit and <paramref name="spanCondition"/>==0 or 1.
-        /// </summary>
-        /// <returns>The string index which starts the span (i.e. inclusive).</returns>
-        public int SpanBack(string s, int limit, SpanCondition spanCondition) // ICU4N TODO: API - Change limit to length
-        {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
-
-            return SpanBack(s.AsSpan(), limit, spanCondition);
         }
 
         /// <summary>
