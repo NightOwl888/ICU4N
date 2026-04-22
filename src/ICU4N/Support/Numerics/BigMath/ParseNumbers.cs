@@ -229,7 +229,7 @@ namespace ICU4N.Numerics.BigMath
             if (((flags & IsTight) == 0) && ((flags & NoSpace) == 0))
             {
                 int iBefore = i;
-                EatWhiteSpace(s.AsSpan(), ref i);
+                EatWhiteSpace(s, ref i);
                 if (i == end)
                     return ParsingStatus.Format_EmptyInputString;
                     //throw new FormatException(SR.Format_EmptyInputString);
@@ -301,7 +301,7 @@ namespace ICU4N.Numerics.BigMath
             {
                 //if (!Integer.TryParse(s, substrStart, substrEnd - substrStart, radix, out int bigRadixDigit)) // ICU4N TODO: When this is put into J2N - call the internal method
                 int grabNumbersStart = substrStart;
-                if (!TryGrabInts(radix, s.AsSpan(), ref grabNumbersStart, substrEnd, isUnsigned: true, out int bigRadixDigit))
+                if (!TryGrabInts(radix, s, ref grabNumbersStart, substrEnd, isUnsigned: true, out int bigRadixDigit))
                 {
                     //exception = null;
                     //result = null;
