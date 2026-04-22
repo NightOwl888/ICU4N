@@ -985,8 +985,8 @@ namespace ICU4N.Globalization
             /* total mondo hack for Norwegian, fortunately the main NY case is handled earlier */
             if (!foundVariant)
             {
-                if (parser.TryGetLanguage(buffer, out int languageLength) && buffer.Slice(0, languageLength).SequenceEqual("nb".AsSpan())
-                    && parser.TryGetVariant(buffer, out int variantLength) && buffer.Slice(0, variantLength).SequenceEqual("NY".AsSpan()))
+                if (parser.TryGetLanguage(buffer, out int languageLength) && buffer.Slice(0, languageLength).SequenceEqual("nb")
+                    && parser.TryGetVariant(buffer, out int variantLength) && buffer.Slice(0, variantLength).SequenceEqual("NY"))
                 {
                     parser.SetBaseName(LscvToID("nn", parser.GetScript(), parser.GetCountry(), null));
                 }
@@ -3293,7 +3293,7 @@ namespace ICU4N.Globalization
             if (languageTag == null)
                 throw new ArgumentNullException(nameof(languageTag));
 
-            LanguageTag.TryParse(languageTag.AsSpan(), out LanguageTag tag, out _);
+            LanguageTag.TryParse(languageTag, out LanguageTag tag, out _);
             InternalLocaleBuilder bldr = new InternalLocaleBuilder();
             bldr.SetLanguageTag(tag);
             return GetInstance(bldr.GetBaseLocale(), bldr.GetLocaleExtensions());
