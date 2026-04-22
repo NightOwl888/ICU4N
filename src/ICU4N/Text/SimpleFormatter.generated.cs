@@ -24,7 +24,7 @@ namespace ICU4N.Text
         /// <stable>ICU 57</stable>
         public string Format(ReadOnlySpan<char> value0)
         {
-            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0);
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern, value0);
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace ICU4N.Text
         /// <stable>ICU 57</stable>
         public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1)
         {
-            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1);
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern, value0, value1);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace ICU4N.Text
         /// <stable>ICU 57</stable>
         public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2)
         {
-            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2);
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern, value0, value1, value2);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace ICU4N.Text
         /// <stable>ICU 57</stable>
         public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3)
         {
-            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2, value3);
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern, value0, value1, value2, value3);
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace ICU4N.Text
         /// <stable>ICU 57</stable>
         public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4)
         {
-            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2, value3, value4);
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern, value0, value1, value2, value3, value4);
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace ICU4N.Text
         /// <stable>ICU 57</stable>
         public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5)
         {
-            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2, value3, value4, value5);
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern, value0, value1, value2, value3, value4, value5);
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace ICU4N.Text
         /// <stable>ICU 57</stable>
         public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6)
         {
-            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2, value3, value4, value5, value6);
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern, value0, value1, value2, value3, value4, value5, value6);
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace ICU4N.Text
         /// <stable>ICU 57</stable>
         public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7)
         {
-            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2, value3, value4, value5, value6, value7);
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern, value0, value1, value2, value3, value4, value5, value6, value7);
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace ICU4N.Text
         /// <stable>ICU 57</stable>
         public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8)
         {
-            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2, value3, value4, value5, value6, value7, value8);
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern, value0, value1, value2, value3, value4, value5, value6, value7, value8);
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace ICU4N.Text
         /// <stable>ICU 57</stable>
         public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9)
         {
-            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2, value3, value4, value5, value6, value7, value8, value9);
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9);
         }
 
         /// <summary>
@@ -179,7 +179,7 @@ namespace ICU4N.Text
         /// <stable>ICU 57</stable>
         public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10)
         {
-            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10);
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10);
         }
 
         /// <summary>
@@ -200,7 +200,7 @@ namespace ICU4N.Text
         /// <stable>ICU 57</stable>
         public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11)
         {
-            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11);
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11);
         }
 
         /// <summary>
@@ -222,7 +222,7 @@ namespace ICU4N.Text
         /// <stable>ICU 57</stable>
         public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12)
         {
-            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12);
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12);
         }
 
         /// <summary>
@@ -245,7 +245,7 @@ namespace ICU4N.Text
         /// <stable>ICU 57</stable>
         public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13)
         {
-            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13);
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13);
         }
 
         /// <summary>
@@ -269,7 +269,7 @@ namespace ICU4N.Text
         /// <stable>ICU 57</stable>
         public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14)
         {
-            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14);
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14);
         }
 
         /// <summary>
@@ -294,7 +294,7 @@ namespace ICU4N.Text
         /// <stable>ICU 57</stable>
         public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14, ReadOnlySpan<char> value15)
         {
-            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15);
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15);
         }
 
         #endregion Format
@@ -316,7 +316,7 @@ namespace ICU4N.Text
         /// <draft>ICU 60.1</draft>
         public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0)
         {
-            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0);
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern, destination, out charsLength, value0);
         }
 
         /// <summary>
@@ -338,7 +338,7 @@ namespace ICU4N.Text
         /// <draft>ICU 60.1</draft>
         public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1)
         {
-            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1);
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern, destination, out charsLength, value0, value1);
         }
 
         /// <summary>
@@ -364,7 +364,7 @@ namespace ICU4N.Text
         /// <draft>ICU 60.1</draft>
         public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2)
         {
-            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2);
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern, destination, out charsLength, value0, value1, value2);
         }
 
         /// <summary>
@@ -394,7 +394,7 @@ namespace ICU4N.Text
         /// <draft>ICU 60.1</draft>
         public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3)
         {
-            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2, value3);
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern, destination, out charsLength, value0, value1, value2, value3);
         }
 
         /// <summary>
@@ -428,7 +428,7 @@ namespace ICU4N.Text
         /// <draft>ICU 60.1</draft>
         public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4)
         {
-            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2, value3, value4);
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern, destination, out charsLength, value0, value1, value2, value3, value4);
         }
 
         /// <summary>
@@ -466,7 +466,7 @@ namespace ICU4N.Text
         /// <draft>ICU 60.1</draft>
         public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5)
         {
-            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2, value3, value4, value5);
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern, destination, out charsLength, value0, value1, value2, value3, value4, value5);
         }
 
         /// <summary>
@@ -508,7 +508,7 @@ namespace ICU4N.Text
         /// <draft>ICU 60.1</draft>
         public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6)
         {
-            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2, value3, value4, value5, value6);
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern, destination, out charsLength, value0, value1, value2, value3, value4, value5, value6);
         }
 
         /// <summary>
@@ -554,7 +554,7 @@ namespace ICU4N.Text
         /// <draft>ICU 60.1</draft>
         public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7)
         {
-            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2, value3, value4, value5, value6, value7);
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern, destination, out charsLength, value0, value1, value2, value3, value4, value5, value6, value7);
         }
 
         /// <summary>
@@ -604,7 +604,7 @@ namespace ICU4N.Text
         /// <draft>ICU 60.1</draft>
         public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8)
         {
-            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2, value3, value4, value5, value6, value7, value8);
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern, destination, out charsLength, value0, value1, value2, value3, value4, value5, value6, value7, value8);
         }
 
         /// <summary>
@@ -658,7 +658,7 @@ namespace ICU4N.Text
         /// <draft>ICU 60.1</draft>
         public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9)
         {
-            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9);
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern, destination, out charsLength, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9);
         }
 
         /// <summary>
@@ -716,7 +716,7 @@ namespace ICU4N.Text
         /// <draft>ICU 60.1</draft>
         public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10)
         {
-            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10);
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern, destination, out charsLength, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10);
         }
 
         /// <summary>
@@ -778,7 +778,7 @@ namespace ICU4N.Text
         /// <draft>ICU 60.1</draft>
         public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11)
         {
-            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11);
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern, destination, out charsLength, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11);
         }
 
         /// <summary>
@@ -844,7 +844,7 @@ namespace ICU4N.Text
         /// <draft>ICU 60.1</draft>
         public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12)
         {
-            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12);
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern, destination, out charsLength, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12);
         }
 
         /// <summary>
@@ -914,7 +914,7 @@ namespace ICU4N.Text
         /// <draft>ICU 60.1</draft>
         public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13)
         {
-            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13);
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern, destination, out charsLength, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13);
         }
 
         /// <summary>
@@ -988,7 +988,7 @@ namespace ICU4N.Text
         /// <draft>ICU 60.1</draft>
         public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14)
         {
-            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14);
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern, destination, out charsLength, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14);
         }
 
         /// <summary>
@@ -1066,7 +1066,7 @@ namespace ICU4N.Text
         /// <draft>ICU 60.1</draft>
         public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14, ReadOnlySpan<char> value15)
         {
-            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15);
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern, destination, out charsLength, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15);
         }
 
 
