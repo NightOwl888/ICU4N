@@ -371,7 +371,7 @@ namespace ICU4N.Impl.Coll
             }
             try
             {
-                sink.AddRelation(strength, prefix.AsSpan(), rawBuilder.AsMemory(), extension.AsSpan());
+                sink.AddRelation(strength, prefix, rawBuilder.AsMemory(), extension);
             }
             catch (Exception e)
             {
@@ -408,7 +408,7 @@ namespace ICU4N.Impl.Coll
                         try
                         {
                             int length = UTF16.ValueOf(cp, str, 0);
-                            sink.AddRelation(strength, empty.AsSpan(), str.AsMemory(0, length), empty.AsSpan());
+                            sink.AddRelation(strength, empty, str.AsMemory(0, length), empty);
                         }
                         catch (Exception e)
                         {
@@ -460,7 +460,7 @@ namespace ICU4N.Impl.Coll
                         try
                         {
                             int length = UTF16.ValueOf(prev, str, 0);
-                            sink.AddRelation(strength, empty.AsSpan(), str.AsMemory(0, length), empty.AsSpan());
+                            sink.AddRelation(strength, empty, str.AsMemory(0, length), empty);
                         }
                         catch (Exception e)
                         {
