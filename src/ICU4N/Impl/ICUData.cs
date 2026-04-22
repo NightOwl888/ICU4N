@@ -140,7 +140,7 @@ namespace ICU4N.Impl
         internal static Stream GetStream(Assembly loader, string localeID, string resourceName, bool required)
         {
             // ICU4N: Map the locale to a valid .NET culture name so .NET doesn't complain about it being incompatible.
-            string cultureName = ResourceUtil.GetDotNetNeutralCultureName(localeID.AsSpan());
+            string cultureName = ResourceUtil.GetDotNetNeutralCultureName(localeID);
 
             Stream i = null;
             Assembly satelliteAssembly;
