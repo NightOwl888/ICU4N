@@ -126,7 +126,7 @@ namespace ICU4N.Impl
             internal static void AddBaseNamesInFolder(ByteBuffer bytes, string folder, string suffix, ISet<string> names)
             {
                 // Find the first data item name that starts with the folder name.
-                int index = BinarySearch(bytes, folder.AsSpan());
+                int index = BinarySearch(bytes, folder);
                 if (index < 0)
                 {
                     index = ~index;  // Normal: Otherwise the folder itself is the name of a data item.
@@ -330,7 +330,7 @@ namespace ICU4N.Impl
 
             internal override ByteBuffer GetData(string requestedPath)
             {
-                return DatPackageReader.GetData(pkgBytes, requestedPath.AsSpan());
+                return DatPackageReader.GetData(pkgBytes, requestedPath);
             }
 
             internal override void AddBaseNamesInFolder(string folder, string suffix, ISet<string> names)
