@@ -122,7 +122,7 @@ namespace ICU4N.Text
         /// The max argument number + 1.
         /// </summary>
         /// <stable>ICU 57</stable>
-        public int ArgumentLimit => argumentLimit.HasValue ? argumentLimit.Value : (argumentLimit = SimpleFormatterImpl.GetArgumentLimit(compiledPattern.AsSpan())).Value;
+        public int ArgumentLimit => argumentLimit.HasValue ? argumentLimit.Value : (argumentLimit = SimpleFormatterImpl.GetArgumentLimit(compiledPattern)).Value;
 
         /// <summary>
         /// Formats the given values.
@@ -131,7 +131,7 @@ namespace ICU4N.Text
         /// <stable>ICU 57</stable>
         public string Format(params string[] values)
         {
-            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), values);
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern, values);
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace ICU4N.Text
         /// <draft>ICU 60.1</draft>
         public bool TryFormat(Span<char> destination, out int charsLength, params string[] values)
         {
-            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, values);
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern, destination, out charsLength, values);
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace ICU4N.Text
         internal StringBuilder FormatAndAppend(
             StringBuilder appendTo, Span<int> offsets, params string[] values) // ICU4N TODO: API - If we do this, we should probably make this IAppendable instead of StringBuilder
         {
-            return SimpleFormatterImpl.FormatAndAppend(compiledPattern.AsSpan(), appendTo, offsets, values);
+            return SimpleFormatterImpl.FormatAndAppend(compiledPattern, appendTo, offsets, values);
         }
 
         /// <summary>
@@ -195,7 +195,7 @@ namespace ICU4N.Text
         internal StringBuilder FormatAndReplace(
             StringBuilder result, Span<int> offsets, params string[] values) // ICU4N TODO: API - If we do this, we should probably make this IAppendable instead of StringBuilder
         {
-            return SimpleFormatterImpl.FormatAndReplace(compiledPattern.AsSpan(), result, offsets, values);
+            return SimpleFormatterImpl.FormatAndReplace(compiledPattern, result, offsets, values);
         }
 
         /// <summary>
@@ -219,7 +219,7 @@ namespace ICU4N.Text
         /// <stable>ICU 57</stable>
         public string GetTextWithNoArguments()
         {
-            return SimpleFormatterImpl.GetTextWithNoArguments(compiledPattern.AsSpan());
+            return SimpleFormatterImpl.GetTextWithNoArguments(compiledPattern);
         }
 
         /// <summary>
@@ -235,7 +235,7 @@ namespace ICU4N.Text
         /// <draft>ICU 60.1</draft>
         public bool TryGetTextWithNoArguments(Span<char> destination, out int charsLength)
         {
-            return SimpleFormatterImpl.TryGetTextWithNoArguments(compiledPattern.AsSpan(), destination, out charsLength);
+            return SimpleFormatterImpl.TryGetTextWithNoArguments(compiledPattern, destination, out charsLength);
         }
     }
 }
