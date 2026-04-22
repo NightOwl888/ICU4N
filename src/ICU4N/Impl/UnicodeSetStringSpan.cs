@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 namespace ICU4N.Impl
 {
     /// <summary>
-    /// Implement <see cref="Span(string, int, SpanCondition)"/> etc. for a set with strings.
+    /// Implement <see cref="Span(ReadOnlySpan{char}, int, SpanCondition)"/> etc. for a set with strings.
     /// Avoid recursion because of its exponential complexity.
     /// Instead, try multiple paths at once and track them with an IndexList.
     /// </summary>
@@ -41,7 +41,7 @@ namespace ICU4N.Impl
         /// <summary>The spanLength is >=0xfe.</summary>
         internal const byte LONG_SPAN = (ALL_CP_CONTAINED - 1);
 
-        /// <summary>Set for <see cref="Span(string, int, SpanCondition)"/>. Same as parent but without strings.</summary>
+        /// <summary>Set for <see cref="Span(ReadOnlySpan{char}, int, SpanCondition)"/>. Same as parent but without strings.</summary>
         private UnicodeSet spanSet;
 
         /// <summary>
@@ -53,8 +53,8 @@ namespace ICU4N.Impl
         /// <summary>The strings of the parent set.</summary>
         private IList<string> strings;
 
-        /// <summary>The lengths of <see cref="Span(string, int, SpanCondition)"/>, 
-        /// <see cref="SpanBack(string, int, SpanCondition)"/> etc. for each string.</summary>
+        /// <summary>The lengths of <see cref="Span(ReadOnlySpan{char}, int, SpanCondition)"/>, 
+        /// <see cref="SpanBack(ReadOnlySpan{char}, int, SpanCondition)"/> etc. for each string.</summary>
         private short[] spanLengths;
 
         /// <summary>Maximum lengths of relevant strings.</summary>
@@ -63,7 +63,7 @@ namespace ICU4N.Impl
         /// <summary>Are there strings that are not fully contained in the code point set?</summary>
         private bool someRelevant;
 
-        /// <summary>Set up for all variants of <see cref="SpanBack(string, int, SpanCondition)"/>?</summary>
+        /// <summary>Set up for all variants of <see cref="SpanBack(ReadOnlySpan{char}, int, SpanCondition)"/>?</summary>
         private bool all;
 
         /// <summary>Span helper</summary>
@@ -72,7 +72,7 @@ namespace ICU4N.Impl
         private readonly object syncLock = new object();
 
         /// <summary>
-        /// Constructs for all variants of <see cref="Span(string, int, SpanCondition)"/>, or only for any one variant.
+        /// Constructs for all variants of <see cref="Span(ReadOnlySpan{char}, int, SpanCondition)"/>, or only for any one variant.
         /// Initializes as little as possible, for single use.
         /// </summary>
         public UnicodeSetStringSpan(UnicodeSet set, IList<string> setStrings, int which)
@@ -253,8 +253,8 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Do the strings need to be checked in <see cref="Span(string, int, SpanCondition)"/> etc.?
-        /// Returns true if strings need to be checked (call <see cref="Span(string, int, SpanCondition)"/> here),
+        /// Do the strings need to be checked in <see cref="Span(ReadOnlySpan{char}, int, SpanCondition)"/> etc.?
+        /// Returns true if strings need to be checked (call <see cref="Span(ReadOnlySpan{char}, int, SpanCondition)"/> here),
         /// false if not (use a BMPSet for best performance).
         /// </summary>
         public bool NeedsStringSpanUTF16 => someRelevant;
@@ -385,21 +385,6 @@ namespace ICU4N.Impl
          *     then try another spanLength=spanSet.span(SpanCondition.CONTAINED).
          *     Stop if spanLength==0, otherwise continue the loop.
          */
-
-        /// <summary>
-        /// Spans a string.
-        /// </summary>
-        /// <param name="s">The string to be spanned.</param>
-        /// <param name="start">The start index that the span begins.</param>
-        /// <param name="spanCondition">The span condition.</param>
-        /// <returns>The limit (exclusive end) of the span.</returns>
-        public int Span(string s, int start, SpanCondition spanCondition)
-        {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
-
-            return Span(s.AsSpan(), start, spanCondition);
-        }
 
         /// <summary>
         /// Spans a string.
@@ -639,29 +624,6 @@ namespace ICU4N.Impl
         /// <param name="spanCondition">The span condition.</param>
         /// <param name="outCount">The count.</param>
         /// <returns>The limit (exclusive end) of the span.</returns>
-        public int SpanAndCount(string s, int start, SpanCondition spanCondition,
-            out int outCount) // ICU4N TODO: API - Would this be more useful if we returned length instead of limit?
-        {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
-
-            return SpanAndCount(s.AsSpan(), start, spanCondition, out outCount);
-        }
-
-        /// <summary>
-        /// Spans a string and counts the smallest number of set elements on any path across the span.
-        /// </summary>
-        /// <remarks>
-        /// For proper counting, we cannot ignore strings that are fully contained in code point spans.
-        /// <para/>
-        /// If the set does not have any fully-contained strings, then we could optimize this
-        /// like Span(), but such sets are likely rare, and this is at least still linear.
-        /// </remarks>
-        /// <param name="s">The string to be spanned.</param>
-        /// <param name="start">The start index that the span begins.</param>
-        /// <param name="spanCondition">The span condition.</param>
-        /// <param name="outCount">The count.</param>
-        /// <returns>The limit (exclusive end) of the span.</returns>
         public int SpanAndCount(ReadOnlySpan<char> s, int start, SpanCondition spanCondition,
             out int outCount) // ICU4N TODO: API - Would this be more useful if we returned length instead of limit?
         {
@@ -759,21 +721,6 @@ namespace ICU4N.Impl
                 outCount = count;
                 return pos;
             }
-        }
-
-        /// <summary>
-        /// Span a string backwards.
-        /// </summary>
-        /// <param name="s">The string to be spanned.</param>
-        /// <param name="length"></param>
-        /// <param name="spanCondition">The span condition</param>
-        /// <returns>The string index which starts the span (i.e. inclusive).</returns>
-        public int SpanBack(string s, int length, SpanCondition spanCondition)
-        {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
-
-            return SpanBack(s.AsSpan(), length, spanCondition);
         }
 
         /// <summary>
@@ -1235,7 +1182,8 @@ namespace ICU4N.Impl
         /// List of offsets from the current position from where to try matching
         /// a code point or a string.
         /// Stores offsets rather than indexes to simplify the code and use the same list
-        /// for both increments (in <see cref="Span(string, int, SpanCondition)"/>) and decrements (in <see cref="SpanBack(string, int, SpanCondition)"/>).
+        /// for both increments (in <see cref="Span(ReadOnlySpan{char}, int, SpanCondition)"/>) and decrements
+        /// (in <see cref="SpanBack(ReadOnlySpan{char}, int, SpanCondition)"/>).
         /// 
         /// <para/>Assumption: The maximum offset is limited, and the offsets that are stored at any one time
         /// are relatively dense, that is,
