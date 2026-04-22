@@ -351,14 +351,6 @@ namespace ICU4N.Impl.Locale
             return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsAlpha(string s)
-        {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
-            return IsAlpha(s.AsSpan());
-        }
-
         public static bool IsAlpha(ReadOnlySpan<char> s) // ICU4N specific - renamed from ToAlphaString()
         {
             bool b = true;
@@ -379,13 +371,6 @@ namespace ICU4N.Impl.Locale
             return (c >= '0' && c <= '9');
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsNumeric(string s)
-        {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
-            return IsNumeric(s.AsSpan());
-        }
         public static bool IsNumeric(ReadOnlySpan<char> s) // ICU4N specific - renamed from IsNumericString()
         {
             bool b = true;
@@ -404,14 +389,6 @@ namespace ICU4N.Impl.Locale
         public static bool IsAlphaNumeric(char c)
         {
             return IsAlpha(c) || IsNumeric(c);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsAlphaNumeric(string s)
-        {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
-            return IsAlphaNumeric(s.AsSpan());
         }
 
         public static bool IsAlphaNumeric(ReadOnlySpan<char> s) // ICU4N specific - renamed from IsAlphaNumericString()
