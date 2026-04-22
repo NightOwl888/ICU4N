@@ -228,7 +228,7 @@ namespace ICU4N.Text
             if (sequence is null)
                 throw new ArgumentNullException(nameof(sequence));
 
-            return ReplaceFrom(sequence.AsSpan(), ReadOnlySpan<char>.Empty, CountMethod.WholeSpan, SpanCondition.Simple);
+            return ReplaceFrom(sequence, ReadOnlySpan<char>.Empty, CountMethod.WholeSpan, SpanCondition.Simple);
         }
 
         /// <summary>
@@ -259,7 +259,7 @@ namespace ICU4N.Text
             if (sequence is null)
                 throw new ArgumentNullException(nameof(sequence));
 
-            return ReplaceFrom(sequence.AsSpan(), ReadOnlySpan<char>.Empty, CountMethod.WholeSpan, spanCondition);
+            return ReplaceFrom(sequence, ReadOnlySpan<char>.Empty, CountMethod.WholeSpan, spanCondition);
         }
 
         /// <summary>
