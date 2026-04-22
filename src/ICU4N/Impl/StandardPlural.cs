@@ -240,36 +240,36 @@ namespace ICU4N.Impl
             switch (keyword.Length)
             {
                 case 3:
-                    if ("one".AsSpan().Equals(keyword, StringComparison.Ordinal))
+                    if ("one".Equals(keyword, StringComparison.Ordinal))
                     {
                         result = StandardPlural.One;
                         return true;
                     }
-                    else if ("two".AsSpan().Equals(keyword, StringComparison.Ordinal))
+                    else if ("two".Equals(keyword, StringComparison.Ordinal))
                     {
                         result = StandardPlural.Two;
                         return true;
                     }
-                    else if ("few".AsSpan().Equals(keyword, StringComparison.Ordinal))
+                    else if ("few".Equals(keyword, StringComparison.Ordinal))
                     {
                         result = StandardPlural.Few;
                         return true;
                     }
                     break;
                 case 4:
-                    if ("many".AsSpan().Equals(keyword, StringComparison.Ordinal))
+                    if ("many".Equals(keyword, StringComparison.Ordinal))
                     {
                         result = StandardPlural.Many;
                         return true;
                     }
-                    else if ("zero".AsSpan().Equals(keyword, StringComparison.Ordinal))
+                    else if ("zero".Equals(keyword, StringComparison.Ordinal))
                     {
                         result = StandardPlural.Zero;
                         return true;
                     }
                     break;
                 case 5:
-                    if ("other".AsSpan().Equals(keyword, StringComparison.Ordinal))
+                    if ("other".Equals(keyword, StringComparison.Ordinal))
                     {
                         result = StandardPlural.Other;
                         return true;
