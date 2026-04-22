@@ -495,19 +495,19 @@ namespace ICU4N.Numerics
                 bool negative = (flags & AffixPatternProviderFlags.NegativeSubpattern) != 0;
                 if (prefix && negative)
                 {
-                    return negPrefixPattern.AsSpan();
+                    return negPrefixPattern;
                 }
                 else if (prefix)
                 {
-                    return posPrefixPattern.AsSpan();
+                    return posPrefixPattern;
                 }
                 else if (negative)
                 {
-                    return negSuffixPattern.AsSpan();
+                    return negSuffixPattern;
                 }
                 else
                 {
-                    return posSuffixPattern.AsSpan();
+                    return posSuffixPattern;
                 }
             }
         }
