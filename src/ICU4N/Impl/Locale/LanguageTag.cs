@@ -1,4 +1,5 @@
 ﻿using ICU4N.Support.Collections;
+using ICU4N.Support.Text;
 using ICU4N.Text;
 using J2N.Collections.Generic.Extensions;
 using System;
@@ -169,7 +170,7 @@ namespace ICU4N.Impl.Locale
             if (Grandfathered.TryGetValue(languageTag, out string? gf))
             {
                 // use preferred mapping
-                itr = new StringTokenEnumerator(gf.AsSpan(), Separator);
+                itr = new StringTokenEnumerator(gf, Separator);
                 isGrandfathered = true;
             }
             else
@@ -475,7 +476,7 @@ namespace ICU4N.Impl.Locale
             string language = baseLocale.Language;
             string script = baseLocale.Script;
             string region = baseLocale.Region;
-            ReadOnlySpan<char> variant = baseLocale.Variant.AsSpan();
+            string variant = baseLocale.Variant;
 
             bool hasSubtag = false;
 
@@ -639,7 +640,7 @@ namespace ICU4N.Impl.Locale
                     }
                     concatBuffer[0] = locextKey;
                     concatBuffer[1] = Separator;
-                    extensions.Add(StringHelper.Concat(concatBuffer, ext.Value.AsSpan()));
+                    extensions.Add(StringHelper.Concat(concatBuffer, ext.Value));
                 }
             }
 
@@ -674,7 +675,7 @@ namespace ICU4N.Impl.Locale
                         sb.Append(PrivateUse_Variant_Prefix);
                         sb.Append(Separator);
                         var privuse = sb.AppendSpan(privuseVar.Length);
-                        privuseVar.AsSpan().CopyTo(privuse);
+                        privuseVar.CopyTo(privuse);
                         privuse.Replace(BaseLocale.Separator, Separator);
                     }
                     privateuse = sb.ToString();
@@ -739,19 +740,6 @@ namespace ICU4N.Impl.Locale
         //
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsLanguage(string s)
-        {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
-            // language      = 2*3ALPHA            ; shortest ISO 639 code
-            //                 ["-" extlang]       ; sometimes followed by
-            //                                     ;   extended language subtags
-            //               / 4ALPHA              ; or reserved for future use
-            //               / 5*8ALPHA            ; or registered language subtag
-            return (s.Length >= 2) && (s.Length <= 8) && AsciiUtil.IsAlpha(s);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsLanguage(ReadOnlySpan<char> s)
         {
             // language      = 2*3ALPHA            ; shortest ISO 639 code
@@ -763,30 +751,11 @@ namespace ICU4N.Impl.Locale
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsExtlang(string s)
-        {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
-            // extlang       = 3ALPHA              ; selected ISO 639 codes
-            //                 *2("-" 3ALPHA)      ; permanently reserved
-            return (s.Length == 3) && AsciiUtil.IsAlpha(s);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsExtlang(ReadOnlySpan<char> s)
         {
             // extlang       = 3ALPHA              ; selected ISO 639 codes
             //                 *2("-" 3ALPHA)      ; permanently reserved
             return (s.Length == 3) && AsciiUtil.IsAlpha(s);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsScript(string s)
-        {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
-            // script        = 4ALPHA              ; ISO 15924 code
-            return (s.Length == 4) && AsciiUtil.IsAlpha(s);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -797,31 +766,12 @@ namespace ICU4N.Impl.Locale
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsRegion(string s)
-        {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
-            // region        = 2ALPHA              ; ISO 3166-1 code
-            //               / 3DIGIT              ; UN M.49 code
-            return ((s.Length == 2) && AsciiUtil.IsAlpha(s))
-                    || ((s.Length == 3) && AsciiUtil.IsNumeric(s));
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsRegion(ReadOnlySpan<char> s)
         {
             // region        = 2ALPHA              ; ISO 3166-1 code
             //               / 3DIGIT              ; UN M.49 code
             return ((s.Length == 2) && AsciiUtil.IsAlpha(s))
                     || ((s.Length == 3) && AsciiUtil.IsNumeric(s));
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsVariant(string s)
-        {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
-            return IsVariant(s.AsSpan());
         }
 
         public static bool IsVariant(ReadOnlySpan<char> s)
@@ -844,11 +794,8 @@ namespace ICU4N.Impl.Locale
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsExtensionSingleton(string s)
+        public static bool IsExtensionSingleton(ReadOnlySpan<char> s)
         {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
-
             // singleton     = DIGIT               ; 0 - 9
             //               / %x41-57             ; A - W
             //               / %x59-5A             ; Y - Z
@@ -861,33 +808,9 @@ namespace ICU4N.Impl.Locale
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsExtensionSingleton(ReadOnlySpan<char> s)
-        {
-            // singleton     = DIGIT               ; 0 - 9
-            //               / %x41-57             ; A - W
-            //               / %x59-5A             ; Y - Z
-            //               / %x61-77             ; a - w
-            //               / %x79-7A             ; y - z
-
-            return (s.Length == 1)
-                    && AsciiUtil.IsAlpha(s)
-                    && !AsciiUtil.CaseIgnoreMatch(Private_Use.AsSpan(), s);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsExtensionSingletonChar(char c)
         {
             return IsExtensionSingleton(stackalloc char[1] { c });
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsExtensionSubtag(string s)
-        {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
-
-            // extension     = singleton 1*("-" (2*8alphanum))
-            return (s.Length >= 2) && (s.Length <= 8) && AsciiUtil.IsAlphaNumeric(s);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -898,39 +821,18 @@ namespace ICU4N.Impl.Locale
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsPrivateusePrefix(string s)
+        public static bool IsPrivateusePrefix(ReadOnlySpan<char> s)
         {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
-
             // privateuse    = "x" 1*("-" (1*8alphanum))
             return (s.Length == 1)
                     && AsciiUtil.CaseIgnoreMatch(Private_Use, s);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsPrivateusePrefix(ReadOnlySpan<char> s)
-        {
-            // privateuse    = "x" 1*("-" (1*8alphanum))
-            return (s.Length == 1)
-                    && AsciiUtil.CaseIgnoreMatch(Private_Use.AsSpan(), s);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsPrivateusePrefixChar(char c)
         {
             Span<char> buffer = stackalloc char[1] { c };
-            return (AsciiUtil.CaseIgnoreMatch(Private_Use.AsSpan(), buffer));
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsPrivateuseSubtag(string s)
-        {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
-
-            // privateuse    = "x" 1*("-" (1*8alphanum))
-            return (s.Length >= 1) && (s.Length <= 8) && AsciiUtil.IsAlphaNumeric(s);
+            return (AsciiUtil.CaseIgnoreMatch(Private_Use, buffer));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
