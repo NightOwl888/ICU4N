@@ -508,7 +508,7 @@ namespace ICU4N.Impl
             if (src is null)
                 throw new ArgumentNullException(nameof(src));
 
-            Impl.Decompose(src.AsSpan(), ref buffer); // ICU4N: Checked 3rd parameter
+            Impl.Decompose(src, ref buffer); // ICU4N: Checked 3rd parameter
         }
 
         protected override void Normalize(ReadOnlySpan<char> src, ref ReorderingBuffer buffer)
@@ -529,7 +529,7 @@ namespace ICU4N.Impl
             if (src is null)
                 throw new ArgumentNullException(nameof(src));
 
-            Impl.DecomposeAndAppend(src.AsSpan(), doNormalize, ref buffer);
+            Impl.DecomposeAndAppend(src, doNormalize, ref buffer);
         }
 
         protected override void NormalizeAndAppend(ReadOnlySpan<char> src, bool doNormalize, ref ReorderingBuffer buffer)
@@ -579,7 +579,7 @@ namespace ICU4N.Impl
             if (src is null)
                 throw new ArgumentNullException(nameof(src));
 
-            Impl.Compose(src.AsSpan(), onlyContiguous, doCompose: true, ref buffer);
+            Impl.Compose(src, onlyContiguous, doCompose: true, ref buffer);
         }
 
         protected override void Normalize(ReadOnlySpan<char> src, ref ReorderingBuffer buffer)
@@ -603,7 +603,7 @@ namespace ICU4N.Impl
             if (src is null)
                 throw new ArgumentNullException(nameof(src));
 
-            Impl.ComposeAndAppend(src.AsSpan(), doNormalize, onlyContiguous, ref buffer);
+            Impl.ComposeAndAppend(src, doNormalize, onlyContiguous, ref buffer);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -701,7 +701,7 @@ namespace ICU4N.Impl
             if (src is null)
                 throw new ArgumentNullException(nameof(src));
 
-            Impl.MakeFCD(src.AsSpan(), ref buffer);
+            Impl.MakeFCD(src, ref buffer);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -726,7 +726,7 @@ namespace ICU4N.Impl
             if (src is null)
                 throw new ArgumentNullException(nameof(src));
 
-            Impl.MakeFCDAndAppend(src.AsSpan(), doNormalize, ref buffer);
+            Impl.MakeFCDAndAppend(src, doNormalize, ref buffer);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
