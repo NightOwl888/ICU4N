@@ -508,21 +508,6 @@ namespace ICU4N.Impl
         /// <param name="text">A text string to be iterated over.</param>
         /// <param name="index">The starting iteration position within the input text.</param>
         /// <returns>The <see cref="CharSequenceEnumerator"/>.</returns>
-        public virtual CharSequenceEnumerator GetCharSequenceEnumerator(string text, int index) // ICU4N specific
-        {
-            if (text is null)
-                throw new ArgumentNullException(nameof(text)); // ICU4N: Added guard clause
-
-            return new CharSequenceEnumerator(this, text.AsSpan(), index);
-        }
-
-        /// <summary>
-        /// Create an enumerator that will produce the values from the <see cref="Trie2"/> for
-        /// the sequence of code points in an input text.
-        /// </summary>
-        /// <param name="text">A text string to be iterated over.</param>
-        /// <param name="index">The starting iteration position within the input text.</param>
-        /// <returns>The <see cref="CharSequenceEnumerator"/>.</returns>
         public virtual CharSequenceEnumerator GetCharSequenceEnumerator(ReadOnlySpan<char> text, int index)
         {
             return new CharSequenceEnumerator(this, text, index);
