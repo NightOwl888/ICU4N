@@ -108,16 +108,6 @@ namespace ICU4N.Impl
         /// <param name="choice">Selector to indicate if argument name is a Unicode 1.0 or the most current version.</param>
         /// <param name="name">The name to search for.</param>
         /// <returns>Code point.</returns>
-        public int GetCharFromName(UCharacterNameChoice choice, string? name)
-            => GetCharFromName(choice, name.AsSpan());
-
-        /// <summary>
-        /// Find a character by its name and return its code point value
-        /// 
-        /// </summary>
-        /// <param name="choice">Selector to indicate if argument name is a Unicode 1.0 or the most current version.</param>
-        /// <param name="name">The name to search for.</param>
-        /// <returns>Code point.</returns>
         public int GetCharFromName(UCharacterNameChoice choice, ReadOnlySpan<char> name)
         {
             // checks for illegal arguments
@@ -850,7 +840,7 @@ namespace ICU4N.Impl
             {
                 int prefixlen = m_prefix_.Length;
                 if (name.Length < prefixlen ||
-                    !m_prefix_.AsSpan().Equals(name.Slice(0, prefixlen), StringComparison.Ordinal)) // ICU4N: Checked 2nd parameter
+                    !m_prefix_.Equals(name.Slice(0, prefixlen), StringComparison.Ordinal)) // ICU4N: Checked 2nd parameter
                 {
                     return -1;
                 }
@@ -925,7 +915,7 @@ namespace ICU4N.Impl
             internal int Add(int[] set, int maxlength)
             {
                 // prefix length
-                int length = UCharacterName.Add(set, m_prefix_.AsSpan());
+                int length = UCharacterName.Add(set, m_prefix_);
                 switch (m_type_)
                 {
                     case TYPE_0_:
@@ -1524,7 +1514,7 @@ namespace ICU4N.Impl
                             int length = TYPE_NAMES_.Length;
                             for (int i = 0; i < length; ++i)
                             {
-                                if (type.CompareTo(TYPE_NAMES_[i].AsSpan(), StringComparison.Ordinal) == 0)
+                                if (type.CompareTo(TYPE_NAMES_[i], StringComparison.Ordinal) == 0)
                                 {
                                     if (GetType(result) == i)
                                     {
@@ -1620,7 +1610,7 @@ namespace ICU4N.Impl
                 // 2 for <>
                 // 1 for -
                 // 6 for most hex digits per code point
-                int length = 9 + Add(m_nameSet_, TYPE_NAMES_[i].AsSpan());
+                int length = 9 + Add(m_nameSet_, TYPE_NAMES_[i]);
                 if (length > maxlength)
                 {
                     maxlength = length;
