@@ -524,7 +524,7 @@ namespace ICU4N.Impl
                     int e = UnescapeAt(s, ref pos); // ICU4N: Changed array to ref parameter
                     if (e < 0)
                     {
-                        throw new ArgumentException(StringHelper.Concat("Invalid escape sequence ".AsSpan(), s.Slice(i - 1, Math.Min(i + 8, s.Length) - (i - 1)))); // ICU4N: Corrected 2nd parameter
+                        throw new ArgumentException(StringHelper.Concat("Invalid escape sequence ", s.Slice(i - 1, Math.Min(i + 8, s.Length) - (i - 1)))); // ICU4N: Corrected 2nd parameter
                     }
                     result.AppendCodePoint(e);
                     i = pos;
@@ -690,24 +690,12 @@ namespace ICU4N.Impl
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
         /// </summary>
-        public static string Hex(string s)
-        {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
-
-            return Hex(s.AsSpan());
-        }
-
-        /// <summary>
-        /// Convert a string to comma-separated groups of 4 hex uppercase
-        /// digits.  E.g., hex('ab') => "0041,0042".
-        /// </summary>
         public static string Hex(ReadOnlySpan<char> s)
         {
             ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
             try
             {
-                Hex(s, 4, ",".AsSpan(), true, ref sb);
+                Hex(s, 4, ",", true, ref sb);
                 return sb.ToString();
             }
             finally
