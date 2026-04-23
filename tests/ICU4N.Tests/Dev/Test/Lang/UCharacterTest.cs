@@ -730,284 +730,265 @@ namespace ICU4N.Dev.Test.Lang
             Normalizer2 nfc = Normalizer2.NFCInstance;
             Normalizer2 nfkc = Normalizer2.NFKCInstance;
 
-            TextReader input = null;
-            try
+            // ICU4N: Removed try/catch because it was hiding bugs
+            using TextReader input = TestUtil.GetDataReader("unicode.UnicodeData.txt");
+            int numErrors = 0;
+
+            for (; ; )
             {
-                input = TestUtil.GetDataReader("unicode/UnicodeData.txt");
-                int numErrors = 0;
-
-                for (; ; )
+                String s = input.ReadLine();
+                if (s == null)
                 {
-                    String s = input.ReadLine();
-                    if (s == null)
-                    {
-                        break;
-                    }
-                    if (s.Length < 4 || s.StartsWith("#", StringComparison.Ordinal))
-                    {
-                        continue;
-                    }
-                    String[] fields = s.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-                    Debug.Assert((fields.Length == 15), "Number of fields is " + fields.Length + ": " + s);
+                    break;
+                }
+                if (s.Length < 4 || s.StartsWith("#", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+                String[] fields = s.Split(new char[] { ';' }, StringSplitOptions.None);
+                assertEquals($"Number of fields is {fields.Length}: {s}", 15, fields.Length);
 
-                    int ch = int.Parse(fields[0], NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+                int ch = int.Parse(fields[0], NumberStyles.HexNumber, CultureInfo.InvariantCulture);
 
-                    // testing the general category
-                    int type = TYPE.IndexOf(fields[2], StringComparison.Ordinal);
-                    if (type < 0)
-                        type = 0;
+                // testing the general category
+                int type = TYPE.IndexOf(fields[2], StringComparison.Ordinal);
+                if (type < 0)
+                    type = 0;
+                else
+                    type = (type >> 1) + 1;
+                if (UChar.GetUnicodeCategory(ch).ToInt32() != type)
+                {
+                    Errln("FAIL \\u" + Hex(ch) + " expected type " + type);
+                    break;
+                }
+
+                if (UChar.GetIntPropertyValue(ch,
+                           UProperty.General_Category_Mask) != (1 << type))
+                {
+                    Errln("error: getIntPropertyValue(\\u" +
+                          (ch).ToHexString() +
+                          ", UProperty.GENERAL_CATEGORY_MASK) != " +
+                          "getMask(getType(ch))");
+                }
+
+                // testing combining class
+                int cc = int.Parse(fields[3], CultureInfo.InvariantCulture);
+                if (UChar.GetCombiningClass(ch) != cc)
+                {
+                    Errln("FAIL \\u" + Hex(ch) + " expected combining " +
+                            "class " + cc);
+                    break;
+                }
+                if (nfkc.GetCombiningClass(ch) != cc)
+                {
+                    Errln("FAIL \\u" + Hex(ch) + " expected NFKC combining " +
+                            "class " + cc);
+                    break;
+                }
+
+                // testing the direction
+                String d = fields[4];
+                if (d.Length == 1)
+                    d = d + "   ";
+
+                int dir = DIR.IndexOf(d, StringComparison.Ordinal) >> 2;
+                if ((int)UChar.GetDirection(ch) != dir)
+                {
+                    Errln("FAIL \\u" + Hex(ch) +
+                        " expected direction " + dir + " but got " + (int)UChar.GetDirection(ch));
+                    break;
+                }
+
+                byte bdir = (byte)dir;
+                if (UChar.GetDirectionality(ch) != bdir)
+                {
+                    Errln("FAIL \\u" + Hex(ch) +
+                        " expected directionality " + bdir + " but got " +
+                        UChar.GetDirectionality(ch));
+                    break;
+                }
+
+                /* get Decomposition_Type & Decomposition_Mapping, field 5 */
+                int dt;
+                if (fields[5].Length == 0)
+                {
+                    /* no decomposition, except UnicodeData.txt omits Hangul syllable decompositions */
+                    if (ch == 0xac00 || ch == 0xd7a3)
+                    {
+                        dt = DecompositionType.Canonical;
+                    }
                     else
-                        type = (type >> 1) + 1;
-                    if (UChar.GetUnicodeCategory(ch).ToInt32() != type)
                     {
-                        Errln("FAIL \\u" + Hex(ch) + " expected type " + type);
-                        break;
+                        dt = DecompositionType.None;
                     }
-
-                    if (UChar.GetIntPropertyValue(ch,
-                               UProperty.General_Category_Mask) != (1 << type))
+                }
+                else
+                {
+                    d = fields[5];
+                    dt = -1;
+                    if (d[0] == '<')
                     {
-                        Errln("error: getIntPropertyValue(\\u" +
-                              (ch).ToHexString() +
-                              ", UProperty.GENERAL_CATEGORY_MASK) != " +
-                              "getMask(getType(ch))");
+                        int end = d.IndexOf('>', 1);
+                        if (end >= 0)
+                        {
+                            dt = UChar.GetPropertyValueEnum(UProperty.Decomposition_Type, d.Substring(1, end - 1));// ICU4N: Corrected 2nd parameter
+                            while (d[++end] == ' ') { }  // skip spaces
+                            d = d.Substring(end);
+                        }
                     }
-
-                    // testing combining class
-                    int cc = int.Parse(fields[3], CultureInfo.InvariantCulture);
-                    if (UChar.GetCombiningClass(ch) != cc)
+                    else
                     {
-                        Errln("FAIL \\u" + Hex(ch) + " expected combining " +
-                                "class " + cc);
-                        break;
+                        dt = DecompositionType.Canonical;
                     }
-                    if (nfkc.GetCombiningClass(ch) != cc)
+                }
+                String dm;
+                if (dt > DecompositionType.None)
+                {
+                    if (ch == 0xac00)
                     {
-                        Errln("FAIL \\u" + Hex(ch) + " expected NFKC combining " +
-                                "class " + cc);
-                        break;
+                        dm = "\u1100\u1161";
                     }
+                    else if (ch == 0xd7a3)
+                    {
+                        dm = "\ud788\u11c2";
+                    }
+                    else
+                    {
+                        String[] dmChars = Regex.Split(d, " +");
+                        StringBuilder dmb = new StringBuilder(dmChars.Length);
+                        foreach (String dmc in dmChars)
+                        {
+                            dmb.AppendCodePoint(Convert.ToInt32(dmc, 16));
+                        }
+                        dm = dmb.ToString();
+                    }
+                }
+                else
+                {
+                    dm = null;
+                }
+                if (dt < 0)
+                {
+                    Errln(String.Format("error in UnicodeData.txt: syntax error in U+{0:X4} decomposition field", ch));
+                    return;
+                }
+                int i = UChar.GetIntPropertyValue(ch, UProperty.Decomposition_Type);
+                assertEquals(
+                        String.Format("error: UCharacter.getIntPropertyValue(U+{0:X4}, UProperty.DECOMPOSITION_TYPE) is wrong", ch),
+                        dt, i);
+                /* Expect Decomposition_Mapping=nfkc.getRawDecomposition(c). */
+                String mapping = nfkc.GetRawDecomposition(ch);
+                assertEquals(
+                        String.Format("error: nfkc.getRawDecomposition(U+{0:X4}) is wrong", ch),
+                        dm, mapping);
+                /* For canonical decompositions only, expect Decomposition_Mapping=nfc.getRawDecomposition(c). */
+                if (dt != DecompositionType.Canonical)
+                {
+                    dm = null;
+                }
+                mapping = nfc.GetRawDecomposition(ch);
+                assertEquals(
+                        String.Format("error: nfc.getRawDecomposition(U+{0:X4}) is wrong", ch),
+                        dm, mapping);
+                /* recompose */
+                if (dt == DecompositionType.Canonical
+                        && !UChar.HasBinaryProperty(ch, UProperty.Full_Composition_Exclusion))
+                {
+                    int a = dm.CodePointAt(0);
+                    int b = dm.CodePointBefore(dm.Length);
+                    int composite = nfc.ComposePair(a, b);
+                    assertEquals(
+                            String.Format(
+                                    "error: nfc U+{0:X4} decomposes to U+{1:X4}+U+{2:X4} " +
+                                    "but does not compose back (instead U+{3:X4})",
+                                    ch, a, b, composite),
+                            ch, composite);
+                    /*
+                     * Note: NFKC has fewer round-trip mappings than NFC,
+                     * so we can't just test nfkc.composePair(a, b) here without further data.
+                     */
+                }
 
-                    // testing the direction
-                    String d = fields[4];
-                    if (d.Length == 1)
-                        d = d + "   ";
-
-                    int dir = DIR.IndexOf(d, StringComparison.Ordinal) >> 2;
-                    if (UChar.GetDirection(ch).ToInt32() != dir)
+                // testing iso comment
+                try
+                {
+                    String isocomment = fields[11];
+                    String comment = UChar.GetISOComment(ch);
+                    if (comment == null)
+                    {
+                        comment = "";
+                    }
+                    if (!comment.Equals(isocomment))
                     {
                         Errln("FAIL \\u" + Hex(ch) +
-                            " expected direction " + dir + " but got " + UChar.GetDirection(ch).ToInt32());
+                            " expected iso comment " + isocomment);
                         break;
                     }
-
-                    byte bdir = (byte)dir;
-                    if (UChar.GetDirectionality(ch) != bdir)
+                }
+                catch (Exception e)
+                {
+                    if (e.Message.IndexOf("unames.icu", StringComparison.Ordinal) >= 0)
                     {
-                        Errln("FAIL \\u" + Hex(ch) +
-                            " expected directionality " + bdir + " but got " +
-                            UChar.GetDirectionality(ch));
-                        break;
-                    }
-
-                    /* get Decomposition_Type & Decomposition_Mapping, field 5 */
-                    int dt;
-                    if (fields[5].Length == 0)
-                    {
-                        /* no decomposition, except UnicodeData.txt omits Hangul syllable decompositions */
-                        if (ch == 0xac00 || ch == 0xd7a3)
-                        {
-                            dt = DecompositionType.Canonical;
-                        }
-                        else
-                        {
-                            dt = DecompositionType.None;
-                        }
+                        numErrors++;
                     }
                     else
                     {
-                        d = fields[5];
-                        dt = -1;
-                        if (d[0] == '<')
-                        {
-                            int end = d.IndexOf('>', 1);
-                            if (end >= 0)
-                            {
-                                dt = UChar.GetPropertyValueEnum(UProperty.Decomposition_Type, d.Substring(1, end - 1));// ICU4N: Corrected 2nd parameter
-                                while (d[++end] == ' ') { }  // skip spaces
-                                d = d.Substring(end);
-                            }
-                        }
-                        else
-                        {
-                            dt = DecompositionType.Canonical;
-                        }
-                    }
-                    String dm;
-                    if (dt > DecompositionType.None)
-                    {
-                        if (ch == 0xac00)
-                        {
-                            dm = "\u1100\u1161";
-                        }
-                        else if (ch == 0xd7a3)
-                        {
-                            dm = "\ud788\u11c2";
-                        }
-                        else
-                        {
-                            String[] dmChars = Regex.Split(d, " +");
-                            StringBuilder dmb = new StringBuilder(dmChars.Length);
-                            foreach (String dmc in dmChars)
-                            {
-                                dmb.AppendCodePoint(Convert.ToInt32(dmc, 16));
-                            }
-                            dm = dmb.ToString();
-                        }
-                    }
-                    else
-                    {
-                        dm = null;
-                    }
-                    if (dt < 0)
-                    {
-                        Errln(String.Format("error in UnicodeData.txt: syntax error in U+{0:X4} decomposition field", ch));
-                        return;
-                    }
-                    int i = UChar.GetIntPropertyValue(ch, UProperty.Decomposition_Type);
-                    assertEquals(
-                            String.Format("error: UCharacter.getIntPropertyValue(U+{0:X4}, UProperty.DECOMPOSITION_TYPE) is wrong", ch),
-                            dt, i);
-                    /* Expect Decomposition_Mapping=nfkc.getRawDecomposition(c). */
-                    String mapping = nfkc.GetRawDecomposition(ch);
-                    assertEquals(
-                            String.Format("error: nfkc.getRawDecomposition(U+{0:X4}) is wrong", ch),
-                            dm, mapping);
-                    /* For canonical decompositions only, expect Decomposition_Mapping=nfc.getRawDecomposition(c). */
-                    if (dt != DecompositionType.Canonical)
-                    {
-                        dm = null;
-                    }
-                    mapping = nfc.GetRawDecomposition(ch);
-                    assertEquals(
-                            String.Format("error: nfc.getRawDecomposition(U+{0:X4}) is wrong", ch),
-                            dm, mapping);
-                    /* recompose */
-                    if (dt == DecompositionType.Canonical
-                            && !UChar.HasBinaryProperty(ch, UProperty.Full_Composition_Exclusion))
-                    {
-                        int a = dm.CodePointAt(0);
-                        int b = dm.CodePointBefore(dm.Length);
-                        int composite = nfc.ComposePair(a, b);
-                        assertEquals(
-                                String.Format(
-                                        "error: nfc U+{0:X4} decomposes to U+{1:X4}+U+{2:X4} " +
-                                        "but does not compose back (instead U+{3:X4})",
-                                        ch, a, b, composite),
-                                ch, composite);
-                        /*
-                         * Note: NFKC has fewer round-trip mappings than NFC,
-                         * so we can't just test nfkc.composePair(a, b) here without further data.
-                         */
-                    }
-
-                    // testing iso comment
-                    try
-                    {
-                        String isocomment = fields[11];
-                        String comment = UChar.GetISOComment(ch);
-                        if (comment == null)
-                        {
-                            comment = "";
-                        }
-                        if (!comment.Equals(isocomment))
-                        {
-                            Errln("FAIL \\u" + Hex(ch) +
-                                " expected iso comment " + isocomment);
-                            break;
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        if (e.Message.IndexOf("unames.icu", StringComparison.Ordinal) >= 0)
-                        {
-                            numErrors++;
-                        }
-                        else
-                        {
-                            throw; // ICU4N: CA2200: Rethrow to preserve stack details
-                        }
-                    }
-
-                    String upper = fields[12];
-                    int tempchar = ch;
-                    if (upper.Length > 0)
-                    {
-                        tempchar = Convert.ToInt32(upper, 16);
-                    }
-                    int resultCp = UChar.ToUpper(ch);
-                    if (resultCp != tempchar)
-                    {
-                        Errln("FAIL \\u" + Utility.Hex(ch, 4)
-                                + " expected uppercase \\u"
-                                + Utility.Hex(tempchar, 4)
-                                + " but got \\u"
-                                + Utility.Hex(resultCp, 4));
-                        break;
-                    }
-
-                    String lower = fields[13];
-                    tempchar = ch;
-                    if (lower.Length > 0)
-                    {
-                        tempchar = Convert.ToInt32(lower, 16);
-                    }
-                    if (UChar.ToLower(ch) != tempchar)
-                    {
-                        Errln("FAIL \\u" + Utility.Hex(ch, 4)
-                                + " expected lowercase \\u"
-                                + Utility.Hex(tempchar, 4));
-                        break;
-                    }
-
-
-
-                    String title = fields[14];
-                    tempchar = ch;
-                    if (title.Length > 0)
-                    {
-                        tempchar = Convert.ToInt32(title, 16);
-                    }
-                    if (UChar.ToTitleCase(ch) != tempchar)
-                    {
-                        Errln("FAIL \\u" + Utility.Hex(ch, 4)
-                                + " expected titlecase \\u"
-                                + Utility.Hex(tempchar, 4));
-                        break;
+                        throw; // ICU4N: CA2200: Rethrow to preserve stack details
                     }
                 }
-                if (numErrors > 0)
+
+                String upper = fields[12];
+                int tempchar = ch;
+                if (upper.Length > 0)
                 {
-                    Warnln("Could not find unames.icu");
+                    tempchar = Convert.ToInt32(upper, 16);
                 }
-            }
-            catch (Exception e)
-            {
-                e.PrintStackTrace();
-            }
-            finally
-            {
-                if (input != null)
+                int resultCp = UChar.ToUpper(ch);
+                if (resultCp != tempchar)
                 {
-                    try
-                    {
-                        input.Dispose();
-                    }
-                    catch (IOException ignored)
-                    {
-                    }
+                    Errln("FAIL \\u" + Utility.Hex(ch, 4)
+                            + " expected uppercase \\u"
+                            + Utility.Hex(tempchar, 4)
+                            + " but got \\u"
+                            + Utility.Hex(resultCp, 4));
+                    break;
+                }
+
+                String lower = fields[13];
+                tempchar = ch;
+                if (lower.Length > 0)
+                {
+                    tempchar = Convert.ToInt32(lower, 16);
+                }
+                if (UChar.ToLower(ch) != tempchar)
+                {
+                    Errln("FAIL \\u" + Utility.Hex(ch, 4)
+                            + " expected lowercase \\u"
+                            + Utility.Hex(tempchar, 4));
+                    break;
+                }
+
+
+
+                String title = fields[14];
+                tempchar = ch;
+                if (title.Length > 0)
+                {
+                    tempchar = Convert.ToInt32(title, 16);
+                }
+                if (UChar.ToTitleCase(ch) != tempchar)
+                {
+                    Errln("FAIL \\u" + Utility.Hex(ch, 4)
+                            + " expected titlecase \\u"
+                            + Utility.Hex(tempchar, 4));
+                    break;
                 }
             }
+            if (numErrors > 0)
+            {
+                Warnln("Could not find unames.icu");
+            }
+
 
             if (UnicodeBlock.Of(0x0041)
                                             != UnicodeBlock.Basic_Latin
@@ -1026,7 +1007,7 @@ namespace ICU4N.Dev.Test.Lang
                 UUnicodeCategory type = UChar.GetUnicodeCategory(ch);
                 if (UChar.GetIntPropertyValue(ch,
                                                    UProperty.General_Category_Mask)
-                    != (1 << type.ToInt32()))
+                    != (1 << (int)type))
                 {
                     Errln("error: UCharacter.getIntPropertyValue(\\u"
                           + (ch).ToHexString()
@@ -1053,7 +1034,7 @@ namespace ICU4N.Dev.Test.Lang
             // test that PUA is not "unassigned"
             for (int ch = 0xe000; ch <= 0x10fffd;)
             {
-                int type = UChar.GetUnicodeCategory(ch).ToInt32();
+                int type = (int)UChar.GetUnicodeCategory(ch);
                 if (UChar.GetIntPropertyValue(ch,
                                                    UProperty.General_Category_Mask)
                     != (1 << type))
@@ -1064,13 +1045,13 @@ namespace ICU4N.Dev.Test.Lang
                           + "getMask(getType())");
                 }
 
-                if (type == UUnicodeCategory.OtherNotAssigned.ToInt32())
+                if (type == (int)UUnicodeCategory.OtherNotAssigned)
                 {
                     Errln("error: UCharacter.getType(\\u"
                             + Utility.Hex(ch, 4)
                             + ") == UCharacterCategory.UNASSIGNED");
                 }
-                else if (type != UUnicodeCategory.PrivateUse.ToInt32())
+                else if (type != (int)UUnicodeCategory.PrivateUse)
                 {
                     Logln("PUA override: UCharacter.getType(\\u"
                           + Utility.Hex(ch, 4) + ")=" + type);
