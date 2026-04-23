@@ -201,6 +201,14 @@
 
       <_SatelliteAssemblyReferences Include="@(ReferencePath)"
         Condition=" '%(Filename)' == 'mscorlib' or '%(Filename)' == 'netstandard' or '%(Filename)' == 'System.Runtime' " />
+
+      <!-- Populated only inside the per-culture MSBuild recursion, where
+           $(_SatelliteCulture) is set as a global property. Defining this
+           here (in a DependsOnTargets target) makes the item list available
+           before Inputs/Outputs on _BuildOneSatelliteAssembly are evaluated,
+           which is what enables true per-culture incremental gating. -->
+      <_OneCultureResource Condition=" '$(_SatelliteCulture)' != '' "
+                           Include="$(ICU4JResourcesDirectory)/$(_SatelliteCulture)/*.*" />
     </ItemGroup>
 
     <MakeDir Directories="$(ICU4NSatelliteAssemblyOutputDir)" Condition="!Exists('$(ICU4NSatelliteAssemblyOutputDir)')" />
@@ -231,7 +239,7 @@
   <Target Name="GenerateOurSatelliteAssemblies"
           AfterTargets="ExecICU4JResourceConverter"
           BeforeTargets="DeploySatelliteAssemblies"
-          DependsOnTargets="_CollectSatelliteInputs"
+          DependsOnTargets="_BuildNeutralSatelliteAssembly"
           Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)' ">
 
     <!-- Inline the culture-dir collection as raw directory paths. The culture
@@ -253,7 +261,27 @@
       </_SatelliteRecursionInput>
     </ItemGroup>
 
-    <!-- ===== Neutral (culture-less) satellite — one Csc invocation ===== -->
+    <!-- ===== Localized satellites — MSBuild recursion, one call per culture.
+         Each recursive invocation of _BuildOneSatelliteAssembly has its own
+         per-culture Inputs/Outputs, so up-to-date cultures are skipped
+         individually without turning this into an all-or-nothing build. ===== -->
+    <MSBuild Projects="@(_SatelliteRecursionInput->'%(ProjectPath)')"
+             Targets="_BuildOneSatelliteAssembly"
+             Properties="_SatelliteCulture=%(_SatelliteRecursionInput.Identity);TargetFramework=$(TargetFramework);_SatelliteAssemblyVersion=$(AssemblyVersion)"
+             BuildInParallel="true" />
+  </Target>
+
+  <!--
+    Neutral (culture-less) satellite — one Csc invocation. Split into its own
+    target so it can carry Inputs/Outputs and skip on incremental builds when
+    neither the resource set nor the project file has changed.
+  -->
+  <Target Name="_BuildNeutralSatelliteAssembly"
+          DependsOnTargets="_CollectSatelliteInputs"
+          Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)' "
+          Inputs="$(MSBuildAllProjects);@(_NeutralSatelliteResource)"
+          Outputs="$(ICU4JResponseFileDirectory)/neutral.AssemblyInfo.cs;$(ICU4NSatelliteAssemblyOutputDir)/$(AssemblyName).resources.dll">
+
     <ItemGroup>
       <_NeutralSatelliteAttribute Include="System.Reflection.AssemblyVersionAttribute">
         <_Parameter1>$(AssemblyVersion)</_Parameter1>
@@ -274,12 +302,6 @@
          Deterministic="true"
          TargetType="Library"
          UseSharedCompilation="true" />
-
-    <!-- ===== Localized satellites — MSBuild recursion, one call per culture ===== -->
-    <MSBuild Projects="@(_SatelliteRecursionInput->'%(ProjectPath)')"
-             Targets="_BuildOneSatelliteAssembly"
-             Properties="_SatelliteCulture=%(_SatelliteRecursionInput.Identity);TargetFramework=$(TargetFramework);_SatelliteAssemblyVersion=$(AssemblyVersion)"
-             BuildInParallel="true" />
   </Target>
 
   <!--
@@ -291,7 +313,7 @@
   <Target Name="_BuildOneSatelliteAssembly"
           DependsOnTargets="_CollectSatelliteInputs"
           Condition=" '$(_SatelliteCulture)' != '' and '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)' "
-          Inputs="$(MSBuildAllProjects);$(ICU4JResourcesDirectory)/$(_SatelliteCulture)/*.*"
+          Inputs="$(MSBuildAllProjects);@(_OneCultureResource)"
           Outputs="$(ICU4NSatelliteAssemblyOutputDir)/$(_SatelliteCulture)/$(AssemblyName).resources.dll">
 
     <PropertyGroup>
@@ -300,8 +322,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <_OneCultureResource Include="$(ICU4JResourcesDirectory)/$(_SatelliteCulture)/*.*" />
-
       <_OneCultureAttribute Include="System.Reflection.AssemblyVersionAttribute">
         <_Parameter1>$(_SatelliteAssemblyVersion)</_Parameter1>
       </_OneCultureAttribute>
