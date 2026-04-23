@@ -29,7 +29,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Dev\Data\IDNATestInput.txt" />
     <EmbeddedResource Include="Dev\Data\TestData\*" />
-    <EmbeddedResource Include="Dev\Data\TestData\unicode\*" />
+    <!--<EmbeddedResource Include="Dev\Data\unicode\*" />-->
     <EmbeddedResource Include="Dev\Test\Rbbi\rbbitst.txt" />
     <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRanges1.16.tri2" />
     <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRanges1.32.tri2" />
