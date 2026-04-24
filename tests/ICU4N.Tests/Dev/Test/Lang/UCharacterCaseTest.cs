@@ -3,6 +3,7 @@ using ICU4N.Impl;
 using ICU4N.Support;
 using ICU4N.Support.Text;
 using ICU4N.Text;
+using J2N;
 using J2N.Text;
 using NUnit.Framework;
 using System;
@@ -600,149 +601,144 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestSpecialCasingTxt()
         {
-            try
-            {
-                // reading in the SpecialCasing file
-                TextReader input = TestUtil.GetDataReader(
-                                                      "unicode/SpecialCasing.txt");
-                while (true)
-                {
-                    String s = input.ReadLine();
-                    if (s == null)
-                    {
-                        break;
-                    }
-                    if (s.Length == 0 || s[0] == '#')
-                    {
-                        continue;
-                    }
+            // ICU4N: Removed try/catch because it was hiding bugs
 
-                    String[] chstr = GetUnicodeStrings(s);
-                    StringBuffer strbuffer = new StringBuffer(chstr[0]);
-                    StringBuffer lowerbuffer = new StringBuffer(chstr[1]);
-                    StringBuffer upperbuffer = new StringBuffer(chstr[3]);
-                    CultureInfo locale = null;
-                    for (int i = 4; i < chstr.Length; i++)
+            // reading in the SpecialCasing file
+            TextReader input = TestUtil.GetDataReader("unicode.SpecialCasing.txt");
+
+            while (true)
+            {
+                String s = input.ReadLine();
+                if (s == null)
+                {
+                    break;
+                }
+                if (s.Length == 0 || s[0] == '#')
+                {
+                    continue;
+                }
+
+                String[] chstr = GetUnicodeStrings(s);
+                StringBuffer strbuffer = new StringBuffer(chstr[0]);
+                StringBuffer lowerbuffer = new StringBuffer(chstr[1]);
+                StringBuffer upperbuffer = new StringBuffer(chstr[3]);
+                CultureInfo locale = null;
+                for (int i = 4; i < chstr.Length; i++)
+                {
+                    String condition = chstr[i];
+                    if (char.IsLower(chstr[i][0]))
                     {
-                        String condition = chstr[i];
-                        if (char.IsLower(chstr[i][0]))
+                        // specified locale
+                        locale = new CultureInfo(chstr[i]);
+                    }
+                    else if (condition.CompareToOrdinalIgnoreCase("Not_Before_Dot")
+                                                        == 0)
+                    {
+                        // turns I into dotless i
+                    }
+                    else if (condition.CompareToOrdinalIgnoreCase(
+                                                        "More_Above") == 0)
+                    {
+                        strbuffer.Append((char)0x300);
+                        lowerbuffer.Append((char)0x300);
+                        upperbuffer.Append((char)0x300);
+                    }
+                    else if (condition.CompareToOrdinalIgnoreCase(
+                                                "After_Soft_Dotted") == 0)
+                    {
+                        strbuffer.Insert(0, 'i');
+                        lowerbuffer.Insert(0, 'i');
+                        String lang = "";
+                        if (locale != null)
                         {
-                            // specified locale
-                            locale = new CultureInfo(chstr[i]);
+                            lang = UCultureInfo.GetLanguage(locale.Name);
                         }
-                        else if (condition.CompareToOrdinalIgnoreCase("Not_Before_Dot")
-                                                          == 0)
+                        if (lang.Equals("tr") || lang.Equals("az"))
                         {
-                            // turns I into dotless i
+                            // this is to be removed when 4.0 data comes out
+                            // and upperbuffer.insert uncommented
+                            // see jitterbug 2344
+                            chstr[i] = "After_I";
+                            strbuffer.Remove(0, 1);
+                            lowerbuffer.Remove(0, 1);
+                            i--;
+                            continue;
+                            // upperbuffer.insert(0, '\u0130');
                         }
-                        else if (condition.CompareToOrdinalIgnoreCase(
-                                                          "More_Above") == 0)
+                        else
                         {
-                            strbuffer.Append((char)0x300);
-                            lowerbuffer.Append((char)0x300);
-                            upperbuffer.Append((char)0x300);
-                        }
-                        else if (condition.CompareToOrdinalIgnoreCase(
-                                                    "After_Soft_Dotted") == 0)
-                        {
-                            strbuffer.Insert(0, 'i');
-                            lowerbuffer.Insert(0, 'i');
-                            String lang = "";
-                            if (locale != null)
-                            {
-                                lang = UCultureInfo.GetLanguage(locale.Name);
-                            }
-                            if (lang.Equals("tr") || lang.Equals("az"))
-                            {
-                                // this is to be removed when 4.0 data comes out
-                                // and upperbuffer.insert uncommented
-                                // see jitterbug 2344
-                                chstr[i] = "After_I";
-                                strbuffer.Remove(0, 1);
-                                lowerbuffer.Remove(0, 1);
-                                i--;
-                                continue;
-                                // upperbuffer.insert(0, '\u0130');
-                            }
-                            else
-                            {
-                                upperbuffer.Insert(0, 'I');
-                            }
-                        }
-                        else if (condition.CompareToOrdinalIgnoreCase(
-                                                          "Final_Sigma") == 0)
-                        {
-                            strbuffer.Insert(0, 'c');
-                            lowerbuffer.Insert(0, 'c');
-                            upperbuffer.Insert(0, 'C');
-                        }
-                        else if (condition.CompareToOrdinalIgnoreCase("After_I") == 0)
-                        {
-                            strbuffer.Insert(0, 'I');
-                            lowerbuffer.Insert(0, 'i');
-                            String lang = "";
-                            if (locale != null)
-                            {
-                                lang = UCultureInfo.GetLanguage(locale.Name);
-                            }
-                            if (lang.Equals("tr") || lang.Equals("az"))
-                            {
-                                upperbuffer.Insert(0, 'I');
-                            }
+                            upperbuffer.Insert(0, 'I');
                         }
                     }
-                    chstr[0] = strbuffer.ToString();
-                    chstr[1] = lowerbuffer.ToString();
-                    chstr[3] = upperbuffer.ToString();
-                    if (locale == null)
+                    else if (condition.CompareToOrdinalIgnoreCase(
+                                                        "Final_Sigma") == 0)
                     {
-                        if (!UChar.ToLower(chstr[0]).Equals(chstr[1]))
-                        {
-                            Errln(s);
-                            Errln("Fail: toLowerCase for character " +
-                                  Utility.Escape(chstr[0]) + ", expected "
-                                  + Utility.Escape(chstr[1]) + " but resulted in " +
-                                  Utility.Escape(UChar.ToLower(chstr[0])));
-                        }
-                        if (!UChar.ToUpper(chstr[0]).Equals(chstr[3]))
-                        {
-                            Errln(s);
-                            Errln("Fail: toUpperCase for character " +
-                                  Utility.Escape(chstr[0]) + ", expected "
-                                  + Utility.Escape(chstr[3]) + " but resulted in " +
-                                  Utility.Escape(UChar.ToUpper(chstr[0])));
-                        }
+                        strbuffer.Insert(0, 'c');
+                        lowerbuffer.Insert(0, 'c');
+                        upperbuffer.Insert(0, 'C');
                     }
-                    else
+                    else if (condition.CompareToOrdinalIgnoreCase("After_I") == 0)
                     {
-                        if (!UChar.ToLower(locale, chstr[0]).Equals(
-                                                                       chstr[1]))
+                        strbuffer.Insert(0, 'I');
+                        lowerbuffer.Insert(0, 'i');
+                        String lang = "";
+                        if (locale != null)
                         {
-                            Errln(s);
-                            Errln("Fail: toLowerCase for character " +
-                                  Utility.Escape(chstr[0]) + ", expected "
-                                  + Utility.Escape(chstr[1]) + " but resulted in " +
-                                  Utility.Escape(UChar.ToLower(locale,
-                                                                        chstr[0])));
+                            lang = UCultureInfo.GetLanguage(locale.Name);
                         }
-                        if (!UChar.ToUpper(locale, chstr[0]).Equals(
-                                                                       chstr[3]))
+                        if (lang.Equals("tr") || lang.Equals("az"))
                         {
-                            Errln(s);
-                            Errln("Fail: toUpperCase for character " +
-                                  Utility.Escape(chstr[0]) + ", expected "
-                                  + Utility.Escape(chstr[3]) + " but resulted in " +
-                                  Utility.Escape(UChar.ToUpper(locale,
-                                                                        chstr[0])));
+                            upperbuffer.Insert(0, 'I');
                         }
                     }
                 }
-                input.Dispose();
+                chstr[0] = strbuffer.ToString();
+                chstr[1] = lowerbuffer.ToString();
+                chstr[3] = upperbuffer.ToString();
+                if (locale == null)
+                {
+                    if (!UChar.ToLower(chstr[0]).Equals(chstr[1]))
+                    {
+                        Errln(s);
+                        Errln("Fail: toLowerCase for character " +
+                                Utility.Escape(chstr[0]) + ", expected "
+                                + Utility.Escape(chstr[1]) + " but resulted in " +
+                                Utility.Escape(UChar.ToLower(chstr[0])));
+                    }
+                    if (!UChar.ToUpper(chstr[0]).Equals(chstr[3]))
+                    {
+                        Errln(s);
+                        Errln("Fail: toUpperCase for character " +
+                                Utility.Escape(chstr[0]) + ", expected "
+                                + Utility.Escape(chstr[3]) + " but resulted in " +
+                                Utility.Escape(UChar.ToUpper(chstr[0])));
+                    }
+                }
+                else
+                {
+                    if (!UChar.ToLower(locale, chstr[0]).Equals(
+                                                                    chstr[1]))
+                    {
+                        Errln(s);
+                        Errln("Fail: toLowerCase for character " +
+                                Utility.Escape(chstr[0]) + ", expected "
+                                + Utility.Escape(chstr[1]) + " but resulted in " +
+                                Utility.Escape(UChar.ToLower(locale,
+                                                                    chstr[0])));
+                    }
+                    if (!UChar.ToUpper(locale, chstr[0]).Equals(
+                                                                    chstr[3]))
+                    {
+                        Errln(s);
+                        Errln("Fail: toUpperCase for character " +
+                                Utility.Escape(chstr[0]) + ", expected "
+                                + Utility.Escape(chstr[3]) + " but resulted in " +
+                                Utility.Escape(UChar.ToUpper(locale,
+                                                                    chstr[0])));
+                    }
+                }
             }
-            catch (Exception e)
-            {
-                e.PrintStackTrace();
-            }
+            input.Dispose();
         }
 
         [Test]

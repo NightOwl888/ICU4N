@@ -41,13 +41,13 @@ namespace ICU4N.Dev.Test
         /**
          * Return a buffered reader on the data file at path 'name' rooted at the data path.
          */
-        public static TextReader GetDataReader(String name, String charset)
+        public static TextReader GetDataReader(string name, string charset)
         {
             Stream input = GetDataStream(name);
             StreamReader isr =
                     charset == null
                         ? new StreamReader(input)
-                        : new StreamReader(input, Encoding.GetEncoding(charset));
+                        : new StreamReader(input, Encoding.GetEncoding(charset ?? Encoding.UTF8.WebName));
             return isr;
         }
 
@@ -55,7 +55,7 @@ namespace ICU4N.Dev.Test
          * Return a buffered reader on the data file at path 'name' rooted at the data path,
          * using the provided encoding.
          */
-        public static TextReader GetDataReader(String name)
+        public static TextReader GetDataReader(string name)
         {
             return GetDataReader(name, null);
         }
