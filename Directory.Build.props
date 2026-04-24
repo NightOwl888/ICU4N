@@ -55,14 +55,6 @@
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
-  <PropertyGroup Label=".NET Framework SDK Fixup">
-    <TargetFrameworkSDKToolsDirectory Condition="Exists('$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.1 Tools\')">$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.1 Tools\</TargetFrameworkSDKToolsDirectory>
-    <TargetFrameworkSDKToolsDirectory Condition="Exists('$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.2 Tools\')">$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.2 Tools\</TargetFrameworkSDKToolsDirectory>
-    <TargetFrameworkSDKToolsDirectory Condition="Exists('$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.7.2 Tools\')">$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.7.2 Tools\</TargetFrameworkSDKToolsDirectory>
-    <TargetFrameworkSDKToolsDirectory Condition="Exists('$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools\')">$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools\</TargetFrameworkSDKToolsDirectory>
-    <TargetFrameworkSDKToolsDirectory Condition="$([MSBuild]::IsOSPlatform('Windows')) == 'false' And Exists('/Library/Frameworks/Mono.framework/Versions/Current/Commands')">/Library/Frameworks/Mono.framework/Versions/Current/Commands/</TargetFrameworkSDKToolsDirectory>
-  </PropertyGroup>
-
   <PropertyGroup Label="Satellite Assemblies">
     <ICU4NSatelliteAssemblyOutputDir>$(ArtifactsDir)/SatelliteAssemblies/$(Configuration)</ICU4NSatelliteAssemblyOutputDir>
     <!-- Without this we get error MSB4057: The target "GetTargetPath" does not exist in the project.
