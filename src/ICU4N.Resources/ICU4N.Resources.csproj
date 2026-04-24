@@ -22,4 +22,13 @@
     <PackageReference Update="NETStandard.Library" Version="$(NETStandardLibrary20PackageReferenceVersion)" PrivateAssets="All" />
   </ItemGroup>
 
+  <!-- Build-only reference to the orchestration project guarantees satellites
+       in $(ICU4NSatelliteAssemblyOutputDir) exist before pack. -->
+  <ItemGroup>
+    <ProjectReference Include="../ICU4N.Resources.Build/ICU4N.Resources.Build.csproj"
+                      ReferenceOutputAssembly="false"
+                      SetTargetFramework="TargetFramework=netstandard2.0"
+                      PrivateAssets="All" />
+  </ItemGroup>
+
 </Project>
