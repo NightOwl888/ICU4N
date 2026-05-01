@@ -424,7 +424,7 @@ namespace ICU4N.Text
             if (description is null)
                 throw new ArgumentNullException(nameof(description));
 
-            ParseRuleStatus status = TryParseDescription(description.AsSpan(), out PluralRules result, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context);
+            ParseRuleStatus status = TryParseDescription(description, out PluralRules result, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context);
             if (status != ParseRuleStatus.OK)
                 ThrowParseException(status, source.ToString(), context.ToString());
             return result;
@@ -473,7 +473,7 @@ namespace ICU4N.Text
             if (description is null)
                 throw new ArgumentNullException(nameof(description));
 
-            ParseRuleStatus status = TryParseDescription(description.AsSpan(), out result, out ReadOnlySpan<char> _, out ReadOnlySpan<char> _);
+            ParseRuleStatus status = TryParseDescription(description, out result, out ReadOnlySpan<char> _, out ReadOnlySpan<char> _);
             return status == ParseRuleStatus.OK;
         }
 
@@ -1076,17 +1076,6 @@ namespace ICU4N.Text
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public virtual ReadOnlySpan<char> AsSpan() // ICU4N: Added to patch platforms that don't implicitly convert string to ReadOnlySpan<char>
-            {
-                return ToString()
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-                    .AsSpan()
-#endif
-                    ;
-            }
-
-            /// <internal/>
-            [Obsolete("This API is ICU internal only.")]
 #pragma warning disable 809
             public override string ToString()
 #pragma warning restore 809
@@ -1293,7 +1282,7 @@ namespace ICU4N.Text
                         }
                         if (!TryCheckDecimal(sampleType2, sample)) // ICU4N TODO: This can never fail - it should be an assert rather than an error.
                         {
-                            source = sample.AsSpan();
+                            source = sample.ToString(); // ICU4N TODO: API - ideally, there would be a TryGetChars() method that writes to Span<char> to avoid this unnecessary allocation.
                             return ParseRuleStatus.IllformedNumberRange;
                         }
                         samples2.Add(new FixedDecimalRange(sample, sample));
@@ -1312,12 +1301,12 @@ namespace ICU4N.Text
                         }
                         if (!TryCheckDecimal(sampleType2, start)) // ICU4N TODO: This can never fail - it should be an assert rather than an error.
                         {
-                            source = start.AsSpan();
+                            source = start.ToString(); // ICU4N TODO: API - ideally, there would be a TryGetChars() method that writes to Span<char> to avoid this unnecessary allocation.
                             return ParseRuleStatus.IllformedNumberRange;
                         }
                         if (!TryCheckDecimal(sampleType2, end)) // ICU4N TODO: This can never fail - it should be an assert rather than an error.
                         {
-                            source = end.AsSpan();
+                            source = end.ToString(); // ICU4N TODO: API - ideally, there would be a TryGetChars() method that writes to Span<char> to avoid this unnecessary allocation.
                             return ParseRuleStatus.IllformedNumberRange;
                         }
                         samples2.Add(new FixedDecimalRange(start, end));
@@ -1418,7 +1407,7 @@ namespace ICU4N.Text
 #pragma warning restore 612, 618
         }
 
-        internal class SimpleTokenizer
+        internal class SimpleTokenizer // ICU4N TODO: API - Move this to the test that calls it. The only purpose of keeping it is to verify the port.
         {
             private static readonly UnicodeSet BREAK_AND_IGNORE = new UnicodeSet(0x09, 0x0a, 0x0c, 0x0d, 0x20, 0x20).Freeze();
             private static readonly UnicodeSet BREAK_AND_KEEP = new UnicodeSet('!', '!', '%', '%', ',', ',', '.', '.', '=', '=').Freeze();
@@ -1470,11 +1459,6 @@ namespace ICU4N.Text
             {
                 this.source = source;
                 Current = default;
-            }
-
-            public SimpleTokenizerEnumerator(string source)
-                : this(source.AsSpan())
-            {
             }
 
             // Needed to be compatible with the foreach operator
@@ -1735,12 +1719,14 @@ namespace ICU4N.Text
                             // at this point, either we are out of tokens, or t is ','
                             if (low > high)
                             {
-                                token = string.Concat(low.ToString(CultureInfo.InvariantCulture), "~", high.ToString(CultureInfo.InvariantCulture)).AsSpan();
+                                // ICU4N TODO: This may be a bug. Need to check whether this string goes out of scope.
+                                token = string.Concat(low.ToString(CultureInfo.InvariantCulture), "~", high.ToString(CultureInfo.InvariantCulture));
                                 return ParseRuleStatus.ConstraintUnexpectedToken;
                             }
                             else if (mod != 0 && high >= mod)
                             {
-                                token = string.Concat(low.ToString(CultureInfo.InvariantCulture), ">mod=", mod.ToString(CultureInfo.InvariantCulture)).AsSpan();
+                                // ICU4N TODO: This may be a bug. Need to check whether this string goes out of scope.
+                                token = string.Concat(low.ToString(CultureInfo.InvariantCulture), ">mod=", mod.ToString(CultureInfo.InvariantCulture));
                                 return ParseRuleStatus.ConstraintUnexpectedToken;
                             }
                             valueList.Add(low);
@@ -1771,11 +1757,7 @@ namespace ICU4N.Text
                         // Hack to exclude "is not 1,2"
                         if (lowBound != highBound && hackForCompatibility && !inRange)
                         {
-                            token = "is not <range>"
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-                                .AsSpan()
-#endif
-                                ;
+                            token = "is not <range>";
                             return ParseRuleStatus.ConstraintUnexpectedToken;
                         }
 
@@ -1849,12 +1831,6 @@ namespace ICU4N.Text
             // ICU4N: Checked 2nd arg
             return TryParseRule(description.Slice(0, x).Trim(), description.Slice(x + 1).Trim(), out result, out source, out context);
         }
-
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool TryParseRule(string keyword, string description, out Rule result)
-            => TryParseRule(keyword.AsSpan(), description.AsSpan(), out result);
-#endif
 
         // ICU4N: Added overload for use by PluralRulesLoader so it doesn't have to use StringBuilder
         internal static bool TryParseRule(ReadOnlySpan<char> keyword, ReadOnlySpan<char> description, out Rule result)
@@ -2475,7 +2451,7 @@ namespace ICU4N.Text
                     // ICU4N: Hard-coded rule will always succeed unless TryParseRule has a bug. So, we don't need a try version of this method.
 
                     // make sure we have always have an 'other' a rule
-                    ParseRuleStatus status = TryParseRule("other:".AsSpan(), out otherRule, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context);
+                    ParseRuleStatus status = TryParseRule("other:", out otherRule, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context);
                     if (status != ParseRuleStatus.OK)
                         ThrowParseException(status, source.ToString(), context.ToString());
                 }

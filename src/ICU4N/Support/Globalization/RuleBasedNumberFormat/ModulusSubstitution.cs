@@ -80,8 +80,8 @@ namespace ICU4N.Globalization
 
             if (divisor == 0)
             { // this will cause recursion
-                throw new InvalidOperationException(StringHelper.Concat(("Substitution with bad divisor (" + divisor.ToString(CultureInfo.InvariantCulture) + ") ").AsSpan(), description.Slice(0, pos), // ICU4N: Checked 2nd parameter
-                        " | ".AsSpan(), description.Slice(pos)));
+                throw new InvalidOperationException(StringHelper.Concat("Substitution with bad divisor (", divisor.ToString(CultureInfo.InvariantCulture), ") ", description.Slice(0, pos), // ICU4N: Checked 2nd parameter
+                        " | ", description.Slice(pos)));
             }
 
             // the >>> token doesn't alter how this substitution calculates the

@@ -15,12 +15,12 @@ namespace ICU4N.Impl.Locale
         public AsciiCaseInsensitiveKey(string value)
         {
             this.value = value;
-            hashCode = AsciiUtil.GetHashCodeOrdinalIgnoreCase(value.AsSpan());
+            hashCode = AsciiUtil.GetHashCodeOrdinalIgnoreCase(value);
         }
 
         public bool Equals(ReadOnlySpan<char> other)
         {
-            return AsciiUtil.CaseIgnoreMatch(value.AsSpan(), other);
+            return AsciiUtil.CaseIgnoreMatch(value, other);
         }
 
         public bool Equals(string other)

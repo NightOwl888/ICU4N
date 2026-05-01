@@ -35,7 +35,7 @@ namespace ICU4N.Impl.Locale
         }
 
         public virtual string ID => LazyInitializer.EnsureInitialized(ref id,
-            () => StringHelper.Concat(stackalloc char[] { key, LanguageTag.Separator }, value.AsSpan()))!;
+            () => StringHelper.Concat(stackalloc char[] { key, LanguageTag.Separator }, value))!;
 
         public override string ToString()
         {

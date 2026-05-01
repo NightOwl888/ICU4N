@@ -1,4 +1,5 @@
 ﻿using ICU4N.Support.Collections;
+using ICU4N.Support.Text;
 using ICU4N.Text;
 using System;
 using System.Buffers;
@@ -150,7 +151,7 @@ namespace ICU4N.Impl.Locale
                     // normalize separator to "-"
                     string tp = type.Replace(BaseLocale.Separator, LanguageTag.Separator);
                     // validate
-                    StringTokenEnumerator itr = new StringTokenEnumerator(tp.AsSpan(), LanguageTag.Separator);
+                    StringTokenEnumerator itr = new StringTokenEnumerator(tp, LanguageTag.Separator);
                     while (itr.MoveNext())
                     {
                         ReadOnlySpan<char> s = itr.Current;
@@ -212,7 +213,7 @@ namespace ICU4N.Impl.Locale
                 try
                 {
                     Span<char> val = usePool ? pooledArray.AsSpan(valueLength) : stackalloc char[valueLength];
-                    value.AsSpan().CopyTo(val);
+                    value.CopyTo(val);
                     val.Replace(BaseLocale.Separator, LanguageTag.Separator);
 
                     StringTokenEnumerator itr = new StringTokenEnumerator(val, LanguageTag.Separator);
@@ -266,7 +267,7 @@ namespace ICU4N.Impl.Locale
                 return this;
             }
             subtags = subtags.Replace(BaseLocale.Separator, LanguageTag.Separator);
-            StringTokenEnumerator itr = new StringTokenEnumerator(subtags.AsSpan(), LanguageTag.Separator);
+            StringTokenEnumerator itr = new StringTokenEnumerator(subtags, LanguageTag.Separator);
 
             List<string>? extensions = null;
             string? privateuse = null;
@@ -615,7 +616,7 @@ namespace ICU4N.Impl.Locale
             {
                 if (_extensions.TryGetValue(PRIVUSE_KEY, out string? privuse) && privuse != null)
                 {
-                    StringTokenEnumerator itr = new StringTokenEnumerator(privuse.AsSpan(), LanguageTag.Separator);
+                    StringTokenEnumerator itr = new StringTokenEnumerator(privuse, LanguageTag.Separator);
                     bool sawPrefix = false;
                     int privVarStart = -1;
                     while (itr.MoveNext())
@@ -625,7 +626,7 @@ namespace ICU4N.Impl.Locale
                             privVarStart = itr.Current.StartIndex;
                             break;
                         }
-                        if (AsciiUtil.CaseIgnoreMatch(itr.Current, LanguageTag.PrivateUse_Variant_Prefix.AsSpan()))
+                        if (AsciiUtil.CaseIgnoreMatch(itr.Current, LanguageTag.PrivateUse_Variant_Prefix))
                         {
                             sawPrefix = true;
                         }
@@ -674,7 +675,7 @@ namespace ICU4N.Impl.Locale
         /// </summary>
         internal static string? RemovePrivateuseVariant(string? privuseVal)
         {
-            StringTokenEnumerator itr = new StringTokenEnumerator(privuseVal.AsSpan(), LanguageTag.Separator);
+            StringTokenEnumerator itr = new StringTokenEnumerator(privuseVal, LanguageTag.Separator);
 
             // Note: privateuse value "abc-lvariant" is unchanged
             // because no subtags after "lvariant".
@@ -691,7 +692,7 @@ namespace ICU4N.Impl.Locale
                     sawPrivuseVar = true;
                     break;
                 }
-                if (AsciiUtil.CaseIgnoreMatch(itr.Current, LanguageTag.PrivateUse_Variant_Prefix.AsSpan()))
+                if (AsciiUtil.CaseIgnoreMatch(itr.Current, LanguageTag.PrivateUse_Variant_Prefix))
                 {
                     prefixStart = itr.Current.StartIndex;
                 }
@@ -711,7 +712,7 @@ namespace ICU4N.Impl.Locale
         /// </summary>
         private int CheckVariants(string variants, char sep)
         {
-            StringTokenEnumerator itr = new StringTokenEnumerator(variants.AsSpan(), sep);
+            StringTokenEnumerator itr = new StringTokenEnumerator(variants, sep);
             while (itr.MoveNext())
             {
                 ReadOnlySpan<char> s = itr.Current;

@@ -813,7 +813,7 @@ namespace ICU4N.Impl
 
             foreach (var file in new DirectoryInfo(PlatformDetection.BaseDirectory).GetFiles(satelliteAssemblyDLLName, SearchOption.AllDirectories))
             {
-                if (LooksLikeACultureName(file.Directory.Name.AsSpan()))
+                if (LooksLikeACultureName(file.Directory.Name))
                 {
 #if FEATURE_SYSTEM_REFLECTION_METADATA
                     AddLocaleIDsFromAssemblyPath(file.FullName, baseName, set);
@@ -868,7 +868,7 @@ namespace ICU4N.Impl
         private static void AddLocaleIDsFromAssemblyPath(string assemblyPath, string baseName, ISet<string> set)
         {
             var prefix = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-            AppendFilePrefixFromBaseName(baseName.AsSpan(), ref prefix);
+            AppendFilePrefixFromBaseName(baseName, ref prefix);
 
             using var stream = new FileStream(assemblyPath, FileMode.Open, FileAccess.Read, FileShare.Read);
             using var peReader = new PEReader(stream);
@@ -877,9 +877,9 @@ namespace ICU4N.Impl
             foreach (var resourceHandle in reader.ManifestResources)
             {
                 var resource = reader.GetManifestResource(resourceHandle);
-                var name = reader.GetString(resource.Name).AsSpan();
+                var name = reader.GetString(resource.Name);
 
-                if (IsMatchingLocaleFile(name, prefix.AsSpan(), ".res".AsSpan(), out ReadOnlySpan<char> locale))
+                if (IsMatchingLocaleFile(name, prefix.AsSpan(), ".res", out ReadOnlySpan<char> locale))
                     set.Add(locale.ToString());
             }
         }
@@ -887,12 +887,12 @@ namespace ICU4N.Impl
         private static void AppendLocaleIDsFromAssembly(Assembly assembly, string baseName, ISet<string> set)
         {
             var prefix = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-            AppendFilePrefixFromBaseName(baseName.AsSpan(), ref prefix);
+            AppendFilePrefixFromBaseName(baseName, ref prefix);
 
             // Iterate through embedded resources
             foreach (string resourceName in assembly.GetManifestResourceNames())
             {
-                if (IsMatchingLocaleFile(resourceName.AsSpan(), prefix.AsSpan(), ".res".AsSpan(), out ReadOnlySpan<char> locale))
+                if (IsMatchingLocaleFile(resourceName, prefix.AsSpan(), ".res", out ReadOnlySpan<char> locale))
                     set.Add(locale.ToString());
             }
         }

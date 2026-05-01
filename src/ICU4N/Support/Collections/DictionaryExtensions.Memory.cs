@@ -21,7 +21,7 @@ namespace ICU4N.Support.Collections
             int hashCode = ascii.GetHashCode(key);
             foreach (string itemKey in dictionary.Keys)
             {
-                if (ascii.GetHashCode(itemKey) == hashCode && ascii.Equals(key, itemKey.AsSpan()))
+                if (ascii.GetHashCode(itemKey) == hashCode && ascii.Equals(key, itemKey))
                     return true;
             }
             return false;
@@ -41,7 +41,7 @@ namespace ICU4N.Support.Collections
             int hashCode = ascii.GetHashCode(key);
             foreach (var kvp in dictionary)
             {
-                if (ascii.GetHashCode(kvp.Key) == hashCode && ascii.Equals(key, kvp.Key.AsSpan()))
+                if (ascii.GetHashCode(kvp.Key) == hashCode && ascii.Equals(key, kvp.Key))
                 {
                     value = kvp.Value;
                     return true;

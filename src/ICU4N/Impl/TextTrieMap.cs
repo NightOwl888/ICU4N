@@ -51,42 +51,11 @@ namespace ICU4N.Impl
         /// <param name="text">The text.</param>
         /// <param name="value">The value associated with the text.</param>
         /// <returns></returns>
-        public virtual TextTrieMap<TValue> Put(string text, TValue value)
-        {
-            if (text is null)
-                throw new ArgumentNullException(nameof(text)); // ICU4N: Added guard clause.
-            return Put(text.AsSpan(), value);
-        }
-
-        /// <summary>
-        /// Adds the text key and its associated value in this object.
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <param name="value">The value associated with the text.</param>
-        /// <returns></returns>
         public virtual TextTrieMap<TValue> Put(ReadOnlySpan<char> text, TValue value)
         {
             CharEnumerator chitr = new CharEnumerator(text, ignoreCase);
             root.Add(chitr, value);
             return this;
-        }
-
-        /// <summary>
-        /// Gets an enumerator of the values associated with the
-        /// longest prefix matching string key.
-        /// </summary>
-        /// <param name="text">The text to be matched with prefixes.</param>
-        /// <returns>
-        /// An enumerator of the values associated with
-        /// the longest prefix matching matching key, or <c>null</c>
-        /// if no matching entry is found.
-        /// </returns>
-        public virtual IEnumerator<TValue> Get(string text)
-        {
-            if (text is null)
-                throw new ArgumentNullException(nameof(text)); // ICU4N: Added guard clause.
-
-            return Get(text.AsSpan());
         }
 
         /// <summary>
@@ -106,28 +75,12 @@ namespace ICU4N.Impl
 
         // ICU4N specific: Eliminatd Get(ICharSequence text, int start, int[] matchLen) because we can slice a ReadOnlySpan<char>
 
-        public virtual IEnumerator<TValue> Get(string text, out int matchLength)
-        {
-            if (text is null)
-                throw new ArgumentNullException(nameof(text)); // ICU4N: Added guard clause.
-
-            return Get(text.AsSpan(), out matchLength);
-        }
-
         public virtual IEnumerator<TValue> Get(ReadOnlySpan<char> text, out int matchLength)
         {
             LongestMatchHandler<TValue> handler = new LongestMatchHandler<TValue>();
             Find(text, handler);
             matchLength = handler.MatchLength;
             return handler.Matches;
-        }
-
-        public virtual void Find(string text, IResultHandler<TValue> handler)
-        {
-            if (text is null)
-                throw new ArgumentNullException(nameof(text)); // ICU4N: Added guard clause.
-
-            Find(text.AsSpan(), handler);
         }
 
         public virtual void Find(ReadOnlySpan<char> text, IResultHandler<TValue> handler)

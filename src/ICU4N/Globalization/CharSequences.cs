@@ -28,44 +28,6 @@ namespace ICU4N.Globalization
         /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
-        public static int MatchAfter(string a, string b, int aIndex, int bIndex)
-        {
-            if (a is null)
-                throw new ArgumentNullException(nameof(a));
-            if (b is null)
-                throw new ArgumentNullException(nameof(b));
-
-            return MatchAfter(a.AsSpan(), b.AsSpan(), aIndex, bIndex);
-        }
-
-        /// <summary>
-        /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
-        /// </summary>
-        [Obsolete("This API is ICU internal only.")]
-        public static int MatchAfter(string a, ReadOnlySpan<char> b, int aIndex, int bIndex)
-        {
-            if (a is null)
-                throw new ArgumentNullException(nameof(a));
-
-            return MatchAfter(a.AsSpan(), b, aIndex, bIndex);
-        }
-
-        /// <summary>
-        /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
-        /// </summary>
-        [Obsolete("This API is ICU internal only.")]
-        public static int MatchAfter(ReadOnlySpan<char> a, string b, int aIndex, int bIndex)
-        {
-            if (b is null)
-                throw new ArgumentNullException(nameof(b));
-
-            return MatchAfter(a, b.AsSpan(), aIndex, bIndex);
-        }
-
-        /// <summary>
-        /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
-        /// </summary>
-        [Obsolete("This API is ICU internal only.")]
         public static int MatchAfter(ReadOnlySpan<char> a, ReadOnlySpan<char> b, int aIndex, int bIndex)
         {
             int i = aIndex, j = bIndex;

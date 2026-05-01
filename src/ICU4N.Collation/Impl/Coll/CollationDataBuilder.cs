@@ -1276,7 +1276,7 @@ namespace ICU4N.Impl.Coll
                 ConditionalCE32 firstCond = cond;
                 ConditionalCE32 lastCond = cond;
                 while (cond.Next >= 0 &&
-                        (cond = GetConditionalCE32(cond.Next)).Context.AsSpan().StartsWith(prefixSpan, StringComparison.Ordinal))
+                        (cond = GetConditionalCE32(cond.Next)).Context.StartsWith(prefixSpan, StringComparison.Ordinal))
                 {
                     lastCond = cond;
                 }
@@ -1320,7 +1320,7 @@ namespace ICU4N.Impl.Coll
                             if (length == prefixLength) { break; }
                             if (cond.DefaultCE32 != Collation.NO_CE32 &&
                                     (length == 0 || prefixSpan.RegionMatches(
-                                            prefix.Length - length, cond.Context.AsSpan(), 1, length, StringComparison.Ordinal)
+                                            prefix.Length - length, cond.Context, 1, length, StringComparison.Ordinal)
                                             /* C++: prefix.endsWith(cond.context, 1, length) */))
                             {
                                 emptySuffixCE32 = cond.DefaultCE32;

@@ -156,7 +156,7 @@ namespace ICU4N.Numerics
                         // There should always be data in the "other" plural variant.
                         throw new ICUException("Could not find data in 'other' plural variant with field " + field);
                     }
-                    SimpleFormatterImpl.CompileToStringMinMaxArguments(simpleFormat.AsSpan(), ref sb, 1, 1);
+                    SimpleFormatterImpl.CompileToStringMinMaxArguments(simpleFormat, ref sb, 1, 1);
                     string compiled = sb.AsSpan().ToString();
                     output[plural] = new SimpleModifier(compiled, null, false);
                 }

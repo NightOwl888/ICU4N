@@ -947,7 +947,7 @@ namespace ICU4N.Text
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static string Compose(string str, bool compat, NormalizerUnicodeVersion unicodeVersion)
         {
-            return GetComposeNormalizer2(compat, (int)unicodeVersion).Normalize(str.AsSpan());
+            return GetComposeNormalizer2(compat, (int)unicodeVersion).Normalize(str);
         }
 
         /// <summary>
@@ -1061,7 +1061,7 @@ namespace ICU4N.Text
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static string Decompose(string str, bool compat, NormalizerUnicodeVersion unicodeVersion)
         {
-            return GetDecomposeNormalizer2(compat, (int)unicodeVersion).Normalize(str.AsSpan());
+            return GetDecomposeNormalizer2(compat, (int)unicodeVersion).Normalize(str);
         }
 
         /// <summary>
@@ -1324,7 +1324,7 @@ namespace ICU4N.Text
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static QuickCheckResult QuickCheck(string source, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
         {
-            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).QuickCheck(source.AsSpan());
+            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).QuickCheck(source);
         }
 
         /// <summary>
@@ -1376,7 +1376,7 @@ namespace ICU4N.Text
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static bool IsNormalized(string str, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
         {
-            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).IsNormalized(str.AsSpan());
+            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).IsNormalized(str);
         }
 
         /// <summary>
@@ -1610,7 +1610,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public static int Compare(string s1, string s2, NormalizerComparison comparison, FoldCase foldCase, NormalizerUnicodeVersion unicodeVersion)
         {
-            return InternalCompare(s1.AsSpan(), s2.AsSpan(), (int)comparison | (int)foldCase, (int)unicodeVersion);
+            return InternalCompare(s1, s2, (int)comparison | (int)foldCase, (int)unicodeVersion);
         }
 
         // ---------------------------------
@@ -1870,7 +1870,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public static int Compare(int char32a, string str2, NormalizerComparison comparison, FoldCase foldCase, NormalizerUnicodeVersion unicodeVersion)
         {
-            return InternalCompare(UTF16.ValueOf(char32a, stackalloc char[2]), str2.AsSpan(), (int)comparison | (int)foldCase, (int)unicodeVersion);
+            return InternalCompare(UTF16.ValueOf(char32a, stackalloc char[2]), str2, (int)comparison | (int)foldCase, (int)unicodeVersion);
         }
 
         // ---------------------------------

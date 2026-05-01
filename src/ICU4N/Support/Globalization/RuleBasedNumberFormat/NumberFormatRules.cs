@@ -233,24 +233,10 @@ namespace ICU4N.Globalization
             => ruleText.Slice(ruleName.Length).TrimStart(PatternProps.WhiteSpace).TrimEnd(';');
 
 
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-        internal NumberFormatRules(string description)
-            : this(description.AsSpan(), stripWhiteSpace: true)
-        {
-        }
-#endif
-
         internal NumberFormatRules(ReadOnlySpan<char> description)
             : this(description, stripWhiteSpace: true)
         {
         }
-
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-        private NumberFormatRules(string description, bool stripWhiteSpace)
-            : this(description.AsSpan(), stripWhiteSpace)
-        {
-        }
-#endif
 
         private NumberFormatRules(ReadOnlySpan<char> description, bool stripWhiteSpace) // ICU4N TODO: Add a localizations parameter? We need to work out a way to allow users to supply these, but they don't matter for built-in rules. The jagged array is really ugly, but we should probably include an overload for compatibility reasons.
         {
@@ -468,11 +454,7 @@ namespace ICU4N.Globalization
             }
             // ICU4N: We must heap allocate here because the ValueStringBuilder may return from the
             // stack, which is out of scope after this point.
-            return result.ToString()
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-                .AsSpan()
-#endif
-                ;
+            return result.ToString();
         }
 
         //-----------------------------------------------------------------------

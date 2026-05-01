@@ -167,7 +167,7 @@ namespace ICU4N.Globalization
             ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
             try
             {
-                SimpleFormatterImpl.CompileToStringMinMaxArguments(sep.AsSpan(), ref sb, 2, 2);
+                SimpleFormatterImpl.CompileToStringMinMaxArguments(sep, ref sb, 2, 2);
                 this.separatorFormat = sb.AsSpan().ToString();
 
                 string pattern = langData.Get("localeDisplayPattern", "pattern");
@@ -175,7 +175,7 @@ namespace ICU4N.Globalization
                 {
                     pattern = "{0} ({1})";
                 }
-                SimpleFormatterImpl.CompileToStringMinMaxArguments(pattern.AsSpan(), ref sb, 2, 2);
+                SimpleFormatterImpl.CompileToStringMinMaxArguments(pattern, ref sb, 2, 2);
                 this.format = sb.AsSpan().ToString();
                 if (pattern.Contains("（"))
                 {
@@ -197,7 +197,7 @@ namespace ICU4N.Globalization
                 {
                     keyTypePattern = "{0}={1}";
                 }
-                SimpleFormatterImpl.CompileToStringMinMaxArguments(keyTypePattern.AsSpan(), ref sb, 2, 2);
+                SimpleFormatterImpl.CompileToStringMinMaxArguments(keyTypePattern, ref sb, 2, 2);
                 this.keyTypeFormat = sb.AsSpan().ToString();
             }
             finally
@@ -395,7 +395,7 @@ namespace ICU4N.Globalization
                             else if (!key.Equals(keyDisplayName))
                             {
                                 string keyValue = SimpleFormatterImpl.FormatCompiledPattern(
-                                    keyTypeFormat.AsSpan(), keyDisplayName, valueDisplayName);
+                                    keyTypeFormat, keyDisplayName, valueDisplayName);
                                 AppendWithSep(keyValue, ref buf);
                             }
                             else
@@ -414,7 +414,7 @@ namespace ICU4N.Globalization
                 if (buf.Length > 0)
                 {
                     resultName = SimpleFormatterImpl.FormatCompiledPattern(
-                        format.AsSpan(), resultName.AsSpan(), buf.AsSpan());
+                        format, resultName, buf.AsSpan());
                 }
             }
             finally
@@ -683,7 +683,7 @@ namespace ICU4N.Globalization
             }
             else
             {
-                SimpleFormatterImpl.FormatAndReplace(separatorFormat.AsSpan(), ref b, null, b.AsSpan(), s.AsSpan());
+                SimpleFormatterImpl.FormatAndReplace(separatorFormat, ref b, null, b.AsSpan(), s);
             }
         }
 

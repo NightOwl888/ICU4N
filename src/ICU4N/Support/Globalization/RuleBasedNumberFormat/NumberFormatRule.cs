@@ -353,19 +353,6 @@ namespace ICU4N.Globalization
             this.ruleText = ParseRuleDescriptor(descriptor, description).ToString();
         }
 
-        /// <summary>
-        /// Intializes a new instance of <see cref="NumberFormatRule"/> for simple cases where we don't have any substitutions,
-        /// such as <c>"Inf", decimalFormatSymbols.Infinity</c> or <c>"NaN", decimalFormatSymbols.NaN</c>.
-        /// </summary>
-        /// <param name="owner">The <see cref="RuleBasedNumberFormat"/> that owns this rule.</param>
-        /// <param name="descriptor">The rule's descriptor (such as "Inf" or "NaN").</param>
-        /// <param name="description">The rule's description, minus the descriptor.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
-        public NumberFormatRule(INumberFormatRules owner, string descriptor, string description)
-            : this(owner, descriptor.AsSpan(), description.AsSpan())
-        {
-        }
-
         private static ReadOnlySpan<char> RemoveLeadingApostrophe(ReadOnlySpan<char> description)
             => description.Length > 0 && description[0] == '\'' ? description.Slice(1) : description;
 
@@ -632,7 +619,7 @@ namespace ICU4N.Globalization
                 // Use the string as is - there were no substitutions to remove
                 this.ruleText = ruleText.ToString();
             }
-            ExtractPluralRules(this.ruleText.AsSpan());
+            ExtractPluralRules(this.ruleText);
         }
 
         /// <summary>
@@ -994,7 +981,7 @@ namespace ICU4N.Globalization
                     ? new ValueStringBuilder(stackalloc char[newRuleTextLength])
                     : new ValueStringBuilder(newRuleTextLength);
 
-                ruleTextCopy.Append(ruleText.AsSpan());
+                ruleTextCopy.Append(ruleText);
                 if (sub2 != null)
                 {
                     ruleTextCopy.Insert(sub2.Pos, sub2String.AsSpan());

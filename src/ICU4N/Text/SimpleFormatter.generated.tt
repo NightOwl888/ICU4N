@@ -47,7 +47,7 @@ namespace ICU4N.Text
         /// <stable>ICU 57</stable>
         public string Format(<#=GenerateValuesParams(i + 1, "ReadOnlySpan<char>")#>)
         {
-            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), <#=GenerateValuesParams(i + 1)#>);
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern, <#=GenerateValuesParams(i + 1)#>);
         }
 
 <# } #>
@@ -73,7 +73,7 @@ namespace ICU4N.Text
         /// <draft>ICU 60.1</draft>
         public bool TryFormat(Span<char> destination, out int charsLength, <#=GenerateValuesParams(i + 1, "ReadOnlySpan<char>")#>)
         {
-            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, <#=GenerateValuesParams(i + 1)#>);
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern, destination, out charsLength, <#=GenerateValuesParams(i + 1)#>);
         }
 
 <# } #>

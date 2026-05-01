@@ -2886,7 +2886,7 @@ namespace ICU4N
             if (str is null)
                 throw new ArgumentNullException(nameof(str));
 
-            return CaseMapImpl.ToUpper(GetDefaultCaseLocale(), 0, str.AsSpan());
+            return CaseMapImpl.ToUpper(GetDefaultCaseLocale(), 0, str);
         }
 
         /// <summary>
@@ -2901,7 +2901,7 @@ namespace ICU4N
             if (str is null)
                 throw new ArgumentNullException(nameof(str));
 
-            return CaseMapImpl.ToLower(GetDefaultCaseLocale(), 0, str.AsSpan());
+            return CaseMapImpl.ToLower(GetDefaultCaseLocale(), 0, str);
         }
 
         /// <summary>
@@ -2966,7 +2966,7 @@ namespace ICU4N
             if (str is null)
                 throw new ArgumentNullException(nameof(str));
 
-            return CaseMapImpl.ToUpper(GetCaseLocale(locale), 0, str.AsSpan());
+            return CaseMapImpl.ToUpper(GetCaseLocale(locale), 0, str);
         }
 
         /// <summary>
@@ -2982,7 +2982,7 @@ namespace ICU4N
             if (str is null)
                 throw new ArgumentNullException(nameof(str));
 
-            return CaseMapImpl.ToUpper(GetCaseLocale(locale), 0, str.AsSpan());
+            return CaseMapImpl.ToUpper(GetCaseLocale(locale), 0, str);
         }
 
         /// <summary>
@@ -2998,7 +2998,7 @@ namespace ICU4N
             if (str is null)
                 throw new ArgumentNullException(nameof(str));
 
-            return CaseMapImpl.ToLower(GetCaseLocale(locale), 0, str.AsSpan());
+            return CaseMapImpl.ToLower(GetCaseLocale(locale), 0, str);
         }
 
         /// <summary>
@@ -3014,7 +3014,7 @@ namespace ICU4N
             if (str is null)
                 throw new ArgumentNullException(nameof(str));
 
-            return CaseMapImpl.ToLower(GetCaseLocale(locale), 0, str.AsSpan());
+            return CaseMapImpl.ToLower(GetCaseLocale(locale), 0, str);
         }
 
         /// <summary>
@@ -3107,7 +3107,7 @@ namespace ICU4N
             }
             titleIter = CaseMapImpl.GetTitleBreakIterator(locale!, options, titleIter);
             titleIter.SetText(str);
-            return CaseMapImpl.ToTitle(GetCaseLocale(locale), options, titleIter, str.AsSpan());
+            return CaseMapImpl.ToTitle(GetCaseLocale(locale), options, titleIter, str);
         }
 
         /// <summary>
@@ -3221,7 +3221,7 @@ namespace ICU4N
             }
             titleIter = CaseMapImpl.GetTitleBreakIterator(locale!, options, titleIter);
             titleIter.SetText(str);
-            return CaseMapImpl.ToTitle(GetCaseLocale(locale), options, titleIter, str.AsSpan());
+            return CaseMapImpl.ToTitle(GetCaseLocale(locale), options, titleIter, str);
         }
 
 #nullable restore
@@ -3358,7 +3358,7 @@ namespace ICU4N
             if (str is null)
                 throw new ArgumentNullException(nameof(str));
 
-            return CaseMapImpl.Fold((int)foldCase, str.AsSpan());
+            return CaseMapImpl.Fold((int)foldCase, str);
         }
 
         /// <icu/>

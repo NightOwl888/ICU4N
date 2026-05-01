@@ -268,7 +268,7 @@ namespace ICU4N.Text
                     ReadOnlySpan<char> chStr = UTF16.ValueOf(source, i);
                     foreach (string s in subpermute)
                     {
-                        string piece = StringHelper.Concat(chStr, s.AsSpan());
+                        string piece = StringHelper.Concat(chStr, s);
                         //if (PROGRESS) System.out.println("  Piece: " + piece);
                         output.Add(piece);
                     }
@@ -414,7 +414,7 @@ namespace ICU4N.Text
                         segmentBuffer.AppendCodePoint(cp2);
                         foreach (string item in remainder)
                         {
-                            result.Add(StringHelper.Concat(segmentBuffer.AsSpan(), item.AsSpan()));
+                            result.Add(StringHelper.Concat(segmentBuffer.AsSpan(), item));
                         }
                     }
                 }

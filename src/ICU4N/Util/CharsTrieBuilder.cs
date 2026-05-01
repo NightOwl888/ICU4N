@@ -37,7 +37,7 @@ namespace ICU4N.Util
         public CharsTrieBuilder Add(string s, int value)
         {
 #pragma warning disable 612, 618
-            AddImpl(s.AsSpan(), value);
+            AddImpl(s, value);
 #pragma warning restore 612, 618
             return this;
         }

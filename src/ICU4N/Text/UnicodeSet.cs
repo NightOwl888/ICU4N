@@ -1,5 +1,6 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Impl;
+using ICU4N.Support.Text;
 using ICU4N.Util;
 using J2N;
 using J2N.Collections.Generic.Extensions;
@@ -955,7 +956,7 @@ namespace ICU4N.Text
             if (pat != null && !escapeUnprintable)
             {
                 charsLength = pat.Length;
-                return pat.AsSpan().TryCopyTo(destination);
+                return pat.TryCopyTo(destination);
             }
             ValueStringBuilder result = new ValueStringBuilder(destination);
             try
@@ -1383,7 +1384,7 @@ namespace ICU4N.Text
                     // now keep checking string until we get the longest one
                     for (; ; )
                     {
-                        int tempLen = MatchesAt(text, offset, trial.AsSpan());
+                        int tempLen = MatchesAt(text, offset, trial);
                         if (lastLen > tempLen) goto strings_break;
                         lastLen = tempLen;
                         if (!it.MoveNext()) break;
@@ -1710,7 +1711,7 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(s));
 
             CheckFrozen();
-            int cp = GetSingleCP(s.AsSpan());
+            int cp = GetSingleCP(s);
             if (cp < 0)
             {
                 strings.Add(s);
@@ -1783,7 +1784,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         internal UnicodeSet AddAll(string s) // ICU4N specific - changed from public to internal (we are using UnionWithChars in .NET)
         {
-            return AddAll(s.AsSpan());
+            return AddAll(s.AsSpan()); // J2N: This overload is required because this wants to call the params string[] overload without the impl
         }
 
         /// <summary>
@@ -1927,7 +1928,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public static UnicodeSet FromAll(string s) // ICU4N TODO: API - rename FromChars() to match other APIs
         {
-            return new UnicodeSet().AddAll(s);
+            return new UnicodeSet().AddAll(s.AsSpan()); // J2N: AsSpan() is required because this wants to call the params string[] overload.
         }
 
         /// <summary>
@@ -1996,7 +1997,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         internal UnicodeSet Retain(string cs) // ICU4N specific - changed from public to internal (we are using IntersectWith in .NET)
         {
-            int cp = GetSingleCP(cs.AsSpan());
+            int cp = GetSingleCP(cs);
             if (cp < 0)
             {
                 string s = cs;
@@ -2098,7 +2099,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public UnicodeSet Remove(string s)
         {
-            int cp = GetSingleCP(s.AsSpan());
+            int cp = GetSingleCP(s);
             if (cp < 0)
             {
                 strings.Remove(s);
@@ -2210,7 +2211,7 @@ namespace ICU4N.Text
         internal UnicodeSet Complement(string s) // ICU4N specific - changed from public to internal (we are using SymmetricExceptWith in .NET)
         {
             CheckFrozen();
-            int cp = GetSingleCP(s.AsSpan());
+            int cp = GetSingleCP(s);
             if (cp < 0)
             {
                 if (strings.Contains(s))
@@ -2494,7 +2495,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public bool Contains(string s)
         {
-            int cp = GetSingleCP(s.AsSpan());
+            int cp = GetSingleCP(s);
             if (cp < 0)
             {
                 return strings.Contains(s);
@@ -3772,9 +3773,9 @@ namespace ICU4N.Text
         internal virtual UnicodeSet AddAll(IEnumerable<char[]> source) // ICU4N specific - changed from public to internal (we are using UnionWith in .NET)
         {
             CheckFrozen();
-            foreach (var o in source)
+            foreach (char[] o in source)
             {
-                Add(o.AsSpan());
+                Add(o);
             }
             return this;
         }
@@ -4519,7 +4520,7 @@ namespace ICU4N.Text
                                     : new ValueStringBuilder(bufferLength);
                                 try
                                 {
-                                    MungeCharName(valueAlias.AsSpan(), ref buf);
+                                    MungeCharName(valueAlias, ref buf);
                                     int ch = UChar.GetCharFromExtendedName(buf.AsSpan());
                                     if (ch == -1)
                                     {
@@ -4550,7 +4551,7 @@ namespace ICU4N.Text
                                     : new ValueStringBuilder(bufferLength);
                                 try
                                 {
-                                    MungeCharName(valueAlias.AsSpan(), ref buf);
+                                    MungeCharName(valueAlias, ref buf);
                                     VersionInfo version = VersionInfo.GetInstance(buf.AsSpan());
                                     ApplyFilter(new VersionFilter(version), UPropertySource.PropertiesVectorsTrie);
                                     return this;

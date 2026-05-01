@@ -1288,7 +1288,7 @@ namespace ICU4N.Impl
 
             internal override int GetResource(ICUResourceBundleReader reader, string resKey)
             {
-                return GetContainerResource(reader, FindTableItem(reader, resKey.AsSpan()));
+                return GetContainerResource(reader, FindTableItem(reader, resKey));
             }
 
             public virtual bool GetKeyAndValue(int i, ResourceKey key, ResourceValue value)
