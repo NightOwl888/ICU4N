@@ -2135,6 +2135,357 @@ namespace ICU4N.Dev.Test.Format
             assertEquals("infinity", rbnf.Format(double.PositiveInfinity));
             assertEquals("not a number", rbnf.Format(double.NaN));
         }
+
+
+        public class ICU4NSpecificTests
+        {
+            // ICU4N specific - extra parsing rules to compare against the original implementation
+
+            [Test]
+            public void TestDoubleSemicolonInsideRuleSet()
+            {
+                string rules =
+                    "%default:\n" +
+                    "0: zero;;\n" +
+                    "1: one;\n";
+
+                var formatterSettings =
+                    new RbnfFormattterSettings(rules, CultureInfo.InvariantCulture);
+
+                Assert.AreEqual("one", formatterSettings.formatter.Format(1));
+                Assert.AreEqual("one", formatterSettings.FormatWithIcuNumber(1));
+            }
+
+            [Test]
+            public void TestWhitespaceAfterRuleSetName()
+            {
+                string rules =
+                    "%default:\n\n\n   \n" +
+                    "0: zero;\n";
+
+                var formatterSettings =
+                    new RbnfFormattterSettings(rules, CultureInfo.InvariantCulture);
+
+                Assert.AreEqual("zero", formatterSettings.formatter.Format(0));
+                Assert.AreEqual("zero", formatterSettings.FormatWithIcuNumber(0));
+            }
+
+            [Test]
+            public void TestMultipleSemicolonsBetweenRuleSets()
+            {
+                string rules =
+                    "%foo:\n" +
+                    "0: zero;\n" +
+                    ";\n" +
+                    ";;\n" +
+                    "%bar:\n" +
+                    "0: uno;\n";
+
+                var formatterSettings =
+                    new RbnfFormattterSettings(rules, CultureInfo.InvariantCulture);
+
+                Assert.AreEqual("uno", formatterSettings.formatter.Format(1));
+                Assert.AreEqual("uno", formatterSettings.FormatWithIcuNumber(1));
+            }
+
+            [Test]
+            public void TestWhitespaceBeforeRuleSet()
+            {
+                string rules =
+                    "%foo:\n" +
+                    "0: zero;\n\n\n\n" +
+                    "      %bar:\n" +
+                    "1: one;\r\n;" +
+                    "2: two;\n";
+
+                var formatterSettings =
+                    new RbnfFormattterSettings(rules, CultureInfo.InvariantCulture);
+
+                Assert.AreEqual("two", formatterSettings.formatter.Format(2));
+                Assert.AreEqual("two", formatterSettings.FormatWithIcuNumber(2));
+            }
+
+            [Test]
+            public void TestTrailingSemicolonGarbage()
+            {
+                string rules =
+                    "%default:\n" +
+                    "0: zero;\n" +
+                    "1: one;\n" +
+                    " ; ; ;;  ";
+
+                var formatterSettings =
+                    new RbnfFormattterSettings(rules, CultureInfo.InvariantCulture);
+
+                Assert.AreEqual("one", formatterSettings.formatter.Format(1));
+                Assert.AreEqual("one", formatterSettings.FormatWithIcuNumber(1));
+            }
+
+            [Test]
+            public void TestTrailingWhitespacePreservedInsideRule()
+            {
+                string rules =
+                    "%default:\n" +
+                    "0: zero   ;\n";
+
+                var formatterSettings =
+                    new RbnfFormattterSettings(rules, CultureInfo.InvariantCulture);
+
+                Assert.AreEqual("zero   ", formatterSettings.formatter.Format(0));
+                Assert.AreEqual("zero   ", formatterSettings.FormatWithIcuNumber(0));
+            }
+
+            [Test]
+            public void TestTrailingNewlinePreservedInsideRule()
+            {
+                string rules =
+                    "%default:\n" +
+                    "0: zero   \n;\n";
+
+                var formatterSettings =
+                    new RbnfFormattterSettings(rules, CultureInfo.InvariantCulture);
+
+                Assert.AreEqual("zero   \n", formatterSettings.formatter.Format(0));
+                Assert.AreEqual("zero   \n", formatterSettings.FormatWithIcuNumber(0));
+            }
+
+            [Test]
+            public void TestEmbeddedNewlineInsideRuleText()
+            {
+                string rules =
+                    "%default:\n" +
+                    "0: zero\nzero;\n";
+
+                var formatterSettings =
+                    new RbnfFormattterSettings(rules, CultureInfo.InvariantCulture);
+
+                Assert.AreEqual("zero\nzero", formatterSettings.formatter.Format(0));
+                Assert.AreEqual("zero\nzero", formatterSettings.FormatWithIcuNumber(0));
+            }
+
+
+            [Test]
+            public void TestRuleSetBoundaryWhitespace()
+            {
+                string rules =
+                    "%foo:\n" +
+                    "0: zero;\n" +
+                    "\n\n\n" +
+                    "    %bar:\n" +
+                    "0: one;\n";
+
+                var formatterSettings =
+                    new RbnfFormattterSettings(rules, CultureInfo.InvariantCulture);
+
+                Assert.AreEqual("one", formatterSettings.formatter.Format(1));
+                Assert.AreEqual("one", formatterSettings.FormatWithIcuNumber(1));
+            }
+
+            [Test]
+            public void TestRuleSetBoundaryWhitespaceAfterSemicolon()
+            {
+                string rules =
+                    "%foo:\n" +
+                    "0: zero;\n" +
+                    "     \n" +
+                    "     %bar:\n" +
+                    "0: one;\n";
+
+                var formatterSettings =
+                    new RbnfFormattterSettings(rules, CultureInfo.InvariantCulture);
+
+                Assert.AreEqual("one", formatterSettings.formatter.Format(1));
+                Assert.AreEqual("one", formatterSettings.FormatWithIcuNumber(1));
+            }
+
+            [Test]
+            public void TestManyEmptyRuleSetSeparators()
+            {
+                string rules =
+                    "%foo:\n" +
+                    "0: zero;\n" +
+                    ";\n" +
+                    ";;\n" +
+                    " ; ; ;\n" +
+                    "%bar:\n" +
+                    "0: one;\n";
+
+                var formatterSettings =
+                    new RbnfFormattterSettings(rules, CultureInfo.InvariantCulture);
+
+                Assert.AreEqual("one", formatterSettings.formatter.Format(1));
+                Assert.AreEqual("one", formatterSettings.FormatWithIcuNumber(1));
+            }
+
+            [Test]
+            public void TestDoubleSemicolonRuleDelimiter()
+            {
+                string rules =
+                    "%default:\n" +
+                    "0: zero;;\n" +
+                    "1: one;\n";
+
+                var formatterSettings =
+                    new RbnfFormattterSettings(rules, CultureInfo.InvariantCulture);
+
+                Assert.AreEqual("one", formatterSettings.formatter.Format(1));
+                Assert.AreEqual("one", formatterSettings.FormatWithIcuNumber(1));
+            }
+
+            [Test]
+            public void TestTripleSemicolonRuleDelimiter()
+            {
+                string rules =
+                    "%default:\n" +
+                    "0: zero;;;\n" +
+                    "1: one;\n";
+
+                var formatterSettings =
+                    new RbnfFormattterSettings(rules, CultureInfo.InvariantCulture);
+
+                Assert.AreEqual("one", formatterSettings.formatter.Format(1));
+                Assert.AreEqual("one", formatterSettings.FormatWithIcuNumber(1));
+            }
+
+            [Test]
+            public void TestWhitespaceOnlyRuleBetweenSemicolons()
+            {
+                string rules =
+                    "%default:\n" +
+                    "0: zero;    ;\n" +
+                    "1: one;\n";
+
+                var formatterSettings =
+                    new RbnfFormattterSettings(rules, CultureInfo.InvariantCulture);
+
+                Assert.AreEqual("one", formatterSettings.formatter.Format(1));
+                Assert.AreEqual("one", formatterSettings.FormatWithIcuNumber(1));
+            }
+
+            [Test]
+            public void TestWhitespaceBeforeColon()
+            {
+                string rules =
+                    "%default:\n" +
+                    "0 : zero;\n";
+
+                var formatterSettings =
+                    new RbnfFormattterSettings(rules, CultureInfo.InvariantCulture);
+
+                Assert.AreEqual("zero", formatterSettings.formatter.Format(0));
+                Assert.AreEqual("zero", formatterSettings.FormatWithIcuNumber(0));
+            }
+
+            [Test]
+            public void TestWhitespaceAfterColon()
+            {
+                string rules =
+                    "%default:\n" +
+                    "0:     zero;\n";
+
+                var formatterSettings =
+                    new RbnfFormattterSettings(rules, CultureInfo.InvariantCulture);
+
+                Assert.AreEqual("zero", formatterSettings.formatter.Format(0));
+                Assert.AreEqual("zero", formatterSettings.FormatWithIcuNumber(0));
+            }
+
+            [Test]
+            public void TestLineBreakAfterColon()
+            {
+                string rules =
+                    "%default:\n" +
+                    "0:\n" +
+                    "zero;\n";
+
+                var formatterSettings =
+                    new RbnfFormattterSettings(rules, CultureInfo.InvariantCulture);
+
+                Assert.AreEqual("zero", formatterSettings.formatter.Format(0));
+                Assert.AreEqual("zero", formatterSettings.FormatWithIcuNumber(0));
+            }
+
+            [Test]
+            public void TestOptionalTextLineBreak()
+            {
+                string rules =
+                    "%default:\n" +
+                    "20: twenty[\n->>];\n";
+
+                var formatterSettings =
+                    new RbnfFormattterSettings(rules, CultureInfo.InvariantCulture);
+
+                Assert.AreEqual("twenty", formatterSettings.formatter.Format(20));
+                Assert.AreEqual("twenty", formatterSettings.FormatWithIcuNumber(20));
+            }
+
+
+            [Test]
+            public void TestWhitespaceAroundRuleSetReference()
+            {
+                string rules =
+                    "%default:\n" +
+                    "0: = %other =;\n" +
+                    "%other:\n" +
+                    "0: zero;\n";
+
+                var formatterSettings =
+                    new RbnfFormattterSettings(rules, CultureInfo.InvariantCulture);
+
+                Assert.AreEqual("zero", formatterSettings.formatter.Format(0));
+                Assert.AreEqual("zero", formatterSettings.FormatWithIcuNumber(0));
+            }
+
+            [Test]
+            public void TestLineBreakInsideRuleSetReference()
+            {
+                string rules =
+                    "%default:\n" +
+                    "0: =\n%other=;\n" +
+                    "%other:\n" +
+                    "0: zero;\n";
+
+                var formatterSettings =
+                    new RbnfFormattterSettings(rules, CultureInfo.InvariantCulture);
+
+                Assert.AreEqual("zero", formatterSettings.formatter.Format(0));
+                Assert.AreEqual("zero", formatterSettings.FormatWithIcuNumber(0));
+            }
+
+            [Test]
+            public void TestWhitespaceAroundSubstitutionTokens()
+            {
+                string rules =
+                    "%default:\n" +
+                    "0: zero;\n" +
+                    "1: one;\n" +
+                    "20: twenty;\n" +
+                    "100: << hundred[ >>];\n";
+
+                var formatterSettings =
+                    new RbnfFormattterSettings(rules, CultureInfo.InvariantCulture);
+
+                Assert.AreEqual("one hundred", formatterSettings.formatter.Format(100));
+                Assert.AreEqual("one hundred", formatterSettings.FormatWithIcuNumber(100));
+            }
+
+            [Test]
+            public void TestLineBreakAroundSubstitutionTokens()
+            {
+                string rules =
+                    "%default:\n" +
+                    "0: zero;\n" +
+                    "1: one;\n" +
+                    "20: twenty;\n" +
+                    "100: <<\n hundred[ >>];\n";
+
+                var formatterSettings =
+                    new RbnfFormattterSettings(rules, CultureInfo.InvariantCulture);
+
+                Assert.AreEqual("one\n hundred", formatterSettings.formatter.Format(100));
+                Assert.AreEqual("one\n hundred", formatterSettings.FormatWithIcuNumber(100));
+            }
+        }
     }
 
     internal class RbnfFormattterSettings

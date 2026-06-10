@@ -235,6 +235,12 @@ namespace ICU4N.Globalization
             var ruleTokens = description.AsTokens(';', PatternProps.WhiteSpace, TrimBehavior.Start);
             while (ruleTokens.MoveNext())
             {
+                ReadOnlySpan<char> ruleToken = ruleTokens.Current.Text;
+                // ICU4N: Since we are not actually stripping whitespace at the top level, we need to
+                // ignore any empty cases here. This was handled by stripWhiteSpace() upstream.
+                if (ruleToken.IsEmpty)
+                    continue;
+
                 // makeRules (a factory method on NumberFormatRule) will return either
                 // a single rule or an array of rules.  Either way, add them
                 // to our rule vector
