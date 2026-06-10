@@ -21,6 +21,7 @@ using J2N.Globalization;
 using System.Threading;
 using J2N.Threading;
 using System.Reflection;
+using ICU4N.Impl;
 
 namespace ICU4N.Dev.Test.Format
 {
@@ -4201,7 +4202,7 @@ namespace ICU4N.Dev.Test.Format
             fmt.SetDecimalFormatSymbols(sym);
 
             // ICU4N TODO: Implement this setting?
-            String skipExtSepParse = ICUConfig.DecimalFormat_SkipExtendedSeparatorParsing; // Get("com.ibm.icu.text.DecimalFormat.SkipExtendedSeparatorParsing", "false");
+            String skipExtSepParse = ICUConfig.Get("DecimalFormat_SkipExtendedSeparatorParsing", "false");
             if (skipExtSepParse.Equals("true", StringComparison.Ordinal))
             {
                 // When the property SkipExtendedSeparatorParsing is true,

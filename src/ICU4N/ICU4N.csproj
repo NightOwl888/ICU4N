@@ -479,11 +479,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="ICUConfig.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ICUConfig.resx</DependentUpon>
-    </Compile>
     <Compile Update="Support\Numerics\BigMath\Messages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -491,10 +486,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Update="ICUConfig.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ICUConfig.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
     <EmbeddedResource Update="Support\Numerics\BigMath\Messages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Messages.Designer.cs</LastGenOutput>

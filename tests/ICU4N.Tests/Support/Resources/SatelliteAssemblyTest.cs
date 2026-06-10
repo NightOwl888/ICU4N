@@ -1,5 +1,6 @@
 ﻿using ICU4N.Dev.Test;
 using ICU4N.Globalization;
+using ICU4N.Impl;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace ICU4N.Support.Resources
 
         static SatelliteAssemblyTest()
         {
-            var assembly = typeof(ICU4N.ICUConfig).Assembly.GetSatelliteAssembly(CultureInfo.InvariantCulture);
+            var assembly = typeof(ICUConfig).Assembly.GetSatelliteAssembly(CultureInfo.InvariantCulture);
 
             LoadManifest(assembly, "data.fullLocaleNames.lst", localeCultures);
             LoadManifest(assembly, "data.coll.fullLocaleNames.lst", collCultures);
@@ -95,7 +96,7 @@ namespace ICU4N.Support.Resources
         [Test]
         public void TestLoadInvariantAssembly()
         {
-            var assembly = typeof(ICU4N.ICUConfig).Assembly.GetSatelliteAssembly(CultureInfo.InvariantCulture);
+            var assembly = typeof(ICUConfig).Assembly.GetSatelliteAssembly(CultureInfo.InvariantCulture);
             assertNotNull(string.Empty, assembly);
         }
 
@@ -103,7 +104,7 @@ namespace ICU4N.Support.Resources
         [TestCaseSource("LocaleCultures")]
         public void TestLoadLocaleAssemblies(string locale)
         {
-            var assembly = typeof(ICU4N.ICUConfig).Assembly.GetSatelliteAssembly(new ResourceCultureInfo(ResourceUtil.GetDotNetNeutralCultureName(locale.AsSpan())));
+            var assembly = typeof(ICUConfig).Assembly.GetSatelliteAssembly(new ResourceCultureInfo(ResourceUtil.GetDotNetNeutralCultureName(locale.AsSpan())));
             assertNotNull(string.Empty, assembly);
         }
 
