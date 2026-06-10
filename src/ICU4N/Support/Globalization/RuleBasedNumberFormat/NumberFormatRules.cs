@@ -1,5 +1,4 @@
 ﻿using ICU4N.Impl;
-using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using System;
@@ -7,7 +6,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Resources;
-using System.Text;
 #nullable enable
 
 namespace ICU4N.Globalization
@@ -199,7 +197,7 @@ namespace ICU4N.Globalization
             return rulesCache.GetOrCreate(cacheKey, (key) =>
             {
                 string rules = GetRulesForCulture(bundle, key.Name, format, out string[][]? localizations);
-                return new NumberFormatRules(rules, stripWhiteSpace: false); // ICU4N TODO: localizations
+                return new NumberFormatRules(rules); // ICU4N TODO: localizations
             });
         }
 
@@ -232,38 +230,28 @@ namespace ICU4N.Globalization
         private static ReadOnlySpan<char> ExtractSpecialRule(ReadOnlySpan<char> ruleText, string ruleName)
             => ruleText.Slice(ruleName.Length).TrimStart(PatternProps.WhiteSpace).TrimEnd(';');
 
-
-        internal NumberFormatRules(ReadOnlySpan<char> description)
-            : this(description, stripWhiteSpace: true)
-        {
-        }
-
-        private NumberFormatRules(ReadOnlySpan<char> description, bool stripWhiteSpace) // ICU4N TODO: Add a localizations parameter? We need to work out a way to allow users to supply these, but they don't matter for built-in rules. The jagged array is really ugly, but we should probably include an overload for compatibility reasons.
+        internal NumberFormatRules(ReadOnlySpan<char> description) // ICU4N TODO: Add a localizations parameter? We need to work out a way to allow users to supply these, but they don't matter for built-in rules. The jagged array is really ugly, but we should probably include an overload for compatibility reasons.
         {
             if (description.Length == 0)
                 throw new ArgumentException("Empty rules description");
-
-            if (stripWhiteSpace)
-            {
-                description = StripWhiteSpace(description);
-            }
 
             // 1st pass: pre-flight parsing the description and count the number of
             // rule sets (";%" marks the end of one rule set and the beginning
             // of the next)
             int numRuleSets = 0; // ICU4N: Since we are counting the rule segments instead of the delimiters, we start at 0 instead of 1.
-            SplitTokenizerEnumerator ruleTokens = description.AsTokens(";%", delimiterLength: 1, PatternProps.WhiteSpace, TrimBehavior.Start);
-            while (ruleTokens.MoveNext())
+            var ruleSetTokens = new WhiteSpaceStrippingRuleSetTokenEnumerator(description);
+            while (ruleSetTokens.MoveNext())
             {
-                ReadOnlySpan<char> ruleToken = ruleTokens.Current.Text;
-                if (IsSpecialRule(ruleToken, LenientParseRuleName))
+                ReadOnlySpan<char> ruleSetToken = ruleSetTokens.Current;
+
+                if (IsSpecialRule(ruleSetToken, LenientParseRuleName))
                 {
-                    lenientParseRules = ExtractSpecialRule(ruleToken, LenientParseRuleName).ToString();
+                    lenientParseRules = ExtractSpecialRule(ruleSetToken, LenientParseRuleName).ToString();
                     continue; // Don't count this rule
                 }
-                if (IsSpecialRule(ruleToken, PostProcessRuleName))
+                if (IsSpecialRule(ruleSetToken, PostProcessRuleName))
                 {
-                    postProcessRules = ExtractSpecialRule(ruleToken, PostProcessRuleName).ToString();
+                    postProcessRules = ExtractSpecialRule(ruleSetToken, PostProcessRuleName).ToString();
                     continue; // Don't count this rule
                 }
 
@@ -286,15 +274,15 @@ namespace ICU4N.Globalization
             // sets before we can actually set everything up
             int curRuleSet = 0;
 
-            ruleTokens = description.AsTokens(";%", delimiterLength: 1, PatternProps.WhiteSpace, TrimBehavior.Start);
-            while (ruleTokens.MoveNext())
+            ruleSetTokens = new WhiteSpaceStrippingRuleSetTokenEnumerator(description);
+            while (ruleSetTokens.MoveNext())
             {
                 // Skip special rules
-                ReadOnlySpan<char> ruleToken = ruleTokens.Current.Text;
-                if (IsSpecialRule(ruleToken))
+                ReadOnlySpan<char> ruleSetToken = ruleSetTokens.Current;
+                if (IsSpecialRule(ruleSetToken))
                     continue;
 
-                var ruleSet = new NumberFormatRuleSet(this, ruleToken);
+                var ruleSet = new NumberFormatRuleSet(this, ruleSetToken);
                 ruleSets[curRuleSet] = ruleSet;
                 string currentName = ruleSet.Name;
                 ruleSetsMap[currentName] = ruleSet;
@@ -340,15 +328,15 @@ namespace ICU4N.Globalization
 
             // 3rd pass: finally, we can go back through the descriptions
             // and finish setting up the substructure
-            ruleTokens = description.AsTokens(";%", delimiterLength: 1, PatternProps.WhiteSpace, TrimBehavior.Start);
-            for (int i = 0; i < ruleSets.Length && ruleTokens.MoveNext(); )
+            ruleSetTokens = new WhiteSpaceStrippingRuleSetTokenEnumerator(description);
+            for (int i = 0; i < ruleSets.Length && ruleSetTokens.MoveNext(); )
             {
                 // Skip special rules
-                ReadOnlySpan<char> ruleToken = ruleTokens.Current.Text;
-                if (IsSpecialRule(ruleToken))
+                ReadOnlySpan<char> ruleSetToken = ruleSetTokens.Current;
+                if (IsSpecialRule(ruleSetToken))
                     continue;
 
-                ruleSets[i].ParseRules(ruleToken);
+                ruleSets[i].ParseRules(ruleSetToken);
                 i++;
             }
 
@@ -394,67 +382,169 @@ namespace ICU4N.Globalization
         }
 
         /// <summary>
-        /// This method is used by the constructor to strip whitespace between rules (i.e.,
-        /// after semicolons).
+        /// This enumerator is used by the constructor to strip whitespace between rules (i.e.,
+        /// after semicolons) while tokenizing the description into rule sets tokens. It emulates
+        /// the upstream behavior of <c>stripWhiteSpace()</c> while tokenizing so that we don't
+        /// have to allocate a new string with all the whitespace removed before parsing.
+        /// The main difference between this and a normal tokenizer is that it treats
+        /// runs of semicolons as a single delimiter and skips whitespace so that we don't
+        /// have to worry about extra semicolons or whitespace in the description.
+        /// It also ensures that the tokens it returns are stripped of any leading
+        /// or trailing whitespace so that we don't have to worry about that in the
+        /// the local parsing code. However, unlike <c>stripWhiteSpace()</c> we don't actually
+        /// modify the string, so the tokens returned may contain whitespace or duplicate semicolons
+        /// that were present in the original description that downstream tokenizers must account for.
         /// </summary>
-        /// <param name="description">The formatter description.</param>
-        /// <returns>The description with all the whitespace that follows semicolons
-        /// taken out.</returns>
-        private ReadOnlySpan<char> StripWhiteSpace(ReadOnlySpan<char> description) // ICU4N TODO: There is a bug here. We need to return a string to ensure this stays on the stack while we parse the rest. This could go out of scope before we are done. Ideally, we could "strip" the whitespace by ignoring it while parsing rather than calling a method like this.
+        /// <remarks>
+        /// The effective result is the tokenized description with all whitespace that
+        /// follows semicolons taken out, but only for the rule set rule delimiters.
+        /// </remarks>
+        private ref struct WhiteSpaceStrippingRuleSetTokenEnumerator
         {
-            int descriptionLength = description.Length;
+#pragma warning disable IDE0044 // Add readonly modifier
+            private /*readonly*/ ReadOnlySpan<char> description;
+#pragma warning restore IDE0044 // Add readonly modifier
+            private int position;
 
-            // since we don't have a method that deletes characters
-            // create a new StringBuffer to copy the text into
-            using ValueStringBuilder result = descriptionLength <= RuleStringStackBufferSize
-                ? new ValueStringBuilder(stackalloc char[RuleStringStackBufferSize])
-                : new ValueStringBuilder(descriptionLength);
-
-            // iterate through the characters...
-            int start = 0;
-            while (start < descriptionLength)
+            public WhiteSpaceStrippingRuleSetTokenEnumerator(ReadOnlySpan<char> description)
             {
-                // seek to the first non-whitespace character...
-                while (start < descriptionLength
-                       && PatternProps.IsWhiteSpace(description[start]))
-                {
-                    ++start;
-                }
-
-                //if the first non-whitespace character is semicolon, skip it and continue
-                if (start < descriptionLength && description[start] == ';')
-                {
-                    start += 1;
-                    continue;
-                }
-
-                // locate the next semicolon in the text and copy the text from
-                // our current position up to that semicolon into the result
-                int p = description.Slice(start).IndexOf(';') + start;
-                if (p == -1)
-                {
-                    // or if we don't find a semicolon, just copy the rest of
-                    // the string into the result
-                    result.Append(description.Slice(start));
-                    break;
-                }
-                else if (p < descriptionLength)
-                {
-                    result.Append(description.Slice(start, (p + 1) - start)); // ICU4N: Corrected 2nd parameter
-                    start = p + 1;
-                }
-                else
-                {
-                    // when we get here, we've seeked off the end of the string, and
-                    // we terminate the loop (we continue until *start* is -1 rather
-                    // than until *p* is -1, because otherwise we'd miss the last
-                    // rule in the description)
-                    break;
-                }
+                this.description = description;
+                position = 0;
+                Current = default;
             }
-            // ICU4N: We must heap allocate here because the ValueStringBuilder may return from the
-            // stack, which is out of scope after this point.
-            return result.ToString();
+
+            public ReadOnlySpan<char> Current { get; private set; }
+
+            public bool MoveNext()
+            {
+                int descriptionLength = description.Length;
+
+                //
+                // Emulate StripWhiteSpace() startup logic.
+                //
+                while (true)
+                {
+                    while (position < descriptionLength &&
+                        PatternProps.IsWhiteSpace(description[position]))
+                    {
+                        position++;
+                    }
+
+                    if (position < descriptionLength && description[position] == ';')
+                    {
+                        position++;
+                        continue;
+                    }
+
+                    break;
+                }
+
+                if (position >= descriptionLength)
+                    return false;
+
+                int start = position;
+
+                //
+                // Search for semicolons using the vectorized IndexOf()
+                // implementation rather than examining every character.
+                //
+                while (position < descriptionLength)
+                {
+#pragma warning disable IDE0057 // Use range operator
+                    int relativeIndex = description.Slice(position).IndexOf(';');
+#pragma warning restore IDE0057 // Use range operator
+
+                    if (relativeIndex < 0)
+                        break;
+
+                    position += relativeIndex;
+
+                    int p = position + 1;
+
+                    //
+                    // StripWhiteSpace() removes whitespace after ';'
+                    //
+                    while (p < descriptionLength &&
+                        PatternProps.IsWhiteSpace(description[p]))
+                    {
+                        p++;
+                    }
+
+                    //
+                    // StripWhiteSpace() then discards any semicolons
+                    // that appear before real content.
+                    //
+                    while (p < descriptionLength && description[p] == ';')
+                    {
+                        p++;
+
+                        while (p < descriptionLength &&
+                            PatternProps.IsWhiteSpace(description[p]))
+                        {
+                            p++;
+                        }
+                    }
+
+                    //
+                    // Equivalent to finding ";%" in the stripped stream.
+                    //
+                    if (p < descriptionLength && description[p] == '%')
+                    {
+                        Current = description.Slice(start, position - start + 1);
+
+                        position = p;
+                        return true;
+                    }
+
+                    //
+                    // Continue searching after the semicolon we just examined.
+                    //
+                    position++;
+                }
+
+                //
+                // Final token.
+                //
+                int end = descriptionLength;
+
+                //
+                // Strip trailing whitespace.
+                //
+                while (end > start &&
+                    PatternProps.IsWhiteSpace(description[end - 1]))
+                {
+                    end--;
+                }
+
+                //
+                // Strip trailing semicolon-only garbage.
+                //
+                while (end > start)
+                {
+                    int p = end;
+
+                    while (p > start &&
+                        PatternProps.IsWhiteSpace(description[p - 1]))
+                    {
+                        p--;
+                    }
+
+                    if (p > start && description[p - 1] == ';')
+                    {
+                        end = p - 1;
+                        continue;
+                    }
+
+                    break;
+                }
+
+#pragma warning disable IDE0057 // Use range operator
+                Current = description.Slice(start, end - start);
+#pragma warning restore IDE0057 // Use range operator
+                position = descriptionLength;
+
+                return Current.Length > 0;
+            }
         }
 
         //-----------------------------------------------------------------------
