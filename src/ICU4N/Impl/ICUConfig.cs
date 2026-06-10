@@ -1,5 +1,7 @@
 ﻿using ICU4N.Support;
-using System.Resources;
+using J2N;
+using System.Collections.Generic;
+using System.IO;
 
 namespace ICU4N.Impl
 {
@@ -8,30 +10,26 @@ namespace ICU4N.Impl
     /// </summary>
     internal class ICUConfig // ICU4N TODO: Refactor to use IConfiguration from .NET and make public
     {
-        //public static readonly string CONFIG_PROPS_FILE = "/com/ibm/icu/ICUConfig.properties";
-        //private static readonly IDictionary<string, string> CONFIG_PROPS;
+        private const string ConfigPropsFile = "ICU4N.ICUConfig.properties";
+        private static readonly Dictionary<string, string> ConfigProps = LoadConfigProps();
 
-        //static ICUConfig()
-        //{
-        //    CONFIG_PROPS = new Dictionary<string, string>();
-        //    try
-        //    {
-        //        using (Stream input = ICUData.GetStream(CONFIG_PROPS_FILE))
-        //        {
-        //            if (input != null)
-        //            {
-        //                // ICU4N TODO: Go with some other type of "properties" in .NET?
-        //                //CONFIG_PROPS.Load(input);
-        //            }
-        //        }
-        //        //} catch (MissingResourceException mre) {
-        //        // If it does not exist, ignore.
-        //    }
-        //    catch (IOException ioe)
-        //    {
-        //        // Any IO errors, ignore
-        //    }
-        //}
+        private static Dictionary<string, string> LoadConfigProps()
+        {
+            Dictionary<string, string> props = [];
+            try
+            {
+                using Stream input = typeof(ICUConfig).Assembly.GetManifestResourceStream(ConfigPropsFile);
+                if (input != null)
+                {
+                    props.LoadProperties(input);
+                }
+            }
+            catch (IOException)
+            {
+                // Any IO errors, ignore
+            }
+            return props;
+        }
 
         /// <summary>
         /// Get ICU configuration property value for the given name.
@@ -47,32 +45,25 @@ namespace ICU4N.Impl
         /// Get ICU configuration property value for the given name.
         /// </summary>
         /// <param name="name">The configuration property name.</param>
-        /// <param name="def">The default value.</param>
+        /// <param name="defaultValue">The default value.</param>
         /// <returns>The configuration property value.  If the property does not
-        /// exist, <paramref name="def"/> is returned.</returns>
-        public static string Get(string name, string def)
+        /// exist, <paramref name="defaultValue"/> is returned.</returns>
+        public static string Get(string name, string defaultValue)
         {
             if (string.IsNullOrEmpty(name))
-                return def;
+                return defaultValue;
 
-            string value = null;
+            System.Diagnostics.Debug.Assert(!name.Contains('.'), $"ICUConfig property names should not contain '.'. These should be converted to '_' without namespaces for .NET. Value: {name}");
 
             // Try to get an environment variable first
-            value = SystemProperties.GetProperty(name, null);
+            string value = SystemProperties.GetProperty(name, null);
             if (value != null)
                 return value;
 
-            try
-            {
-                value =  global::ICU4N.ICUConfig.ResourceManager.GetString(name.Replace(".", "_"));
-                if (value != null)
-                    return value;
-            }
-            catch (MissingManifestResourceException)
-            {
-            }
+            if (ConfigProps.TryGetValue(name, out value))
+                return value;
 
-            return def;
+            return defaultValue;
         }
     }
 }

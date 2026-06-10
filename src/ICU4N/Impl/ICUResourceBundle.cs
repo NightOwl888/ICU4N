@@ -962,7 +962,7 @@ namespace ICU4N.Impl
         {
             string bn = baseName.EndsWith("/", StringComparison.Ordinal) ? baseName : baseName + "/";
             ISet<string> set = new JCG.HashSet<string>();
-            string skipScan = ICUConfig.Get("ICUResourceBundle.SkipRuntimeLocaleResourceScan", "false");
+            string skipScan = ICUConfig.Get("ICUResourceBundle_SkipRuntimeLocaleResourceScan", "false");
             if (!skipScan.Equals("true", StringComparison.OrdinalIgnoreCase))
             {
                 var resourceLocationAttribute = assembly.GetCustomAttribute<ResourceLocationAttribute>();

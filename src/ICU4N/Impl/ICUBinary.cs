@@ -9,7 +9,6 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Reflection;
-using System.Text;
 
 namespace ICU4N.Impl
 {
@@ -343,9 +342,7 @@ namespace ICU4N.Impl
 
         static ICUBinary()
         {
-            // ICU4N TODO: Fix path
-            // Normally com.ibm.icu.impl.ICUBinary.dataPath.
-            string dataPath = ICUConfig.Get(typeof(ICUBinary).Name + "_DataPath");
+            string dataPath = ICUConfig.Get($"{nameof(ICUBinary)}_DataPath");
             if (dataPath != null)
             {
                 AddDataFilesFromPath(dataPath, icuDataFiles);

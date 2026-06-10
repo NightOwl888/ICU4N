@@ -2,7 +2,6 @@
 using ICU4N.Logging;
 using ICU4N.Reflection;
 using ICU4N.Resources;
-using ICU4N.Support;
 using ICU4N.Util;
 using J2N;
 using System;
@@ -97,11 +96,11 @@ namespace ICU4N.Impl
         /// For testing (otherwise false): When reading a <see cref="Stream"/> from an <see cref="Assembly"/>
         /// (that is, not from a file), log when the stream contains ICU binary data.
         /// <para/>
-        /// This cannot be <see cref="ICUConfig"/>'ured because <see cref="ICUConfig"/> calls <see cref="ICUData.GetStream(string)"/>
-        /// to read the properties file, so we would get a circular dependency
-        /// in the class initialization.
+        /// In ICU4J, this is not loaded through <see cref="ICUConfig"/> because it would cause a circular dependency in
+        /// the class initialization. In ICU4N, we changed this to use <see cref="ICUConfig"/> since it doesn't
+        /// use <see cref="ICUData"/> to load the properties file.
         /// </summary>
-        private static readonly bool logBinaryDataFromInputStream = SystemProperties.GetPropertyAsBoolean("ICU4N.LogBinaryDataFromInputStream", false);
+        private static readonly bool logBinaryDataFromInputStream = ICUConfig.Get("ICU4N_LogBinaryDataFromInputStream", "false").Equals("true", StringComparison.OrdinalIgnoreCase);
         private static readonly ILog logger = logBinaryDataFromInputStream ? LogProvider.For<ICUData>() : null;
 
         public static bool Exists(string resourceName)

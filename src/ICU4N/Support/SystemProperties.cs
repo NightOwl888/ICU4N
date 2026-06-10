@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Security;
 
 namespace ICU4N.Support
@@ -9,18 +10,44 @@ namespace ICU4N.Support
     /// errors.
     /// <para/>
     /// For instructions how to set environment variables for your OS, see 
-    /// <a href="https://www.schrodinger.com/kb/1842">https://www.schrodinger.com/kb/1842</a>.
+    /// <a href="https://my.schrodinger.com/support/article/1842">https://my.schrodinger.com/support/article/1842</a>.
     /// <para/>
-    /// Note that if you want to load any of these settings for your application from a
-    /// configuration file, it is recommended your application load them at startup and
-    /// call <see cref="SystemProperties.SetProperty(string, string)"/> to set them.
-    /// <para/>
-    /// Set the environment variable <c>icu4n.ignoreSecurityExceptions</c> to <c>false</c>
-    /// to change the read behavior of these methods to throw the underlying exception 
+    /// Set the environment variable <c>ICU4N_IGNORE_ENVVAR_SECURITY_EXCEPTIONS</c> to <c>false</c>
+    /// to change the read behavior of these methods to throw the underlying exception
     /// instead of returning the default value.
     /// </summary>
     internal static class SystemProperties // ICU4N: We can probably factor this out completely once ICUConfig and ICUDebug classes are refactored to use .NET APIs
     {
+        private static readonly ConcurrentDictionary<string, PropertyNames> propertyNameCache = new(StringComparer.Ordinal);
+
+        private static PropertyNames GetPropertyNames(string logicalName)
+        {
+            return propertyNameCache.GetOrAdd(
+                logicalName,
+                static x => new PropertyNames(x));
+        }
+
+        internal sealed class PropertyNames
+        {
+            public PropertyNames(string logicalName)
+            {
+                LogicalName = logicalName;
+
+                AppConfigurationName =
+                    $"ICU4N:{logicalName.Replace('_', ':')}";
+
+                EnvironmentVariableName =
+                    $"ICU4N_{logicalName.ToUpperInvariant()}";
+            }
+
+            public string LogicalName { get; }
+
+            public string AppConfigurationName { get; }
+
+            public string EnvironmentVariableName { get; }
+        }
+
+
         /// <summary>
         /// Retrieves the value of an environment variable from the current process.
         /// </summary>
@@ -75,8 +102,7 @@ namespace ICU4N.Support
             return GetProperty<bool>(key, defaultValue,
                 (str) =>
                 {
-                    bool value;
-                    return bool.TryParse(str, out value) ? value : defaultValue;
+                    return bool.TryParse(str, out bool value) ? value : defaultValue;
                 }
             );
         }
@@ -106,20 +132,24 @@ namespace ICU4N.Support
             return GetProperty<int>(key, defaultValue,
                 (str) =>
                 {
-                    int value;
-                    return int.TryParse(str, out value) ? value : defaultValue;
+                    return int.TryParse(str, out int value) ? value : defaultValue;
                 }
             );
         }
 
         private static T GetProperty<T>(string key, T defaultValue, Func<string, T> conversionFunction)
         {
+            if (key is null)
+                return defaultValue;
+
+            PropertyNames names = GetPropertyNames(key);
+
             string setting;
             if (ignoreSecurityExceptions)
             {
                 try
                 {
-                    setting = Environment.GetEnvironmentVariable(key);
+                    setting = Environment.GetEnvironmentVariable(names.EnvironmentVariableName);
                 }
                 catch (SecurityException)
                 {
@@ -128,7 +158,7 @@ namespace ICU4N.Support
             }
             else
             {
-                setting = Environment.GetEnvironmentVariable(key);
+                setting = Environment.GetEnvironmentVariable(names.EnvironmentVariableName);
             }
 
             return string.IsNullOrEmpty(setting)
@@ -136,17 +166,6 @@ namespace ICU4N.Support
                 : conversionFunction(setting);
         }
 
-        internal static bool ignoreSecurityExceptions = GetPropertyAsBoolean("icu4n.ignoreSecurityExceptions", true);
-
-        /// <summary>
-        /// Creates, modifies, or deletes an environment variable stored in the current process.
-        /// </summary>
-        /// <param name="key">The name of the environment variable.</param>
-        /// <param name="value">The new environment variable value.</param>
-        /// <exception cref="SecurityException">The caller does not have the required permission to perform this operation.</exception>
-        public static void SetProperty(string key, string value)
-        {
-            Environment.SetEnvironmentVariable(key, value);
-        }
+        internal static bool ignoreSecurityExceptions = GetPropertyAsBoolean("ICU4N_IGNORE_ENVVAR_SECURITY_EXCEPTIONS", true);
     }
 }
