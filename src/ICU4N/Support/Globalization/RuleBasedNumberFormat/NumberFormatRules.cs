@@ -430,6 +430,7 @@ namespace ICU4N.Globalization
                         position++;
                     }
 
+                    // if the first non-whitespace character is semicolon, skip it and continue
                     if (position < descriptionLength && description[position] == ';')
                     {
                         position++;
