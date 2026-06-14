@@ -690,6 +690,18 @@ namespace ICU4N.Impl
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
         /// </summary>
+        public static string Hex(string s)
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
+            return Hex(s.AsSpan());
+        }
+
+        /// <summary>
+        /// Convert a string to comma-separated groups of 4 hex uppercase
+        /// digits.  E.g., hex('ab') => "0041,0042".
+        /// </summary>
         public static string Hex(ReadOnlySpan<char> s)
         {
             ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);

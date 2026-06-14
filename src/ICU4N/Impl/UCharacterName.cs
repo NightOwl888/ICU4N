@@ -108,6 +108,16 @@ namespace ICU4N.Impl
         /// <param name="choice">Selector to indicate if argument name is a Unicode 1.0 or the most current version.</param>
         /// <param name="name">The name to search for.</param>
         /// <returns>Code point.</returns>
+        public int GetCharFromName(UCharacterNameChoice choice, string? name)
+            => GetCharFromName(choice, name.AsSpan());
+
+        /// <summary>
+        /// Find a character by its name and return its code point value
+        /// 
+        /// </summary>
+        /// <param name="choice">Selector to indicate if argument name is a Unicode 1.0 or the most current version.</param>
+        /// <param name="name">The name to search for.</param>
+        /// <returns>Code point.</returns>
         public int GetCharFromName(UCharacterNameChoice choice, ReadOnlySpan<char> name)
         {
             // checks for illegal arguments

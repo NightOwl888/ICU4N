@@ -393,6 +393,21 @@ namespace ICU4N.Impl
         /// <param name="start">The start index that the span begins.</param>
         /// <param name="spanCondition">The span condition.</param>
         /// <returns>The limit (exclusive end) of the span.</returns>
+        public int Span(string s, int start, SpanCondition spanCondition)
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
+            return Span(s.AsSpan(), start, spanCondition);
+        }
+
+        /// <summary>
+        /// Spans a string.
+        /// </summary>
+        /// <param name="s">The string to be spanned.</param>
+        /// <param name="start">The start index that the span begins.</param>
+        /// <param name="spanCondition">The span condition.</param>
+        /// <returns>The limit (exclusive end) of the span.</returns>
         public int Span(ReadOnlySpan<char> s, int start, SpanCondition spanCondition)
         {
             if (spanCondition == SpanCondition.NotContained)
@@ -624,6 +639,29 @@ namespace ICU4N.Impl
         /// <param name="spanCondition">The span condition.</param>
         /// <param name="outCount">The count.</param>
         /// <returns>The limit (exclusive end) of the span.</returns>
+        public int SpanAndCount(string s, int start, SpanCondition spanCondition,
+            out int outCount) // ICU4N TODO: API - Would this be more useful if we returned length instead of limit?
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
+            return SpanAndCount(s.AsSpan(), start, spanCondition, out outCount);
+        }
+
+        /// <summary>
+        /// Spans a string and counts the smallest number of set elements on any path across the span.
+        /// </summary>
+        /// <remarks>
+        /// For proper counting, we cannot ignore strings that are fully contained in code point spans.
+        /// <para/>
+        /// If the set does not have any fully-contained strings, then we could optimize this
+        /// like Span(), but such sets are likely rare, and this is at least still linear.
+        /// </remarks>
+        /// <param name="s">The string to be spanned.</param>
+        /// <param name="start">The start index that the span begins.</param>
+        /// <param name="spanCondition">The span condition.</param>
+        /// <param name="outCount">The count.</param>
+        /// <returns>The limit (exclusive end) of the span.</returns>
         public int SpanAndCount(ReadOnlySpan<char> s, int start, SpanCondition spanCondition,
             out int outCount) // ICU4N TODO: API - Would this be more useful if we returned length instead of limit?
         {
@@ -721,6 +759,21 @@ namespace ICU4N.Impl
                 outCount = count;
                 return pos;
             }
+        }
+
+        /// <summary>
+        /// Span a string backwards.
+        /// </summary>
+        /// <param name="s">The string to be spanned.</param>
+        /// <param name="length"></param>
+        /// <param name="spanCondition">The span condition</param>
+        /// <returns>The string index which starts the span (i.e. inclusive).</returns>
+        public int SpanBack(string s, int length, SpanCondition spanCondition)
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
+            return SpanBack(s.AsSpan(), length, spanCondition);
         }
 
         /// <summary>

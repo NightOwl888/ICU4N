@@ -504,6 +504,8 @@ namespace ICU4N.Impl
         public ReadOnlySpan<char> AsSpan(int start) => str.AsSpan(start);
         public ReadOnlySpan<char> AsSpan(int start, int length) => str.AsSpan(start, length);
 
+        [CLSCompliant(false)]
+        public char* GetCharsPointer() => str.GetCharsPointer();
         public Span<char> RawChars => str.RawChars;
 
         public bool TryCopyTo(Span<char> destination, out int charsWritten) => str.TryCopyTo(destination, out charsWritten);
@@ -796,6 +798,49 @@ namespace ICU4N.Impl
         public static bool IsSurrogateLead(int c) { return (c & 0x400) == 0; }
 
         #region Equal(ICharSequence, ICharSequence)
+
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        public static bool Equal(string s1, string s2)
+        {
+            if (s1 == s2)
+            {
+                return true;
+            }
+            if (s1 is null || s2 is null) return false;
+            // ICU4N: Use optimized equality comparison in System.Memory
+            return System.MemoryExtensions.Equals(s1.AsSpan(), s2.AsSpan(), StringComparison.Ordinal);
+        }
+
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        public static bool Equal(string s1, ReadOnlySpan<char> s2)
+        {
+            if (s1 is null) return false;
+            // ICU4N: Use optimized equality comparison in System.Memory
+            return System.MemoryExtensions.Equals(s1.AsSpan(), s2, StringComparison.Ordinal);
+        }
+
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        public static bool Equal(ReadOnlySpan<char> s1, string s2)
+        {
+            if (s2 is null) return false;
+            // ICU4N: Use optimized equality comparison in System.Memory
+            return System.MemoryExtensions.Equals(s1, s2.AsSpan(), StringComparison.Ordinal);
+        }
 
         /// <summary>
         /// Compares two character sequence objects for binary equality.

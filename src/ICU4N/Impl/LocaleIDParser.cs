@@ -48,6 +48,18 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
         private const char DOT = '.';
         private const char UNDERSCORE = '_';
 
+#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+        public LocaleIDParser(Span<char> initialBuffer, string localeID)
+            : this(initialBuffer, localeID.AsSpan(), false)
+        {
+        }
+
+        public LocaleIDParser(Span<char> initialBuffer, string localeID, bool canonicalize)
+            : this(initialBuffer, localeID.AsSpan(), canonicalize)
+        {
+        }
+#endif
+
         public LocaleIDParser(Span<char> initialBuffer, ReadOnlySpan<char> localeID)
             : this(initialBuffer, localeID, false)
         {
@@ -63,6 +75,16 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             this.keywords = null;
             this.baseName = ReadOnlySpan<char>.Empty;
         }
+
+#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Reset(string localeID)
+            => Reset(localeID.AsSpan());
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Reset(string localeID, bool canonicalize)
+            => Reset(localeID.AsSpan(), canonicalize);
+#endif
 
         public void Reset(ReadOnlySpan<char> localeID)
         {
@@ -724,6 +746,12 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
                 variant: GetString(ParseVariant())
             );
         }
+
+#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+
+        public void SetBaseName(string baseName)
+            => SetBaseName(baseName.AsSpan());
+#endif
 
         public void SetBaseName(ReadOnlySpan<char> baseName)
         {

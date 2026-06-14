@@ -108,6 +108,18 @@ namespace ICU4N.Text
             return ref MemoryMarshal.GetReference(_chars);
         }
 
+        // ICU4N: Added this to allow inserting one ValueStringBuilder to another
+        // without the compiler complaining about scope. The scoped keyword on 
+        // the ReadOnlySpan<char> parameter of Insert(int, ReadOnlySpan<char>) would
+        // also work, but since that requires LangVersion=>11.0 and that causes more compiler
+        // errors, we are going with this for now. Note we also marked this struct unsafe
+        // just like NumberBuffer is (it wasn't that way originally).
+        public unsafe char* GetCharsPointer()
+        {
+            // This is safe to do since we are a ref struct
+            return (char*)Unsafe.AsPointer(ref _chars[0]);
+        }
+
         public ref char this[int index]
         {
             get

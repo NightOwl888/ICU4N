@@ -120,10 +120,24 @@ namespace ICU4N.Impl.Locale
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsAttribute(string s)
+        {
+            // 3*8alphanum
+            return (s.Length >= 3) && (s.Length <= 8) && AsciiUtil.IsAlphaNumeric(s);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsAttribute(ReadOnlySpan<char> s)
         {
             // 3*8alphanum
             return (s.Length >= 3) && (s.Length <= 8) && AsciiUtil.IsAlphaNumeric(s);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsKey(string s)
+        {
+            // 2alphanum
+            return (s.Length == 2) && AsciiUtil.IsAlphaNumeric(s);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -134,10 +148,23 @@ namespace ICU4N.Impl.Locale
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsTypeSubtag(string s)
+        {
+            // 3*8alphanum
+            return (s.Length >= 3) && (s.Length <= 8) && AsciiUtil.IsAlphaNumeric(s);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsTypeSubtag(ReadOnlySpan<char> s)
         {
             // 3*8alphanum
             return (s.Length >= 3) && (s.Length <= 8) && AsciiUtil.IsAlphaNumeric(s);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsType(string s)
+        {
+            return IsType(s.AsSpan());
         }
 
         public static bool IsType(ReadOnlySpan<char> s)
