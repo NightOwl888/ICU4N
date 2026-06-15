@@ -1,5 +1,4 @@
-﻿using J2N.Collections.Generic.Extensions;
-using J2N.Collections.ObjectModel;
+﻿using J2N.Collections.ObjectModel;
 using JCG = J2N.Collections.Generic;
 
 namespace ICU4N.Support.Collections

@@ -708,30 +708,15 @@ namespace ICU4N.Impl.Locale
 
         public string Language => _language;
 
-        public IList<string> Extlangs
-#if FEATURE_ILIST_ASREADONLY
-            => System.Collections.Generic.CollectionExtensions.AsReadOnly(_extlangs);
-#else
-            => _extlangs.AsReadOnly();
-#endif
+        public IList<string> Extlangs => _extlangs.AsReadOnly();
 
         public string Script => _script;
 
         public string Region => _region;
 
-        public IList<string> Variants
-#if FEATURE_ILIST_ASREADONLY
-            => System.Collections.Generic.CollectionExtensions.AsReadOnly(_variants);
-#else
-            => _variants.AsReadOnly();
-#endif
+        public IList<string> Variants => _variants.AsReadOnly();
 
-        public IList<string> Extensions
-#if FEATURE_ILIST_ASREADONLY
-            => System.Collections.Generic.CollectionExtensions.AsReadOnly(_extensions);
-#else
-            => _extensions.AsReadOnly();
-#endif
+        public IList<string> Extensions => _extensions.AsReadOnly();
 
         public string PrivateUse => _privateuse;
 

@@ -1120,11 +1120,7 @@ namespace ICU4N.Text
                 {
                     bucket.DisplayIndex = displayIndex++;
                 }
-#if FEATURE_ILIST_ASREADONLY
-                immutableVisibleList = System.Collections.Generic.CollectionExtensions.AsReadOnly(publicBucketList);
-#else
                 immutableVisibleList = publicBucketList.AsReadOnly();
-#endif
             }
 
             internal int BucketCount => immutableVisibleList.Count;

@@ -592,11 +592,7 @@ namespace ICU4N.Impl
                 tempLocaleIdToPluralRanges[locale] = pr!;
             }
             // now make whole thing immutable
-#if FEATURE_IDICTIONARY_ASREADONLY
-            return System.Collections.Generic.CollectionExtensions.AsReadOnly(tempLocaleIdToPluralRanges);
-#else
             return tempLocaleIdToPluralRanges.AsReadOnly();
-#endif
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿using ICU4N.Text;
+﻿using ICU4N;
+using ICU4N.Text;
 using ICU4N.Util;
-using J2N.Collections.Generic.Extensions;
 using System.Collections.Generic;
 
 namespace ICU4N.Impl
@@ -222,11 +222,7 @@ namespace ICU4N.Impl
 
             internal IList<T> ToList()
             {
-#if FEATURE_ILIST_ASREADONLY
-                return System.Collections.Generic.CollectionExtensions.AsReadOnly(list);
-#else
                 return list.AsReadOnly();
-#endif
             }
         }
 
@@ -245,11 +241,7 @@ namespace ICU4N.Impl
 
             public IList<CurrencyInfo> ToList()
             {
-#if FEATURE_ILIST_ASREADONLY
-                return System.Collections.Generic.CollectionExtensions.AsReadOnly(result);
-#else
                 return result.AsReadOnly();
-#endif
             }
 
             public int Collects => Everything;

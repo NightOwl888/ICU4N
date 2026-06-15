@@ -1062,11 +1062,7 @@ namespace ICU4N.Util
                     //CurrencyFilter filter = CurrencyFilter.onDateRange(null, new Date(253373299200000L));
                     CurrencyFilter filter = CurrencyFilter.All;
                     IList<string> tenderCurrencies = GetTenderCurrencies(filter);
-#if FEATURE_ILIST_ASREADONLY
-                    all = System.Collections.Generic.CollectionExtensions.AsReadOnly(tenderCurrencies);
-#else
                     all = tenderCurrencies.AsReadOnly();
-#endif
 #if FEATURE_MICROSOFT_EXTENSIONS_CACHING
                     ALL_TENDER_CODES = new SoftReference<IList<string>>(all, new MemoryCacheEntryOptions { SlidingExpiration = SlidingExpiration });
 #else

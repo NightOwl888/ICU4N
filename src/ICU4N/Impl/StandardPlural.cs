@@ -46,19 +46,10 @@ namespace ICU4N.Impl
     /// </summary>
     public static partial class StandardPluralUtil
     {
-        private static readonly IList<StandardPlural> values =
-#if FEATURE_ILIST_ASREADONLY
-            System.Collections.Generic.CollectionExtensions.AsReadOnly(Enum.GetValues<StandardPlural>());
-#else
-            ((StandardPlural[])Enum.GetValues(typeof(StandardPlural))).AsReadOnly();
-#endif
+        private static readonly IList<StandardPlural> values = Enum.GetValues<StandardPlural>().AsReadOnly();
 
         private static readonly string[] keywords =
-#if FEATURE_ILIST_ASREADONLY
             Enum.GetNames<StandardPlural>()
-#else
-            ((string[])Enum.GetNames(typeof(StandardPlural)))
-#endif
             .Select(n => n.ToLowerInvariant()).ToArray();
 
         /// <summary>

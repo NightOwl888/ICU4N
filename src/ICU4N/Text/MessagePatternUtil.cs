@@ -279,11 +279,7 @@ namespace ICU4N.Text
         }
         internal MessageNode Freeze()
         {
-#if FEATURE_ILIST_ASREADONLY
-            list = System.Collections.Generic.CollectionExtensions.AsReadOnly(list);
-#else
             list = list.AsReadOnly();
-#endif
             return this;
         }
 
@@ -609,11 +605,7 @@ namespace ICU4N.Text
         }
         internal ComplexArgStyleNode Freeze()
         {
-#if FEATURE_ILIST_ASREADONLY
-            list = System.Collections.Generic.CollectionExtensions.AsReadOnly(list);
-#else
             list = list.AsReadOnly();
-#endif
             return this;
         }
 

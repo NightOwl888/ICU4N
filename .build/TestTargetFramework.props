@@ -10,6 +10,7 @@
     <!--<TargetFramework>net6.0</TargetFramework>-->
     <!--<TargetFramework>net8.0</TargetFramework>-->
     <!--<TargetFramework>net9.0</TargetFramework>-->
+    <!--<TargetFramework>net10.0</TargetFramework>-->
     <TestAllTargetFrameworks>true</TestAllTargetFrameworks>
 
     <!-- Allow the build script to pass in the test frameworks to build for.
@@ -19,6 +20,7 @@
     <!-- Test Client to DLL target works as follows:
 
       Test Client       | Target Under Test
+      net10.0           | net10.0
       net9.0            | net9.0
       net8.0            | net8.0
       net6.0            | netstandard2.0
@@ -27,7 +29,7 @@
       net47             | net40
 
     -->
-    <TargetFrameworks Condition="'$(TestAllTargetFrameworks)' == 'true'">net9.0;net8.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(TestAllTargetFrameworks)' == 'true'">net10.0;net9.0;net8.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(TestAllTargetFrameworks)' == 'true' And '$(IsLegacyVisualStudioVersion)' != 'true'">$(TargetFrameworks);net6.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(TestAllTargetFrameworks)' == 'true' And $([MSBuild]::IsOsPlatform('Windows')) And '$(IsLegacyVisualStudioVersion)' != 'true'">$(TargetFrameworks);net48;net472;net47</TargetFrameworks>
     <TargetFramework Condition=" '$(TargetFrameworks)' != '' "></TargetFramework>
