@@ -372,7 +372,7 @@ namespace ICU4N.Dev.Test.Format
             {
                 PluralRules rules = factory.GetInstance(locale);
                 IDictionary<String, PluralRules> keywordToRule = new Dictionary<String, PluralRules>();
-                ICollection<FixedDecimalSamples> samples = new JCG.LinkedHashSet<FixedDecimalSamples>();
+                ICollection<FixedDecimalSamples> samples = new JCG.OrderedHashSet<FixedDecimalSamples>();
 
                 foreach (String keyword in rules.Keywords)
                 {
@@ -962,7 +962,7 @@ namespace ICU4N.Dev.Test.Format
         [Test]
         public void TestKeywords()
         {
-            ISet<string> possibleKeywords = new JCG.LinkedHashSet<string>(new string[] { "zero", "one", "two", "few", "many", "other" });
+            ISet<string> possibleKeywords = new JCG.OrderedHashSet<string>(new string[] { "zero", "one", "two", "few", "many", "other" });
             Object[][][] tests = new object[][][] {
                 // format is locale, explicits, then triples of keyword, status, unique value.
                 new object[][] { new object[] { "en", null }, new object[] { "one", PluralRulesKeywordStatus.Unique, 1.0d }, new object[] { "other", PluralRulesKeywordStatus.Unbounded, null } },
@@ -981,7 +981,7 @@ namespace ICU4N.Dev.Test.Format
                 // NumberType numberType = (NumberType) test[1];
                 ISet<double> explicits = (ISet<double>)test[0][1];
                 PluralRules pluralRules = factory.GetInstance(locale);
-                JCG.LinkedHashSet<string> remaining = new JCG.LinkedHashSet<string>(possibleKeywords);
+                JCG.OrderedHashSet<string> remaining = new JCG.OrderedHashSet<string>(possibleKeywords);
                 for (int i = 1; i < test.Length; ++i)
                 {
                     object[] row = test[i];
