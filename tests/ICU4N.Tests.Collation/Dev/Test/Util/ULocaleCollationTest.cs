@@ -337,7 +337,7 @@ namespace ICU4N.Dev.Test.Util
 
             foreach (String[][] test in tests)
             {
-                var list = new JCG.LinkedHashSet<UCultureInfo>();
+                var list = new JCG.OrderedHashSet<UCultureInfo>();
                 IList<UiListItem> expected = new JCG.List<UiListItem>();
                 foreach (String item in test[0])
                 {

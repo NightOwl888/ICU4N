@@ -179,7 +179,7 @@ namespace ICU4N.Dev.Test
         {
             if (values1 is JCG.SortedSet<T> s1 && s1.Equals(values2)) return true;
             else if (values1 is JCG.HashSet<T> h1 && h1.Equals(values2)) return true;
-            else if (values1 is JCG.LinkedHashSet<T> l1 && l1.Equals(values2)) return true;
+            else if (values1 is JCG.OrderedHashSet<T> o1 && o1.Equals(values2)) return true;
             else if (SetEqualityComparer<T>.Aggressive.Equals(values1, values2)) return true;
             else
             {

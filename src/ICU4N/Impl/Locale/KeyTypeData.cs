@@ -271,7 +271,7 @@ namespace ICU4N.Impl.Locale
                         bcpKeyId = legacyKeyId;
                         hasSameKey = true;
                     }
-                    ISet<string> _bcp47Types = new JCG.LinkedHashSet<string>();
+                    ISet<string> _bcp47Types = new JCG.OrderedHashSet<string>();
                     _Bcp47Keys[bcpKeyId] = _bcp47Types.AsReadOnly();
 
                     bool isTZ = legacyKeyId.Equals("timezone");
@@ -519,7 +519,7 @@ namespace ICU4N.Impl.Locale
                 foreach (var keyInfoEntry2 in keyInfoEntry)
                 {
                     string key2 = keyInfoEntry2.Key;
-                    ISet<string> _deprecatedTypes = new JCG.LinkedHashSet<string>();
+                    ISet<string> _deprecatedTypes = new JCG.OrderedHashSet<string>();
                     foreach (var keyInfoEntry3 in keyInfoEntry2)
                     {
                         string key3 = keyInfoEntry3.Key;

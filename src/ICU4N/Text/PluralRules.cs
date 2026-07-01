@@ -1227,7 +1227,7 @@ namespace ICU4N.Text
                 PluralRulesSampleType sampleType2;
                 bool bounded2 = true;
                 bool haveBound = false;
-                ISet<FixedDecimalRange> samples2 = new JCG.LinkedHashSet<FixedDecimalRange>();
+                ISet<FixedDecimalRange> samples2 = new JCG.OrderedHashSet<FixedDecimalRange>();
 
                 if (text.StartsWith("integer", StringComparison.Ordinal))
                 {

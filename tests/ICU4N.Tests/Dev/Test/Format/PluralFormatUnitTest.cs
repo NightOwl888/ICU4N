@@ -215,7 +215,7 @@ namespace ICU4N.Dev.Test.Format
             foreach (UCultureInfo locale in PluralRules.GetUCultures())
             {
                 UCultureInfo otherLocale = PluralRules.GetFunctionalEquivalent(locale);
-                if (!same.TryGetValue(otherLocale, out ISet<UCultureInfo> others)) same[otherLocale] = others = new LinkedHashSet<UCultureInfo>();
+                if (!same.TryGetValue(otherLocale, out ISet<UCultureInfo> others)) same[otherLocale] = others = new J2N.Collections.Generic.OrderedHashSet<UCultureInfo>();
                 others.Add(locale);
                 continue;
             }
