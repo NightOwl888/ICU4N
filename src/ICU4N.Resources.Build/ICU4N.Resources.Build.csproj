@@ -1,0 +1,470 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Generates the ICU4N satellite assemblies into $(ICU4NSatelliteAssemblyOutputDir).
+       Produces no shipping assembly; referenced build-only by ICU4N, the two
+       ICU4N.Resources package projects, and the test projects. -->
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>ICU4N.Resources.Build</AssemblyName>
+    <RootNamespace>ICU4N.Resources.Build</RootNamespace>
+
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <IsPackable>false</IsPackable>
+    <IsPublishable>false</IsPublishable>
+
+    <!-- The solution builds this project directly and four others reference it,
+         so instances can run concurrently. It ships nothing, so suppress the
+         reference assembly, deps file and symbols that those instances would
+         otherwise race to write to the same paths. -->
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+    <DebugType>none</DebugType>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+
+    <!-- The satellites are for ICU4N.dll — use its name for the resource DLLs. -->
+    <ICU4NMainAssemblyName>ICU4N</ICU4NMainAssemblyName>
+
+    <!-- Avoids the Directory.Build.targets rule injecting a CLSCompliant attribute. -->
+    <CLSCompliant>false</CLSCompliant>
+
+  </PropertyGroup>
+
+  <!-- Satellites carry ICU4N's identity, not this project's. Description mirrors
+       the one in ICU4N.csproj. -->
+  <PropertyGroup Label="Satellite Assembly Identity">
+    <ICU4NSatelliteTitle>ICU4N</ICU4NSatelliteTitle>
+    <ICU4NSatelliteProduct>ICU4N</ICU4NSatelliteProduct>
+    <ICU4NSatelliteDescription>ICU (International Components for Unicode) is a set of libraries providing Unicode and Globalization support for software applications. It provides Text-boundary analysis (RuleBasedBreakIterator) as well as easy access to all of the many Unicode character properties, Unicode Normalization, Case Folding and other fundamental operations as specified by the Unicode Standard. ICU4N is a .NET port of ICU4J.</ICU4NSatelliteDescription>
+  </PropertyGroup>
+
+  <!-- The same satellites are packed into both ICU4N.Resources (lib/netstandard2.0)
+       and ICU4N.Resources.NETFramework4.0 (lib/net40), so they are built once
+       against net40: .NET Core can load a net40 resource assembly, but net40
+       cannot load a netstandard2.0 one. These reference assemblies are
+       platform-neutral, so no Windows SDK or Mono is required. -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net40"
+                      Version="$(MicrosoftNETFrameworkReferenceAssembliesPackageReferenceVersion)"
+                      PrivateAssets="All"
+                      ExcludeAssets="all"
+                      GeneratePathProperty="true" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <ICU4NSatelliteReferenceAssemblyDir>$(PkgMicrosoft_NETFramework_ReferenceAssemblies_net40)/build/.NETFramework/v4.0</ICU4NSatelliteReferenceAssemblyDir>
+  </PropertyGroup>
+
+  <!-- No sources: exclude the default C# glob. -->
+  <ItemGroup>
+    <Compile Remove="**/*.cs" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <ICU4JResourceConverterDir>$(SolutionDir)src/tools/ICU4JResourceConverter</ICU4JResourceConverterDir>
+    <!-- Read the TFM from the converter project so this stays correct wherever
+         the build runs. -->
+    <ICU4JResourceConverterTargetFramework Condition="'$(ICU4JResourceConverterTargetFramework)' == ''">$([System.Text.RegularExpressions.Regex]::Match($([System.IO.File]::ReadAllText('$(ICU4JResourceConverterDir)/ICU4JResourceConverter.csproj')), '&lt;TargetFramework&gt;([^&lt;]+)&lt;/TargetFramework&gt;').Groups[1].Value)</ICU4JResourceConverterTargetFramework>
+    <ICU4JResourceConverterOutputDir>$(ICU4JResourceConverterDir)/bin/$(Configuration)/$(ICU4JResourceConverterTargetFramework)</ICU4JResourceConverterOutputDir>
+
+    <ICU4JDownloadConfigFilePath>$(SolutionDir).build/icu4j-download-urls.txt</ICU4JDownloadConfigFilePath>
+    <ICU4JWorkingDirectory>$(ArtifactsDir)/icu4j-temp</ICU4JWorkingDirectory>
+    <ICU4JResourcesDirectory>$(ICU4JWorkingDirectory)/icu4j-transformed</ICU4JResourcesDirectory>
+    <!-- These are .rsp files that contain the options and paths of the files to embed, since they can exceed the length allowed by the Process class. -->
+    <ICU4JResponseFileDirectory>$(ICU4JWorkingDirectory)/icu4j-embed</ICU4JResponseFileDirectory>
+  </PropertyGroup>
+
+  <!-- The pack steps run without /p:AssemblyVersion= and only need to package the
+       satellites an earlier build already produced, so generation is skipped when
+       no version is available but the neutral satellite is present. -->
+  <PropertyGroup>
+    <_SatellitesAlreadyBuilt Condition=" '$(AssemblyVersion)' == '' And Exists('$(ICU4NSatelliteAssemblyOutputDir)/$(ICU4NMainAssemblyName).resources.dll') ">true</_SatellitesAlreadyBuilt>
+    <_SatelliteOrchestrationDependsOn Condition=" '$(_SatellitesAlreadyBuilt)' != 'true' ">GenerateOurSatelliteAssemblies</_SatelliteOrchestrationDependsOn>
+  </PropertyGroup>
+
+  <!-- Generates the satellites, then registers them as None items so they flow to
+       referencing projects' output. Globbed inside a target because the files do
+       not exist at evaluation time on a clean build; None with an explicit
+       TargetPath keeps the SDK from re-routing *.resources.dll through RAR. -->
+  <Target Name="_RunSatelliteOrchestration"
+          BeforeTargets="AssignTargetPaths"
+          DependsOnTargets="$(_SatelliteOrchestrationDependsOn)">
+    <ItemGroup>
+      <_GeneratedSatellite Include="$(ICU4NSatelliteAssemblyOutputDir)/**/*.resources.dll" />
+      <None Include="@(_GeneratedSatellite)">
+        <TargetPath>%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+        <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        <Visible>false</Visible>
+      </None>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="DownloadICU4J" BeforeTargets="ExecICU4JResourceConverter" Returns="$(ICU4JJarFilePath)">
+
+    <PropertyGroup>
+      <Major>$(PackageVersion.Split('.')[0])</Major>
+      <Minor>$(PackageVersion.Split('.')[1])</Minor>
+      <ICU4JJarFilePath>$(ArtifactsDir)/icu4j-$(Major).$(Minor).jar</ICU4JJarFilePath>
+    </PropertyGroup>
+
+    <Message Text="Downloading ICU4J..." Importance="high" Condition=" !Exists('$(ICU4JJarFilePath)') " />
+
+    <ReadICU4JDownloadUrls ConfigFilePath="$(ICU4JDownloadConfigFilePath)" MajorVersion="$(Major)" MinorVersion="$(Minor)" Condition=" !Exists('$(ICU4JJarFilePath)') ">
+      <Output ItemName="ICU4JDownloadUrls" TaskParameter="Urls" />
+    </ReadICU4JDownloadUrls>
+
+    <Message Text="@(ICU4JDownloadUrls)" Importance="high" />
+
+    <DownloadFileWithFallback Urls="@(ICU4JDownloadUrls)" DestinationFilePath="$(ICU4JJarFilePath)" Condition=" !Exists('$(ICU4JJarFilePath)')">
+      <Output PropertyName="IsICU4JFileDownloaded" TaskParameter="Successful" />
+    </DownloadFileWithFallback>
+
+    <Error Condition=" '$(IsICU4JFileDownloaded)' != 'true' And !Exists('$(ICU4JJarFilePath)') " Text="The build cannot continue without $(ICU4JJarFilePath). Use Maven search (https://mvnrepository.com or https://search.maven.org/) to look for the file and download it manually to $(ICU4JJarFilePath). Alternatively, check the ICU Releases Page: https://github.com/unicode-org/icu/releases." />
+  </Target>
+
+  <Target Name="ExecICU4JResourceConverter" BeforeTargets="GenerateOurSatelliteAssemblies">
+
+    <PropertyGroup>
+      <RunICU4JResourceConverterCommand Condition="$([MSBuild]::IsOSPlatform('Windows')) == 'true'">"$(ICU4JResourceConverterOutputDir)/ICU4JResourceConverter.exe"</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand Condition="$([MSBuild]::IsOSPlatform('Windows')) == 'false'">"$(ICU4JResourceConverterOutputDir)/ICU4JResourceConverter"</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) "$(ICU4JJarFilePath)"</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) -work "$(ICU4JWorkingDirectory)"</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) -out "$(ICU4JResourcesDirectory)"</RunICU4JResourceConverterCommand>
+    </PropertyGroup>
+
+    <CheckWhetherResourcesRequireUpdate SourceFilePath="$(ICU4JJarFilePath)"
+                                        WorkingDirectory="$(ICU4JWorkingDirectory)"
+                                        DestinationPath="$(ICU4JResourcesDirectory)">
+      <Output PropertyName="ResourcesRequireUpdate" TaskParameter="RequiresUpdate" />
+    </CheckWhetherResourcesRequireUpdate>
+
+    <Exec Command="$(RunICU4JResourceConverterCommand)" Condition=" '$(ResourcesRequireUpdate)' == 'true' " />
+  </Target>
+
+  <Target Name="_CollectSatelliteInputs">
+    <Error Condition="!Exists('$(ICU4NSatelliteReferenceAssemblyDir)/mscorlib.dll')"
+           Text="The .NET Framework 4.0 reference assemblies were not found at '$(ICU4NSatelliteReferenceAssemblyDir)'. Run a NuGet restore for $(MSBuildProjectName) so the Microsoft.NETFramework.ReferenceAssemblies.net40 package is available." />
+
+    <ItemGroup>
+      <_NeutralSatelliteResource Include="$(ICU4JResourcesDirectory)/*.*" />
+
+      <!-- net40 mscorlib, paired with NoStandardLib on the Csc calls below to
+           suppress the implicit netstandard reference. -->
+      <_SatelliteAssemblyReferences Include="$(ICU4NSatelliteReferenceAssemblyDir)/mscorlib.dll" />
+
+      <_OneCultureResource Condition=" '$(_SatelliteCulture)' != '' "
+                           Include="$(ICU4JResourcesDirectory)/$(_SatelliteCulture)/*.*" />
+    </ItemGroup>
+
+    <MakeDir Directories="$(ICU4NSatelliteAssemblyOutputDir)" Condition="!Exists('$(ICU4NSatelliteAssemblyOutputDir)')" />
+    <MakeDir Directories="$(ICU4JResponseFileDirectory)" Condition="!Exists('$(ICU4JResponseFileDirectory)')" />
+  </Target>
+
+  <!-- Attributes shared by the neutral and localized satellites. Per-culture
+       builds are nested MSBuild invocations that never run GetBuildVersion, so
+       the versions are passed in from the parent. -->
+  <Target Name="_CollectSatelliteAssemblyAttributes">
+    <PropertyGroup>
+      <_SatelliteFileVersion Condition=" '$(_SatelliteFileVersion)' == '' ">$(FileVersion)</_SatelliteFileVersion>
+      <_SatelliteInformationalVersion Condition=" '$(_SatelliteInformationalVersion)' == '' ">$(AssemblyInformationalVersion)</_SatelliteInformationalVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <_SatelliteCommonAttribute Include="System.Reflection.AssemblyTitleAttribute">
+        <_Parameter1>$(ICU4NSatelliteTitle)</_Parameter1>
+      </_SatelliteCommonAttribute>
+      <_SatelliteCommonAttribute Include="System.Reflection.AssemblyDescriptionAttribute">
+        <_Parameter1>$(ICU4NSatelliteDescription)</_Parameter1>
+      </_SatelliteCommonAttribute>
+      <_SatelliteCommonAttribute Include="System.Reflection.AssemblyCompanyAttribute">
+        <_Parameter1>$(Company)</_Parameter1>
+      </_SatelliteCommonAttribute>
+      <_SatelliteCommonAttribute Include="System.Reflection.AssemblyProductAttribute">
+        <_Parameter1>$(ICU4NSatelliteProduct)</_Parameter1>
+      </_SatelliteCommonAttribute>
+      <_SatelliteCommonAttribute Include="System.Reflection.AssemblyInformationalVersionAttribute">
+        <_Parameter1>$(_SatelliteInformationalVersion)</_Parameter1>
+      </_SatelliteCommonAttribute>
+      <_SatelliteCommonAttribute Include="System.Reflection.AssemblyCopyrightAttribute">
+        <_Parameter1>$(Copyright)</_Parameter1>
+      </_SatelliteCommonAttribute>
+      <_SatelliteCommonAttribute Include="System.Reflection.AssemblyFileVersionAttribute">
+        <_Parameter1>$(_SatelliteFileVersion)</_Parameter1>
+      </_SatelliteCommonAttribute>
+    </ItemGroup>
+  </Target>
+
+  <!-- Ensure $(AssemblyVersion) is populated by Nerdbank.GitVersioning before
+       satellite generation. On CI (where NB.GV is not loaded because it's
+       gated off by $(TF_BUILD)), skip the dependency — the CI pipeline passes
+       /p:AssemblyVersion= directly. -->
+  <PropertyGroup>
+    <_SatelliteBuildDependsOn Condition=" '$(SkipGitVersioning.ToLower())' != 'true' And '$(TF_BUILD.ToLower())' != 'true' ">GetBuildVersion;GetAssemblyVersion;_BuildNeutralSatelliteAssembly</_SatelliteBuildDependsOn>
+    <_SatelliteBuildDependsOn Condition=" '$(_SatelliteBuildDependsOn)' == '' ">_BuildNeutralSatelliteAssembly</_SatelliteBuildDependsOn>
+  </PropertyGroup>
+
+  <Target Name="GenerateOurSatelliteAssemblies"
+          DependsOnTargets="$(_SatelliteBuildDependsOn)">
+
+    <ItemGroup>
+      <_CultureDirForRecursion Include="$([System.IO.Directory]::GetDirectories('$(ICU4JResourcesDirectory)'))" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_SatelliteRecursionInput Include="@(_CultureDirForRecursion->'%(Filename)')">
+        <ProjectPath>$(MSBuildProjectFullPath)</ProjectPath>
+      </_SatelliteRecursionInput>
+    </ItemGroup>
+
+    <MSBuild Projects="@(_SatelliteRecursionInput->'%(ProjectPath)')"
+             Targets="_BuildOneSatelliteAssembly"
+             Properties="_SatelliteCulture=%(_SatelliteRecursionInput.Identity);TargetFramework=$(TargetFramework);_SatelliteAssemblyVersion=$(AssemblyVersion);_SatelliteFileVersion=$(FileVersion);_SatelliteInformationalVersion=$(AssemblyInformationalVersion)"
+             BuildInParallel="true" />
+  </Target>
+
+  <Target Name="_BuildNeutralSatelliteAssembly"
+          DependsOnTargets="_CollectSatelliteInputs;_CollectSatelliteAssemblyAttributes"
+          Inputs="$(MSBuildAllProjects);@(_NeutralSatelliteResource)"
+          Outputs="$(ICU4JResponseFileDirectory)/neutral.AssemblyInfo.cs;$(ICU4NSatelliteAssemblyOutputDir)/$(ICU4NMainAssemblyName).resources.dll">
+
+    <Error Condition=" '$(AssemblyVersion)' == '' "
+           Text="AssemblyVersion is empty. Satellite generation needs it from Nerdbank.GitVersioning (GetBuildVersion) or from /p:AssemblyVersion= on the command line." />
+
+    <ItemGroup>
+      <_NeutralSatelliteAttribute Include="@(_SatelliteCommonAttribute)" />
+      <_NeutralSatelliteAttribute Include="System.Reflection.AssemblyVersionAttribute">
+        <_Parameter1>$(AssemblyVersion)</_Parameter1>
+      </_NeutralSatelliteAttribute>
+    </ItemGroup>
+
+    <WriteCodeFragment AssemblyAttributes="@(_NeutralSatelliteAttribute)"
+                       Language="C#"
+                       OutputFile="$(ICU4JResponseFileDirectory)/neutral.AssemblyInfo.cs" />
+
+    <Csc Resources="@(_NeutralSatelliteResource)"
+         Sources="$(ICU4JResponseFileDirectory)/neutral.AssemblyInfo.cs"
+         OutputAssembly="$(ICU4NSatelliteAssemblyOutputDir)/$(ICU4NMainAssemblyName).resources.dll"
+         References="@(_SatelliteAssemblyReferences)"
+         KeyFile="$(AssemblyOriginatorKeyFile)"
+         NoConfig="true"
+         NoLogo="true"
+         NoStandardLib="true"
+         Deterministic="true"
+         Optimize="true"
+         DebugType="none"
+         TargetType="Library"
+         UseSharedCompilation="true" />
+
+    <!-- Same shape the SDK uses for assemblies; the terminal logger renders it
+         as the per-project "-> path" line. -->
+    <Message Importance="high"
+             Text="$(ICU4NMainAssemblyName).resources (neutral) -&gt; $([System.IO.Path]::GetFullPath('$(ICU4NSatelliteAssemblyOutputDir)/$(ICU4NMainAssemblyName).resources.dll'))" />
+  </Target>
+
+  <Target Name="_BuildOneSatelliteAssembly"
+          DependsOnTargets="_CollectSatelliteInputs;_CollectSatelliteAssemblyAttributes"
+          Condition=" '$(_SatelliteCulture)' != '' "
+          Inputs="$(MSBuildAllProjects);@(_OneCultureResource)"
+          Outputs="$(ICU4NSatelliteAssemblyOutputDir)/$(_SatelliteCulture)/$(ICU4NMainAssemblyName).resources.dll">
+
+    <PropertyGroup>
+      <_OutputAssembly>$(ICU4NSatelliteAssemblyOutputDir)/$(_SatelliteCulture)/$(ICU4NMainAssemblyName).resources.dll</_OutputAssembly>
+      <_AssemblyInfoFile>$(ICU4JResponseFileDirectory)/$(_SatelliteCulture).AssemblyInfo.cs</_AssemblyInfoFile>
+    </PropertyGroup>
+
+    <Error Condition=" '$(_SatelliteAssemblyVersion)' == '' "
+           Text="AssemblyVersion is empty. Satellite generation needs it from Nerdbank.GitVersioning (GetBuildVersion) or from /p:AssemblyVersion= on the command line." />
+
+    <ItemGroup>
+      <_OneCultureAttribute Include="@(_SatelliteCommonAttribute)" />
+      <_OneCultureAttribute Include="System.Reflection.AssemblyVersionAttribute">
+        <_Parameter1>$(_SatelliteAssemblyVersion)</_Parameter1>
+      </_OneCultureAttribute>
+      <_OneCultureAttribute Include="System.Reflection.AssemblyCultureAttribute">
+        <_Parameter1>$(_SatelliteCulture)</_Parameter1>
+      </_OneCultureAttribute>
+    </ItemGroup>
+
+    <MakeDir Directories="$(ICU4NSatelliteAssemblyOutputDir)/$(_SatelliteCulture)" />
+
+    <WriteCodeFragment AssemblyAttributes="@(_OneCultureAttribute)"
+                       Language="C#"
+                       OutputFile="$(_AssemblyInfoFile)" />
+
+    <Csc Resources="@(_OneCultureResource)"
+         Sources="$(_AssemblyInfoFile)"
+         OutputAssembly="$(_OutputAssembly)"
+         References="@(_SatelliteAssemblyReferences)"
+         KeyFile="$(AssemblyOriginatorKeyFile)"
+         NoConfig="true"
+         NoLogo="true"
+         NoStandardLib="true"
+         Deterministic="true"
+         Optimize="true"
+         DebugType="none"
+         TargetType="Library"
+         UseSharedCompilation="true" />
+
+    <Message Importance="high"
+             Text="$(ICU4NMainAssemblyName).resources ($(_SatelliteCulture)) -&gt; $([System.IO.Path]::GetFullPath('$(_OutputAssembly)'))" />
+  </Target>
+
+  <UsingTask TaskName="DownloadFileWithFallback" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildBinPath)\Microsoft.Build.Tasks.Core.dll">
+     <ParameterGroup>
+      <Urls ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+      <DestinationFilePath ParameterType="System.String" Required="true" />
+      <Successful ParameterType="System.Boolean" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.Net" />
+      <Using Namespace="System.IO" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+        Successful = false;
+        Directory.CreateDirectory(Path.GetDirectoryName(DestinationFilePath.ToString()));
+        using var client = new WebClient();
+        foreach (var url in Urls)
+        {
+            try
+            {
+                var tempFile = Path.GetDirectoryName(DestinationFilePath.ToString()) + Path.DirectorySeparatorChar + Guid.NewGuid().ToString();
+                client.DownloadFile(url.ToString(), tempFile);
+                File.Move(tempFile, DestinationFilePath.ToString());
+                Successful = true;
+                Log.LogMessage(MessageImportance.High, $"[SUCCESS] Downloaded {DestinationFilePath} from {url}");
+                break;
+            }
+            catch (Exception e)
+            {
+                Log.LogMessage(MessageImportance.High, $"[ERROR] Downloading {DestinationFilePath} from {url} failed: {e}");
+                continue;
+            }
+        }
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <UsingTask TaskName="ReadICU4JDownloadUrls" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildBinPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <ConfigFilePath ParameterType="System.String" Required="true" />
+      <MajorVersion ParameterType="System.String" Required="true" />
+      <MinorVersion ParameterType="System.String" Required="true" />
+      <Urls ParameterType="Microsoft.Build.Framework.ITaskItem[]" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Text" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+        using var reader = new StreamReader(ConfigFilePath.ToString(), Encoding.UTF8);
+        var result = new List<string>();
+        string line, lineCleaned;
+        while ((line = reader.ReadLine()) != null)
+        {
+            if (line.StartsWith("#", StringComparison.Ordinal))
+                continue;
+            int firstComment = line.IndexOf('#');
+            if (firstComment >=0)
+                lineCleaned = line.Substring(0, firstComment);
+            else
+                lineCleaned = line;
+            result.Add(string.Format(lineCleaned, MajorVersion.ToString(), MinorVersion.ToString()));
+        }
+        Urls = new TaskItem[result.Count];
+        for (int i = 0; i < result.Count; i++)
+            Urls[i] = new TaskItem(result[i]);
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <!--
+    Reports whether the ICU4J resources need converting, and clears the working
+    directory when they do.
+
+    The solution builds this project both directly and through
+    ProjectReference, so two instances can run concurrently. The check and the
+    directory wipe are serialized on a system-wide mutex, so only the first
+    instance is told to convert; by the time the second one checks, the
+    resources are present and it does nothing.
+  -->
+  <UsingTask TaskName="CheckWhetherResourcesRequireUpdate" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildBinPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <SourceFilePath ParameterType="System.String" Required="true" />
+      <WorkingDirectory ParameterType="System.String" Required="true" />
+      <DestinationPath ParameterType="System.String" Required="true" />
+      <RequiresUpdate ParameterType="System.Boolean" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Security.Cryptography" />
+      <Using Namespace="System.Text" />
+      <Using Namespace="System.Threading" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+        // Name the mutex after the working directory so builds of different
+        // working trees do not block each other.
+        string key;
+        using (var sha = SHA256.Create())
+            key = BitConverter.ToString(sha.ComputeHash(Encoding.UTF8.GetBytes(WorkingDirectory))).Replace("-", "").Substring(0, 32);
+
+        RequiresUpdate = false;
+        bool held = false;
+        var mutex = new Mutex(false, "Global\\ICU4N-ConvertResources-" + key);
+        try
+        {
+            try { held = mutex.WaitOne(TimeSpan.FromMinutes(10)); }
+            catch (AbandonedMutexException) { held = true; }
+
+            if (!held)
+            {
+                Log.LogError("Timed out waiting for another build to finish converting the ICU4J resources.");
+            }
+            else
+            {
+                if (!Directory.Exists(DestinationPath))
+                {
+                    RequiresUpdate = true;
+                }
+                else
+                {
+                    var files = Directory.GetFiles(DestinationPath, "*.*", SearchOption.AllDirectories);
+                    if (!File.Exists(SourceFilePath) || files.Length == 0)
+                    {
+                        RequiresUpdate = true;
+                    }
+                    else
+                    {
+                        var latestSourceWrite = File.GetLastWriteTimeUtc(SourceFilePath);
+                        foreach (var file in files)
+                        {
+                            if (latestSourceWrite > File.GetLastWriteTimeUtc(file))
+                            {
+                                RequiresUpdate = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (RequiresUpdate && Directory.Exists(WorkingDirectory))
+                    Directory.Delete(WorkingDirectory, true);
+            }
+        }
+        finally
+        {
+            if (held) mutex.ReleaseMutex();
+            mutex.Dispose();
+        }
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+</Project>

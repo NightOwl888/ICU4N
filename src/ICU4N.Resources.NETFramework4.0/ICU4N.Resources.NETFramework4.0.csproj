@@ -18,4 +18,14 @@
     <None Include="../ICU4N.Resources.NuGetVersionWarning.targets" Pack="true" PackagePath="buildTransitive/ICU4N.Resources.NuGetVersionWarning.targets" />
   </ItemGroup>
 
+  <!-- Build-only reference to the orchestration project guarantees satellites
+       in $(ICU4NSatelliteAssemblyOutputDir) exist before pack. Stub packages
+       carry no satellites, so they must not trigger the build. -->
+  <ItemGroup Condition="'$(PackResourceStubs)' != 'true'">
+    <ProjectReference Include="../ICU4N.Resources.Build/ICU4N.Resources.Build.csproj"
+                      ReferenceOutputAssembly="false"
+                      SetTargetFramework="TargetFramework=netstandard2.0"
+                      PrivateAssets="All" />
+  </ItemGroup>
+
 </Project>

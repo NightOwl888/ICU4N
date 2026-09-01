@@ -11,4 +11,17 @@
     <PackageReference Include="System.Runtime.Serialization.Formatters" Version="$(SystemRuntimeSerializationFormattersPackageReferenceVersion)" />
   </ItemGroup>
 
+  <!-- All test projects need ICU4N satellite assemblies in their bin/ to exercise
+       localization at runtime. Inject a build-only ProjectReference to the
+       satellite orchestration project; its <None CopyToOutputDirectory> items
+       flow here transitively and populate {culture}/ICU4N.resources.dll in
+       the test-project output. Publish output picks them up via
+       CopyToPublishDirectory. -->
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)src/ICU4N.Resources.Build/ICU4N.Resources.Build.csproj"
+                      ReferenceOutputAssembly="false"
+                      SetTargetFramework="TargetFramework=netstandard2.0"
+                      PrivateAssets="All" />
+  </ItemGroup>
+
 </Project>
