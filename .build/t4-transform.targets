@@ -34,11 +34,6 @@
       Mono/T4
   
     -->
-  
-  <Target Name="UpdateT4Tool" BeforeTargets="TextTemplateTransform;DispatchToInnerBuilds" Condition=" !Exists('$(DotNetT4ToolVersionInstallPath)') And '$(UseMicrosoftT4)' != 'true' And '$(SkipT4Transform)' != 'true' ">
-    <Message Importance="high" Text="Updating T4 Tool..." />
-    <Exec Command="dotnet tool update dotnet-t4 --tool-path $(DotNetT4ToolPath) --version $(DotNetT4PackageVersion)" />
-  </Target>
 
   <Target Name="TextTemplateTransform" BeforeTargets="DispatchToInnerBuilds" Condition=" '$(UseMicrosoftT4)' != 'true' And '$(SkipT4Transform)' != 'true' ">
     <ItemGroup>
