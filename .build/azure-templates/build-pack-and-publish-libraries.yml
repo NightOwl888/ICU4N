@@ -45,6 +45,20 @@ steps:
   displayName: 'Validate Template Parameters'
 
 - pwsh: |
+    dotnet tool install dotnet-t4 `
+      --tool-path "$(Build.SourcesDirectory)/.tools/dotnet-t4" `
+      --version "${{ parameters.dotNetT4PackageVersion }}"
+  displayName: 'Install dotnet-t4'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Transform T4 templates'
+  inputs:
+    command: custom
+    projects: '${{ parameters.solutionFilesConvention }}'
+    custom: msbuild
+    arguments: '/t:TextTemplateTransform'
+
+- pwsh: |
     $nugetPackageDirectory = "$(Build.SourcesDirectory)/_artifacts/NugetPackages"
     if (-not (Test-Path "$nugetPackageDirectory")) {
         New-Item "$nugetPackageDirectory" -ItemType Directory
@@ -58,7 +72,7 @@ steps:
     command: custom
     projects: '${{ parameters.resourcesFilesConvention }}'
     custom: pack
-    arguments: '--configuration ${{ parameters.buildConfiguration }} --output "$(Build.SourcesDirectory)/_artifacts/NugetPackages" --verbosity normal /p:PackageVersion="${{ parameters.packageVersion }}" /p:SkipGitVersioning=true /p:PackResourceStubs=true'
+    arguments: '--configuration ${{ parameters.buildConfiguration }} --output "$(Build.SourcesDirectory)/_artifacts/NugetPackages" --verbosity normal /p:PackageVersion="${{ parameters.packageVersion }}" /p:SkipGitVersioning=true /p:PackResourceStubs=true /p:SkipT4Transform=true'
 
   # Runs dotnet build 
 - task: DotNetCoreCLI@2
@@ -67,7 +81,7 @@ steps:
     command: custom
     projects: '${{ parameters.solutionFilesConvention }}'
     custom: build
-    arguments: '--configuration ${{ parameters.buildConfiguration }} --verbosity normal /p:Platform="${{ parameters.buildPlatform }}" /p:InformationalVersion="${{ parameters.informationalVersion }}" /p:FileVersion="${{ parameters.fileVersion }}" /p:AssemblyVersion="${{ parameters.assemblyVersion }}" /p:PackageVersion="${{ parameters.packageVersion }}" /p:TestAllTargetFrameworks=true /p:PortableDebugTypeOnly=true /p:DisableIkvm=true /p:ReferenceICUResources=true'
+    arguments: '--configuration ${{ parameters.buildConfiguration }} --verbosity normal /p:Platform="${{ parameters.buildPlatform }}" /p:InformationalVersion="${{ parameters.informationalVersion }}" /p:FileVersion="${{ parameters.fileVersion }}" /p:AssemblyVersion="${{ parameters.assemblyVersion }}" /p:PackageVersion="${{ parameters.packageVersion }}" /p:TestAllTargetFrameworks=true /p:PortableDebugTypeOnly=true /p:DisableIkvm=true /p:ReferenceICUResources=true /p:SkipT4Transform=true'
 
 - pwsh: |
     $packageVersion = "${{ parameters.packageVersion }}"

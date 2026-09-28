@@ -194,6 +194,10 @@
     <Message Text="$(OutputTargetFrameworks)" Importance="high"/>
   </Target>
 
+  <!-- Projects without T4 support get a no-op target so that
+       solution-level T4 transformation can be invoked uniformly. -->
+  <Target Name="TextTemplateTransform" />
+
   <!-- Global PackageReferences -->
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) ">
