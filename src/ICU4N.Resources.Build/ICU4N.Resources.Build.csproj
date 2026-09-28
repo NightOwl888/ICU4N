@@ -148,14 +148,18 @@
            Text="The .NET Framework 4.0 reference assemblies were not found at '$(ICU4NSatelliteReferenceAssemblyDir)'. Run a NuGet restore for $(MSBuildProjectName) so the Microsoft.NETFramework.ReferenceAssemblies.net40 package is available." />
 
     <ItemGroup>
-      <_NeutralSatelliteResource Include="$(ICU4JResourcesDirectory)/*.*" />
+      <_NeutralSatelliteResource Include="$(ICU4JResourcesDirectory)/*.*">
+        <LogicalName>%(Filename)%(Extension)</LogicalName>
+      </_NeutralSatelliteResource>
 
       <!-- net40 mscorlib, paired with NoStandardLib on the Csc calls below to
            suppress the implicit netstandard reference. -->
       <_SatelliteAssemblyReferences Include="$(ICU4NSatelliteReferenceAssemblyDir)/mscorlib.dll" />
 
       <_OneCultureResource Condition=" '$(_SatelliteCulture)' != '' "
-                           Include="$(ICU4JResourcesDirectory)/$(_SatelliteCulture)/*.*" />
+                     Include="$(ICU4JResourcesDirectory)/$(_SatelliteCulture)/*.*">
+        <LogicalName>%(Filename)%(Extension)</LogicalName>
+      </_OneCultureResource>
     </ItemGroup>
 
     <MakeDir Directories="$(ICU4NSatelliteAssemblyOutputDir)" Condition="!Exists('$(ICU4NSatelliteAssemblyOutputDir)')" />
