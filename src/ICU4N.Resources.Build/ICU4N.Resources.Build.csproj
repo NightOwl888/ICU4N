@@ -101,7 +101,7 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="DownloadICU4J" BeforeTargets="ExecICU4JResourceConverter" Returns="$(ICU4JJarFilePath)">
+  <Target Name="DownloadICU4J" Outputs="$(ICU4JJarFilePath)">
 
     <PropertyGroup>
       <Major>$(PackageVersion.Split('.')[0])</Major>
@@ -124,7 +124,7 @@
     <Error Condition=" '$(IsICU4JFileDownloaded)' != 'true' And !Exists('$(ICU4JJarFilePath)') " Text="The build cannot continue without $(ICU4JJarFilePath). Use Maven search (https://mvnrepository.com or https://search.maven.org/) to look for the file and download it manually to $(ICU4JJarFilePath). Alternatively, check the ICU Releases Page: https://github.com/unicode-org/icu/releases." />
   </Target>
 
-  <Target Name="ExecICU4JResourceConverter" BeforeTargets="GenerateOurSatelliteAssemblies">
+  <Target Name="ExecICU4JResourceConverter" DependsOnTargets="DownloadICU4J">
 
     <PropertyGroup>
       <RunICU4JResourceConverterCommand Condition="$([MSBuild]::IsOSPlatform('Windows')) == 'true'">"$(ICU4JResourceConverterOutputDir)/ICU4JResourceConverter.exe"</RunICU4JResourceConverterCommand>
@@ -143,7 +143,7 @@
     <Exec Command="$(RunICU4JResourceConverterCommand)" Condition=" '$(ResourcesRequireUpdate)' == 'true' " />
   </Target>
 
-  <Target Name="_CollectSatelliteInputs">
+  <Target Name="_CollectSatelliteInputs" DependsOnTargets="ExecICU4JResourceConverter">
     <Error Condition="!Exists('$(ICU4NSatelliteReferenceAssemblyDir)/mscorlib.dll')"
            Text="The .NET Framework 4.0 reference assemblies were not found at '$(ICU4NSatelliteReferenceAssemblyDir)'. Run a NuGet restore for $(MSBuildProjectName) so the Microsoft.NETFramework.ReferenceAssemblies.net40 package is available." />
 
@@ -169,7 +169,7 @@
   <!-- Attributes shared by the neutral and localized satellites. Per-culture
        builds are nested MSBuild invocations that never run GetBuildVersion, so
        the versions are passed in from the parent. -->
-  <Target Name="_CollectSatelliteAssemblyAttributes">
+  <Target Name="_CollectSatelliteAssemblyAttributes" DependsOnTargets="ExecICU4JResourceConverter">
     <PropertyGroup>
       <_SatelliteFileVersion Condition=" '$(_SatelliteFileVersion)' == '' ">$(FileVersion)</_SatelliteFileVersion>
       <_SatelliteInformationalVersion Condition=" '$(_SatelliteInformationalVersion)' == '' ">$(AssemblyInformationalVersion)</_SatelliteInformationalVersion>
@@ -205,7 +205,7 @@
        gated off by $(TF_BUILD)), skip the dependency — the CI pipeline passes
        /p:AssemblyVersion= directly. -->
   <PropertyGroup>
-    <_SatelliteBuildDependsOn Condition=" '$(SkipGitVersioning.ToLower())' != 'true' And '$(TF_BUILD.ToLower())' != 'true' ">GetBuildVersion;GetAssemblyVersion;_BuildNeutralSatelliteAssembly</_SatelliteBuildDependsOn>
+    <_SatelliteBuildDependsOn Condition=" '$(SkipGitVersioning.ToLower())' != 'true' And '$(TF_BUILD.ToLower())' != 'true' ">GetBuildVersion;_BuildNeutralSatelliteAssembly</_SatelliteBuildDependsOn>
     <_SatelliteBuildDependsOn Condition=" '$(_SatelliteBuildDependsOn)' == '' ">_BuildNeutralSatelliteAssembly</_SatelliteBuildDependsOn>
   </PropertyGroup>
 
@@ -224,7 +224,7 @@
 
     <MSBuild Projects="@(_SatelliteRecursionInput->'%(ProjectPath)')"
              Targets="_BuildOneSatelliteAssembly"
-             Properties="_SatelliteCulture=%(_SatelliteRecursionInput.Identity);TargetFramework=$(TargetFramework);_SatelliteAssemblyVersion=$(AssemblyVersion);_SatelliteFileVersion=$(FileVersion);_SatelliteInformationalVersion=$(AssemblyInformationalVersion)"
+             Properties="_SatelliteCulture=%(_SatelliteRecursionInput.Identity);TargetFramework=$(TargetFramework);_SatelliteAssemblyVersion=$(AssemblyVersion);_SatelliteFileVersion=$(FileVersion);_SatelliteInformationalVersion=$(AssemblyInformationalVersion);PackageVersion=$(PackageVersion)"
              BuildInParallel="true" />
   </Target>
 
