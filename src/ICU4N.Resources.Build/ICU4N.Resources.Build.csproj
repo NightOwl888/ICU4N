@@ -13,6 +13,10 @@
     <IsPackable>false</IsPackable>
     <IsPublishable>false</IsPublishable>
 
+    <!-- In Visual Studio, disable the optimizations that bypass this MSBuild file
+         so our incremental build works in dev -->
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+
     <!-- The solution builds this project directly and four others reference it,
          so instances can run concurrently. It ships nothing, so suppress the
          reference assembly, deps file and symbols that those instances would
@@ -101,13 +105,20 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="DownloadICU4J" Outputs="$(ICU4JJarFilePath)">
+  <PropertyGroup>
+    <_SatelliteBuildDependsOn2 Condition=" '$(SkipGitVersioning.ToLower())' != 'true' And '$(TF_BUILD.ToLower())' != 'true' ">GetBuildVersion</_SatelliteBuildDependsOn2>
+    <_SatelliteBuildDependsOn2 Condition=" '$(_SatelliteBuildDependsOn)' == '' "></_SatelliteBuildDependsOn2>
+  </PropertyGroup>
 
+  <Target Name="_SetICU4JJarFilePath" DependsOnTargets="$(_SatelliteBuildDependsOn2)">
     <PropertyGroup>
       <Major>$(PackageVersion.Split('.')[0])</Major>
       <Minor>$(PackageVersion.Split('.')[1])</Minor>
       <ICU4JJarFilePath>$(ArtifactsDir)/icu4j-$(Major).$(Minor).jar</ICU4JJarFilePath>
     </PropertyGroup>
+  </Target>
+
+  <Target Name="DownloadICU4J" DependsOnTargets="_SetICU4JJarFilePath" Outputs="$(ICU4JJarFilePath)">
 
     <Message Text="Downloading ICU4J..." Importance="high" Condition=" !Exists('$(ICU4JJarFilePath)') " />
 
