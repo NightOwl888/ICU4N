@@ -1,0 +1,13 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <!-- Discover the data files relative to this targets file inside the nuget installation path -->
+    <RawResourceFiles Include="$(MSBuildThisFileDirectory)../data/**/*.*" />
+  </ItemGroup>
+
+  <!-- This target hooks into the consumer's build process -->
+  <Target Name="CopyRawResourceFilesToBin" BeforeTargets="Build;Publish">
+    <Copy SourceFiles="@(RawResourceFiles)" 
+          DestinationFiles="@(RawResourceFiles->'$(TargetDir)data/%(RecursiveDir)%(Filename)%(Extension)')" 
+          SkipUnchangedFiles="true" />
+  </Target>
+</Project>

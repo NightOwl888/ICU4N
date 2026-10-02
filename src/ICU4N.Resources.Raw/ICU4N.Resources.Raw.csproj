@@ -1,0 +1,354 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+
+    <Description>Full raw data for ICU4N. This package can be used as an alternative to using satellite assemblies. Note that no shadow copy is done to these files by ICU4N, so in certain environments where updates are done live (such as IIS), using this deployment method will require a restart of the application domain.</Description>
+
+    <!-- Fixes NU5017: Suppresses NuGet's rule that halts packages without traditional code/dependencies -->
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+    <IncludeSymbols>false</IncludeSymbols>
+
+    <!-- Fixes NU5128: Instructs the compiler not to pack the empty placeholder assembly -->
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    
+    <!-- Removes the <dependencies> group entirely from the generated NuGet package metadata -->
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+
+    <!-- Prevents the generation of a DLL -->
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+    <CopyBuildOutputToOutputDirectory>false</CopyBuildOutputToOutputDirectory>
+    <CopyOutputSymbolsToOutputDirectory>false</CopyOutputSymbolsToOutputDirectory>
+    <SkipCompilerExecution>true</SkipCompilerExecution>
+    <CoreCompileDependsOn>$(CoreCompileDependsOn);_SkipCoreCompile</CoreCompileDependsOn>
+
+    <!-- Avoids generating a ThisAssembly class during the build -->
+    <NBGV_EmitThisAssemblyClass>false</NBGV_EmitThisAssemblyClass>
+  </PropertyGroup>
+
+  <!-- Blocks MSBuild from ever calling the Csc compiler -->
+  <Target Name="_SkipCoreCompile" />
+
+  <ItemGroup>
+    <!-- Packs the file for direct package references -->
+    <None Include="ICU4N.Resources.Raw.targets" Pack="true" PackagePath="build\ICU4N.Resources.Raw.targets" />
+
+    <!-- Packs the exact same file so it flows transitively to downstream apps -->
+    <None Include="ICU4N.Resources.Raw.targets" Pack="true" PackagePath="buildTransitive\ICU4N.Resources.Raw.targets" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <ICU4JDownloadConfigFilePath>$([System.IO.Path]::GetFullPath('$(RepositoryRoot).build/icu4j-download-urls.txt'))</ICU4JDownloadConfigFilePath>
+    
+    <!-- Allow PackageVersion to be passed into the build. We don't need to depend on NBGV in this case. -->
+    <_SetICU4JDataPathsDependsOnTargets>GetBuildVersion</_SetICU4JDataPathsDependsOnTargets>
+    <_SetICU4JDataPathsDependsOnTargets Condition="'$(PackageVersion)' != '' And '$(PackageVersion)' != '1.0.0'"></_SetICU4JDataPathsDependsOnTargets>
+  </PropertyGroup>
+
+  <Target Name="_SetICU4JDataPaths" DependsOnTargets="$(_SetICU4JDataPathsDependsOnTargets)">
+    <PropertyGroup>
+      <MajorVersion>$(PackageVersion.Split('.')[0])</MajorVersion>
+      <MinorVersion>$(PackageVersion.Split('.')[1])</MinorVersion>
+      <ICU4JJarFilePath>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)icu4j-$(MajorVersion).$(MinorVersion).jar'))</ICU4JJarFilePath>
+      <ICU4JJarDataDirectory>com/ibm/icu/impl/$(DataPath)</ICU4JJarDataDirectory>
+      <RawDataStamp>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath).data-extracted'))</RawDataStamp>
+      <DataPath>data/$(ICUDataPrefix)$(MajorVersion)$(ICUDataEndian)/</DataPath>
+      <RawDataDirectory>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)$(DataPath)'))</RawDataDirectory>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="DownloadICU4J" DependsOnTargets="_SetICU4JDataPaths" Outputs="$(ICU4JJarFilePath)">
+
+    <Message Text="Downloading ICU4J..." Importance="high" Condition=" !Exists('$(ICU4JJarFilePath)') " />
+
+    <ReadICU4JDownloadUrls ConfigFilePath="$(ICU4JDownloadConfigFilePath)" MajorVersion="$(MajorVersion)" MinorVersion="$(MinorVersion)" Condition=" !Exists('$(ICU4JJarFilePath)') ">
+      <Output ItemName="ICU4JDownloadUrls" TaskParameter="Urls" />
+    </ReadICU4JDownloadUrls>
+
+    <Message Text="@(ICU4JDownloadUrls)" Importance="high" />
+
+    <DownloadFileWithFallback Urls="@(ICU4JDownloadUrls)" DestinationFilePath="$(ICU4JJarFilePath)" MutexName="ICU4N.Resources.Raw.DownloadICU4JData" Condition=" !Exists('$(ICU4JJarFilePath)')">
+      <Output PropertyName="IsICU4JFileDownloaded" TaskParameter="Successful" />
+    </DownloadFileWithFallback>
+
+    <Error Condition=" '$(IsICU4JFileDownloaded)' != 'true' And !Exists('$(ICU4JJarFilePath)') " Text="The build cannot continue without $(ICU4JJarFilePath). Use Maven search (https://mvnrepository.com or https://search.maven.org/) to look for the file and download it manually to $(ICU4JJarFilePath). Alternatively, check the ICU Releases Page: https://github.com/unicode-org/icu/releases." />
+  </Target>
+
+  <Target Name="ExtractRawData"
+          DependsOnTargets="DownloadICU4J"
+          Inputs="$(ICU4JJarFilePath)"
+          Outputs="$(RawDataStamp)">
+
+    <ExtractICU4JData
+        SourceFile="$(ICU4JJarFilePath)"
+        DirectoryToExtract="$(ICU4JJarDataDirectory)"
+        DestinationDirectory="$(RawDataDirectory)"
+        StampFile="$(RawDataStamp)"
+        MutexName="ICU4N.Resources.Raw.ExtractICU4JData" />
+
+  </Target>
+
+  <Target Name="GetRawData"
+        BeforeTargets="AssignTargetPaths"
+        DependsOnTargets="ExtractRawData">
+
+    <ItemGroup>
+      <RawDataFiles Include="$(RawDataDirectory)**/*" />
+
+      <None Include="@(RawDataFiles)">
+        <TargetPath>$(DataPath)%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+        <Link>$(DataPath)%(RecursiveDir)%(Filename)%(Extension)</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        <Visible>false</Visible>
+      </None>
+    </ItemGroup>
+
+  </Target>
+
+  <PropertyGroup>
+    <TargetsForTfmSpecificContentInPackage>
+      $(TargetsForTfmSpecificContentInPackage);
+      PackRawData
+    </TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+
+  <Target Name="PackRawData" DependsOnTargets="ExtractRawData">
+
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(RawDataDirectory)**/*">
+        <PackagePath>$(DataPath)%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
+        <!-- Tell the consumer's project to treat it as content and copy it to output -->
+        <BuildAction>None</BuildAction>
+        <CopyToOutput>true</CopyToOutput>
+      </TfmSpecificPackageFile>
+    </ItemGroup>
+
+  </Target>
+
+  <UsingTask TaskName="ExtractICU4JData"
+           TaskFactory="RoslynCodeTaskFactory"
+           AssemblyFile="$(MSBuildBinPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <SourceFile ParameterType="System.String" Required="true" />
+      <DirectoryToExtract ParameterType="System.String" Required="true" />
+      <DestinationDirectory ParameterType="System.String" Required="true" />
+      <StampFile ParameterType="System.String" Required="true" />
+      <MutexName ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.IO.Compression" />
+      <Using Namespace="System.Threading" />
+
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+        Log.LogMessage(MessageImportance.High, $"Extracting ICU4J Data...");
+        using (var mutex = new Mutex(false, MutexName))
+        {
+            Log.LogMessage(
+                MessageImportance.Normal,
+                "Waiting for extraction mutex '{0}'.",
+                MutexName);
+
+            mutex.WaitOne();
+
+            try
+            {
+                // Another MSBuild process may have completed the extraction
+                // while we were waiting for the mutex.
+                if (File.Exists(StampFile) &&
+                    File.GetLastWriteTimeUtc(StampFile) >= File.GetLastWriteTimeUtc(SourceFile))
+                {
+                    Log.LogMessage(
+                        MessageImportance.Normal,
+                        "ICU4J data has already been extracted to '{0}'.",
+                        DestinationDirectory);
+                }
+                else
+                {
+                    Directory.CreateDirectory(DestinationDirectory);
+
+                    string sourceDirectory = DirectoryToExtract
+                        .Replace('\\', '/')
+                        .Trim('/');
+
+                    string prefix = sourceDirectory + "/";
+
+                    Log.LogMessage(
+                        MessageImportance.Normal,
+                        "Extracting '{0}' from '{1}' to '{2}'.",
+                        DirectoryToExtract,
+                        SourceFile,
+                        DestinationDirectory);
+
+                    using (var fileStream = File.OpenRead(SourceFile))
+                    using (var archive = new ZipArchive(fileStream, ZipArchiveMode.Read))
+                    {
+                        foreach (var entry in archive.Entries)
+                        {
+                            string entryName = entry.FullName.Replace('\\', '/');
+
+                            if (!entryName.StartsWith(prefix, StringComparison.Ordinal))
+                                continue;
+
+                            string relativePath = entryName.Substring(prefix.Length);
+
+                            if (relativePath.Length == 0)
+                                continue;
+
+                            string destinationPath = relativePath.Replace(
+                                '/',
+                                Path.DirectorySeparatorChar);
+
+                            destinationPath = Path.Combine(
+                                DestinationDirectory,
+                                destinationPath);
+
+                            // Directory entries end in '/'.
+                            if (entryName.EndsWith("/", StringComparison.Ordinal))
+                            {
+                                Directory.CreateDirectory(destinationPath);
+                                continue;
+                            }
+
+                            string destinationParent =
+                                Path.GetDirectoryName(destinationPath);
+
+                            if (!string.IsNullOrEmpty(destinationParent))
+                                Directory.CreateDirectory(destinationParent);
+
+                            using (var input = entry.Open())
+                            using (var output = File.Create(destinationPath))
+                            {
+                                input.CopyTo(output);
+                            }
+                        }
+                    }
+
+                    // Only create/update the stamp after the entire extraction
+                    // has completed successfully.
+                    Directory.CreateDirectory(Path.GetDirectoryName(StampFile));
+                    File.WriteAllText(StampFile, "");
+
+                    Log.LogMessage(
+                        MessageImportance.Normal,
+                        "ICU4J data extraction completed.");
+                }
+            }
+            finally
+            {
+                mutex.ReleaseMutex();
+            }
+        }
+      ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <UsingTask TaskName="DownloadFileWithFallback" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildBinPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <Urls ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+      <DestinationFilePath ParameterType="System.String" Required="true" />
+      <MutexName ParameterType="System.String" Required="true" />
+      <Successful ParameterType="System.Boolean" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.Net" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Threading" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+        Successful = false;
+        using (var mutex = new Mutex(false, MutexName))
+        {
+            Log.LogMessage(
+                MessageImportance.Normal,
+                "Waiting for download mutex '{0}'.",
+                MutexName);
+
+            mutex.WaitOne();
+
+            try
+            {
+                // Another MSBuild process may have completed the extraction
+                // while we were waiting for the mutex.
+                if (File.Exists(DestinationFilePath.ToString()))
+                {
+                    Log.LogMessage(
+                        MessageImportance.Normal,
+                        "ICU4J data has already been downloaded to '{0}'.",
+                        DestinationFilePath.ToString());
+                }
+                else
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(DestinationFilePath.ToString()));
+                    using var client = new WebClient();
+                    foreach (var url in Urls)
+                    {
+                        try
+                        {
+                            var tempFile = Path.GetDirectoryName(DestinationFilePath.ToString()) + Path.DirectorySeparatorChar + Guid.NewGuid().ToString();
+                            client.DownloadFile(url.ToString(), tempFile);
+                            File.Move(tempFile, DestinationFilePath.ToString());
+                            Successful = true;
+                            Log.LogMessage(MessageImportance.High, $"[SUCCESS] Downloaded {DestinationFilePath} from {url}");
+                            break;
+                        }
+                        catch (Exception e)
+                        {
+                            Log.LogMessage(MessageImportance.High, $"[ERROR] Downloading {DestinationFilePath} from {url} failed: {e}");
+                            continue;
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                mutex.ReleaseMutex();
+            }
+        }
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <UsingTask TaskName="ReadICU4JDownloadUrls" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildBinPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <ConfigFilePath ParameterType="System.String" Required="true" />
+      <MajorVersion ParameterType="System.String" Required="true" />
+      <MinorVersion ParameterType="System.String" Required="true" />
+      <Urls ParameterType="Microsoft.Build.Framework.ITaskItem[]" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Text" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+        using var reader = new StreamReader(ConfigFilePath.ToString(), Encoding.UTF8);
+        var result = new List<string>();
+        string line, lineCleaned;
+        while ((line = reader.ReadLine()) != null)
+        {
+            if (line.StartsWith("#", StringComparison.Ordinal))
+                continue;
+            int firstComment = line.IndexOf('#');
+            if (firstComment >=0)
+                lineCleaned = line.Substring(0, firstComment);
+            else
+                lineCleaned = line;
+            result.Add(string.Format(lineCleaned, MajorVersion.ToString(), MinorVersion.ToString()));
+        }
+        Urls = new TaskItem[result.Count];
+        for (int i = 0; i < result.Count; i++)
+            Urls[i] = new TaskItem(result[i]);
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+</Project>
