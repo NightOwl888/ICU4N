@@ -114,6 +114,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.Resources.Build", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICU4N.Resources.Raw", "src\ICU4N.Resources.Raw\ICU4N.Resources.Raw.csproj", "{BBBC5B28-8F6A-4796-9533-D57739A96EE0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICU4N.Resources.Transform", "src\ICU4N.Resources.Transform\ICU4N.Resources.Transform.csproj", "{18331D26-DBC1-2DF5-8A49-A073186787AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -168,6 +170,10 @@ Global
 		{BBBC5B28-8F6A-4796-9533-D57739A96EE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BBBC5B28-8F6A-4796-9533-D57739A96EE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BBBC5B28-8F6A-4796-9533-D57739A96EE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18331D26-DBC1-2DF5-8A49-A073186787AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18331D26-DBC1-2DF5-8A49-A073186787AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18331D26-DBC1-2DF5-8A49-A073186787AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18331D26-DBC1-2DF5-8A49-A073186787AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -190,6 +196,7 @@ Global
 		{6C646911-624D-482A-809D-B1C57A5E8411} = {543196C0-5AE0-40D8-8BE0-CDDD1F8C4DBB}
 		{A7D4E911-3B25-4D5F-9E6F-2A8B1C7D9F30} = {543196C0-5AE0-40D8-8BE0-CDDD1F8C4DBB}
 		{BBBC5B28-8F6A-4796-9533-D57739A96EE0} = {543196C0-5AE0-40D8-8BE0-CDDD1F8C4DBB}
+		{18331D26-DBC1-2DF5-8A49-A073186787AF} = {543196C0-5AE0-40D8-8BE0-CDDD1F8C4DBB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {083BF0D3-ED92-41EE-AD6E-6715D0BA155B}
