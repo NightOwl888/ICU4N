@@ -49,10 +49,10 @@
     <PropertyGroup>
       <MajorVersion>$(PackageVersion.Split('.')[0])</MajorVersion>
       <MinorVersion>$(PackageVersion.Split('.')[1])</MinorVersion>
+      <DataPath>data/$(ICUDataPrefix)$(MajorVersion)$(ICUDataEndian)/</DataPath>
       <ICU4JJarFilePath>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)icu4j-$(MajorVersion).$(MinorVersion).jar'))</ICU4JJarFilePath>
       <ICU4JJarDataDirectory>com/ibm/icu/impl/$(DataPath)</ICU4JJarDataDirectory>
       <RawDataStamp>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath).data-extracted'))</RawDataStamp>
-      <DataPath>data/$(ICUDataPrefix)$(MajorVersion)$(ICUDataEndian)/</DataPath>
       <RawDataDirectory>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)$(DataPath)'))</RawDataDirectory>
     </PropertyGroup>
   </Target>
@@ -104,6 +104,15 @@
       </None>
     </ItemGroup>
 
+  </Target>
+
+  <!-- This target acts as an API for any project referencing this one -->
+  <Target Name="ExportRawDataDirectory"
+          DependsOnTargets="ExtractRawData"
+          Returns="@(ExportedRawDataFolder)">
+    <ItemGroup>
+      <ExportedRawDataFolder Include="$(RawDataDirectory)" />
+    </ItemGroup>
   </Target>
 
   <PropertyGroup>
