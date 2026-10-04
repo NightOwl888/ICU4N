@@ -8,9 +8,6 @@
     <TargetFrameworks Condition=" '$(IsLegacyVisualStudioVersion)' != 'true' ">$(TargetFrameworks);netstandard2.0;net462;net451;net40</TargetFrameworks>
 
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-
-    <IsNetStandard20Compatible>true</IsNetStandard20Compatible>
-    <IsNetStandard20Compatible Condition="$(TargetFramework.StartsWith('net40')) Or $(TargetFramework.StartsWith('net45')) Or '$(TargetFramework)' == 'net46' Or '$(TargetFramework)' == 'net461'">false</IsNetStandard20Compatible>
   </PropertyGroup>
 
   <PropertyGroup Label="NuGet Package Settings">
@@ -38,14 +35,20 @@
     <InternalsVisibleTo Include="ICU4N.Tests.Transliterator" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ICU4N.Resources\ICU4N.Resources.csproj" />
+  </ItemGroup>
+
   <!-- ICU4N: Using version constraints conforming with ICU versioning rules for resources, which don't allow them to differ from the version of the binaries. -->
   <!-- ICU4N TODO: This is the safest approach for version constraints, but need to check the ICU docs to see if this is how these are actually supposed to work. -->
-  <ItemGroup Condition="'$(ReferenceICUResources.ToLowerInvariant())' == 'true' And '$(IsNetStandard20Compatible.ToLowerInvariant())' == 'true'">
-    <PackageReference Include="ICU4N.Resources" Version="[$(PackageVersion)]" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(ReferenceICUResources.ToLowerInvariant())' == 'true' And '$(IsNetStandard20Compatible.ToLowerInvariant())' != 'true'">
-    <PackageReference Include="ICU4N.Resources.NETFramework4.0" Version="[$(PackageVersion)]" />
-  </ItemGroup>
+  <Target Name="SetExactVersionForICU4NResources" BeforeTargets="GenerateNuspec">
+    <ItemGroup>
+      <_ProjectReferencesWithVersions Condition="'%(Filename)' == 'ICU4N.Resources'">
+        <!-- Wraps the resolved version in exact-match brackets -->
+        <ProjectVersion>[%(ProjectVersion)]</ProjectVersion>
+      </_ProjectReferencesWithVersions>
+    </ItemGroup>
+  </Target>
 
   <ItemGroup>
     <PackageReference Include="J2N" Version="$(J2NPackageReferenceVersion)" />
