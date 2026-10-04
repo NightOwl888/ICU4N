@@ -101,9 +101,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4JResourceConverter", "src\tools\ICU4JResourceConverter\ICU4JResourceConverter.csproj", "{19E2FD68-4144-491D-82FC-A163AF3692E0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.Resources", "src\ICU4N.Resources\ICU4N.Resources.csproj", "{EF88B9E7-0FC5-4AE2-93AB-C7A8087AC347}"
-	ProjectSection(ProjectDependencies) = postProject
-		{883E16AF-AB40-4285-89A8-57333CC68AA2} = {883E16AF-AB40-4285-89A8-57333CC68AA2}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.Resources.NETFramework4.0", "src\ICU4N.Resources.NETFramework4.0\ICU4N.Resources.NETFramework4.0.csproj", "{6C646911-624D-482A-809D-B1C57A5E8411}"
 	ProjectSection(ProjectDependencies) = postProject
