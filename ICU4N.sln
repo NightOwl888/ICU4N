@@ -68,9 +68,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8C266EC1
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N", "src\ICU4N\ICU4N.csproj", "{883E16AF-AB40-4285-89A8-57333CC68AA2}"
-	ProjectSection(ProjectDependencies) = postProject
-		{19E2FD68-4144-491D-82FC-A163AF3692E0} = {19E2FD68-4144-491D-82FC-A163AF3692E0}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.Collation", "src\ICU4N.Collation\ICU4N.Collation.csproj", "{E2A01BE7-8163-41F9-A273-7EE38355E28F}"
 EndProject
