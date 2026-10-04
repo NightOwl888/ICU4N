@@ -27,16 +27,16 @@
          We suppress passing the target framework and the warning that the target framework doesn't match
          because this is intentional.
 
-      - GlobalPropertiesToRemove="TargetFramework" forces it to build as net10.0.
+      - GlobalPropertiesToRemove="TargetFramework" forces it to build using its own target framework.
       - OutputItemType="ICU4JToolAssembly" automatically captures the path to the built DLL!
+      - Private="false" prevents the tool assembly from being copied to the output directory of this project.
     -->
     <ProjectReference Include="..\tools\ICU4JResourceConverter\ICU4JResourceConverter.csproj"
                       ReferenceOutputAssembly="false"
                       SkipGetTargetFrameworkProperties="true"
                       GlobalPropertiesToRemove="TargetFramework"
                       OutputItemType="ICU4JToolAssembly"
-                      ExcludeAssets="All"
-                      PrivateAssets="All" />
+                      Private="false" />
   </ItemGroup>
 
   <PropertyGroup>

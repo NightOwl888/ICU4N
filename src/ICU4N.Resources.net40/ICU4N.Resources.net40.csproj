@@ -31,8 +31,7 @@
     <ProjectReference Include="..\ICU4N.Resources.Transform\ICU4N.Resources.Transform.csproj"
                       ReferenceOutputAssembly="false"
                       SkipGetTargetFrameworkProperties="true"
-                      GlobalPropertiesToRemove="TargetFramework"
-                      PrivateAssets="All" />
+                      GlobalPropertiesToRemove="TargetFramework" />
 
     <!-- Reference to the ICU4JResourceConverter tool so it builds automatically and only once in the graph.
          We suppress passing the target framework and the warning that the target framework doesn't match
@@ -40,14 +39,14 @@
 
       - GlobalPropertiesToRemove="TargetFramework" forces it to build using its own target framework.
       - OutputItemType="ICU4JToolAssembly" automatically captures the path to the built DLL!
+      - Private="false" prevents the tool assembly from being copied to the output directory of this project.
     -->
     <ProjectReference Include="..\tools\ICU4JResourceConverter\ICU4JResourceConverter.csproj"
                       ReferenceOutputAssembly="false"
                       SkipGetTargetFrameworkProperties="true"
                       GlobalPropertiesToRemove="TargetFramework"
                       OutputItemType="ICU4JToolAssembly"
-                      ExcludeAssets="All"
-                      PrivateAssets="All" />
+                      Private="false" />
   </ItemGroup>
 
   <ItemGroup>
