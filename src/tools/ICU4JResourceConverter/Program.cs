@@ -27,6 +27,10 @@ namespace JavaResourceConverter
             {
                 ParseAndExecuteTransform(args);
             }
+            else if (arg0.Equals("build", StringComparison.OrdinalIgnoreCase))
+            {
+                ParseAndExecuteBuild(args);
+            }
             else
             {
                 ParseAndExecuteUnzipAndTransform(args);
@@ -215,6 +219,64 @@ namespace JavaResourceConverter
             }
         }
 
+        private static void ParseAndExecuteBuild(string[] args)
+        {
+            if (args.Length < 11)
+            {
+                Console.Error.WriteLine("Error: Insufficient arguments for 'build' command.");
+                Usage();
+                return;
+            }
+
+            var inputDir = JarUtil.NormalizePath(args[1]);
+            var sourceFile = JarUtil.NormalizePath(args[2]);
+            var outputDir = JarUtil.NormalizePath(args[3]);
+
+            var targetFramework = args[4];
+
+            var assemblyVersion = args[5];
+            var fileVersion = args[6];
+            var informationalVersion = args[7];
+            var company = args[8];
+            var copyright = args[9];
+            var product = args[10];
+            var title = args[11];
+
+            BuildSatelliteAssembliesCommand(inputDir, sourceFile, outputDir, targetFramework, assemblyVersion, fileVersion, informationalVersion, company, copyright, product, title);
+        }
+
+        private static void BuildSatelliteAssembliesCommand(string inputDir, string sourceFile, string outputDir, string targetFramework, string assemblyVersion, string fileVersion, string informationalVersion, string company, string copyright, string product, string title)
+        {
+            string mutexName = GetMutexName(outputDir);
+            string outputFile = Path.Combine(outputDir, SatelliteUtil.SatelliteAssemblyName);
+
+            using (var mutex = new Mutex(false, mutexName))
+            {
+                bool acquired = false;
+                try
+                {
+                    Console.WriteLine($"Waiting for lock on output directory '{outputDir}'...");
+                    acquired = mutex.WaitOne();
+
+                    // Check if another concurrent process completed the work while we were waiting for the mutex
+                    if (File.Exists(outputFile) && File.GetLastWriteTimeUtc(outputFile) >= File.GetLastWriteTimeUtc(sourceFile))
+                    {
+                        Console.WriteLine($"Satellite assemblies already up to date. Skipping build.");
+                        return;
+                    }
+
+                    SatelliteUtil.BuildSatteliteAssemblies(inputDir, outputDir, targetFramework, assemblyVersion, fileVersion, informationalVersion, company, copyright, product, title);
+                }
+                finally
+                {
+                    if (acquired)
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                }
+            }
+        }
+
         private static string GetMutexName(string outputDir)
         {
             using (var sha256 = SHA256.Create())
@@ -233,6 +295,8 @@ namespace JavaResourceConverter
             Console.WriteLine($"  {appName} <icu4j .jar file> -out <output directory> -work <working directory> [-timestamp <marker file>]");
             // transform requires the data directory and output directory, with an optional timestamp.
             Console.WriteLine($"  {appName} transform <data directory> <output directory> [-timestamp <marker file>]\n");
+            // build requires all parameters.
+            Console.WriteLine($"  {appName} build <transformed directory> <source file> <output directory> <target framework> <assembly version> <file version> <informational version> <company> <copyright> <product> <title>\n");
             Environment.Exit(1);
         }
     }

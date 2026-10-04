@@ -34,7 +34,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Basic.Reference.Assemblies.Net40" Version="$(BasicReferenceAssembliesNet40PackageReferenceVersion)" />
+    <PackageReference Include="Basic.Reference.Assemblies.NetStandard20" Version="$(BasicReferenceAssembliesNetStandard20PackageReferenceVersion)" />
     <PackageReference Include="J2N" Version="$(J2NPackageReferenceVersion)" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="$(MicorosoftCodeAnalysisCSharpPackageReferenceVersion)" />
   </ItemGroup>
 
 </Project>
