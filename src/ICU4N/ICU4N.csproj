@@ -1,4 +1,4 @@
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <!-- Explicitly importing SDK to allow for T4 template generation. See: https://developercommunity.visualstudio.com/t/upgrading-to-sdk-style-project-disables-t4-transfo/1394852 -->
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
@@ -92,18 +92,6 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <ICU4JResourceConverterDir>$(SolutionDir)src/tools/ICU4JResourceConverter</ICU4JResourceConverterDir>
-    <ICU4JResourceConverterTargetFramework>net10.0</ICU4JResourceConverterTargetFramework>
-    <ICU4JResourceConverterOutputDir>$(ICU4JResourceConverterDir)/bin/$(Configuration)/$(ICU4JResourceConverterTargetFramework)</ICU4JResourceConverterOutputDir>
-
-    <ICU4JDownloadConfigFilePath>$(SolutionDir).build/icu4j-download-urls.txt</ICU4JDownloadConfigFilePath>
-    <ICU4JWorkingDirectory>$(ArtifactsDir)/icu4j-temp</ICU4JWorkingDirectory>
-    <ICU4JResourcesDirectory>$(ICU4JWorkingDirectory)/icu4j-transformed</ICU4JResourcesDirectory>
-    <!-- These are .rsp files that contain the options and paths of the files to embed, since they can exceed the length allowed by the Process class. -->
-    <ICU4JResponseFileDirectory>$(ICU4JWorkingDirectory)/icu4j-embed</ICU4JResponseFileDirectory>
   </PropertyGroup>
 
   <ItemGroup>
