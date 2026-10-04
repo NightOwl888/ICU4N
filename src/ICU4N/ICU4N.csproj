@@ -106,20 +106,6 @@
     <ICU4JResponseFileDirectory>$(ICU4JWorkingDirectory)/icu4j-embed</ICU4JResponseFileDirectory>
   </PropertyGroup>
 
-  <!-- Satellite assemblies are produced by ICU4N.Resources.Build into
-       $(ICU4NSatelliteAssemblyOutputDir). This build-only reference regenerates
-       any that are missing or stale. Every project that needs the satellites in
-       its output references it directly, so Private=false stops them flowing on
-       through ICU4N as well: a consumer receiving them from both sources sees
-       two entries for one relative path (NETSDK1152 on publish). -->
-  <ItemGroup>
-    <ProjectReference Include="../ICU4N.Resources.Build/ICU4N.Resources.Build.csproj"
-                      ReferenceOutputAssembly="false"
-                      SetTargetFramework="TargetFramework=netstandard2.0"
-                      Private="false"
-                      PrivateAssets="All" />
-  </ItemGroup>
-
   <ItemGroup>
     <EmbeddedResource Include="ICUConfig.properties" />
   </ItemGroup>
