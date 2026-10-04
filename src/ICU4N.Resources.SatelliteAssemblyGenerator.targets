@@ -1,0 +1,165 @@
+<Project>
+  <PropertyGroup>
+    <Description>Full data for ICU4N. This package is a transitive dependency of ICU4N and does not necessarily need to be installed explicitly.</Description>
+
+    <!-- Fixes NU5017: Suppresses NuGet's rule that halts packages without traditional code/dependencies -->
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+    <IncludeSymbols>false</IncludeSymbols>
+
+    <!-- Fixes NU5128: Instructs the compiler not to pack the empty placeholder assembly -->
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+
+    <!-- Prevents the generation of a DLL -->
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+    <CopyBuildOutputToOutputDirectory>false</CopyBuildOutputToOutputDirectory>
+    <CopyOutputSymbolsToOutputDirectory>false</CopyOutputSymbolsToOutputDirectory>
+    <SkipCompilerExecution>true</SkipCompilerExecution>
+    <CoreCompileDependsOn>$(CoreCompileDependsOn);_SkipCoreCompile</CoreCompileDependsOn>
+
+    <!-- Avoids generating a ThisAssembly class during the build -->
+    <NBGV_EmitThisAssemblyClass>false</NBGV_EmitThisAssemblyClass>
+  </PropertyGroup>
+
+  <!-- Blocks MSBuild from ever calling the Csc compiler -->
+  <Target Name="_SkipCoreCompile" />
+
+  <ItemGroup>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)ICU4N.Resources.Transform/ICU4N.Resources.Transform.csproj"
+                      ReferenceOutputAssembly="false"
+                      SkipGetTargetFrameworkProperties="true"
+                      GlobalPropertiesToRemove="TargetFramework" />
+
+    <!-- Reference to the ICU4JResourceConverter tool so it builds automatically and only once in the graph.
+         We suppress passing the target framework and the warning that the target framework doesn't match
+         because this is intentional.
+
+      - GlobalPropertiesToRemove="TargetFramework" forces it to build using its own target framework.
+      - OutputItemType="ICU4JToolAssembly" automatically captures the path to the built DLL!
+      - Private="false" prevents the tool assembly from being copied to the output directory of this project.
+    -->
+    <ProjectReference Include="$(MSBuildThisFileDirectory)tools/ICU4JResourceConverter/ICU4JResourceConverter.csproj"
+                      ReferenceOutputAssembly="false"
+                      SkipGetTargetFrameworkProperties="true"
+                      GlobalPropertiesToRemove="TargetFramework"
+                      OutputItemType="ICU4JToolAssembly"
+                      Private="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)ICU4N.Resources.buildTransitive.targets" Pack="true" PackagePath="buildTransitive/$(PackageId).targets" />
+    <None Include="$(MSBuildThisFileDirectory)ICU4N.Resources.NuGetVersionWarning.targets" Pack="true" PackagePath="buildTransitive/ICU4N.Resources.NuGetVersionWarning.targets" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <ICU4JResourceConverterAssembly>@(ICU4JToolAssembly)</ICU4JResourceConverterAssembly>
+
+    <!-- The satellites are for ICU4N.dll — use its name for the resource DLLs. -->
+    <ICU4NMainAssemblyName>ICU4N</ICU4NMainAssemblyName>
+  </PropertyGroup>
+
+  <!-- Satellites carry ICU4N's identity, not this project's. Description mirrors
+       the one in ICU4N.csproj. -->
+  <PropertyGroup Label="Satellite Assembly Identity">
+    <ICU4NSatelliteTitle>ICU4N</ICU4NSatelliteTitle>
+    <ICU4NSatelliteProduct>ICU4N</ICU4NSatelliteProduct>
+  </PropertyGroup>
+
+  <Target Name="_SetICU4JSatellitePaths">
+    <PropertyGroup>
+      <ICU4NSatelliteDirectory>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)').TrimEnd('\'))</ICU4NSatelliteDirectory>
+      <BuildOutputFile>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)$(ICU4NMainAssemblyName).resources.dll'))</BuildOutputFile>
+    </PropertyGroup>
+  </Target>
+
+  <!-- Query the exported directory path directly from Transform -->
+  <Target Name="GetICU4JTransformDirectory" DependsOnTargets="ResolveProjectReferences;_SetICU4JSatellitePaths">
+    <MSBuild Projects="..\ICU4N.Resources.Transform\ICU4N.Resources.Transform.csproj"
+             Targets="ExportTransformedDataDirectory"
+             RemoveProperties="TargetFramework">
+      <Output TaskParameter="TargetOutputs" ItemName="_SourceDataDirectory" />
+    </MSBuild>
+
+    <PropertyGroup>
+      <ICU4NTransformDataDirectory>%(_SourceDataDirectory.Identity)</ICU4NTransformDataDirectory>
+      <ICU4NTransformStampFile>%(_SourceDataDirectory.StampFile)</ICU4NTransformStampFile>
+    </PropertyGroup>
+  </Target>
+
+  <PropertyGroup>
+    <SatelliteBuildDependsOn>GetAssemblyVersion</SatelliteBuildDependsOn>
+    <SatelliteBuildDependsOn Condition="'$(PackageVersion)' != '' And '$(PackageVersion)' != '1.0.0'"></SatelliteBuildDependsOn>
+  </PropertyGroup>
+
+  <!-- Run build tool using the retrieved directory path -->
+  <Target Name="GenerateOurSatelliteAssemblies"
+          DependsOnTargets="GetICU4JTransformDirectory;$(SatelliteBuildDependsOn)"
+          Inputs="$(ICU4NTransformStampFile)"
+          Outputs="$(BuildOutputFile)">
+
+    <PropertyGroup>
+      <RunICU4JResourceConverterCommand>dotnet &quot;$(ICU4JResourceConverterAssembly)&quot; build</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) &quot;$(ICU4NTransformDataDirectory)&quot;</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) &quot;$(ICU4NTransformStampFile)&quot;</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) &quot;$(ICU4NSatelliteDirectory)&quot;</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) $(TargetFramework)</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) &quot;$(AssemblyVersion)&quot;</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) &quot;$(FileVersion)&quot;</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) &quot;$(InformationalVersion)&quot;</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) &quot;$(Company)&quot;</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) &quot;$(Copyright)&quot;</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) &quot;$(ICU4NSatelliteProduct)&quot;</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) &quot;$(ICU4NSatelliteTitle)&quot;</RunICU4JResourceConverterCommand>
+    </PropertyGroup>
+    
+    <Message Importance="high" Text="Running ICU4JResourceConverter command: $(RunICU4JResourceConverterCommand)" />
+
+    <Exec Command="$(RunICU4JResourceConverterCommand)"/>
+  </Target>
+
+  <PropertyGroup>
+    <TargetsForTfmSpecificContentInPackage>
+      $(TargetsForTfmSpecificContentInPackage);
+      PackSatelliteAssemblies
+    </TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+
+
+  <Target Name="PackSatelliteAssemblies" DependsOnTargets="GenerateOurSatelliteAssemblies">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(ICU4NSatelliteDirectory)/**/$(ICU4NMainAssemblyName).resources.dll">
+        <PackagePath>lib/$(TargetFramework)/%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
+      </TfmSpecificPackageFile>
+    </ItemGroup>
+  </Target>
+
+  <!-- Injects satellite assemblies into MSBuild's CopyToOutputDirectory flow for ProjectReferences.
+       Copying raw data files is conditional, since we only want to include
+       either raw files or satellite assemblies in the output folders, not both. -->
+  <Target Name="GetSatelliteItemsForCopyToOutput"
+          BeforeTargets="AssignTargetPaths;GetCopyToOutputDirectoryItems"
+          DependsOnTargets="GenerateOurSatelliteAssemblies"
+          Condition="'$(ICU4NResourceFormat)' == 'SatelliteAssemblies'">
+
+    <ItemGroup>
+      <!--
+        Why use a custom intermediate item instead of globbing directly into <None>?
+        Because these files are generated/extracted during the build, they do not exist when MSBuild initially 
+        evaluates the project. Declaring a custom item forces MSBuild to execute a fresh query against the 
+        file system right now, correctly capturing the new files and computing their glob metadata (like %(RecursiveDir)). 
+        We then feed these fully resolved items into <None>. Globbing directly into <None> inside a target 
+        often fails to populate this metadata correctly for dynamically generated files.
+      -->
+      <ICU4NSatelliteAssemblies Include="$(ICU4NSatelliteDirectory)/**/$(ICU4NMainAssemblyName).resources.dll" />
+      
+      <None Include="@(ICU4NSatelliteAssemblies)">
+        <TargetPath>%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+        <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        <Visible>false</Visible>
+        <Pack>false</Pack>
+      </None>
+    </ItemGroup>
+  </Target>
+
+</Project>
