@@ -46,7 +46,7 @@
   <Target Name="_SetICU4JDataTransformPaths">
     <PropertyGroup>
       <ICU4JResourceTransformedDirectory>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)icu4j-transformed').TrimEnd('\'))</ICU4JResourceTransformedDirectory>
-      <TransformedDataStamp>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath).data-extracted'))</TransformedDataStamp>
+      <TransformedDataStamp>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath).data-transformed'))</TransformedDataStamp>
     </PropertyGroup>
   </Target>
 
@@ -58,8 +58,8 @@
     </MSBuild>
 
     <PropertyGroup>
-      <_TempSourceDirectory>@(_SourceDataDirectory)</_TempSourceDirectory>
-      <ICU4JRawDataDirectory>$([System.IO.Path]::GetFullPath('$(_TempSourceDirectory)').TrimEnd('\'))</ICU4JRawDataDirectory>
+      <ICU4JRawDataDirectory>$([System.IO.Path]::GetFullPath('%(_SourceDataDirectory.Identity)').TrimEnd('\'))</ICU4JRawDataDirectory>
+      <ICU4JRawDataStampFile>%(_SourceDataDirectory.StampFile)</ICU4JRawDataStampFile>
     </PropertyGroup>
   </Target>
 
@@ -71,7 +71,17 @@
     <Message Importance="high" Text="Running ICU4JResourceConverter on $(ICU4JRawDataDirectory)..." />
     <Message Importance="high" Text="ICU4JToolAssembly: @(ICU4JToolAssembly)" />
 
-    <Exec Command="dotnet &quot;$(ICU4JResourceConverterAssembly)&quot; transform &quot;$(ICU4JRawDataDirectory)&quot; &quot;$(ICU4JResourceTransformedDirectory)&quot; -timestamp &quot;$(TransformedDataStamp)&quot;"/>
+    <PropertyGroup>
+      <RunICU4JResourceConverterCommand>dotnet &quot;$(ICU4JResourceConverterAssembly)&quot; transform</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) &quot;$(ICU4JRawDataDirectory)&quot;</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) &quot;$(ICU4JResourceTransformedDirectory)&quot;</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) &quot;$(ICU4JRawDataStampFile)&quot;</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) &quot;$(TransformedDataStamp)&quot;</RunICU4JResourceConverterCommand>
+    </PropertyGroup>
+
+    <Message Importance="high" Text="Running ICU4JResourceConverter command: $(RunICU4JResourceConverterCommand)" />
+
+    <Exec Command="$(RunICU4JResourceConverterCommand)"/>
   </Target>
 
   <!-- This target acts as an API for any project referencing this one  -->

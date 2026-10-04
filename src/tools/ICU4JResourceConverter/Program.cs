@@ -39,30 +39,21 @@ namespace JavaResourceConverter
 
         private static void ParseAndExecuteTransform(string[] args)
         {
-            if (args.Length < 3)
+            if (args.Length < 5)
             {
-                Console.Error.WriteLine("Error: 'transform' command requires <data directory> and <output directory>.");
+                Console.Error.WriteLine("Error: 'transform' command requires <data directory> <output directory> <input timestamp file> and <output timestamp file>.");
                 Usage();
             }
 
             string dataDir = JarUtil.NormalizePath(args[1]);
             string outputDir = JarUtil.NormalizePath(args[2]);
-            string timestampFile = null;
+            string inputTimestampFile = args[3];
+            string outputTimestampFile = args[4];
 
-            for (int i = 3; i < args.Length; i++)
-            {
-                var arg = args[i];
-                if (arg.Equals("-timestamp", StringComparison.OrdinalIgnoreCase))
-                {
-                    timestampFile = i + 1 < args.Length ? args[i + 1] : throw new ArgumentException("Missing value for timestamp file.");
-                    i++;
-                }
-            }
-
-            TransformCommand(dataDir, outputDir, timestampFile);
+            TransformCommand(dataDir, outputDir, inputTimestampFile, outputTimestampFile);
         }
 
-        private static void TransformCommand(string dataDir, string outputDir, string timestampFile)
+        private static void TransformCommand(string dataDir, string outputDir, string inputTimestampFile, string outputTimestampFile)
         {
             string mutexName = GetMutexName(outputDir);
 
@@ -75,29 +66,25 @@ namespace JavaResourceConverter
                     acquired = mutex.WaitOne();
 
                     // Check if another concurrent process completed the work while we were waiting for the mutex
-                    if (!string.IsNullOrEmpty(timestampFile) && File.Exists(timestampFile))
+                    if (File.Exists(outputTimestampFile) && File.GetLastWriteTimeUtc(outputTimestampFile) >= File.GetLastWriteTimeUtc(inputTimestampFile))
                     {
-                        Console.WriteLine($"Timestamp marker file '{timestampFile}' already exists. Skipping transformation.");
+                        Console.WriteLine($"Transformed files already up to date. Skipping transformation.");
                         return;
                     }
 
                     // ****** TRANSFORM COMMAND ******
 
-                    Console.WriteLine($"ICU Data is available at {dataDir}");
+                    Console.WriteLine($"Transforming ICU resources from {dataDir}...");
 
                     ResourceUtil.TransformResources(dataDir, outputDir);
 
                     Console.WriteLine($"Transforming resources completed. Data is available in {outputDir}.");
 
                     // Write timestamp file inside the mutex upon successful transformation
-                    if (!string.IsNullOrEmpty(timestampFile))
+                    if (!string.IsNullOrEmpty(outputTimestampFile))
                     {
-                        var timestampDir = Path.GetDirectoryName(timestampFile);
-                        if (!string.IsNullOrEmpty(timestampDir) && !Directory.Exists(timestampDir))
-                        {
-                            Directory.CreateDirectory(timestampDir);
-                        }
-                        File.WriteAllText(timestampFile, "Transform completed at " + DateTime.UtcNow.ToString("o"));
+                        Directory.CreateDirectory(Path.GetDirectoryName(outputTimestampFile));
+                        File.WriteAllText(outputTimestampFile, "");
                     }
                 }
                 finally
@@ -294,7 +281,7 @@ namespace JavaResourceConverter
             // -out and -work are required for the legacy command, so brackets are removed.
             Console.WriteLine($"  {appName} <icu4j .jar file> -out <output directory> -work <working directory> [-timestamp <marker file>]");
             // transform requires the data directory and output directory, with an optional timestamp.
-            Console.WriteLine($"  {appName} transform <data directory> <output directory> [-timestamp <marker file>]\n");
+            Console.WriteLine($"  {appName} transform <data directory> <output directory> <input timestamp file> <output timestamp file>\n");
             // build requires all parameters.
             Console.WriteLine($"  {appName} build <transformed directory> <source file> <output directory> <target framework> <assembly version> <file version> <informational version> <company> <copyright> <product> <title>\n");
             Environment.Exit(1);

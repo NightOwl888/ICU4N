@@ -123,7 +123,10 @@
           DependsOnTargets="ExtractRawData"
           Returns="@(ExportedRawDataFolder)">
     <ItemGroup>
-      <ExportedRawDataFolder Include="$(RawDataDirectory)" />
+      <ExportedRawDataFolder Include="$(RawDataDirectory)">
+        <!-- Attach the stamp file path as item metadata -->
+        <StampFile>$([System.IO.Path]::GetFullPath('$(RawDataStamp)'))</StampFile>
+      </ExportedRawDataFolder>
     </ItemGroup>
   </Target>
 
