@@ -12,7 +12,7 @@
 
   <!-- ========================================================================================= -->
   <!-- TARGET OVERRIDES (MUST BE PLACED AFTER Sdk.targets)                                       -->
-  <!-- Informs referencing projects that this project produces NO primary assembly output.      -->
+  <!-- Informs referencing projects that this project produces NO primary assembly output.       s-->
   <!-- ========================================================================================= -->
   <!-- Suppress primary assembly expectation for referencing projects (Fixes CS0006) -->
   <Target Name="GetTargetPath" Returns="" />
