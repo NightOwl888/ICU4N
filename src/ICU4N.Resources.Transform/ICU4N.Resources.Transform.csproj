@@ -34,7 +34,9 @@
                       ReferenceOutputAssembly="false"
                       SkipGetTargetFrameworkProperties="true"
                       GlobalPropertiesToRemove="TargetFramework"
-                      OutputItemType="ICU4JToolAssembly" />
+                      OutputItemType="ICU4JToolAssembly"
+                      ExcludeAssets="All"
+                      PrivateAssets="All" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -79,7 +81,10 @@
           Returns="@(ExportedTransformedDataFolder)">
     <ItemGroup>
       <!-- Include the directory path. Ensure MSBuild resolves it to an absolute path -->
-      <ExportedTransformedDataFolder Include="$([System.IO.Path]::GetFullPath('$(ICU4JResourceTransformedDirectory)'))" />
+      <ExportedTransformedDataFolder Include="$([System.IO.Path]::GetFullPath('$(ICU4JResourceTransformedDirectory)'))">
+        <!-- Attach the stamp file path as item metadata -->
+        <StampFile>$([System.IO.Path]::GetFullPath('$(TransformedDataStamp)'))</StampFile>
+      </ExportedTransformedDataFolder>
     </ItemGroup>
   </Target>
 
