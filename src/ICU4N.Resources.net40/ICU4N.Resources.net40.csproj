@@ -137,10 +137,14 @@
     </ItemGroup>
   </Target>
 
-  <!-- Injects satellite assemblies into MSBuild's CopyToOutputDirectory flow for ProjectReferences -->
+  <!-- Injects satellite assemblies into MSBuild's CopyToOutputDirectory flow for ProjectReferences.
+       Copying raw data files is conditional, since we only want to include
+       either raw files or satellite assemblies in the output folders, not both. -->
   <Target Name="GetSatelliteItemsForCopyToOutput"
           BeforeTargets="AssignTargetPaths;GetCopyToOutputDirectoryItems"
-          DependsOnTargets="GenerateOurSatelliteAssemblies">
+          DependsOnTargets="GenerateOurSatelliteAssemblies"
+          Condition="'$(ICU4NResourceFormat)' == 'SatelliteAssemblies'">
+
     <ItemGroup>
       <!--
         Why use a custom intermediate item instead of globbing directly into <None>?

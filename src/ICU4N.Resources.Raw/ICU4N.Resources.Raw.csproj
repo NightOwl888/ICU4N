@@ -88,10 +88,14 @@
 
   </Target>
 
+  <!-- Injects raw resource files into MSBuild's CopyToOutputDirectory flow for ProjectReferences.
+       Copying raw data files is conditional, since we only want to include
+       either raw files or satellite assemblies in the output folders, not both. -->
   <Target Name="GetRawData"
-        BeforeTargets="AssignTargetPaths"
-        DependsOnTargets="ExtractRawData">
-
+          BeforeTargets="AssignTargetPaths"
+          DependsOnTargets="ExtractRawData"
+          Condition="'$(ICU4NResourceFormat)' == 'RawFiles'">
+    
     <ItemGroup>
       <!-- 
         Why use a custom intermediate item instead of globbing directly into <None>?
