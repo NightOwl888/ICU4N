@@ -21,6 +21,9 @@
     <CopyOutputSymbolsToOutputDirectory>false</CopyOutputSymbolsToOutputDirectory>
     <SkipCompilerExecution>true</SkipCompilerExecution>
     <CoreCompileDependsOn>$(CoreCompileDependsOn);_SkipCoreCompile</CoreCompileDependsOn>
+    
+    <!-- Prevents fast up-to-date checks in Visual Studio so our build will run explicitly -->
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
 
     <!-- Avoids generating a ThisAssembly class during the build -->
     <NBGV_EmitThisAssemblyClass>false</NBGV_EmitThisAssemblyClass>
@@ -94,7 +97,7 @@
   <Target Name="GetRawData"
           BeforeTargets="AssignTargetPaths"
           DependsOnTargets="ExtractRawData"
-          Condition="'$(ICU4NResourceFormat)' == 'RawFiles'">
+          Condition="'$(DesignTimeBuild)' != 'true' And '$(ICU4NResourceFormat)' == 'RawFiles'">
     
     <ItemGroup>
       <!-- 
@@ -117,6 +120,12 @@
     </ItemGroup>
 
   </Target>
+
+    <!-- Allows explicit run without allowing background tasks to execute automatically -->
+  <Target Name="ExecuteExtractInIDE"
+          BeforeTargets="AssignTargetPaths"
+          DependsOnTargets="ExtractRawData"
+          Condition="'$(DesignTimeBuild)' != 'true'"/>
 
   <!-- This target acts as an API for any project referencing this one -->
   <Target Name="ExportRawDataDirectory"

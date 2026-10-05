@@ -11,6 +11,9 @@
     <SkipCompilerExecution>true</SkipCompilerExecution>
     <CoreCompileDependsOn>$(CoreCompileDependsOn);_SkipCoreCompile</CoreCompileDependsOn>
 
+    <!-- Prevents fast up-to-date checks in Visual Studio so our build will run explicitly -->
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+
     <!-- Avoids generating a ThisAssembly class during the build -->
     <NBGV_EmitThisAssemblyClass>false</NBGV_EmitThisAssemblyClass>
   </PropertyGroup>
@@ -66,7 +69,7 @@
   <!-- Run transform tool using the retrieved directory path -->
   <Target Name="ExecICU4JResourceConverter"
           DependsOnTargets="GetICU4JRawDataDirectory"
-          Inputs="$(ICU4JRawDataDirectory)"
+          Inputs="$(ICU4JRawDataStampFile)"
           Outputs="$(TransformedDataStamp)">
     <Message Importance="high" Text="Running ICU4JResourceConverter on $(ICU4JRawDataDirectory)..." />
     <Message Importance="high" Text="ICU4JToolAssembly: @(ICU4JToolAssembly)" />
@@ -84,9 +87,14 @@
     <Exec Command="$(RunICU4JResourceConverterCommand)"/>
   </Target>
 
+  <!-- Allows explicit run without allowing background tasks to execute automatically -->
+  <Target Name="ExecuteTransformInIDE"
+          BeforeTargets="AssignTargetPaths"
+          DependsOnTargets="ExecICU4JResourceConverter"
+          Condition="'$(DesignTimeBuild)' != 'true'"/>
+
   <!-- This target acts as an API for any project referencing this one  -->
   <Target Name="ExportTransformedDataDirectory"
-          AfterTargets="AssignTargetPaths"
           DependsOnTargets="ExecICU4JResourceConverter"
           Returns="@(ExportedTransformedDataFolder)">
     <ItemGroup>
