@@ -12,51 +12,23 @@ namespace JavaResourceConverter
     {
         public const string SatelliteAssemblyName = "ICU4N.resources.dll";
 
-        public static void BuildSatteliteAssemblies(string inputDir, string outputDir, string targetFramework, string assemblyVersion, string fileVersion, string informationalVersion, string company, string copyright, string product, string title)
+        public static void BuildSatteliteAssemblies(string inputDir, string outputDir, string targetFramework, string assemblyVersion, string fileVersion, string informationalVersion, string company, string copyright, string product, string title, string keyFilePath)
         {
             Console.WriteLine($"Generating Satellite Assemblies...");
 
             SyntaxTree assemblyInfo = GetAssemblyInfoSyntaxTree(assemblyVersion, fileVersion, informationalVersion, company, copyright, product, title);
 
-            // 1. Process Localized Assemblies (Subdirectories)
-            var subDirs = Directory.EnumerateDirectories(inputDir);
-            foreach (var dir in subDirs)
+            // 1. Configure Roslyn Options For All Assemblies
+            var options = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
+                .WithOptimizationLevel(OptimizationLevel.Release)
+                .WithDeterministic(true);
+
+            if (!string.IsNullOrEmpty(keyFilePath))
             {
-                var culture = Path.GetFileName(dir); // Folder name is the culture
-                var resources = Directory.GetFiles(dir, "*.*", SearchOption.TopDirectoryOnly);
-
-                if (resources.Length > 0)
-                {
-                    var cultureOutDir = Path.Combine(outputDir, culture);
-                    var cultureOutPath = Path.Combine(cultureOutDir, SatelliteAssemblyName);
-                    var cultureAssemblyInfo = $"[assembly: System.Reflection.AssemblyCulture(\"{culture}\")]";
-
-                    BuildSatelliteAssembly(cultureOutPath, assemblyInfo, cultureAssemblyInfo, resources, targetFramework);
-                    Console.WriteLine($"Built satellite assembly [{culture}]: {cultureOutPath}");
-                }
+                options = options
+                    .WithCryptoKeyFile(Path.GetFullPath(keyFilePath))
+                    .WithStrongNameProvider(new DesktopStrongNameProvider());
             }
-
-            // 2. Process the Neutral Assembly (Root Input Directory)
-            var rootResources = Directory.EnumerateFiles(inputDir, "*.*", SearchOption.TopDirectoryOnly);
-            if (rootResources.Any())
-            {
-                var neutralOutPath = Path.Combine(outputDir, SatelliteAssemblyName);
-                BuildSatelliteAssembly(neutralOutPath, assemblyInfo, string.Empty, rootResources, targetFramework);
-                Console.WriteLine($"Built neutral assembly: {neutralOutPath}");
-            }
-
-            Console.WriteLine($"[SUCCESS] All satellite assemblies built successfully.");
-        }
-
-        private static void BuildSatelliteAssembly(
-            string outputPath,
-            SyntaxTree assemblyInfoSyntaxTree,
-            string cultureAssemblyInfo,
-            IEnumerable<string> resourceFiles,
-            string targetFramework)
-        {
-            // 1. Generate the C# Code In-Memory
-            var assemblyCultureInfoSyntaxTree = CSharpSyntaxTree.ParseText(cultureAssemblyInfo);
 
             PortableExecutableReference reference = Basic.Reference.Assemblies.NetStandard20.References.netstandard;
             if (targetFramework == "net40")
@@ -68,7 +40,51 @@ namespace JavaResourceConverter
                 throw new NotSupportedException($"Unsupported target framework: {targetFramework}");
             }
 
-            // 2. Prepare Resources without loading them all into memory at once
+            CSharpCompilation compilation = CSharpCompilation.Create(
+                "ICU4N.resources",
+                [assemblyInfo],
+                [reference],
+                options);
+
+            // 2. Process Localized Assemblies (Subdirectories)
+            var subDirs = Directory.EnumerateDirectories(inputDir);
+            foreach (var dir in subDirs)
+            {
+                var culture = Path.GetFileName(dir); // Folder name is the culture
+                var resources = Directory.GetFiles(dir, "*.*", SearchOption.TopDirectoryOnly);
+
+                if (resources.Length > 0)
+                {
+                    var cultureOutDir = Path.Combine(outputDir, culture);
+                    var cultureOutPath = Path.Combine(cultureOutDir, SatelliteAssemblyName);
+
+                    // Add AssemblyCulture attribute to Roslyn
+                    CSharpCompilation localizedCompilation = compilation
+                        .AddSyntaxTrees(CSharpSyntaxTree.ParseText($"[assembly: System.Reflection.AssemblyCulture(\"{culture}\")]"));
+
+                    BuildSatelliteAssembly(cultureOutPath, resources, localizedCompilation);
+                    Console.WriteLine($"Built satellite assembly [{culture}]: {cultureOutPath}");
+                }
+            }
+
+            // 3. Process the Neutral Assembly (Root Input Directory)
+            var rootResources = Directory.EnumerateFiles(inputDir, "*.*", SearchOption.TopDirectoryOnly);
+            if (rootResources.Any())
+            {
+                var neutralOutPath = Path.Combine(outputDir, SatelliteAssemblyName);
+                BuildSatelliteAssembly(neutralOutPath, rootResources, compilation);
+                Console.WriteLine($"Built neutral assembly: {neutralOutPath}");
+            }
+
+            Console.WriteLine($"[SUCCESS] All satellite assemblies built successfully.");
+        }
+
+        private static void BuildSatelliteAssembly(
+            string outputPath,
+            IEnumerable<string> resourceFiles,
+            CSharpCompilation compilation)
+        {
+            // 1. Prepare Resources without loading them all into memory at once
             var resourceDescriptions = resourceFiles.Select(resPath =>
                 new ResourceDescription(
                     Path.GetFileName(resPath),
@@ -76,18 +92,7 @@ namespace JavaResourceConverter
                     isPublic: true)
             );
 
-            // 3. Configure Roslyn
-            var options = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
-                .WithOptimizationLevel(OptimizationLevel.Release)
-                .WithDeterministic(true);
-
-            var compilation = CSharpCompilation.Create(
-                "ICU4N.resources",
-                new[] { assemblyInfoSyntaxTree, assemblyCultureInfoSyntaxTree },
-                new[] { reference },
-                options);
-
-            // 4. Emit to Output Path
+            // 2. Emit to Output Path
             Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
             using (var peStream = File.Create(outputPath))
             {

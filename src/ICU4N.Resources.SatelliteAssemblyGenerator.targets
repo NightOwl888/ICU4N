@@ -109,6 +109,7 @@
       <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) &quot;$(Copyright)&quot;</RunICU4JResourceConverterCommand>
       <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) &quot;$(ICU4NSatelliteProduct)&quot;</RunICU4JResourceConverterCommand>
       <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) &quot;$(ICU4NSatelliteTitle)&quot;</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) &quot;$(AssemblyOriginatorKeyFile)&quot;</RunICU4JResourceConverterCommand>
     </PropertyGroup>
     
     <Message Importance="high" Text="Running ICU4JResourceConverter command: $(RunICU4JResourceConverterCommand)" />

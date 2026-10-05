@@ -208,7 +208,7 @@ namespace JavaResourceConverter
 
         private static void ParseAndExecuteBuild(string[] args)
         {
-            if (args.Length < 11)
+            if (args.Length < 12)
             {
                 Console.Error.WriteLine("Error: Insufficient arguments for 'build' command.");
                 Usage();
@@ -228,11 +228,12 @@ namespace JavaResourceConverter
             var copyright = args[9];
             var product = args[10];
             var title = args[11];
+            var keyFilePath = args[12];
 
-            BuildSatelliteAssembliesCommand(inputDir, sourceFile, outputDir, targetFramework, assemblyVersion, fileVersion, informationalVersion, company, copyright, product, title);
+            BuildSatelliteAssembliesCommand(inputDir, sourceFile, outputDir, targetFramework, assemblyVersion, fileVersion, informationalVersion, company, copyright, product, title, keyFilePath);
         }
 
-        private static void BuildSatelliteAssembliesCommand(string inputDir, string sourceFile, string outputDir, string targetFramework, string assemblyVersion, string fileVersion, string informationalVersion, string company, string copyright, string product, string title)
+        private static void BuildSatelliteAssembliesCommand(string inputDir, string sourceFile, string outputDir, string targetFramework, string assemblyVersion, string fileVersion, string informationalVersion, string company, string copyright, string product, string title, string keyFilePath)
         {
             string mutexName = GetMutexName(outputDir);
             string outputFile = Path.Combine(outputDir, SatelliteUtil.SatelliteAssemblyName);
@@ -252,7 +253,7 @@ namespace JavaResourceConverter
                         return;
                     }
 
-                    SatelliteUtil.BuildSatteliteAssemblies(inputDir, outputDir, targetFramework, assemblyVersion, fileVersion, informationalVersion, company, copyright, product, title);
+                    SatelliteUtil.BuildSatteliteAssemblies(inputDir, outputDir, targetFramework, assemblyVersion, fileVersion, informationalVersion, company, copyright, product, title, keyFilePath);
                 }
                 finally
                 {
