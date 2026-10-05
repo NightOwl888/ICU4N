@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using NuGet.Frameworks;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,7 +17,20 @@ namespace JavaResourceConverter
         {
             Console.WriteLine($"Generating Satellite Assemblies...");
 
-            SyntaxTree assemblyInfo = GetAssemblyInfoSyntaxTree(assemblyVersion, fileVersion, informationalVersion, company, copyright, product, title);
+            PortableExecutableReference reference = Basic.Reference.Assemblies.NetStandard20.References.netstandard;
+            if (targetFramework == "net40")
+            {
+                reference = Basic.Reference.Assemblies.Net40.References.mscorlib;
+            }
+            else if (targetFramework != "netstandard2.0")
+            {
+                throw new NotSupportedException($"Unsupported target framework: {targetFramework}");
+            }
+
+            NuGetFramework tfm = NuGetFramework.ParseFolder(targetFramework); // parses "netstandard2.0"
+            string targetFrameworkMoniker = tfm.DotNetFrameworkName; // yields ".NETStandard,Version=v2.0"
+
+            SyntaxTree assemblyInfo = GetAssemblyInfoSyntaxTree(targetFrameworkMoniker, assemblyVersion, fileVersion, informationalVersion, company, copyright, product, title);
 
             // 1. Configure Roslyn Options For All Assemblies
             var options = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
@@ -28,16 +42,6 @@ namespace JavaResourceConverter
                 options = options
                     .WithCryptoKeyFile(Path.GetFullPath(keyFilePath))
                     .WithStrongNameProvider(new DesktopStrongNameProvider());
-            }
-
-            PortableExecutableReference reference = Basic.Reference.Assemblies.NetStandard20.References.netstandard;
-            if (targetFramework == "net40")
-            {
-                reference = Basic.Reference.Assemblies.Net40.References.mscorlib;
-            }
-            else if (targetFramework != "netstandard2.0")
-            {
-                throw new NotSupportedException($"Unsupported target framework: {targetFramework}");
             }
 
             CSharpCompilation compilation = CSharpCompilation.Create(
@@ -106,15 +110,17 @@ namespace JavaResourceConverter
             }
         }
 
-        private static SyntaxTree GetAssemblyInfoSyntaxTree(string assemblyVersion, string fileVersion, string informationalVersion, string company, string copyright, string product, string title)
+        private static SyntaxTree GetAssemblyInfoSyntaxTree(string targetFrameworkMoniker, string assemblyVersion, string fileVersion, string informationalVersion, string company, string copyright, string product, string title)
         {
             StringBuilder codeBuilder = new StringBuilder();
             codeBuilder.AppendLine("using System.Reflection;");
             codeBuilder.AppendLine("using System.Runtime.CompilerServices;");
+            codeBuilder.AppendLine("using System.Runtime.Versioning;");
             codeBuilder.AppendLine("using System.Diagnostics;");
             codeBuilder.AppendLine("[assembly: CompilationRelaxations(8)]");
             codeBuilder.AppendLine("[assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]");
             codeBuilder.AppendLine("[assembly: Debuggable(DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints)]");
+            codeBuilder.AppendLine($"[assembly: TargetFramework(\"{targetFrameworkMoniker}\")]");
             codeBuilder.AppendLine($"[assembly: AssemblyCompany(\"{company}\")]");
             codeBuilder.AppendLine($"[assembly: AssemblyCopyright(\"{copyright}\")]");
             codeBuilder.AppendLine($"[assembly: AssemblyFileVersion(\"{fileVersion}\")]");

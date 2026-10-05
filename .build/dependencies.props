@@ -17,6 +17,7 @@
     <NetFxSystemMemoryPackageReferenceVersion>4.0.0</NetFxSystemMemoryPackageReferenceVersion>
     <NetFxSystemRuntimeCompilerServicesUnsafePackageReferenceVersion>4.0.0</NetFxSystemRuntimeCompilerServicesUnsafePackageReferenceVersion>
     <NETStandardLibrary20PackageReferenceVersion>2.0.3</NETStandardLibrary20PackageReferenceVersion>
+    <NuGetFrameworksPackageReferenceVersion>7.9.0</NuGetFrameworksPackageReferenceVersion>
     <NUnitPackageReferenceVersion>3.12.0</NUnitPackageReferenceVersion>
     <NUnit3TestAdapterPackageReferenceVersion>4.6.0</NUnit3TestAdapterPackageReferenceVersion>
     <SystemBuffersPackageReferenceVersion>4.5.1</SystemBuffersPackageReferenceVersion>
