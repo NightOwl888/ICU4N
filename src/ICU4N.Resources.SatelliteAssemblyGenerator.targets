@@ -137,29 +137,26 @@
        Copying raw data files is conditional, since we only want to include
        either raw files or satellite assemblies in the output folders, not both. -->
   <Target Name="GetSatelliteItemsForCopyToOutput"
-          BeforeTargets="AssignTargetPaths;GetCopyToOutputDirectoryItems"
+          BeforeTargets="GetCopyToOutputDirectoryItems"
           DependsOnTargets="GenerateOurSatelliteAssemblies"
-          Condition="'$(ICU4NResourceFormat)' == 'SatelliteAssemblies'">
+          Condition="'$(DesignTimeBuild)' != 'true' And '$(ICU4NResourceFormat)' == 'SatelliteAssemblies'">
 
     <ItemGroup>
       <!--
-        Why use a custom intermediate item instead of globbing directly into <None>?
+        Why use a custom intermediate item instead of globbing directly into <ContentWithTargetPath>?
         Because these files are generated/extracted during the build, they do not exist when MSBuild initially 
         evaluates the project. Declaring a custom item forces MSBuild to execute a fresh query against the 
         file system right now, correctly capturing the new files and computing their glob metadata (like %(RecursiveDir)). 
-        We then feed these fully resolved items into <None>. Globbing directly into <None> inside a target 
+        We then feed these fully resolved items into <ContentWithTargetPath>. Globbing directly into <ContentWithTargetPath> inside a target 
         often fails to populate this metadata correctly for dynamically generated files.
       -->
       <ICU4NSatelliteAssemblies Include="$(ICU4NSatelliteDirectory)/**/$(ICU4NMainAssemblyName).resources.dll" />
-      
-      <None Include="@(ICU4NSatelliteAssemblies)">
+
+      <ContentWithTargetPath Include="@(ICU4NSatelliteAssemblies)">
         <TargetPath>%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
-        <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-        <Visible>false</Visible>
-        <Pack>false</Pack>
-      </None>
+      </ContentWithTargetPath>
     </ItemGroup>
   </Target>
 
