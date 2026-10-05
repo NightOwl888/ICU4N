@@ -95,28 +95,26 @@
        Copying raw data files is conditional, since we only want to include
        either raw files or satellite assemblies in the output folders, not both. -->
   <Target Name="GetRawData"
-          BeforeTargets="AssignTargetPaths"
+          BeforeTargets="GetCopyToOutputDirectoryItems"
           DependsOnTargets="ExtractRawData"
           Condition="'$(DesignTimeBuild)' != 'true' And '$(ICU4NResourceFormat)' == 'RawFiles'">
     
     <ItemGroup>
       <!-- 
-        Why use a custom intermediate item instead of globbing directly into <None>?
-        Because these files are generated/extracted during the build, they do not exist when MSBuild initially 
-        evaluates the project. Declaring a custom item forces MSBuild to execute a fresh query against the 
-        file system right now, correctly capturing the new files and computing their glob metadata (like %(RecursiveDir)). 
-        We then feed these fully resolved items into <None>. Globbing directly into <None> inside a target 
+        Why use a custom intermediate item instead of globbing directly into <ContentWithTargetPath>?
+        Because these files are generated/extracted during the build, they do not exist when MSBuild initially
+        evaluates the project. Declaring a custom item forces MSBuild to execute a fresh query against the
+        file system right now, correctly capturing the new files and computing their glob metadata (like %(RecursiveDir)).
+        We then feed these fully resolved items into <ContentWithTargetPath>. Globbing directly into <ContentWithTargetPath> inside a target
         often fails to populate this metadata correctly for dynamically generated files.
       -->
       <RawDataFiles Include="$(RawDataDirectory)**/*" />
 
-      <None Include="@(RawDataFiles)">
+      <ContentWithTargetPath Include="@(RawDataFiles)">
         <TargetPath>$(DataPath)%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
-        <Link>$(DataPath)%(RecursiveDir)%(Filename)%(Extension)</Link>
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-        <Visible>false</Visible>
-      </None>
+      </ContentWithTargetPath>
     </ItemGroup>
 
   </Target>
