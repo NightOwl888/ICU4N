@@ -23,11 +23,18 @@
   <!-- Blocks MSBuild from ever calling the Csc compiler -->
   <Target Name="_SkipCoreCompile" />
 
+  <!--
+    These references establish build ordering only; they do not represent assembly
+    or package dependencies. Suppress them with $(NoBuild) != true for no-build
+    operations because solution-level pack must be able to package and publish
+    already-built outputs without recursively invoking Build on these auxiliary projects.
+  -->
   <ItemGroup>
     <ProjectReference Include="$(MSBuildThisFileDirectory)ICU4N.Resources.Transform/ICU4N.Resources.Transform.csproj"
                       ReferenceOutputAssembly="false"
                       SkipGetTargetFrameworkProperties="true"
-                      GlobalPropertiesToRemove="TargetFramework" />
+                      GlobalPropertiesToRemove="TargetFramework"
+                      Condition="'$(NoBuild)' != 'true'" />
 
     <!-- Reference to the ICU4JResourceConverter tool so it builds automatically and only once in the graph.
          We suppress passing the target framework and the warning that the target framework doesn't match
@@ -42,7 +49,8 @@
                       SkipGetTargetFrameworkProperties="true"
                       GlobalPropertiesToRemove="TargetFramework"
                       OutputItemType="ICU4JToolAssembly"
-                      Private="false" />
+                      Private="false"
+                      Condition="'$(NoBuild)' != 'true'" />
   </ItemGroup>
 
   <ItemGroup>
