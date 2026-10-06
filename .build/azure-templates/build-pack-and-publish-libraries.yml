@@ -95,15 +95,6 @@ steps:
     }
   displayName: 'Create _artifacts/NugetPackages Directory'
 
-  # Create stub resource NuGet packages for ICU4N.Resources to satisfy the dependency during build.
-- task: DotNetCoreCLI@2
-  displayName: 'Create Stub Resource Packages'
-  inputs:
-    command: custom
-    projects: '${{ parameters.resourcesFilesConvention }}'
-    custom: pack
-    arguments: '--configuration ${{ parameters.buildConfiguration }} --output "$(Build.SourcesDirectory)/_artifacts/NugetPackages" --verbosity normal /p:PackageVersion="${{ parameters.packageVersion }}" /p:SkipGitVersioning=true /p:PackResourceStubs=true /p:SkipT4Transform=true'
-
   # Runs dotnet build 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet build ${{ parameters.solutionFilesConvention }}'
@@ -111,36 +102,7 @@ steps:
     command: custom
     projects: '${{ parameters.solutionFilesConvention }}'
     custom: build
-    arguments: '--configuration ${{ parameters.buildConfiguration }} --verbosity normal /p:Platform="${{ parameters.buildPlatform }}" /p:InformationalVersion="${{ parameters.informationalVersion }}" /p:FileVersion="${{ parameters.fileVersion }}" /p:AssemblyVersion="${{ parameters.assemblyVersion }}" /p:PackageVersion="${{ parameters.packageVersion }}" /p:TestAllTargetFrameworks=true /p:PortableDebugTypeOnly=true /p:DisableIkvm=true /p:ReferenceICUResources=true /p:SkipT4Transform=true'
-
-- pwsh: |
-    $packageVersion = "${{ parameters.packageVersion }}"
-    function DeleteCachedNuGetPackage([string]$packageId, [string]$version) {
-        # The user may have overridden the default .nuget package directory location using NUGET_PACKAGES env variable.
-        [string]$nugetCacheDir = $env:NUGET_PACKAGES
-        if (!(Test-Path $nugetCacheDir)) {
-            $nugetCacheDir = Join-Path $env:USERPROFILE "\.nuget\packages"
-        }
-    
-        # Define the NuGet package cache directory
-        $cacheDir = Join-Path $nugetCacheDir "\$packageId\$version"
-
-        Write-Host $cacheDir
-
-        # Check if the package directory exists
-        if (Test-Path $cacheDir) {
-            # Remove the specific version of the package
-            Remove-Item -Recurse -Force $cacheDir
-            Write-Host "Version '$version' of package '$packageId' has been deleted from the NuGet cache." -ForegroundColor DarkGreen
-        } else {
-            Write-Host "Package '$packageId' version '$version' not found in the cache." -ForegroundColor DarkYellow
-        }
-    }
-    # Remove our package stubs from the NuGet cache. They may interfere with the real
-    # packages if they are also requested on this machine.
-    DeleteCachedNuGetPackage -PackageId "ICU4N.Resources" -Version "$packageVersion"
-    DeleteCachedNuGetPackage -PackageId "ICU4N.Resources.NETFramework4.0" -Version "$packageVersion"
-  displayName: 'Delete Cached Stub Resource Packages'
+    arguments: '--configuration ${{ parameters.buildConfiguration }} --verbosity normal /p:Platform="${{ parameters.buildPlatform }}" /p:InformationalVersion="${{ parameters.informationalVersion }}" /p:FileVersion="${{ parameters.fileVersion }}" /p:AssemblyVersion="${{ parameters.assemblyVersion }}" /p:PackageVersion="${{ parameters.packageVersion }}" /p:TestAllTargetFrameworks=true /p:PortableDebugTypeOnly=true'
 
   # Packs the project binaries into .nupkg files (NuGet).
   # Note that we are outputting .symbols.nupkg files as well 
@@ -152,17 +114,6 @@ steps:
     projects: '${{ parameters.solutionFilesConvention }}'
     custom: pack
     arguments: '--configuration ${{ parameters.buildConfiguration }} --output "$(Build.ArtifactStagingDirectory)/${{ parameters.nugetArtifactName }}" --no-build --verbosity normal /p:PackageVersion="${{ parameters.packageVersion }}" /p:SkipGitVersioning=true'
-
-  # Create the real resource NuGet packages for ICU4N.Resources to satisfy the dependency during build.
-  # We must not pass --no-build here because we need the build our resource packages from scratch.
-- task: DotNetCoreCLI@2
-  displayName: 'Create Real Resource Packages'
-  inputs:
-    command: custom
-    projects: '${{ parameters.resourcesFilesConvention }}'
-    custom: pack
-    arguments: '--configuration ${{ parameters.buildConfiguration }} --output "$(Build.ArtifactStagingDirectory)/${{ parameters.nugetArtifactName }}" --verbosity normal /p:PackageVersion="${{ parameters.packageVersion }}" /p:SkipGitVersioning=true'
-
 
   # Copy the .pdb files as build artifacts, which will later be used
   # to push to the Azure Artifacts symbol server.
