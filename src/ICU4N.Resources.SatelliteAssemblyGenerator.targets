@@ -145,17 +145,17 @@
        Copying raw data files is conditional, since we only want to include
        either raw files or satellite assemblies in the output folders, not both. -->
   <Target Name="GetSatelliteItemsForCopyToOutput"
-          BeforeTargets="GetCopyToOutputDirectoryItems;GetCopyToPublishDirectoryItems"
+          BeforeTargets="GetCopyToOutputDirectoryItems"
           DependsOnTargets="GenerateOurSatelliteAssemblies"
           Condition="'$(DesignTimeBuild)' != 'true' And '$(ICU4NResourceFormat)' == 'SatelliteAssemblies'">
 
     <ItemGroup>
       <!--
         Why use a custom intermediate item instead of globbing directly into <ContentWithTargetPath>?
-        Because these files are generated/extracted during the build, they do not exist when MSBuild initially 
-        evaluates the project. Declaring a custom item forces MSBuild to execute a fresh query against the 
-        file system right now, correctly capturing the new files and computing their glob metadata (like %(RecursiveDir)). 
-        We then feed these fully resolved items into <ContentWithTargetPath>. Globbing directly into <ContentWithTargetPath> inside a target 
+        Because these files are generated/extracted during the build, they do not exist when MSBuild initially
+        evaluates the project. Declaring a custom item forces MSBuild to execute a fresh query against the
+        file system right now, correctly capturing the new files and computing their glob metadata (like %(RecursiveDir)).
+        We then feed these fully resolved items into <ContentWithTargetPath>. Globbing directly into <ContentWithTargetPath> inside a target
         often fails to populate this metadata correctly for dynamically generated files.
       -->
       <ICU4NSatelliteAssemblies Include="$(ICU4NSatelliteDirectory)/**/$(ICU4NMainAssemblyName).resources.dll" />
@@ -163,6 +163,35 @@
       <ContentWithTargetPath Include="@(ICU4NSatelliteAssemblies)">
         <TargetPath>%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </ContentWithTargetPath>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="GetSatelliteItemsForCopyToPublish"
+        BeforeTargets="GetCopyToPublishDirectoryItems"
+        DependsOnTargets="GenerateOurSatelliteAssemblies"
+        Condition="'$(DesignTimeBuild)' != 'true' And '$(ICU4NResourceFormat)' == 'SatelliteAssemblies'">
+
+    <ItemGroup>
+      <!--
+        Why use a custom intermediate item instead of globbing directly into <ContentWithTargetPath>?
+        Because these files are generated/extracted during the build, they do not exist when MSBuild initially
+        evaluates the project. Declaring a custom item forces MSBuild to execute a fresh query against the
+        file system right now, correctly capturing the new files and computing their glob metadata (like %(RecursiveDir)).
+        We then feed these fully resolved items into <ContentWithTargetPath>. Globbing directly into <ContentWithTargetPath> inside a target
+        often fails to populate this metadata correctly for dynamically generated files.
+      -->
+      <!--
+        Note that the GetSatelliteItemsForCopyToOutput target above already copies the localized satellite assemblies to the publish
+        directory, but MSBuild ignores the neutral satellite assembly, so we have to explicitly include it here. MSBuild apparently
+        does not support neutral satellite assemblies natively, so we copy it as content rather than using the
+        IntermediateSatelliteAssembliesWithTargetPath item group that is meant for satellite assemblies. This is a workaround to
+        ensure that the neutral satellite assembly is included in the publish output.
+      -->
+      <ICU4NSatelliteAssemblies Include="$(ICU4NSatelliteDirectory)/$(ICU4NMainAssemblyName).resources.dll" />
+
+      <ContentWithTargetPath Include="@(ICU4NSatelliteAssemblies)">
+        <TargetPath>%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       </ContentWithTargetPath>
     </ItemGroup>
