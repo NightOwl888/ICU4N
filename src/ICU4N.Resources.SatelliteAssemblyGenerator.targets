@@ -145,7 +145,7 @@
        Copying raw data files is conditional, since we only want to include
        either raw files or satellite assemblies in the output folders, not both. -->
   <Target Name="GetSatelliteItemsForCopyToOutput"
-          BeforeTargets="GetCopyToOutputDirectoryItems"
+          BeforeTargets="GetCopyToOutputDirectoryItems;GetCopyToPublishDirectoryItems"
           DependsOnTargets="GenerateOurSatelliteAssemblies"
           Condition="'$(DesignTimeBuild)' != 'true' And '$(ICU4NResourceFormat)' == 'SatelliteAssemblies'">
 
