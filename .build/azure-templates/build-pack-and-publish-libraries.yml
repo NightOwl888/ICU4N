@@ -145,7 +145,8 @@ steps:
     foreach ($framework in $testTargetFrameworks) {
         $outputPath = "$outputRoot/$framework"
         Write-Host "Publishing '$framework' to '$outputPath'..."
-        dotnet publish --output "$outputPath" --framework "$framework" --configuration "$configuration" --no-build --no-restore --verbosity normal /p:TestAllTargetFrameworks=true /p:DisableIkvm=true
+        # PackageVersion is passed so that ICU4N.Resources.Raw has access to the version number of ICU4N.dll, which it uses to determine the version of the ICU4J data files to use.
+        dotnet publish --output "$outputPath" --framework "$framework" --configuration "$configuration" --no-build --no-restore --verbosity normal /p:TestAllTargetFrameworks=true /p:PackageVersion="${{ parameters.packageVersion }}"
     }
   displayName: 'dotnet publish ${{ parameters.testTargetFrameworks }}'
 
