@@ -32,12 +32,21 @@
   <!-- Blocks MSBuild from ever calling the Csc compiler -->
   <Target Name="_SkipCoreCompile" />
 
+  <ItemGroup Label="Local User Overrides">
+    <!-- Including an ICU4N.Resources.Raw.csproj.user file allows for local development
+         overrides. Specifically, you can override the ICU4JLocalFileDirectory
+         and/or ICU4JLocalFileName properties in that file to specify the directory
+         and file pattern of the ICU4J file in the local dev enviornment without committing
+         the file to source control. See the root Directory.Build.props file for more information. -->
+    <None Include="$(MSBuildProjectName).csproj.user" Condition="Exists('$(MSBuildProjectName).csproj.user')" />
+  </ItemGroup>
+
   <ItemGroup>
     <!-- Packs the file for direct package references -->
-    <None Include="ICU4N.Resources.Raw.targets" Pack="true" PackagePath="build\ICU4N.Resources.Raw.targets" />
+    <None Include="$(MSBuildProjectName).targets" Pack="true" PackagePath="build\$(PackageId).targets" />
 
     <!-- Packs the exact same file so it flows transitively to downstream apps -->
-    <None Include="ICU4N.Resources.Raw.targets" Pack="true" PackagePath="buildTransitive\ICU4N.Resources.Raw.targets" />
+    <None Include="$(MSBuildProjectName).targets" Pack="true" PackagePath="buildTransitive\$(PackageId).targets" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -53,7 +62,10 @@
       <MajorVersion>$(PackageVersion.Split('.')[0])</MajorVersion>
       <MinorVersion>$(PackageVersion.Split('.')[1])</MinorVersion>
       <DataPath>data/$(ICUDataPrefix)$(MajorVersion)$(ICUDataEndian)/</DataPath>
+      <ICU4JLocalOverrideFileName>$([System.String]::Format('$(ICU4JLocalFileName)', $(MajorVersion), $(MinorVersion)))</ICU4JLocalOverrideFileName>
+      <ICU4JLocalOverrideFilePath>$([MSBuild]::NormalizePath('$(ICU4JLocalFileDirectory)', '$(ICU4JLocalOverrideFileName)'))</ICU4JLocalOverrideFilePath>
       <ICU4JJarFilePath>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)icu4j-$(MajorVersion).$(MinorVersion).jar'))</ICU4JJarFilePath>
+      <ICU4JJarFilePath Condition=" Exists('$(ICU4JLocalOverrideFilePath)') ">$(ICU4JLocalOverrideFilePath)</ICU4JJarFilePath>
       <ICU4JJarDataDirectory>com/ibm/icu/impl/$(DataPath)</ICU4JJarDataDirectory>
       <RawDataStamp>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath).data-extracted'))</RawDataStamp>
       <RawDataDirectory>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)$(DataPath)'))</RawDataDirectory>
@@ -74,30 +86,19 @@
       <Output PropertyName="IsICU4JFileDownloaded" TaskParameter="Successful" />
     </DownloadFileWithFallback>
 
-    <Error Condition=" '$(IsICU4JFileDownloaded)' != 'true' And !Exists('$(ICU4JJarFilePath)') " Text="The build cannot continue without $(ICU4JJarFilePath). Use Maven search (https://mvnrepository.com or https://search.maven.org/) to look for the file and download it manually to $(ICU4JJarFilePath). Alternatively, check the ICU Releases Page: https://github.com/unicode-org/icu/releases." />
+    <Error Condition=" '$(IsICU4JFileDownloaded)' != 'true' And !Exists('$(ICU4JJarFilePath)') " Text="The ICU4J download failed. The build cannot continue without the ICU4J .jar file. Use Maven search (https://mvnrepository.com or https://search.maven.org/) to look for the file with the corresponding major and minor version to ICU4N and download it manually to $(ICU4JLocalOverrideFilePath). Alternatively, check the ICU Releases Page: https://github.com/unicode-org/icu/releases." />
   </Target>
 
-  <Target Name="ExtractRawData"
-          DependsOnTargets="DownloadICU4J"
-          Inputs="$(ICU4JJarFilePath)"
-          Outputs="$(RawDataStamp)">
+  <Target Name="ExtractRawData" DependsOnTargets="DownloadICU4J" Inputs="$(ICU4JJarFilePath)" Outputs="$(RawDataStamp)">
 
-    <ExtractICU4JData
-        SourceFile="$(ICU4JJarFilePath)"
-        DirectoryToExtract="$(ICU4JJarDataDirectory)"
-        DestinationDirectory="$(RawDataDirectory)"
-        StampFile="$(RawDataStamp)"
-        MutexName="ICU4N.Resources.Raw.ExtractICU4JData" />
+    <ExtractICU4JData SourceFile="$(ICU4JJarFilePath)" DirectoryToExtract="$(ICU4JJarDataDirectory)" DestinationDirectory="$(RawDataDirectory)" StampFile="$(RawDataStamp)" MutexName="ICU4N.Resources.Raw.ExtractICU4JData" />
 
   </Target>
 
   <!-- Injects raw resource files into MSBuild's CopyToOutputDirectory flow for ProjectReferences.
        Copying raw data files is conditional, since we only want to include
        either raw files or satellite assemblies in the output folders, not both. -->
-  <Target Name="GetRawData"
-          BeforeTargets="GetCopyToOutputDirectoryItems"
-          DependsOnTargets="ExtractRawData"
-          Condition="'$(DesignTimeBuild)' != 'true' And '$(ICU4NResourceFormat)' == 'RawFiles'">
+  <Target Name="GetRawData" BeforeTargets="GetCopyToOutputDirectoryItems" DependsOnTargets="ExtractRawData" Condition="'$(DesignTimeBuild)' != 'true' And '$(ICU4NResourceFormat)' == 'RawFiles'">
     
     <ItemGroup>
       <!-- 
@@ -120,15 +121,10 @@
   </Target>
 
     <!-- Allows explicit run without allowing background tasks to execute automatically -->
-  <Target Name="ExecuteExtractInIDE"
-          BeforeTargets="AssignTargetPaths"
-          DependsOnTargets="ExtractRawData"
-          Condition="'$(DesignTimeBuild)' != 'true'"/>
+  <Target Name="ExecuteExtractInIDE" BeforeTargets="AssignTargetPaths" DependsOnTargets="ExtractRawData" Condition="'$(DesignTimeBuild)' != 'true'" />
 
   <!-- This target acts as an API for any project referencing this one -->
-  <Target Name="ExportRawDataDirectory"
-          DependsOnTargets="ExtractRawData"
-          Returns="@(ExportedRawDataFolder)">
+  <Target Name="ExportRawDataDirectory" DependsOnTargets="ExtractRawData" Returns="@(ExportedRawDataFolder)">
     <ItemGroup>
       <ExportedRawDataFolder Include="$(RawDataDirectory)">
         <!-- Attach the stamp file path as item metadata -->
@@ -157,9 +153,7 @@
 
   </Target>
 
-  <UsingTask TaskName="ExtractICU4JData"
-           TaskFactory="RoslynCodeTaskFactory"
-           AssemblyFile="$(MSBuildBinPath)\Microsoft.Build.Tasks.Core.dll">
+  <UsingTask TaskName="ExtractICU4JData" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildBinPath)\Microsoft.Build.Tasks.Core.dll">
     <ParameterGroup>
       <SourceFile ParameterType="System.String" Required="true" />
       <DirectoryToExtract ParameterType="System.String" Required="true" />

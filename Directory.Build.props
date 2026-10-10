@@ -67,6 +67,16 @@
   <PropertyGroup Label="ICU Resource Options">
     <!-- Options: SatelliteAssemblies (default) | RawFiles -->
     <ICU4NResourceFormat Condition="'$(ICU4NResourceFormat)' == ''">SatelliteAssemblies</ICU4NResourceFormat>
+    
+    <!-- Specifies where on the local dev system the user downloaded ICU4J file can be found.
+         To override, set the ICU4JLocalFileDirectory and/or ICU4JLocalFileName property
+         in a new ICU4N.Resources.Raw.csproj.user file inside the ICU4N.Resources.Raw project directory.
+         This file will automatically be excluded from source control. If this file does not exist,
+         the build will automatically download the file to the obj directory of ICU4N.Resources.Raw.
+         The {0} and {1} placeholders in ICU4JLocalFileName will be replaced with the ICU4N major
+         and minor version, respectively. The .jar file you obtain must be the same version of ICU4J. -->
+    <ICU4JLocalFileDirectory Condition="'$(ICU4JLocalFileDirectory)' == ''">$(ArtifactsDir)</ICU4JLocalFileDirectory>
+    <ICU4JLocalFileName Condition="'$(ICU4JLocalFileName)' == ''">icu4j-{0}.{1}.jar</ICU4JLocalFileName>
   </PropertyGroup>
 
 </Project>
