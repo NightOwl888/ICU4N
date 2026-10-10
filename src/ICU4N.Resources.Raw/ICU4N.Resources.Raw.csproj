@@ -153,6 +153,30 @@
 
   </Target>
 
+  <!-- Remove extracted data during Clean, but retain the downloaded JAR cache.
+       Note we don't rely on IsCrossTargetingBuild here because Rider's doesn't set it
+       when using the Resharper build mode. -->
+  <Target Name="CleanExtractedICU4JData"
+          BeforeTargets="CoreClean"
+          DependsOnTargets="_SetICU4JDataPaths"
+          Condition="'$(TargetFramework)' != ''">
+
+    <PropertyGroup>
+      <RawDataParentDirectory>$([System.IO.Directory]::GetParent('$(RawDataDirectory)').Parent.FullName)</RawDataParentDirectory>
+    </PropertyGroup>
+
+    <Message Importance="high"
+             Text="Cleaning extracted ICU4J data from '$(RawDataParentDirectory)'." />
+
+    <RemoveDir Directories="$(RawDataParentDirectory)"
+               Condition="Exists('$(RawDataParentDirectory)')" />
+
+    <Delete Files="$(RawDataStamp)"
+            Condition="Exists('$(RawDataStamp)')" />
+
+  </Target>
+
+
   <UsingTask TaskName="ExtractICU4JData" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildBinPath)\Microsoft.Build.Tasks.Core.dll">
     <ParameterGroup>
       <SourceFile ParameterType="System.String" Required="true" />
