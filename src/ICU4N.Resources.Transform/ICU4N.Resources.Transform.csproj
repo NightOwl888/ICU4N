@@ -114,4 +114,23 @@
     </ItemGroup>
   </Target>
 
+  <!-- Remove transformed data during Clean.
+       Note we don't rely on IsCrossTargetingBuild here because Rider's doesn't set it
+       when using the Resharper build mode. -->
+  <Target Name="CleanTransformedICU4JData"
+          BeforeTargets="CoreClean"
+          DependsOnTargets="_SetICU4JDataTransformPaths"
+          Condition="'$(TargetFramework)' != ''">
+
+    <Message Importance="high"
+             Text="Cleaning transformed ICU4J data from '$(ICU4JResourceTransformedDirectory)'." />
+
+    <RemoveDir Directories="$(ICU4JResourceTransformedDirectory)"
+               Condition="Exists('$(ICU4JResourceTransformedDirectory)')" />
+
+    <Delete Files="$(TransformedDataStamp)"
+            Condition="Exists('$(TransformedDataStamp)')" />
+
+  </Target>
+
 </Project>
