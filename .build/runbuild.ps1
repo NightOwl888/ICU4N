@@ -9,10 +9,8 @@ properties {
     [string]$solutionFile          = "$baseDirectory/ICU4N.sln"
     [string]$versionScriptFile     = "$baseDirectory/.build/version.ps1"
     [string]$testResultsFileName   = "TestResults.trx"
-    [string]$icu4nResourcesProjectFile = "$sourceDirectory/ICU4N.Resources/ICU4N.Resources.csproj"
-    [string]$icu4nResourcesNETFramework40ProjectFile = "$sourceDirectory/ICU4N.Resources.NETFramework4.0/ICU4N.Resources.NETFramework4.0.csproj"
 
-    [string]$packageVersion        = ""  
+    [string]$packageVersion        = ""
     [string]$assemblyVersion       = ""
     [string]$informationalVersion  = ""
     [string]$fileVersion           = ""
@@ -22,7 +20,7 @@ properties {
     [string]$minimumSdkVersion     = "10.0.100"
 
     #test parameters
-    [string]$testPlatforms         = "x64"
+    [string]$testPlatforms         = Get-DefaultPlatform # Pass a parameter (not a property) to override
 }
 
 $backedUpFiles = New-Object System.Collections.ArrayList
@@ -34,7 +32,6 @@ task Clean -description "This task cleans up the build directory" {
     Remove-Item $nugetPackageDirectory -Force -Recurse -ErrorAction SilentlyContinue
     Remove-Item $testResultsDirectory -Force -Recurse -ErrorAction SilentlyContinue
     Get-ChildItem $baseDirectory -Include *.bak -Recurse | foreach ($_) {Remove-Item $_.FullName}
-    Ensure-Directory-Exists $nugetPackageDirectory #For some strange reason, nbgv tool won't install without this directory present
 }
 
 task CheckSDK -description "This task makes sure the correct SDK version is installed" {
@@ -82,37 +79,7 @@ task Init -depends CheckSDK -description "This tasks makes sure the build enviro
     Ensure-Directory-Exists "$artifactsDirectory"
 }
 
-task PackResourceStubs -depends Clean, Init -description "This task builds the resource stubs" {
-    Ensure-Directory-Exists "$nugetPackageDirectory"
-
-    # This task runs before the restore event of the main build, so it is not possible to
-    # actually include the resource files here. This just builds stubs NuGet packages to satisfy
-    # the dependencies of ICU4N.csproj. We pack again after building ICU4N.csproj and this second
-    # build will contain the resource files. Note the resources are not actually required by the build,
-    # but they are required at runtime (or at least the root ICU4N.resources.dll file is).
-
-    $localPackageVersion = $versionInfo['PackageVersion']
-
-    Exec {
-        &dotnet pack "$icu4nResourcesProjectFile" `
-            --configuration $configuration `
-            --output "$nugetPackageDirectory" `
-            /p:PackageVersion="$localPackageVersion" `
-            /p:SkipGitVersioning=true `
-            /p:PackResourceStubs=true
-    }
-
-    Exec {
-        &dotnet pack "$icu4nResourcesNETFramework40ProjectFile" `
-            --configuration $configuration `
-            --output "$nugetPackageDirectory" `
-            /p:PackageVersion="$localPackageVersion" `
-            /p:SkipGitVersioning=true `
-            /p:PackResourceStubs=true
-    }
-}
-
-task Compile -depends Clean, Init, PackResourceStubs -description "This task compiles the solution" {
+task Compile -depends Clean, Init -description "This task compiles the solution" {
 
     $localInformationalVersion = $versionInfo['InformationalVersion']
     $localFileVersion = $versionInfo['FileVersion']
@@ -129,14 +96,8 @@ task Compile -depends Clean, Init, PackResourceStubs -description "This task com
             /p:PackageVersion="$localPackageVersion" `
             /p:TestAllTargetFrameworks=true `
             /p:PortableDebugTypeOnly=true `
-            /p:SkipGitVersioning=true `
-            /p:ReferenceICUResources=true
+            /p:SkipGitVersioning=true
     }
-
-    # Remove our package stubs from the NuGet cache. They may interfere with the real
-    # packages if they are also requested on this machine.
-    DeleteCachedNuGetPackage -PackageId "ICU4N.Resources" -Version "$localPackageVersion"
-    DeleteCachedNuGetPackage -PackageId "ICU4N.Resources.NETFramework4.0" -Version "$localPackageVersion"
 }
 
 task Pack -depends Compile -description "This task creates the NuGet packages" {
@@ -150,22 +111,6 @@ task Pack -depends Compile -description "This task creates the NuGet packages" {
             --output "$nugetPackageDirectory" `
             --no-build `
             --no-restore `
-            /p:PackageVersion="$localPackageVersion" `
-            /p:SkipGitVersioning=true
-    }
-    
-    Exec {
-        &dotnet pack "$icu4nResourcesProjectFile" `
-            --configuration $configuration `
-            --output "$nugetPackageDirectory" `
-            /p:PackageVersion="$localPackageVersion" `
-            /p:SkipGitVersioning=true
-    }
-    
-    Exec {
-        &dotnet pack "$icu4nResourcesNETFramework40ProjectFile" `
-            --configuration $configuration `
-            --output "$nugetPackageDirectory" `
             /p:PackageVersion="$localPackageVersion" `
             /p:SkipGitVersioning=true
     }
@@ -197,6 +142,11 @@ task Test -depends Pack -description "This task runs the tests" {
 
             $testPlatformArray = $testPlatforms -split '\s*[;,]\s*'
             foreach ($testPlatform in $testPlatformArray) {
+
+                if ([System.Runtime.InteropServices.RuntimeInformation]::OSDescription -match "Darwin" -and $testPlatform -eq "arm64" -and $framework -eq "net5.0") {
+                    Write-Host "Skipping '$framework' because it is not supported on ARM64"
+                    continue
+                }
 
                 $testResultDirectory = "$testResultsDirectory/$framework/$testPlatform/$testName"
                 Ensure-Directory-Exists $testResultDirectory
@@ -256,24 +206,12 @@ function Normalize-FileSystemSlashes([string]$path) {
     return $($path -replace '/',$sep -replace '\\',$sep)
 }
 
-function DeleteCachedNuGetPackage([string]$packageId, [string]$version) {
-    # The user may have overridden the default .nuget package directory location using NUGET_PACKAGES env variable.
-    [string]$nugetCacheDir = $env:NUGET_PACKAGES
-    if ([string]::IsNullOrEmpty($nugetCacheDir)) {
-        $nugetCacheDir = "~/.nuget/packages"
+function Get-DefaultPlatform {
+    $architecture = [System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture.ToString()
+    $platform = switch ($architecture) {
+        "X64" { "x64"; break }
+        "Arm64" { "arm64"; break }
+        default { "x64" }
     }
-    
-    # Define the NuGet package cache directory
-    $cacheDir = Join-Path $nugetCacheDir "/$packageId/$version"
-
-    Write-Host $cacheDir
-
-    # Check if the package directory exists
-    if (Test-Path $cacheDir) {
-        # Remove the specific version of the package
-        Remove-Item -Recurse -Force $cacheDir
-        Write-Host "Version '$version' of package '$packageId' has been deleted from the NuGet cache." -ForegroundColor DarkGreen
-    } else {
-        Write-Host "Package '$packageId' version '$version' not found in the cache." -ForegroundColor DarkYellow
-    }
+    return $platform
 }
