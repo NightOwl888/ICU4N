@@ -156,7 +156,7 @@
   <!-- Remove extracted data during Clean, but retain the downloaded JAR cache.
        Note we don't rely on IsCrossTargetingBuild here because Rider's doesn't set it
        when using the Resharper build mode. -->
-  <Target Name="CleanExtractedICU4JData"
+  <Target Name="CleanICU4NSatelliteAssemblies"
           BeforeTargets="CoreClean"
           DependsOnTargets="_SetICU4JDataPaths"
           Condition="'$(TargetFramework)' != ''">

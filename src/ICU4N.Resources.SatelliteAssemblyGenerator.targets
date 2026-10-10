@@ -74,8 +74,8 @@
 
   <Target Name="_SetICU4JSatellitePaths">
     <PropertyGroup>
-      <ICU4NSatelliteDirectory>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)').TrimEnd('\'))</ICU4NSatelliteDirectory>
-      <BuildOutputFile>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)$(ICU4NMainAssemblyName).resources.dll'))</BuildOutputFile>
+      <ICU4NSatelliteDirectory>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)SatelliteAssemblies').TrimEnd('\'))</ICU4NSatelliteDirectory>
+      <ICU4NNeutralSatelliteAssembly>$([MSBuild]::NormalizePath('$(ICU4NSatelliteDirectory)', '$(ICU4NMainAssemblyName).resources.dll'))</ICU4NNeutralSatelliteAssembly>
     </PropertyGroup>
   </Target>
 
@@ -102,7 +102,7 @@
   <Target Name="GenerateOurSatelliteAssemblies"
           DependsOnTargets="GetICU4JTransformDirectory;$(SatelliteBuildDependsOn)"
           Inputs="$(ICU4NTransformStampFile)"
-          Outputs="$(BuildOutputFile)">
+          Outputs="$(ICU4NNeutralSatelliteAssembly)">
 
     <PropertyGroup>
       <RunICU4JResourceConverterCommand>dotnet &quot;$(ICU4JResourceConverterAssembly)&quot; build</RunICU4JResourceConverterCommand>
@@ -195,6 +195,25 @@
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       </ContentWithTargetPath>
     </ItemGroup>
+  </Target>
+
+  <!-- Remove satellite assemblies during Clean.
+       Note we don't rely on IsCrossTargetingBuild here because Rider's doesn't set it
+       when using the Resharper build mode. -->
+  <Target Name="CleanTransformedICU4JData"
+          BeforeTargets="CoreClean"
+          DependsOnTargets="_SetICU4JSatellitePaths"
+          Condition="'$(TargetFramework)' != ''">
+
+    <Message Importance="high"
+             Text="Cleaning satellite assemblies from '$(ICU4NSatelliteDirectory)'." />
+
+    <RemoveDir Directories="$(ICU4NSatelliteDirectory)"
+               Condition="Exists('$(ICU4NSatelliteDirectory)')" />
+
+    <Delete Files="$(ICU4NNeutralSatelliteAssembly)"
+            Condition="Exists('$(ICU4NNeutralSatelliteAssembly)')" />
+
   </Target>
 
 </Project>
