@@ -5,6 +5,11 @@
 
     <Description>Full raw data for ICU4N. This package can be used as an alternative to using satellite assemblies. Note that no shadow copy is done to these files by ICU4N, so in certain environments where updates are done live (such as IIS), using this deployment method will require a restart of the application domain.</Description>
 
+    <!-- ICU4N TODO: This project is meant to be packable, but testing with raw resources seems to be broken and we had to include a .targets file
+         to copy the resources to the build output, which might not be needed. We need to investigate those issues and include passing tests for the
+         package before including it in the distribution. -->
+    <IsPackable>false</IsPackable>
+    
     <!-- Fixes NU5017: Suppresses NuGet's rule that halts packages without traditional code/dependencies -->
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <IncludeSymbols>false</IncludeSymbols>
