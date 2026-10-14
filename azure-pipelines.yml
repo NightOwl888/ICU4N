@@ -52,6 +52,10 @@ stages:
     pool:
       vmImage: 'windows-latest'
 
+    # Define the NUGET_PACKAGES variable at the job level
+    variables:
+      NUGET_PACKAGES: '$(Pipeline.Workspace)/.nuget/packages'
+
     steps:
     # Nerdbank.GitVersioning requires a deep clone. See: https://github.com/dotnet/Nerdbank.GitVersioning/blob/main/doc/cloudbuild.md#azure-pipelines
     - checkout: self
@@ -99,6 +103,7 @@ stages:
 
     - template: '.build/azure-templates/build-pack-and-publish-libraries.yml'
       parameters:
+        nugetPackages: '$(NUGET_PACKAGES)'
         artifactFeedID: '$(ArtifactFeedID)'
         testTargetFrameworks: '$(TestTargetFrameworks)'
         informationalVersion: '$(CI_InformationalVersion)' # Output from gitversioning-increment-and-persist-versions.yml
