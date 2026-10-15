@@ -64,50 +64,6 @@ steps:
     arguments: '/p:TestAllTargetFrameworks=true /p:DisableIkvm=true'
 
 - pwsh: |
-    dotnet tool install dotnet-t4 `
-      --tool-path "$(Build.SourcesDirectory)/.tools/dotnet-t4" `
-      --version "${{ parameters.dotNetT4PackageVersion }}"
-  displayName: 'Install dotnet-t4'
-
-- task: DotNetCoreCLI@2
-  displayName: 'Transform T4 templates'
-  inputs:
-    command: custom
-    projects: '**/*.csproj' # Note we have a dummy TextTemplateTransform in the root Directory.Build.targets file, so this is safe to run on all projects to discover T4 templates.
-    custom: msbuild
-    arguments: '/t:TextTemplateTransform /p:RestorePackages=false /p:NoRestore=true'
-
-- pwsh: |
-    Set-Location "$(Build.SourcesDirectory)"
-
-    $changedFiles = @(git diff --name-only --diff-filter=ACMRTUXB)
-
-    if ($LASTEXITCODE -ne 0) {
-        throw "Unable to determine whether T4 transformation modified the working tree."
-    }
-
-    if ($changedFiles.Count -eq 0) {
-        Write-Host "T4 templates are up to date."
-        exit 0
-    }
-
-    Write-Host ""
-    Write-Host "ERROR: T4 transformation modified files in the repository:"
-    Write-Host ""
-
-    foreach ($file in $changedFiles) {
-        Write-Host "  $file"
-    }
-
-    Write-Host ""
-    Write-Host "The generated T4 files are not up to date in the repository."
-    Write-Host "Execute the affected T4 templates locally and commit the generated files."
-    Write-Host ""
-
-    exit 1
-  displayName: 'Verify T4 generated files are up to date'
-
-- pwsh: |
     $nugetPackageDirectory = "$(Build.SourcesDirectory)/_artifacts/NugetPackages"
     if (-not (Test-Path "$nugetPackageDirectory")) {
         New-Item "$nugetPackageDirectory" -ItemType Directory

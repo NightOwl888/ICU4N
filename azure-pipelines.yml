@@ -114,8 +114,24 @@ stages:
         buildPlatform: '$(BuildPlatform)'
         nugetArtifactName: '$(NuGetArtifactName)'
         binaryArtifactName: '$(BinaryArtifactName)'
-        dotNetT4PackageVersion: '$(DotNetT4PackageVersion)'
 
+
+  - job: T4_UpToDate_Check
+    displayName: 'Run T4 Templates Up-to-Date Check'
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+    # Nerdbank.GitVersioning requires a deep clone. See: https://github.com/dotnet/Nerdbank.GitVersioning/blob/main/doc/cloudbuild.md#azure-pipelines
+    - checkout: self
+      fetchDepth: 0
+
+    - template: '.build/azure-templates/install-dotnet-sdk.yml'
+      parameters:
+        sdkVersion: '$(DotNetSDKVersion)'
+
+    - template: '.build/azure-templates/run-t4-up-to-date-check.yml'
+      parameters:
+        dotNetT4PackageVersion: '$(DotNetT4PackageVersion)'
 
 - stage: Test_Stage
   displayName: 'Test Stage:'
