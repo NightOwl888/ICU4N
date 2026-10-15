@@ -45,19 +45,8 @@ steps:
   displayName: 'Validate Template Parameters'
   condition: eq(variables['System.Debug'], 'true')
 
-  #- task: Cache@2
-  #  displayName: 'Cache NuGet Packages (Experiment)'
-  #  inputs:
-  #    key: '"nuget-experiment-v2" | "$(Agent.OS)" | "${{ parameters.buildConfiguration }}" | **/*.*proj, **/*.props, **/*.targets, **/*.sln, global.json, **/nuget.config, !**/bin/**, !**/obj/**'
-  #    restoreKeys: |
-  #      "nuget-experiment-v2" | "$(Agent.OS)" | "${{ parameters.buildConfiguration }}"
-  #      "nuget-experiment-v2" | "$(Agent.OS)"
-  #    path: ${{ parameters.nugetPackages }}
-  #    cacheHitVar: NUGET_CACHE_RESTORED
-
 - task: DotNetCoreCLI@2
   displayName: 'dotnet restore'
-  #condition: ne(variables.NUGET_CACHE_RESTORED, 'true') # <-- Skips task if packages are already cached
   inputs:
     command: custom
     custom: restore
