@@ -168,7 +168,7 @@
 
   <Target Name="AddInternalsVisibleTo" BeforeTargets="BeforeCompile" Label="Adds InternalsVisibleTo Attribute and PublicKey (if supplied)">
     <ItemGroup Condition="'@(InternalsVisibleTo->Count())' &gt; 0 ">
-      <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
         <_Parameter1>%(InternalsVisibleTo.Identity)</_Parameter1>
         <_Parameter1 Condition=" '$(SignAssembly)' == 'true' And '$(PublicKey)' != '' ">%(InternalsVisibleTo.Identity), PublicKey=$(PublicKey)</_Parameter1>
       </AssemblyAttribute>
