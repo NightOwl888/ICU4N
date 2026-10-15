@@ -61,7 +61,7 @@ steps:
     Write-Host "##vso[build.updatebuildnumber]$packageVersion"
   displayName: 'Write Output Parameters'
 
-- template: 'show-all-environment-variables.yml'
+#- template: 'show-all-environment-variables.yml' # Uncomment for debugging
 
 - pwsh: |
     $dir = '$(Build.ArtifactStagingDirectory)/${{ parameters.versionArtifactName }}'
