@@ -43,6 +43,7 @@ steps:
     EnsureNotNullOrEmpty('${{ parameters.binaryArtifactName }}', 'binaryArtifactName')
     EnsureNotNullOrEmpty('${{ parameters.solutionFilesConvention }}', 'solutionFilesConvention')
   displayName: 'Validate Template Parameters'
+  condition: eq(variables['System.Debug'], 'true')
 
 - task: Cache@2
   displayName: 'Cache NuGet Packages (Experiment)'
