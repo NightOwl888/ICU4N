@@ -62,7 +62,7 @@
     </Task>
   </UsingTask>
 
-  <Target Name="CheckT4TemplatesUpToDate" BeforeTargets="BeforeBuild">
+  <Target Name="CheckT4TemplatesUpToDate" BeforeTargets="BeforeBuild" Condition="'$(TF_BUILD.ToLower())' != 'true' And '$(GITHUB_ACTIONS.ToLower())' != 'true'">
 
     <Message Text="Checking T4 templates for up-to-date generated files..." Importance="high" />
     
