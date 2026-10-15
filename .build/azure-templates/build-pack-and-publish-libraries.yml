@@ -21,7 +21,6 @@ parameters:
   nugetArtifactName: 'nuget' # The name of the Azure DevOps build artifact where the NuGet assets (.nupkg and .pdb files) will be output. Default 'nuget'.
   binaryArtifactName: 'testbinaries' # The name of the Azure DevOps build artifact where the test assemblies will be output. Default 'testbinaries'.
   solutionFilesConvention: '**/*.sln' # The glob pattern where to look for solution files. Default '**\*.sln'.
-  resourcesFilesConvention: '**/ICU4N.Resources*.csproj' # The glob pattern to use when packing resources (satellite assemblies). Default '**/ICU4N.Resources*.csproj'
 
 steps:
 - pwsh: |
@@ -43,7 +42,6 @@ steps:
     EnsureNotNullOrEmpty('${{ parameters.nugetArtifactName }}', 'nugetArtifactName')
     EnsureNotNullOrEmpty('${{ parameters.binaryArtifactName }}', 'binaryArtifactName')
     EnsureNotNullOrEmpty('${{ parameters.solutionFilesConvention }}', 'solutionFilesConvention')
-    EnsureNotNullOrEmpty('${{ parameters.resourcesFilesConvention }}', 'resourcesFilesConvention')
   displayName: 'Validate Template Parameters'
 
 - task: Cache@2
