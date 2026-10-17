@@ -1,8 +1,11 @@
 <Project>
   <PropertyGroup Label="NuGet Package Reference Versions">
+    <BasicReferenceAssembliesNet40PackageReferenceVersion>1.8.12</BasicReferenceAssembliesNet40PackageReferenceVersion>
+    <BasicReferenceAssembliesNetStandard20PackageReferenceVersion>1.8.12</BasicReferenceAssembliesNetStandard20PackageReferenceVersion>
     <IKVMMavenSdkPackageReferenceVersion>1.2.0</IKVMMavenSdkPackageReferenceVersion>
     <!-- J2N will break binary compatibility in 3.0.0 to fix the APIs of collection types -->
     <J2NPackageReferenceVersion>[2.1.0, 3.0.0)</J2NPackageReferenceVersion>
+    <MicorosoftCodeAnalysisCSharpPackageReferenceVersion>5.9.0</MicorosoftCodeAnalysisCSharpPackageReferenceVersion>
     <MicrosoftExtensionsCachingMemoryPackageReferenceVersion>6.0.2</MicrosoftExtensionsCachingMemoryPackageReferenceVersion>
     <MicrosoftExtensionsCachingMemoryPackageReferenceVersion Condition=" '$(TargetFramework)' == 'net451' ">1.1.2</MicrosoftExtensionsCachingMemoryPackageReferenceVersion>
     <MicrosoftNETFrameworkReferenceAssembliesPackageReferenceVersion>1.0.3</MicrosoftNETFrameworkReferenceAssembliesPackageReferenceVersion>
@@ -14,6 +17,7 @@
     <NetFxSystemMemoryPackageReferenceVersion>4.0.0</NetFxSystemMemoryPackageReferenceVersion>
     <NetFxSystemRuntimeCompilerServicesUnsafePackageReferenceVersion>4.0.0</NetFxSystemRuntimeCompilerServicesUnsafePackageReferenceVersion>
     <NETStandardLibrary20PackageReferenceVersion>2.0.3</NETStandardLibrary20PackageReferenceVersion>
+    <NuGetFrameworksPackageReferenceVersion>7.9.0</NuGetFrameworksPackageReferenceVersion>
     <NUnitPackageReferenceVersion>3.12.0</NUnitPackageReferenceVersion>
     <NUnit3TestAdapterPackageReferenceVersion>4.6.0</NUnit3TestAdapterPackageReferenceVersion>
     <SystemBuffersPackageReferenceVersion>4.5.1</SystemBuffersPackageReferenceVersion>
@@ -25,9 +29,6 @@
     <SystemRuntimeCompilerServicesUnsafePackageReferenceVersion Condition=" '$(TargetFramework)' == 'net451' ">4.7.1</SystemRuntimeCompilerServicesUnsafePackageReferenceVersion>
     <SystemRuntimeSerializationFormattersPackageReferenceVersion>10.0.0</SystemRuntimeSerializationFormattersPackageReferenceVersion>
     <SystemTextRegularExpressionsPackageReferenceVersion>4.3.1</SystemTextRegularExpressionsPackageReferenceVersion>
-  </PropertyGroup>
-  <PropertyGroup Label=".NET Tool Package Versions">
-    <DotNetT4PackageVersion>3.0.0-preview-0027-g2711105671</DotNetT4PackageVersion>
   </PropertyGroup>
   <PropertyGroup Label="Maven Package Reference Versions">
     <ICU4JMavenPackageReferenceVersion>60.1</ICU4JMavenPackageReferenceVersion>

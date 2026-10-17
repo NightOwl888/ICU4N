@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.4.33103.184
+# Visual Studio Version 18
+VisualStudioVersion = 18.9.12112.369
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CodeGen", "CodeGen", "{57271E32-0E88-4696-A477-D00D99DF06F7}"
 	ProjectSection(SolutionItems) = preProject
@@ -16,7 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{F00080
 		.build\nowarn.props = .build\nowarn.props
 		.build\nuget.props = .build\nuget.props
 		.build\runbuild.ps1 = .build\runbuild.ps1
-		.build\t4-transform.targets = .build\t4-transform.targets
+		.build\t4-up-to-date-check.targets = .build\t4-up-to-date-check.targets
 		.build\TestReferences.Common.targets = .build\TestReferences.Common.targets
 		.build\TestTargetFramework.props = .build\TestTargetFramework.props
 		version.json = version.json
@@ -32,6 +32,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "azure-templates", "azure-te
 		.build\azure-templates\publish-test-results-for-target-frameworks.yml = .build\azure-templates\publish-test-results-for-target-frameworks.yml
 		.build\azure-templates\publish-test-results-for-test-projects.yml = .build\azure-templates\publish-test-results-for-test-projects.yml
 		.build\azure-templates\publish-test-results.yml = .build\azure-templates\publish-test-results.yml
+		.build\azure-templates\run-t4-up-to-date-check.yml = .build\azure-templates\run-t4-up-to-date-check.yml
 		.build\azure-templates\run-tests-on-os.yml = .build\azure-templates\run-tests-on-os.yml
 		.build\azure-templates\show-all-environment-variables.yml = .build\azure-templates\show-all-environment-variables.yml
 		.build\azure-templates\show-all-files.yml = .build\azure-templates\show-all-files.yml
@@ -56,6 +57,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{543196C0-5AE
 	ProjectSection(SolutionItems) = preProject
 		src\Directory.Build.props = src\Directory.Build.props
 		src\Directory.Build.targets = src\Directory.Build.targets
+		src\ICU4N.Resources.buildTransitive.targets = src\ICU4N.Resources.buildTransitive.targets
+		src\ICU4N.Resources.NuGetVersionWarning.targets = src\ICU4N.Resources.NuGetVersionWarning.targets
+		src\ICU4N.Resources.SatelliteAssemblyGenerator.targets = src\ICU4N.Resources.SatelliteAssemblyGenerator.targets
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8C266EC1-9565-4827-B3AD-AC657F6BDC27}"
@@ -65,9 +69,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8C266EC1
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N", "src\ICU4N\ICU4N.csproj", "{883E16AF-AB40-4285-89A8-57333CC68AA2}"
-	ProjectSection(ProjectDependencies) = postProject
-		{19E2FD68-4144-491D-82FC-A163AF3692E0} = {19E2FD68-4144-491D-82FC-A163AF3692E0}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.Collation", "src\ICU4N.Collation\ICU4N.Collation.csproj", "{E2A01BE7-8163-41F9-A273-7EE38355E28F}"
 EndProject
@@ -98,14 +99,14 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4JResourceConverter", "src\tools\ICU4JResourceConverter\ICU4JResourceConverter.csproj", "{19E2FD68-4144-491D-82FC-A163AF3692E0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.Resources", "src\ICU4N.Resources\ICU4N.Resources.csproj", "{EF88B9E7-0FC5-4AE2-93AB-C7A8087AC347}"
-	ProjectSection(ProjectDependencies) = postProject
-		{883E16AF-AB40-4285-89A8-57333CC68AA2} = {883E16AF-AB40-4285-89A8-57333CC68AA2}
-	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.Resources.NETFramework4.0", "src\ICU4N.Resources.NETFramework4.0\ICU4N.Resources.NETFramework4.0.csproj", "{6C646911-624D-482A-809D-B1C57A5E8411}"
-	ProjectSection(ProjectDependencies) = postProject
-		{883E16AF-AB40-4285-89A8-57333CC68AA2} = {883E16AF-AB40-4285-89A8-57333CC68AA2}
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICU4N.Resources.Raw", "src\ICU4N.Resources.Raw\ICU4N.Resources.Raw.csproj", "{BBBC5B28-8F6A-4796-9533-D57739A96EE0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICU4N.Resources.Transform", "src\ICU4N.Resources.Transform\ICU4N.Resources.Transform.csproj", "{18331D26-DBC1-2DF5-8A49-A073186787AF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICU4N.Resources.net40", "src\ICU4N.Resources.net40\ICU4N.Resources.net40.csproj", "{615141D6-F14F-4C93-A2CA-AF6116C65E17}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICU4N.Resources.netstandard2.0", "src\ICU4N.Resources.netstandard2.0\ICU4N.Resources.netstandard2.0.csproj", "{84B48543-698A-451B-B2B6-3D272840B95C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -151,10 +152,22 @@ Global
 		{EF88B9E7-0FC5-4AE2-93AB-C7A8087AC347}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF88B9E7-0FC5-4AE2-93AB-C7A8087AC347}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF88B9E7-0FC5-4AE2-93AB-C7A8087AC347}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6C646911-624D-482A-809D-B1C57A5E8411}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6C646911-624D-482A-809D-B1C57A5E8411}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6C646911-624D-482A-809D-B1C57A5E8411}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6C646911-624D-482A-809D-B1C57A5E8411}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBBC5B28-8F6A-4796-9533-D57739A96EE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBBC5B28-8F6A-4796-9533-D57739A96EE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBBC5B28-8F6A-4796-9533-D57739A96EE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBBC5B28-8F6A-4796-9533-D57739A96EE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18331D26-DBC1-2DF5-8A49-A073186787AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18331D26-DBC1-2DF5-8A49-A073186787AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18331D26-DBC1-2DF5-8A49-A073186787AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18331D26-DBC1-2DF5-8A49-A073186787AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{615141D6-F14F-4C93-A2CA-AF6116C65E17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{615141D6-F14F-4C93-A2CA-AF6116C65E17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{615141D6-F14F-4C93-A2CA-AF6116C65E17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{615141D6-F14F-4C93-A2CA-AF6116C65E17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84B48543-698A-451B-B2B6-3D272840B95C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84B48543-698A-451B-B2B6-3D272840B95C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84B48543-698A-451B-B2B6-3D272840B95C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84B48543-698A-451B-B2B6-3D272840B95C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -174,7 +187,10 @@ Global
 		{CEF28F3A-21E4-4E63-B7E3-6C56DB2BFECE} = {543196C0-5AE0-40D8-8BE0-CDDD1F8C4DBB}
 		{19E2FD68-4144-491D-82FC-A163AF3692E0} = {CEF28F3A-21E4-4E63-B7E3-6C56DB2BFECE}
 		{EF88B9E7-0FC5-4AE2-93AB-C7A8087AC347} = {543196C0-5AE0-40D8-8BE0-CDDD1F8C4DBB}
-		{6C646911-624D-482A-809D-B1C57A5E8411} = {543196C0-5AE0-40D8-8BE0-CDDD1F8C4DBB}
+		{BBBC5B28-8F6A-4796-9533-D57739A96EE0} = {543196C0-5AE0-40D8-8BE0-CDDD1F8C4DBB}
+		{18331D26-DBC1-2DF5-8A49-A073186787AF} = {543196C0-5AE0-40D8-8BE0-CDDD1F8C4DBB}
+		{615141D6-F14F-4C93-A2CA-AF6116C65E17} = {543196C0-5AE0-40D8-8BE0-CDDD1F8C4DBB}
+		{84B48543-698A-451B-B2B6-3D272840B95C} = {543196C0-5AE0-40D8-8BE0-CDDD1F8C4DBB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {083BF0D3-ED92-41EE-AD6E-6715D0BA155B}

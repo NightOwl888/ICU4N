@@ -1,0 +1,136 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+
+    <!-- Prevents the generation of a DLL -->
+    <CopyBuildOutputToOutputDirectory>false</CopyBuildOutputToOutputDirectory>
+    <CopyOutputSymbolsToOutputDirectory>false</CopyOutputSymbolsToOutputDirectory>
+    <SkipCompilerExecution>true</SkipCompilerExecution>
+    <CoreCompileDependsOn>$(CoreCompileDependsOn);_SkipCoreCompile</CoreCompileDependsOn>
+
+    <!-- Prevents fast up-to-date checks in Visual Studio so our build will run explicitly -->
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+
+    <!-- Avoids generating a ThisAssembly class during the build -->
+    <NBGV_EmitThisAssemblyClass>false</NBGV_EmitThisAssemblyClass>
+  </PropertyGroup>
+
+  <!-- Blocks MSBuild from ever calling the Csc compiler -->
+  <Target Name="_SkipCoreCompile" />
+
+  <!--
+    These references establish build ordering only; they do not represent assembly
+    or package dependencies. Suppress them with $(NoBuild) != true for no-build
+    operations because solution-level pack must be able to package and publish
+    already-built outputs without recursively invoking Build on these auxiliary projects.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\ICU4N.Resources.Raw\ICU4N.Resources.Raw.csproj"
+                      ReferenceOutputAssembly="false"
+                      SkipGetTargetFrameworkProperties="true"
+                      Condition="'$(NoBuild)' != 'true'"/>
+    
+    <!-- Reference to the ICU4JResourceConverter tool so it builds automatically and only once in the graph.
+         We suppress passing the target framework and the warning that the target framework doesn't match
+         because this is intentional.
+
+      - GlobalPropertiesToRemove="TargetFramework" forces it to build using its own target framework.
+      - OutputItemType="ICU4JToolAssembly" automatically captures the path to the built DLL!
+      - Private="false" prevents the tool assembly from being copied to the output directory of this project.
+    -->
+    <ProjectReference Include="..\tools\ICU4JResourceConverter\ICU4JResourceConverter.csproj"
+                      ReferenceOutputAssembly="false"
+                      SkipGetTargetFrameworkProperties="true"
+                      GlobalPropertiesToRemove="TargetFramework"
+                      OutputItemType="ICU4JToolAssembly"
+                      Private="false"
+                      Condition="'$(NoBuild)' != 'true'"/>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <ICU4JResourceConverterAssembly>@(ICU4JToolAssembly)</ICU4JResourceConverterAssembly>
+  </PropertyGroup>
+
+  <Target Name="_SetICU4JDataTransformPaths">
+    <PropertyGroup>
+      <ICU4JResourceTransformedDirectory>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)icu4j-transformed').TrimEnd('\'))</ICU4JResourceTransformedDirectory>
+      <TransformedDataStamp>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath).data-transformed'))</TransformedDataStamp>
+    </PropertyGroup>
+  </Target>
+
+  <!-- Query the exported directory path directly from Raw -->
+  <Target Name="GetICU4JRawDataDirectory" DependsOnTargets="ResolveProjectReferences;_SetICU4JDataTransformPaths">
+    <MSBuild Projects="..\ICU4N.Resources.Raw\ICU4N.Resources.Raw.csproj"
+             Targets="ExportRawDataDirectory">
+      <Output TaskParameter="TargetOutputs" ItemName="_SourceDataDirectory" />
+    </MSBuild>
+
+    <PropertyGroup>
+      <ICU4JRawDataDirectory>$([System.IO.Path]::GetFullPath('%(_SourceDataDirectory.Identity)').TrimEnd('\'))</ICU4JRawDataDirectory>
+      <ICU4JRawDataStampFile>%(_SourceDataDirectory.StampFile)</ICU4JRawDataStampFile>
+    </PropertyGroup>
+  </Target>
+
+  <!-- Run transform tool using the retrieved directory path -->
+  <Target Name="ExecICU4JResourceConverter"
+          DependsOnTargets="GetICU4JRawDataDirectory"
+          Inputs="$(ICU4JRawDataStampFile)"
+          Outputs="$(TransformedDataStamp)">
+    <Message Importance="high" Text="Running ICU4JResourceConverter on $(ICU4JRawDataDirectory)..." />
+    <Message Importance="high" Text="ICU4JToolAssembly: @(ICU4JToolAssembly)" />
+
+    <PropertyGroup>
+      <RunICU4JResourceConverterCommand>dotnet &quot;$(ICU4JResourceConverterAssembly)&quot; transform</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) &quot;$(ICU4JRawDataDirectory)&quot;</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) &quot;$(ICU4JResourceTransformedDirectory)&quot;</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) &quot;$(ICU4JRawDataStampFile)&quot;</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) &quot;$(TransformedDataStamp)&quot;</RunICU4JResourceConverterCommand>
+    </PropertyGroup>
+
+    <Message Importance="high" Text="Running ICU4JResourceConverter command: $(RunICU4JResourceConverterCommand)" />
+
+    <Exec Command="$(RunICU4JResourceConverterCommand)"/>
+  </Target>
+
+  <!-- Allows explicit run without allowing background tasks to execute automatically -->
+  <Target Name="ExecuteTransformInIDE"
+          BeforeTargets="AssignTargetPaths"
+          DependsOnTargets="ExecICU4JResourceConverter"
+          Condition="'$(DesignTimeBuild)' != 'true'"/>
+
+  <!-- This target acts as an API for any project referencing this one  -->
+  <Target Name="ExportTransformedDataDirectory"
+          DependsOnTargets="ExecICU4JResourceConverter"
+          Returns="@(ExportedTransformedDataFolder)">
+    <ItemGroup>
+      <!-- Include the directory path. Ensure MSBuild resolves it to an absolute path -->
+      <ExportedTransformedDataFolder Include="$([System.IO.Path]::GetFullPath('$(ICU4JResourceTransformedDirectory)'))">
+        <!-- Attach the stamp file path as item metadata -->
+        <StampFile>$([System.IO.Path]::GetFullPath('$(TransformedDataStamp)'))</StampFile>
+      </ExportedTransformedDataFolder>
+    </ItemGroup>
+  </Target>
+
+  <!-- Remove transformed data during Clean.
+       Note we don't rely on IsCrossTargetingBuild here because Rider's doesn't set it
+       when using the Resharper build mode. -->
+  <Target Name="CleanTransformedICU4JData"
+          BeforeTargets="CoreClean"
+          DependsOnTargets="_SetICU4JDataTransformPaths"
+          Condition="'$(TargetFramework)' != ''">
+
+    <Message Importance="high"
+             Text="Cleaning transformed ICU4J data from '$(ICU4JResourceTransformedDirectory)'." />
+
+    <RemoveDir Directories="$(ICU4JResourceTransformedDirectory)"
+               Condition="Exists('$(ICU4JResourceTransformedDirectory)')" />
+
+    <Delete Files="$(TransformedDataStamp)"
+            Condition="Exists('$(TransformedDataStamp)')" />
+
+  </Target>
+
+</Project>
