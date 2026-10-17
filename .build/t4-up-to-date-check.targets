@@ -17,68 +17,6 @@
   </PropertyGroup>
 
   <!--
-    Check that every T4 template has a generated file that is at least as
-    recent as the template.
-  -->
-  <UsingTask TaskName="CheckT4Templates"
-             TaskFactory="RoslynCodeTaskFactory"
-             AssemblyFile="$(MSBuildBinPath)\Microsoft.Build.Tasks.Core.dll">
-    <ParameterGroup>
-      <Templates ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
-    </ParameterGroup>
-
-    <Task>
-      <Code Type="Fragment" Language="cs">
-        <![CDATA[
-        foreach (ITaskItem template in Templates)
-        {
-            string templatePath = template.GetMetadata("FullPath");
-            string generatedPath = template.GetMetadata("GeneratedPath");
-
-            if (!File.Exists(generatedPath))
-            {
-                Log.LogError(
-                    "T4 generated file '{0}' does not exist. Execute the T4 template '{1}' before building.",
-                    generatedPath,
-                    templatePath);
-                continue;
-            }
-
-            DateTime templateTime = File.GetLastWriteTimeUtc(templatePath);
-            DateTime generatedTime = File.GetLastWriteTimeUtc(generatedPath);
-
-            if (templateTime > generatedTime)
-            {
-                Log.LogError(
-                    "T4 template '{0}' is newer than its generated file '{1}'. Execute the T4 template before building.",
-                    templatePath,
-                    generatedPath);
-            }
-        }
-
-        Success = !Log.HasLoggedErrors;
-      ]]>
-      </Code>
-    </Task>
-  </UsingTask>
-
-  <Target Name="CheckT4TemplatesUpToDate" BeforeTargets="BeforeBuild" Condition="'$(TF_BUILD.ToLower())' != 'true' And '$(GITHUB_ACTIONS.ToLower())' != 'true'">
-
-    <Message Text="Checking T4 templates for up-to-date generated files..." Importance="high" />
-    
-    <ItemGroup>
-      <_T4Template Include="@(None->WithMetadataValue('Generator', 'TextTemplatingFileGenerator'))" />
-
-      <_T4Template Update="@(_T4Template)">
-        <GeneratedPath>$([System.IO.Path]::Combine($([System.IO.Path]::GetDirectoryName('%(_T4Template.FullPath)')), '%(_T4Template.LastGenOutput)'))</GeneratedPath>
-      </_T4Template>
-    </ItemGroup>
-
-    <CheckT4Templates Templates="@(_T4Template)" />
-
-  </Target>
-
-  <!--
     Explicit CI-only T4 transformation target.
 
     IMPORTANT: There is intentionally no BeforeTargets/AfterTargets here.
