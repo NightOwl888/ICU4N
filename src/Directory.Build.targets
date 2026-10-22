@@ -3,7 +3,7 @@
 
   <PropertyGroup Label="Assembly Documentation">
     <NoWarn Label="Missing XML comment for publicly visible type or member">$(NoWarn);1591</NoWarn>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <DocumentationFile Condition="'$(GenerateDocumentationFile)' != 'false'">bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Label="Disabled Warnings">

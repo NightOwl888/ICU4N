@@ -1,0 +1,23 @@
+﻿<Project>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <Import Project="..\ICU4N.Resources.SatelliteAssemblyGenerator.targets" />
+
+  <!-- Standard SDK Imports -->
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+
+  <!-- ========================================================================================= -->
+  <!-- TARGET OVERRIDES (MUST BE PLACED AFTER Sdk.targets)                                       -->
+  <!-- Informs referencing projects that this project produces NO primary assembly output.       -->
+  <!-- ========================================================================================= -->
+  <!-- Suppress primary assembly expectation for referencing projects (Fixes CS0006) -->
+  <Target Name="GetTargetPath" Returns="" />
+  <Target Name="GetOutputWithTargetPath" Returns="" />
+  <Target Name="GetTargetPathWithTargetPlatformMoniker" Returns="" />
+
+</Project>
+

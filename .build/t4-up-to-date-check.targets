@@ -1,0 +1,41 @@
+<!--
+    Verify that every T4 generated file is at least as new as its template.
+
+    This intentionally does not run T4. It is only a cheap timestamp check.
+    If a template is newer than its generated output, the target becomes
+    out-of-date and the Error below stops the build.
+
+    This is deliberately a local-build check. Git checkout timestamps are not
+    considered authoritative; the purpose here is simply to catch the common
+    mistake of editing a .tt file and building without regenerating it. But,
+    it is still possible to bypass this check by committing without doing a local
+    build.
+-->
+<Project>
+  <PropertyGroup>
+    <DotNetT4ToolPath>$(RepositoryRoot).tools/dotnet-t4</DotNetT4ToolPath>
+  </PropertyGroup>
+
+  <!--
+    Explicit CI-only T4 transformation target.
+
+    IMPORTANT: There is intentionally no BeforeTargets/AfterTargets here.
+    Normal builds never execute this target.
+  -->
+  <Target Name="TextTemplateTransform">
+
+    <ItemGroup>
+      <TextTemplate Include="$(MSBuildProjectDirectory)\**\*.tt"
+                    Exclude="$(MSBuildProjectDirectory)\bin\**\*;
+                             $(MSBuildProjectDirectory)\obj\**\*;
+                             $(MSBuildProjectDirectory)\.tools\**\*" />
+    </ItemGroup>
+
+    <Message Importance="High"
+             Text="Transforming %(TextTemplate.Identity)..." />
+
+    <Exec Command="$(DotNetT4ToolPath)/t4 &quot;%(TextTemplate.FullPath)&quot;" />
+
+  </Target>
+
+</Project>

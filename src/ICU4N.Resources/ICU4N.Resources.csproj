@@ -1,25 +1,51 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>net40;netstandard2.0</TargetFrameworks>
 
-    <Description>Full data for ICU4N. This package is a transient dependency of ICU4N and does not necessarily need to be installed explicitly.</Description>
+    <Description>Full data for ICU4N. This package is a transitive dependency of ICU4N and does not necessarily need to be installed explicitly.</Description>
 
-    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <!-- Fixes NU5017: Suppresses NuGet's rule that halts packages without traditional code/dependencies -->
+    <NoPackageAnalysis>true</NoPackageAnalysis>
     <IncludeSymbols>false</IncludeSymbols>
-  
-    <NoWarn Condition="'$(PackResourceStubs)' == 'true'" Label="Some target frameworks declared in the dependencies group of the nuspec and lib/ref folder do not have exact matches in the other location.">NU5128</NoWarn>
+
+    <!-- Fixes NU5128: Instructs the compiler not to pack the empty placeholder assembly -->
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+
+    <!-- Prevents the generation of a DLL -->
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+    <CopyBuildOutputToOutputDirectory>false</CopyBuildOutputToOutputDirectory>
+    <CopyOutputSymbolsToOutputDirectory>false</CopyOutputSymbolsToOutputDirectory>
+    <SkipCompilerExecution>true</SkipCompilerExecution>
+    <CoreCompileDependsOn>$(CoreCompileDependsOn);_SkipCoreCompile</CoreCompileDependsOn>
+    
+    <!-- Avoids generating a ThisAssembly class during the build -->
+    <NBGV_EmitThisAssemblyClass>false</NBGV_EmitThisAssemblyClass>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(PackResourceStubs)' != 'true'">
-    <None Include="$(ICU4NSatelliteAssemblyOutputDir)/**/*.resources.dll" Pack="true" PackagePath="lib/netstandard2.0" Visible="false" />
-    <None Include="ICU4N.Resources.targets" Pack="true" PackagePath="buildTransitive/$(PackageId).targets" />
-    <None Include="../ICU4N.Resources.NuGetVersionWarning.targets" Pack="true" PackagePath="buildTransitive/ICU4N.Resources.NuGetVersionWarning.targets" />
-  </ItemGroup>
+  <!-- Blocks MSBuild from ever calling the Csc compiler -->
+  <Target Name="_SkipCoreCompile" />
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
+    <ProjectReference Include="..\ICU4N.Resources.net40\ICU4N.Resources.net40.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <ProjectReference Include="..\ICU4N.Resources.netstandard2.0\ICU4N.Resources.netstandard2.0.csproj" />
     <!-- Reference NETStandard.Library for .NET Standard 2.0, but avoid including it as a transitive dependency -->
     <PackageReference Update="NETStandard.Library" Version="$(NETStandardLibrary20PackageReferenceVersion)" PrivateAssets="All" />
   </ItemGroup>
+
+  <!-- Standard SDK Imports -->
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+
+  <!-- ========================================================================================= -->
+  <!-- TARGET OVERRIDES (MUST BE PLACED AFTER Sdk.targets)                                       -->
+  <!-- Informs referencing projects that this project produces NO primary assembly output.       s-->
+  <!-- ========================================================================================= -->
+  <!-- Suppress primary assembly expectation for referencing projects (Fixes CS0006) -->
+  <Target Name="GetTargetPath" Returns="" />
+  <Target Name="GetOutputWithTargetPath" Returns="" />
+  <Target Name="GetTargetPathWithTargetPlatformMoniker" Returns="" />
 
 </Project>
